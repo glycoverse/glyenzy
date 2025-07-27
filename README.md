@@ -14,8 +14,8 @@ status](https://www.r-pkg.org/badges/version/glyenzy)](https://CRAN.R-project.or
 coverage](https://codecov.io/gh/glycoverse/glyenzy/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glyenzy)
 <!-- badges: end -->
 
-> [!Note] **This package is currently under development and is not for
-> production use.**
+> [!Note]
+> **This package is currently under development and is not for production use.**
 
 The glyenzy package helps simulate the biosynthetic process of
 glycosylation in silico. Key features include: identifying the specific
