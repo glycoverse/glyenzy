@@ -1,0 +1,694 @@
+[
+    {
+        "name": "ALG1",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG2",
+        "rules": [
+            {
+                "acceptor": "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG3",
+        "rules": [
+            {
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG6",
+        "rules": [
+            {
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG8",
+        "rules": [
+            {
+                "acceptor": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG9",
+        "rules": [
+            {
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG10",
+        "rules": [
+            {
+                "acceptor": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG11",
+        "rules": [
+            {
+                "acceptor": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG12",
+        "rules": [
+            {
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG13",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ALG14",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT1",
+        "rules": [
+            {
+                "acceptor": "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT2",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-?)]GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-?)]GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-2)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT3",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "whole"
+            },
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-",
+                "alignment": "whole"
+            },
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-",
+                "alignment": "whole"
+            }
+        ],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT4A",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [
+            {
+                "motif": "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            },
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            },
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "whole"
+            }
+        ],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-4)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT4B",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [
+            {
+                "motif": "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            },
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            },
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "whole"
+            }
+        ],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-4)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT5",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "MGAT5B",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "B3GNT8",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)[GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-6)Man(a1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "B4GALNT2",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-4)Glc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-4)Glc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "B4GALT1",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Gal(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "B4GALT2",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Gal(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "B4GALT3",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Gal(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Gal(b1-4)GlcNAc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "DPAGT1",
+        "rules": [
+            {
+                "acceptor": null,
+                "acceptor_alignment": null,
+                "product": "GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "GlcNAc(b1-",
+                "alignment": "terminal"
+            }
+        ]
+    },
+    {
+        "name": "FUT10",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            }
+        ],
+        "rejects": [
+            "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+        ],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Fuc(a1-3)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "FUT8",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Fuc(a1-6)GlcNAc(b1-",
+                "alignment": "core"
+            }
+        ]
+    },
+    {
+        "name": "ST6GAL1",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "ST6GAL2",
+        "rules": [
+            {
+                "acceptor": "GalNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-6)GalNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
+                "alignment": "substructure"
+            },
+            {
+                "motif": "Neu5Ac(a2-6)GalNAc(b1-4)GlcNAc(b1-",
+                "alignment": "substructure"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ST3GAL3",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "ST3GAL4",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "ST8SIA2",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-8)Neu5Ac(a2-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "ST8SIA3",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-8)Neu5Ac(a2-",
+                "alignment": "substructure"
+            }
+        ]
+    },
+    {
+        "name": "ST8SIA4",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
+            }
+        ],
+        "rejects": [],
+        "type": "GT",
+        "species": "human",
+        "markers": [
+            {
+                "motif": "Neu5Ac(a2-8)Neu5Ac(a2-",
+                "alignment": "substructure"
+            }
+        ]
+    }
+]
