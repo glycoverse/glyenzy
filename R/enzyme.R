@@ -56,6 +56,8 @@
 #' @return A `glyenzy_enzyme` object.
 #'
 #' @examples
+#' library(glyrepr)
+#'
 #' enzyme("ST3GAL3")
 #'
 #' @export

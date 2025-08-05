@@ -63,6 +63,8 @@ operator (\code{:::}) to access them.
 }
 
 \examples{
+library(glyrepr)
+
 enzyme("ST3GAL3")
 
 }
