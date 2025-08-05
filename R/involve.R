@@ -12,7 +12,7 @@
 #'   glycan structure strings supported by [glyparse::auto_parse()].
 #' @param enzyme An [enzyme()] or a gene symbol.
 #'
-#' @return A logical vector.
+#' @return A logical vector of the same length as `glycans`.
 #'
 #' @examples
 #' library(glyrepr)
@@ -46,6 +46,13 @@ involve <- function(glycans, enzyme) {
     ))
   }
   # Check if enzyme is involved
+  if (length(enzyme$markers$motifs) == 0) {
+    return(rep(NA, length(glycans)))
+  }
   mat <- glymotif::have_motifs(glycans, enzyme$markers$motifs, alignments = enzyme$markers$alignments)
-  unname(rowSums(mat) > 0)
+  if (enzyme$type == "GT") {
+    unname(rowSums(mat) > 0)
+  } else {  # GD
+    unname(rowSums(mat) == 0)
+  }
 }

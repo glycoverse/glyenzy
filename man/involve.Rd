@@ -13,7 +13,7 @@ glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse:
 \item{enzyme}{An \code{\link[=enzyme]{enzyme()}} or a gene symbol.}
 }
 \value{
-A logical vector.
+A logical vector of the same length as \code{glycans}.
 }
 \description{
 Glycans are synthesized by a series of enzymatic reactions.
