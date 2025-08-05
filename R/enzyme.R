@@ -1,3 +1,73 @@
+#' Enzymes
+#'
+#' @description
+#' Glycosylation is catalyzed by two types of enzymes: glycosyltransferases (GTs) and exoglycosidases (GDs).
+#' Glycosyltransferases catalyze the transfer of a sugar residue from a donor to an acceptor.
+#' Exoglycosidases catalyze the removal of a sugar residue from a substrate.
+#' `glyenzy` provides a data structure (`glyenzy_enzyme`) to represent these enzymes.
+#'
+#' Use `enzyme()` with a gene symbol to load a predefined enzyme.
+#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3.
+#'
+#' Throughout the package, you can use `enzyme()`s for any `enzyme` argument,
+#' or just use the gene symbol directly.
+#' For example, `involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", "ST3GAL3")` and
+#' `involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enzyme("ST3GAL3"))` are equivalent.
+#'
+#' @details
+#'
+#' # Explanation about `glyenzy_enzyme`
+#'
+#' An `enzyme()` is a list with the following elements:
+#'
+#' 1. `name`: the name of the enzyme, usually the gene symbol.
+#' 2. `rules`: a list of `glyenzy_enzyme_rule` objects.
+#'    Each rule is a list with three fields: the `acceptor`, `product`, and `acceptor_alignment`.
+#'    `acceptor` and `product` are `glyrepr_structure` objects with length 1.
+#'    `acceptor_alignment` is a character string specifying the alignment of the `acceptor`.
+#'    `acceptor` is what the enzyme recognizes, and `product` is what the enzyme generates.
+#'    An enzyme can have multiple rules.
+#' 3. `rejects`: a `glyenzy_motif_set` object representing the motifs that the enzyme rejects.
+#'    Even if a glycan satisfies one of the rules, if it contains a reject motif,
+#'    the enzyme will not act on it.
+#' 4. `markers`: a `glyenzy_motif_set` object representing the motifs that
+#'    indicate the enzyme is involved in the biosynthesis of a glycan.
+#'    If the enzyme is a glycosyltransferase (GT),
+#'    the enzyme is involved if the glycan contains the marker in its product side.
+#'    If the enzyme is an exoglycosidase (GD),
+#'    the enzyme is involved if the glycan does not contain the marker in its product side.
+#'    Multiple markers are combined with logical OR.
+#'    Markers can be empty. In this case, it is not possible to determine if the enzyme is involved.
+#' 5. `type`: the type of the enzyme, "GT" for glycosyltransferase or "GD" for exoglycosidase.
+#' 6. `species`: the species of the enzyme, e.g. "human" or "mouse".
+#'
+#' You can see all these information by printing the enzyme object.
+#'
+#' # Create a Custom Enzyme
+#'
+#' Create a custom enzyme is non-trivial, and usually you don't need to.
+#' If you still want to do so, you can use the internal functions
+#' `new_enzyme()`, `new_enzyme_rule()`, and `new_motif_set()`.
+#' These functions are not exported, so you need to use the triple colon
+#' operator (`:::`) to access them.
+#'
+#' @param symbol The gene symbol of the enzyme.
+#'
+#' @return A `glyenzy_enzyme` object.
+#'
+#' @examples
+#' enzyme("ST3GAL3")
+#'
+#' @export
+enzyme <- function(symbol) {
+  checkmate::assert_string(symbol)
+  if (symbol %in% names(glyenzy_enzymes)) {
+    glyenzy_enzymes[[symbol]]
+  } else {
+    cli::cli_abort("Unknown enzyme: {.val {symbol}}.")
+  }
+}
+
 #' Create a new enzyme object
 #'
 #' @param name The name of the enzyme.

@@ -1,3 +1,8 @@
+# Test enzyme function
+test_that("enzyme() returns a glyenzy_enzyme object", {
+  expect_s3_class(enzyme("FUT8"), "glyenzy_enzyme")
+})
+
 # Test new_enzyme_rule function
 test_that("new_enzyme_rule creates valid enzyme rule objects", {
   acceptor <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
