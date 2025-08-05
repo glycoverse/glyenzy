@@ -108,4 +108,4 @@ glyenzy_enzymes <- purrr::map(seq_len(nrow(json_data)), .create_enzyme_from_json
 names(glyenzy_enzymes) <- json_data$name
 
 # Save the data
-usethis::use_data(glyenzy_enzymes, overwrite = TRUE)
+usethis::use_data(glyenzy_enzymes, overwrite = TRUE, internal = TRUE)
