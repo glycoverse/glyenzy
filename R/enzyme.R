@@ -119,3 +119,50 @@ validate_motif_set <- function(x) {
 
   invisible(x)
 }
+
+#' Print method for glyenzy_enzyme objects
+#'
+#' @param x A `glyenzy_enzyme` object.
+#' @param ... Additional arguments passed to print methods.
+#' @export
+print.glyenzy_enzyme <- function(x, ...) {
+  cli::cli_h1("Enzyme: {.field {x$name}}")
+
+  # Basic information
+  cli::cli_alert_info("Type: {.val {x$type}} ({.emph {if (x$type == 'GT') 'Glycosyltransferase' else 'Exoglycosidase'}})")
+  cli::cli_alert_info("Species: {.val {x$species}}")
+
+  # Rules section
+  cli::cli_h2("Rules ({.val {length(x$rules)}})")
+  if (length(x$rules) > 0) {
+    purrr::iwalk(x$rules, function(rule, i) {
+      cli::cli_alert("Rule {.val {i}}: {.field {rule$acceptor_alignment}} alignment")
+      cli::cli_text("  Acceptor: {.val {as.character(rule$acceptor)}}")
+      cli::cli_text("  Product:  {.val {as.character(rule$product)}}")
+    })
+  } else {
+    cli::cli_text("  {.emph No rules defined}")
+  }
+
+  # Rejects section
+  cli::cli_h2("Rejects ({.val {length(x$rejects$motifs)}})")
+  if (length(x$rejects$motifs) > 0) {
+    purrr::iwalk(x$rejects$motifs, function(motif, i) {
+      cli::cli_text("  {.val {i}}: {.val {as.character(motif)}} ({.field {x$rejects$alignments[i]}})")
+    })
+  } else {
+    cli::cli_text("  {.emph No reject motifs defined}")
+  }
+
+  # Markers section
+  cli::cli_h2("Markers ({.val {length(x$markers$motifs)}})")
+  if (length(x$markers$motifs) > 0) {
+    purrr::iwalk(x$markers$motifs, function(motif, i) {
+      cli::cli_text("  {.val {i}}: {.val {as.character(motif)}} ({.field {x$markers$alignments[i]}})")
+    })
+  } else {
+    cli::cli_text("  {.emph No marker motifs defined}")
+  }
+
+  invisible(x)
+}

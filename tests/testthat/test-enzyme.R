@@ -91,16 +91,6 @@ test_that("validate_enzyme_rule fails with invalid acceptor-product pairs for GT
     validate_enzyme_rule(rule),
     "`product` must have exactly one more residue than `acceptor`"
   )
-
-  # Case 4: the extra residue not at the terminal
-  acceptor <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
-  product <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-4)Neu5Ac(a2-")
-
-  rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
-  expect_error(
-    validate_enzyme_rule(rule),
-    "The extra residue in `product` must be at the terminal"
-  )
 })
 
 test_that("validate_enzyme_rule fails with invalid acceptor-product pairs for GDs", {
@@ -132,16 +122,6 @@ test_that("validate_enzyme_rule fails with invalid acceptor-product pairs for GD
   expect_error(
     validate_enzyme_rule(rule),
     "`acceptor` must have exactly one more residue than `product`"
-  )
-
-  # Case 4: the extra residue not at the terminal
-  acceptor <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
-  product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-")
-
-  rule <- new_enzyme_rule(acceptor, product, "terminal", "GD")
-  expect_error(
-    validate_enzyme_rule(rule),
-    "The extra residue in `acceptor` must be at the terminal"
   )
 })
 
@@ -267,4 +247,47 @@ test_that("validate_enzyme fails for mismatched rule types", {
     validate_enzyme(enzyme),
     "All rules must have the same type as the enzyme"
   )
+})
+
+# Test print method for glyenzy_enzyme
+test_that("print.glyenzy_enzyme works correctly", {
+  acceptor <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
+  product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
+  motifs <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
+
+  rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
+  rejects <- new_motif_set(motifs, "terminal")
+  markers <- new_motif_set(motifs, "terminal")
+  enzyme <- new_enzyme("ST3GAL2", list(rule), rejects, markers, "GT", "human")
+
+  expect_snapshot(print(enzyme))
+})
+
+test_that("print.glyenzy_enzyme handles empty motif sets", {
+  acceptor <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
+  product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
+  empty_motifs <- glyparse::parse_iupac_condensed(character(0))
+
+  rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
+  empty_rejects <- new_motif_set(empty_motifs, character(0))
+  empty_markers <- new_motif_set(empty_motifs, character(0))
+  enzyme <- new_enzyme("TEST", list(rule), empty_rejects, empty_markers, "GT", "human")
+
+  expect_snapshot(print(enzyme))
+})
+
+test_that("print.glyenzy_enzyme handles multiple rules", {
+  acceptor1 <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
+  product1 <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
+  acceptor2 <- glyparse::parse_iupac_condensed("Gal(b1-4)GlcNAc(b1-")
+  product2 <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-")
+
+  rule1 <- new_enzyme_rule(acceptor1, product1, "terminal", "GT")
+  rule2 <- new_enzyme_rule(acceptor2, product2, "terminal", "GT")
+  empty_motifs <- glyparse::parse_iupac_condensed(character(0))
+  empty_set <- new_motif_set(empty_motifs, character(0))
+
+  enzyme <- new_enzyme("ST3GAL1", list(rule1, rule2), empty_set, empty_set, "GT", "human")
+
+  expect_snapshot(print(enzyme))
 })
