@@ -603,9 +603,19 @@
         "name": "ST3GAL3",
         "rules": [
             {
-                "acceptor": "Gal(b1-4)GalNAc(b1-",
+                "acceptor": "Gal(b1-3)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "product": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-"
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
             }
         ],
         "rejects": [],
@@ -613,7 +623,11 @@
         "species": "human",
         "markers": [
             {
-                "motif": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-",
+                "motif": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-",
+                "alignment": "substructure"
+            },
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-3/4)GlcNAc(b1-",
                 "alignment": "substructure"
             }
         ]
@@ -622,9 +636,19 @@
         "name": "ST3GAL4",
         "rules": [
             {
-                "acceptor": "Gal(b1-4)GalNAc(b1-",
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "product": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-"
+                "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
             }
         ],
         "rejects": [],
@@ -632,7 +656,11 @@
         "species": "human",
         "markers": [
             {
-                "motif": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-",
+                "motif": "Neu5Ac(a2-3)Gal(b1-3/4)GlcNAc(b1-",
+                "alignment": "substructure"
+            },
+            {
+                "motif": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-",
                 "alignment": "substructure"
             }
         ]
