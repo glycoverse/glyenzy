@@ -90,11 +90,6 @@ validate_enzyme_rule <- function(x) {
   if (igraph::vcount(larger_graph) - igraph::vcount(smaller_graph) != 1) {
     cli::cli_abort("{.arg {larger_name}} must have exactly one more residue than {.arg {smaller_name}}.")
   }
-  # the extra residue in `larger` has an out-degree of 0
-  extra_residue_i <- setdiff(1:igraph::vcount(larger_graph), match_res)
-  if (igraph::degree(larger_graph, extra_residue_i, mode = "out") != 0) {
-    cli::cli_abort("The extra residue in {.arg {larger_name}} must be at the terminal.")
-  }
 }
 
 new_motif_set <- function(motifs, alignments) {
