@@ -80,7 +80,7 @@ validate_enzyme_rule <- function(x) {
 .assert_product_acceptor <- function(smaller, larger, smaller_name, larger_name) {
   smaller_graph <- glyrepr::get_structure_graphs(smaller)
   larger_graph <- glyrepr::get_structure_graphs(larger)
-  match_res <- glymotif::match_motif(larger, smaller)[[1]]  # only one glycan, so `[[1]]`
+  match_res <- glymotif::match_motif(larger, smaller, alignment = "core")[[1]]  # only one glycan, so `[[1]]`
   # `smaller` is a substructure of `larger`
   if (length(match_res) != 1) {
     cli::cli_abort("{.arg {smaller_name}} must be a substructure of {.arg {larger_name}}.")
