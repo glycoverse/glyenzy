@@ -30,16 +30,14 @@
 #' 3. `rejects`: a `glyenzy_motif_set` object representing the motifs that the enzyme rejects.
 #'    Even if a glycan satisfies one of the rules, if it contains a reject motif,
 #'    the enzyme will not act on it.
-#' 4. `markers`: a `glyenzy_motif_set` object representing the motifs that
-#'    indicate the enzyme is involved in the biosynthesis of a glycan.
-#'    If the enzyme is a glycosyltransferase (GT),
-#'    the enzyme is involved if the glycan contains the marker in its product side.
-#'    If the enzyme is an exoglycosidase (GD),
-#'    the enzyme is involved if the glycan does not contain the marker in its product side.
-#'    Multiple markers are combined with logical OR.
-#'    Markers can be empty. In this case, it is not possible to determine if the enzyme is involved.
-#' 5. `type`: the type of the enzyme, "GT" for glycosyltransferase or "GD" for exoglycosidase.
-#' 6. `species`: the species of the enzyme, e.g. "human" or "mouse".
+#' 4. `type`: the type of the enzyme, "GT" for glycosyltransferase or "GD" for exoglycosidase.
+#' 5. `species`: the species of the enzyme, e.g. "human" or "mouse".
+#'
+#' # Enzyme Involvement Detection
+#'
+#' The `involve()` function determines if an enzyme participated in glycan biosynthesis:
+#' - For ALG enzymes: checks if the glycan is an N-glycan (since ALG enzymes are essential for all N-glycan synthesis)
+#' - For other enzymes: checks if the enzyme's product motifs exist in the glycan structure
 #'
 #' You can see all these information by printing the enzyme object.
 #'
@@ -75,30 +73,27 @@ enzyme <- function(symbol) {
 #' @param name The name of the enzyme.
 #' @param rules A list of `glyenzy_enzyme_rule` objects.
 #' @param rejects A `glyenzy_motif_set` object representing the motifs that the enzyme rejects.
-#' @param markers A `glyenzy_motif_set` object representing the motifs that
-#'   indicate the enzyme is involved in the biosynthesis of a glycan.
 #' @param type The type of the enzyme, "GT" for glycosyltransferase or "GD" for exoglycosidase.
 #' @param species The species of the enzyme, e.g. "human" or "mouse".
 #'
 #' @return A `glyenzy_enzyme` object.
 #' @noRd
-new_enzyme <- function(name, rules, rejects, markers, type, species) {
+new_enzyme <- function(name, rules, rejects, type, species) {
   checkmate::assert_string(name)
   checkmate::assert_list(rules, types = "glyenzy_enzyme_rule")
   checkmate::assert_class(rejects, "glyenzy_motif_set")
-  checkmate::assert_class(markers, "glyenzy_motif_set")
   checkmate::assert_choice(type, c("GT", "GD"))
   checkmate::assert_string(species)
 
   structure(
-    list(name = name, rules = rules, rejects = rejects, markers = markers, type = type, species = species),
+    list(name = name, rules = rules, rejects = rejects, type = type, species = species),
     class = "glyenzy_enzyme"
   )
 }
 
 #' Validate a `glyenzy_enzyme` object
 #'
-#' This function validate `rules`, `rejects`, and `markers`
+#' This function validate `rules` and `rejects`
 #' by calling their own validation functions.
 #'
 #' @param x A `glyenzy_enzyme` object.
@@ -114,7 +109,6 @@ validate_enzyme <- function(x) {
   }
   purrr::walk(x$rules, validate_enzyme_rule)
   validate_motif_set(x$rejects)
-  validate_motif_set(x$markers)
   invisible(x)
 }
 
@@ -219,16 +213,6 @@ print.glyenzy_enzyme <- function(x, ...) {
     })
   } else {
     cli::cli_text("  {.emph No reject motifs defined}")
-  }
-
-  # Markers section
-  cli::cli_h2("Markers ({.val {length(x$markers$motifs)}})")
-  if (length(x$markers$motifs) > 0) {
-    purrr::iwalk(x$markers$motifs, function(motif, i) {
-      cli::cli_text("  {.val {i}}: {.val {as.character(motif)}} ({.field {x$markers$alignments[i]}})")
-    })
-  } else {
-    cli::cli_text("  {.emph No marker motifs defined}")
   }
 
   invisible(x)

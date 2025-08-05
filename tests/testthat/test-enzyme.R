@@ -177,15 +177,13 @@ test_that("new_enzyme creates valid enzyme objects", {
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
   rejects <- new_motif_set(motifs, "terminal")
-  markers <- new_motif_set(motifs, "terminal")
 
-  enzyme <- new_enzyme("ST3GAL2", list(rule), rejects, markers, "GT", "human")
+  enzyme <- new_enzyme("ST3GAL2", list(rule), rejects, "GT", "human")
 
   expect_s3_class(enzyme, "glyenzy_enzyme")
   expect_equal(enzyme$name, "ST3GAL2")
   expect_equal(enzyme$rules, list(rule))
   expect_equal(enzyme$rejects, rejects)
-  expect_equal(enzyme$markers, markers)
   expect_equal(enzyme$type, "GT")
   expect_equal(enzyme$species, "human")
 })
@@ -197,41 +195,34 @@ test_that("new_enzyme validates input parameters", {
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
   rejects <- new_motif_set(motifs, "terminal")
-  markers <- new_motif_set(motifs, "terminal")
 
   # Invalid name
   expect_error(
-    new_enzyme(123, list(rule), rejects, markers, "GT", "human"),
+    new_enzyme(123, list(rule), rejects, "GT", "human"),
     "Assertion on 'name' failed"
   )
 
   # Invalid rules
   expect_error(
-    new_enzyme("ST3GAL2", "invalid", rejects, markers, "GT", "human"),
+    new_enzyme("ST3GAL2", "invalid", rejects, "GT", "human"),
     "Assertion on 'rules' failed"
   )
 
   # Invalid rejects
   expect_error(
-    new_enzyme("ST3GAL2", list(rule), "invalid", markers, "GT", "human"),
+    new_enzyme("ST3GAL2", list(rule), "invalid", "GT", "human"),
     "Assertion on 'rejects' failed"
-  )
-
-  # Invalid markers
-  expect_error(
-    new_enzyme("ST3GAL2", list(rule), rejects, "invalid", "GT", "human"),
-    "Assertion on 'markers' failed"
   )
 
   # Invalid type
   expect_error(
-    new_enzyme("ST3GAL2", list(rule), rejects, markers, "invalid", "human"),
+    new_enzyme("ST3GAL2", list(rule), rejects, "invalid", "human"),
     "Assertion on 'type' failed"
   )
 
   # Invalid species
   expect_error(
-    new_enzyme("ST3GAL2", list(rule), rejects, markers, "GT", 123),
+    new_enzyme("ST3GAL2", list(rule), rejects, "GT", 123),
     "Assertion on 'species' failed"
   )
 })
@@ -244,10 +235,9 @@ test_that("validate_enzyme fails for mismatched rule types", {
   gt_rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
   gd_rule <- new_enzyme_rule(product, acceptor, "terminal", "GD")
   rejects <- new_motif_set(motifs, "terminal")
-  markers <- new_motif_set(motifs, "terminal")
 
   # Enzyme type is GT but contains GD rule
-  enzyme <- new_enzyme("TEST", list(gt_rule, gd_rule), rejects, markers, "GT", "human")
+  enzyme <- new_enzyme("TEST", list(gt_rule, gd_rule), rejects, "GT", "human")
   expect_error(
     validate_enzyme(enzyme),
     "All rules must have the same type as the enzyme"
@@ -262,8 +252,7 @@ test_that("print.glyenzy_enzyme works correctly", {
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
   rejects <- new_motif_set(motifs, "terminal")
-  markers <- new_motif_set(motifs, "terminal")
-  enzyme <- new_enzyme("ST3GAL2", list(rule), rejects, markers, "GT", "human")
+  enzyme <- new_enzyme("ST3GAL2", list(rule), rejects, "GT", "human")
 
   expect_snapshot(print(enzyme))
 })
@@ -275,8 +264,7 @@ test_that("print.glyenzy_enzyme handles empty motif sets", {
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", "GT")
   empty_rejects <- new_motif_set(empty_motifs, character(0))
-  empty_markers <- new_motif_set(empty_motifs, character(0))
-  enzyme <- new_enzyme("TEST", list(rule), empty_rejects, empty_markers, "GT", "human")
+  enzyme <- new_enzyme("TEST", list(rule), empty_rejects, "GT", "human")
 
   expect_snapshot(print(enzyme))
 })
@@ -292,7 +280,7 @@ test_that("print.glyenzy_enzyme handles multiple rules", {
   empty_motifs <- glyparse::parse_iupac_condensed(character(0))
   empty_set <- new_motif_set(empty_motifs, character(0))
 
-  enzyme <- new_enzyme("ST3GAL1", list(rule1, rule2), empty_set, empty_set, "GT", "human")
+  enzyme <- new_enzyme("ST3GAL1", list(rule1, rule2), empty_set, "GT", "human")
 
   expect_snapshot(print(enzyme))
 })

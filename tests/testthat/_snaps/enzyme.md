@@ -17,10 +17,6 @@
       -- Rejects (1) --
       
       1: "Gal(b1-3)GalNAc(a1-" (terminal)
-      
-      -- Markers (1) --
-      
-      1: "Gal(b1-3)GalNAc(a1-" (terminal)
 
 # print.glyenzy_enzyme handles empty motif sets
 
@@ -41,10 +37,6 @@
       -- Rejects (0) --
       
       No reject motifs defined
-      
-      -- Markers (0) --
-      
-      No marker motifs defined
 
 # print.glyenzy_enzyme handles multiple rules
 
@@ -68,8 +60,4 @@
       -- Rejects (0) --
       
       No reject motifs defined
-      
-      -- Markers (0) --
-      
-      No marker motifs defined
 

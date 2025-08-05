@@ -45,14 +45,32 @@ involve <- function(glycans, enzyme) {
       "x" = "Got {.cls {class(enzyme)}}."
     ))
   }
-  # Check if enzyme is involved
-  if (length(enzyme$markers$motifs) == 0) {
+
+  # Special handling for ALG enzymes
+  if (stringr::str_starts(enzyme$name, "ALG")) {
+    # ALG enzymes are involved in all N-glycan synthesis
+    # Check if the glycans are N-glycans
+    is_n_glycan_result <- glymotif::is_n_glycan(glycans, strict = TRUE)
+    return(unname(is_n_glycan_result))
+  }
+
+  # For non-ALG enzymes, check if their product motifs exist in the glycans
+  if (length(enzyme$rules) == 0) {
     return(rep(NA, length(glycans)))
   }
-  mat <- glymotif::have_motifs(glycans, enzyme$markers$motifs, alignments = enzyme$markers$alignments)
+
+  # Extract product motifs from all rules
+  product_motifs <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
+
+  # Check if any product motif exists in the glycans
+  mat <- glymotif::have_motifs(glycans, product_motifs, alignments = "substructure")
+
   if (enzyme$type == "GT") {
+    # For glycosyltransferases, involvement means the product exists
     unname(rowSums(mat) > 0)
-  } else {  # GD
+  } else {  # GD (exoglycosidase)
+    # For exoglycosidases, involvement means the product does NOT exist
+    # (the substrate was cleaved, so the product should be absent)
     unname(rowSums(mat) == 0)
   }
 }

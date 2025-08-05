@@ -12,10 +12,6 @@
 #   each exception is a dictionary with the following keys:
 #     - "motif": the motif to be rejected
 #     - "alignment": alignment of the motif
-# - "markers": a list of motifs that indicate the enzyme is involved in the biosynthesis of a glycan,
-#   each marker is a dictionary with the following keys:
-#     - "motif": the marker motif
-#     - "alignment": alignment of the marker
 # - "type": "GT" for glycosyltransferase or "GD" for exoglycosidase
 # - "species": species of the enzyme
 #
@@ -28,11 +24,6 @@
 # However, when the whole glycan is transfered to Asn, the linkage becomes b-linkage.
 # Therefore, although these enzymes actually recognize motifs with a-reducing-ends,
 # we use "b" as the reducing-end in the acceptor and product.
-#
-# ### ALG markers
-#
-# All N-glycans observed on Asn must have been processed by all ALG family.
-# So the "marker" field for these enzymes is just the N-glycan core.
 
 devtools::load_all()
 
@@ -90,12 +81,8 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
   rejects_data <- json_data$rejects[[i]]
   rejects <- .create_motif_set_from_json(rejects_data)
 
-  # Create markers motif set
-  markers_data <- json_data$markers[[i]]
-  markers <- .create_motif_set_from_json(markers_data)
-
-  # Create and validate enzyme
-  enzyme <- glyenzy:::new_enzyme(name, rules, rejects, markers, type, species)
+  # Create and validate enzyme (no longer using markers)
+  enzyme <- glyenzy:::new_enzyme(name, rules, rejects, type, species)
   glyenzy:::validate_enzyme(enzyme)
 
   enzyme
