@@ -18,8 +18,8 @@ Imports:
     checkmate,
     cli,
     glymotif (>= 0.6.0),
-    glyparse (>= 0.4.0),
     glyrepr (>= 0.5.2.9000),
+    glyparse (>= 0.4.0),
     igraph,
     purrr
 Remotes: 
