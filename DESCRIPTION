@@ -21,7 +21,8 @@ Imports:
     glyrepr (>= 0.5.2.9000),
     glyparse (>= 0.4.0),
     igraph,
-    purrr
+    purrr,
+    stringr
 Remotes: 
     glycoverse/glyrepr,
     glycoverse/glyparse,

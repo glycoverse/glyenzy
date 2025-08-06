@@ -5,10 +5,11 @@
             {
                 "acceptor": "GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -18,15 +19,18 @@
             {
                 "acceptor": "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -36,10 +40,11 @@
             {
                 "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -49,10 +54,11 @@
             {
                 "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -62,10 +68,11 @@
             {
                 "acceptor": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -75,10 +82,11 @@
             {
                 "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -88,10 +96,11 @@
             {
                 "acceptor": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -101,15 +110,18 @@
             {
                 "acceptor": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -119,10 +131,11 @@
             {
                 "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -132,10 +145,11 @@
             {
                 "acceptor": "GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -145,10 +159,11 @@
             {
                 "acceptor": "GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -158,10 +173,11 @@
             {
                 "acceptor": "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -171,15 +187,18 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-?)]GlcNAc(b1-",
                 "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-?)]GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -187,23 +206,28 @@
         "name": "MGAT3",
         "rules": [
             {
-                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
-                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-            }
-        ],
-        "rejects": [
-            {
-                "motif": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "whole"
+                "rejects": [
+                    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                    "GlcNAc(b1-4/6)Man(a1-3/6)Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+                ],
+                "rejects_alignment": ["core", "core"],
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             },
             {
-                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-",
-                "alignment": "whole"
+                "acceptor": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "rejects": ["Gal(b1-"],
+                "rejects_alignment": ["core"],
+                "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             },
             {
-                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-",
-                "alignment": "whole"
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "core",
+                "rejects": ["Gal(b1-"],
+                "rejects_alignment": ["core"],
+                "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -215,21 +239,13 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": [
+                    "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                    "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                ],
+                "rejects_alignment": ["core", "core", "whole"],
                 "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-            }
-        ],
-        "rejects": [
-            {
-                "motif": "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "core"
-            },
-            {
-                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "core"
-            },
-            {
-                "motif": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "whole"
             }
         ],
         "type": "GT",
@@ -241,21 +257,13 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": [
+                    "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                    "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                ],
+                "rejects_alignment": ["core", "core", "whole"],
                 "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-            }
-        ],
-        "rejects": [
-            {
-                "motif": "GlcNAc(b1-4)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "core"
-            },
-            {
-                "motif": "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "core"
-            },
-            {
-                "motif": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "alignment": "whole"
             }
         ],
         "type": "GT",
@@ -267,10 +275,11 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -280,10 +289,11 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -293,10 +303,11 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)[GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -306,10 +317,11 @@
             {
                 "acceptor": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-4)Glc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -319,10 +331,11 @@
             {
                 "acceptor": "GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Gal(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -332,10 +345,11 @@
             {
                 "acceptor": "GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Gal(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -345,10 +359,11 @@
             {
                 "acceptor": "GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Gal(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -358,10 +373,11 @@
             {
                 "acceptor": null,
                 "acceptor_alignment": null,
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -371,13 +387,9 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": ["GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"],
+                "rejects_alignment": ["core"],
                 "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
-            }
-        ],
-        "rejects": [
-            {
-                "motif": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-",
-                "alignment": "core"
             }
         ],
         "type": "GT",
@@ -389,10 +401,11 @@
             {
                 "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -402,10 +415,11 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -415,15 +429,18 @@
             {
                 "acceptor": "GalNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-6)GalNAc(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -433,20 +450,25 @@
             {
                 "acceptor": "Gal(b1-3)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-3)GalNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -456,20 +478,25 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-3)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-3)GalNAc(b1-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -479,10 +506,11 @@
             {
                 "acceptor": "Neu5Ac(a2-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -492,10 +520,11 @@
             {
                 "acceptor": "Neu5Ac(a2-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     },
@@ -505,10 +534,11 @@
             {
                 "acceptor": "Neu5Ac(a2-",
                 "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
                 "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
             }
         ],
-        "rejects": [],
         "type": "GT",
         "species": "human"
     }

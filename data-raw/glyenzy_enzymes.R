@@ -34,33 +34,32 @@ library(purrr)
 # Read JSON data
 json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
 
-# Helper function to create motif set from JSON data
-.create_motif_set_from_json <- function(motif_data) {
-  if (nrow(motif_data) == 0) {
-    # Create empty motif set
-    motifs <- glyparse::parse_iupac_condensed(character(0))
-    alignments <- character(0)
-  } else {
-    # motif_data should be a data.frame with motif and alignment columns
-    motifs <- glyparse::parse_iupac_condensed(motif_data$motif)
-    alignments <- motif_data$alignment
-  }
-
-  glyenzy:::new_motif_set(motifs, alignments)
-}
-
 # Helper function to create enzyme rule from JSON data
 .create_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
-  # Skip rules with NA values
-  if (is.na(rule_data$acceptor) || is.na(rule_data$product)) {
-    return(NULL)
+  # Handle null acceptor (for DPAGT1)
+  if (is.null(rule_data$acceptor) || is.na(rule_data$acceptor)) {
+    acceptor <- glyparse::parse_iupac_condensed(character(0))
+    acceptor_alignment <- NULL
+  } else {
+    acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
+    acceptor_alignment <- rule_data$acceptor_alignment
   }
 
-  acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
   product <- glyparse::parse_iupac_condensed(rule_data$product)
-  acceptor_alignment <- rule_data$acceptor_alignment
 
-  glyenzy:::new_enzyme_rule(acceptor, product, acceptor_alignment, enzyme_type)
+  # Handle rejects - they are stored as lists in JSON
+  rejects_list <- rule_data$rejects[[1]]  # Extract the list content
+  rejects_alignment_list <- rule_data$rejects_alignment[[1]]  # Extract the list content
+
+  if (length(rejects_list) == 0) {
+    rejects <- glyparse::parse_iupac_condensed(character(0))
+    rejects_alignment <- character(0)
+  } else {
+    rejects <- glyparse::parse_iupac_condensed(rejects_list)
+    rejects_alignment <- rejects_alignment_list
+  }
+
+  glyenzy:::new_enzyme_rule(acceptor, product, acceptor_alignment, rejects, rejects_alignment, enzyme_type)
 }
 
 # Helper function to create enzyme from JSON data (for data.frame row)
@@ -77,12 +76,8 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
   # Remove NULL rules (those with NA values)
   rules <- purrr::compact(rules)
 
-  # Create rejects motif set
-  rejects_data <- json_data$rejects[[i]]
-  rejects <- .create_motif_set_from_json(rejects_data)
-
-  # Create and validate enzyme (no longer using markers)
-  enzyme <- glyenzy:::new_enzyme(name, rules, rejects, type, species)
+  # Create and validate enzyme
+  enzyme <- glyenzy:::new_enzyme(name, rules, type, species)
   glyenzy:::validate_enzyme(enzyme)
 
   enzyme
