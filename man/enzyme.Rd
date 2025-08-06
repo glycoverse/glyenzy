@@ -46,14 +46,6 @@ Each rule is a list with five fields:
 You can see all these information by printing the enzyme object.
 }
 
-\section{Create a Custom Enzyme}{
-Create a custom enzyme is non-trivial, and usually you don't need to.
-If you still want to do so, you can use the internal functions
-\code{new_enzyme()}, \code{new_enzyme_rule()}, and \code{new_motif_set()}.
-These functions are not exported, so you need to use the triple colon
-operator (\code{:::}) to access them.
-}
-
 \examples{
 library(glyrepr)
 

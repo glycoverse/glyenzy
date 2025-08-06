@@ -2,4 +2,4 @@
 
 S3method(print,glyenzy_enzyme)
 export(enzyme)
-export(involve)
+export(is_synthesized_by)
