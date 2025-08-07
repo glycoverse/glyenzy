@@ -1,4 +1,4 @@
-# Input type
+# ===== Input type =====
 test_that("is_synthesized_by works for `glyrepr_structure` and `glyenzy_enzyme`", {
   glycan <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
   enzyme <- enzyme("ST3GAL3")
@@ -17,4 +17,30 @@ test_that("is_synthesized_by works vectorizedly", {
     "Gal(b1-3)GlcNAc(b1-"
   )
   expect_equal(is_synthesized_by(glycans, "ST3GAL3"), c(TRUE, FALSE))
+})
+
+# ===== Special cases for N-glycans =====
+test_that("is_synthesized_by works for ALG enzymes", {
+  glycan1 <- "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"  # the basic N-glycan core
+  glycan2 <- "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"  # not an N-glycan
+  enzymes <- c("ALG1", "ALG2", "ALG3")
+  expect_true(all(purrr::map_lgl(enzymes, ~ is_synthesized_by(glycan1, .x))))
+  expect_false(any(purrr::map_lgl(enzymes, ~ is_synthesized_by(glycan2, .x))))
+})
+
+test_that("is_synthesized_by works for MGAT1", {
+  glycans <- c(
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(is_synthesized_by(glycans, "MGAT1"), c(TRUE, FALSE))
+})
+
+test_that("is_synthesized_by works for MOGS", {
+  glycans <- c(
+    "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(is_synthesized_by(glycans, "MOGS"), c(FALSE, TRUE, TRUE))
 })

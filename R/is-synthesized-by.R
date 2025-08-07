@@ -101,14 +101,23 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param enzyme A `glyenzy_enzyme` object.
 #' @noRd
 .is_synthesized_by_n_glycan <- function(glycans, enzyme) {
-  dplyr::case_when(
-    stringr::str_starts(enzyme$name, "ALG") ~ .is_synthesized_by_alg(glycans),
-    enzyme$name == "MGAT1" ~ .is_synthesized_by_mgat1(glycans),
-    enzyme$name %in% c("MOGS", "MAN1B1") ~ .is_synthesized_by_mogs_man1b1(glycans, enzyme),
-    enzyme$name %in% c("MAN1A1", "MAN1A2", "MAN1C1") ~ .is_synthesized_by_man123(glycans),
-    enzyme$name == "GANAB" ~ .is_synthesized_by_ganab(glycans),
-    TRUE ~ .is_synthesized_by_default(glycans, enzyme),
-  )
+  if (stringr::str_starts(enzyme$name, "ALG")) {
+    return(.is_synthesized_by_alg(glycans))
+  }
+  if (enzyme$name == "MGAT1") {
+    return(.is_synthesized_by_mgat1(glycans))
+  }
+  if (enzyme$name %in% c("MOGS", "MAN1B1")) {
+    return(.is_synthesized_by_mogs_man1b1(glycans, enzyme))
+  }
+  if (enzyme$name %in% c("MAN1A1", "MAN1A2", "MAN1C1")) {
+    return(.is_synthesized_by_man123(glycans))
+  }
+  if (enzyme$name == "GANAB") {
+    return(.is_synthesized_by_ganab(glycans))
+  }
+
+  .is_synthesized_by_default(glycans, enzyme)
 }
 
 # Special case for ALG family
