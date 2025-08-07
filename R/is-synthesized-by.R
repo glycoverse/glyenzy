@@ -71,8 +71,10 @@ is_synthesized_by <- function(glycans, enzyme) {
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
+#' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
+#'   If `NULL`, it will be computed by [glymotif::is_n_glycan()].
 #' @noRd
-.is_synthesized_by <- function(glycans, enzyme) {
+.is_synthesized_by <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(enzyme$name,
     ALG1 = , ALG2 = , ALG3 = , ALG6 = , ALG8 = , ALG9 = , ALG10 = ,
     ALG11 = , ALG12 = , ALG13 = , ALG14 = , DPAGT1 = .is_synthesized_by_alg,
@@ -83,7 +85,7 @@ is_synthesized_by <- function(glycans, enzyme) {
     GANAB = .is_synthesized_by_ganab,
     .is_synthesized_by_default
   )
-  .f(glycans, enzyme)
+  .f(glycans, enzyme, is_n)
 }
 
 #' Make a function that only applies to N-glycans
@@ -96,8 +98,10 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @noRd
 .make_n_glycan_guard <- function(.f) {
   force(.f)
-  function(glycans, enzyme) {
-    is_n <- glymotif::is_n_glycan(glycans)
+  function(glycans, enzyme, is_n = NULL) {
+    if (is.null(is_n)) {
+      is_n <- glymotif::is_n_glycan(glycans)
+    }
     res <- rep(FALSE, length(glycans))
     if (any(is_n)) {
       res[is_n] <- .f(glycans[is_n], enzyme)
@@ -178,12 +182,13 @@ is_synthesized_by <- function(glycans, enzyme) {
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
+#' @param ... Ignored.
 #' @noRd
-.is_synthesized_by_default <- function(glycans, enzyme) {
+.is_synthesized_by_default <- function(glycans, enzyme, ...) {
   if (enzyme$type == "GD") {
     cli::cli_abort("Exoglycosidases except a few involved in N-glycan biosynthesis are not supported yet.")
   }
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
-  have_products_mat <- glymotif::have_motifs(glycans, products, "substructure")
+  have_products_mat <- glymotif::have_motifs(glycans, products)
   unname(rowSums(have_products_mat) > 0)
 }

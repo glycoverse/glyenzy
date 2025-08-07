@@ -34,15 +34,17 @@ get_involved_enzymes <- function(glycans) {
     ))
   }
 
-  masks <- purrr::map(glyenzy_enzymes, ~ .safe_is_synthesized_by(glycans, .x))
+  # Compute is_n once for all enzymes to avoid repeated computation
+  is_n <- glymotif::is_n_glycan(glycans)
+  masks <- purrr::map(glyenzy_enzymes, ~ .safe_is_synthesized_by(glycans, .x, is_n))
   mast_mat <- do.call(cbind, masks)
   purrr::map(seq_along(glycans), ~ names(glyenzy_enzymes)[mast_mat[.x, ]])
 }
 
 # Like `.is_synthesized_by()`, but returns FALSE instead of throwing error.
-.safe_is_synthesized_by <- function(glycans, enzyme) {
+.safe_is_synthesized_by <- function(glycans, enzyme, is_n) {
   tryCatch(
-    .is_synthesized_by(glycans, enzyme),
+    .is_synthesized_by(glycans, enzyme, is_n),
     error = function(e) rep(FALSE, length(glycans))
   )
 }
