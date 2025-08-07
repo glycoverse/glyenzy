@@ -73,11 +73,20 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param enzyme A `glyenzy_enzyme` object.
 #' @noRd
 .is_synthesized_by <- function(glycans, enzyme) {
-  dplyr::if_else(
-    glymotif::is_n_glycan(glycans, strict = TRUE),
-    .is_synthesized_by_n_glycan(glycans, enzyme),
-    .is_synthesized_by_default(glycans, enzyme)
-  )
+  is_n_glycan <- glymotif::is_n_glycan(glycans, strict = TRUE)
+  result <- logical(length(glycans))
+
+  # Handle N-glycans
+  if (any(is_n_glycan)) {
+    result[is_n_glycan] <- .is_synthesized_by_n_glycan(glycans[is_n_glycan], enzyme)
+  }
+
+  # Handle non-N-glycans
+  if (any(!is_n_glycan)) {
+    result[!is_n_glycan] <- .is_synthesized_by_default(glycans[!is_n_glycan], enzyme)
+  }
+
+  result
 }
 
 #' Is a N-Glycan Synthesized by an Enzyme?
@@ -158,5 +167,7 @@ is_synthesized_by <- function(glycans, enzyme) {
   if (enzyme$type == "GD") {
     cli::cli_abort("Exoglycosidases are not supported yet.")
   }
-  purrr::some(enzyme$rules, ~ glymotif::have_motif(glycans, .x$product, "substructure"))
+  products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
+  have_products_mat <- glymotif::have_motifs(glycans, products, "substructure")
+  unname(rowSums(have_products_mat) > 0)
 }
