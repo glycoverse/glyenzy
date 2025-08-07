@@ -113,6 +113,9 @@ is_synthesized_by <- function(glycans, enzyme) {
   if (enzyme$name %in% c("MAN1A1", "MAN1A2", "MAN1C1")) {
     return(.is_synthesized_by_man123(glycans))
   }
+  if (enzyme$name %in% c("MAN2A1", "MAN2A2")) {
+    return(.is_synthesized_by_man2a12(glycans))
+  }
   if (enzyme$name == "GANAB") {
     return(.is_synthesized_by_ganab(glycans))
   }
@@ -158,10 +161,25 @@ is_synthesized_by <- function(glycans, enzyme) {
   )
 }
 
+# Special case for MAN2A1 and MAN2A2
+# These exoglycosidases catalyze Man(a1-3) and Man(a1-6) trimming
+# after MGAT1 adds the b1-2 GlcNAc.
+.is_synthesized_by_man2a12 <- function(glycans) {
+  !glymotif::have_motif(
+    glycans,
+    "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    alignment = "core"
+  )
+}
+
 # Special case for GANAB
 # This enzyme removes two Glcs.
 .is_synthesized_by_ganab <- function(glycans) {
-  !glymotif::have_motif(glycans, "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", "core")
+  !glymotif::have_motif(
+    glycans,
+    "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    alignment = "core"
+  )
 }
 
 #' Is a Glycan Synthesized by an Enzyme? (Default Case)
