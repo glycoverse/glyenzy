@@ -48,7 +48,7 @@ is_synthesized_by <- function(glycans, enzyme) {
     glycans <- glyparse::auto_parse(glycans)
   } else if (!glyrepr::is_glycan_structure(glycans)) {
     cli::cli_abort(c(
-      "Input glycans must be a {.cls glyrepr_structure} vector or a character vector of glycan structure strings.",
+      "{.arg glycans} must be a {.cls glyrepr_structure} vector or a character vector of glycan structure strings.",
       "x" = "Got {.cls {class(glycans)}}."
     ))
   }
@@ -57,7 +57,7 @@ is_synthesized_by <- function(glycans, enzyme) {
     enzyme <- glyenzy::enzyme(enzyme)
   } else if (!inherits(enzyme, "glyenzy_enzyme")) {
     cli::cli_abort(c(
-      "Input enzyme must be a {.cls glyenzy_enzyme} object or a character string of gene symbol.",
+      "{.arg enzyme} must be a {.cls glyenzy_enzyme} object or a character string of gene symbol.",
       "x" = "Got {.cls {class(enzyme)}}."
     ))
   }

@@ -2,13 +2,13 @@
 test_that("is_synthesized_by works for `glyrepr_structure` and `glyenzy_enzyme`", {
   glycan <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
   enzyme <- enzyme("ST3GAL3")
-  expect_true(is_synthesized_by(glycan, enzyme), TRUE)
+  expect_true(is_synthesized_by(glycan, enzyme))
 })
 
 test_that("is_synthesized_by works for characters", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
   enzyme <- "ST3GAL3"
-  expect_true(is_synthesized_by(glycan, enzyme), TRUE)
+  expect_true(is_synthesized_by(glycan, enzyme))
 })
 
 test_that("is_synthesized_by works vectorizedly", {
@@ -17,6 +17,11 @@ test_that("is_synthesized_by works vectorizedly", {
     "Gal(b1-3)GlcNAc(b1-"
   )
   expect_equal(is_synthesized_by(glycans, "ST3GAL3"), c(TRUE, FALSE))
+})
+
+test_that("is_synthesized_by rejects invalid inputs", {
+  expect_error(is_synthesized_by(123, "ST3GAL3"), "`glycans` must be")
+  expect_error(is_synthesized_by("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-", 123), "`enzyme` must be")
 })
 
 # ===== Special cases for N-glycans =====
@@ -43,4 +48,34 @@ test_that("is_synthesized_by works for MOGS", {
     "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
   expect_equal(is_synthesized_by(glycans, "MOGS"), c(FALSE, TRUE, TRUE))
+})
+
+test_that("is_synthesized_by works for MAN1B1", {
+  glycans <- c(
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(is_synthesized_by(glycans, "MAN1B1"), c(FALSE, TRUE, TRUE))
+})
+
+test_that("is_synthesized_by works for MAN1A1, MAN1A2, and MAN1C1", {
+  glycans <- c(
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(is_synthesized_by(glycans, "MAN1A1"), c(FALSE, FALSE, TRUE))
+  expect_equal(is_synthesized_by(glycans, "MAN1A2"), c(FALSE, FALSE, TRUE))
+  expect_equal(is_synthesized_by(glycans, "MAN1C1"), c(FALSE, FALSE, TRUE))
+})
+
+test_that("is_synthesized_by works for GANAB", {
+  glycans <- c(
+    "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(is_synthesized_by(glycans, "GANAB"), c(FALSE, FALSE, TRUE, TRUE))
 })
