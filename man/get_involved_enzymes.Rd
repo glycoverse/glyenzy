@@ -16,6 +16,7 @@ involved in the biosynthesis of the corresponding glycan.
 }
 \description{
 This function identifies all enzymes involved in the biosynthesis of a glycan.
+Note that the result can be misleading if the glycan is not intact.
 }
 \examples{
 library(glyrepr)

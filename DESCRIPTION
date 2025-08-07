@@ -22,7 +22,6 @@ Imports:
     glyparse (>= 0.4.0),
     igraph,
     purrr,
-    stringr,
     dplyr
 Remotes: 
     glycoverse/glyrepr,
