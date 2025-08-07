@@ -25,10 +25,10 @@ test_that("is_synthesized_by rejects invalid inputs", {
 })
 
 # ===== Special cases for N-glycans =====
-test_that("is_synthesized_by works for ALG enzymes", {
+test_that("is_synthesized_by works for ALG enzymes and DPAGT1", {
   glycan1 <- "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"  # the basic N-glycan core
   glycan2 <- "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"  # not an N-glycan
-  enzymes <- c("ALG1", "ALG2", "ALG3")
+  enzymes <- c("ALG1", "ALG2", "ALG3", "DPAGT1")
   expect_true(all(purrr::map_lgl(enzymes, ~ is_synthesized_by(glycan1, .x))))
   expect_false(any(purrr::map_lgl(enzymes, ~ is_synthesized_by(glycan2, .x))))
 })

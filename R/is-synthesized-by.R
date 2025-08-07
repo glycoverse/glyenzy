@@ -101,7 +101,7 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param enzyme A `glyenzy_enzyme` object.
 #' @noRd
 .is_synthesized_by_n_glycan <- function(glycans, enzyme) {
-  if (stringr::str_starts(enzyme$name, "ALG")) {
+  if (stringr::str_starts(enzyme$name, "ALG") || enzyme$name == "DPAGT1") {
     return(.is_synthesized_by_alg(glycans))
   }
   if (enzyme$name == "MGAT1") {
@@ -123,7 +123,7 @@ is_synthesized_by <- function(glycans, enzyme) {
   .is_synthesized_by_default(glycans, enzyme)
 }
 
-# Special case for ALG family
+# Special case for ALG family and DPAGT1
 # These enzymes involve in the the biosynthesis process of all N-glycans.
 .is_synthesized_by_alg <- function(glycans) {
   rep(TRUE, length(glycans))
@@ -194,7 +194,17 @@ is_synthesized_by <- function(glycans, enzyme) {
   if (enzyme$type == "GD") {
     cli::cli_abort("Exoglycosidases are not supported yet.")
   }
+  # Here we exclude enzymes exclusively involved in N-glycan precursor biosynthesis.
+  if (.exclusive_for_n_glycans(enzyme)) {
+    return(rep(FALSE, length(glycans)))
+  }
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   have_products_mat <- glymotif::have_motifs(glycans, products, "substructure")
   unname(rowSums(have_products_mat) > 0)
+}
+
+.exclusive_for_n_glycans <- function(enzyme) {
+  # These enzymes have special logic for N-glycans.
+  enzymes <- c("DPAGT1", "MGAT1", "MOGS", "MAN1B1", "MAN1A1", "MAN1A2", "MAN1C1", "MAN2A1", "MAN2A2", "GANAB")
+  stringr::str_starts(enzyme$name, "ALG") || enzyme$name %in% enzymes
 }
