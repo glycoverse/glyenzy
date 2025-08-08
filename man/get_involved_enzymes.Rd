@@ -4,15 +4,23 @@
 \alias{get_involved_enzymes}
 \title{Identify Potentially Involved Enzymes}
 \usage{
-get_involved_enzymes(glycans)
+get_involved_enzymes(glycans, return_list = NULL)
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
 glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
+
+\item{return_list}{If \code{NULL} (default),
+return a list of character vectors when \code{glycans} has length greater than 1,
+and a single character vector when \code{glycans} has length 1.
+Set to \code{TRUE} to always return a list.
+This can be useful when you are working programmatically with unknown input length.
+Note that when \code{return_list = FALSE} and \code{length(glycans) > 1},
+an error will be thrown.}
 }
 \value{
-A list of character vectors, each containing the names of enzymes
-involved in the biosynthesis of the corresponding glycan.
+A character vector or a list of character vectors (see \code{return_list} parameter),
+each containing the names of enzymes involved in the biosynthesis of the corresponding glycan.
 }
 \description{
 This function returns all possible isoenzymes associated with the biosynthetic

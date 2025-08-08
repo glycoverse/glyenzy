@@ -7,9 +7,16 @@
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
+#' @param return_list If `NULL` (default),
+#'   return a list of character vectors when `glycans` has length greater than 1,
+#'   and a single character vector when `glycans` has length 1.
+#'   Set to `TRUE` to always return a list.
+#'   This can be useful when you are working programmatically with unknown input length.
+#'   Note that when `return_list = FALSE` and `length(glycans) > 1`,
+#'   an error will be thrown.
 #'
-#' @return A list of character vectors, each containing the names of enzymes
-#'   involved in the biosynthesis of the corresponding glycan.
+#' @return A character vector or a list of character vectors (see `return_list` parameter),
+#'   each containing the names of enzymes involved in the biosynthesis of the corresponding glycan.
 #'
 #' @examples
 #' library(glyrepr)
@@ -26,7 +33,7 @@
 #' get_involved_enzymes("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
 #'
 #' @export
-get_involved_enzymes <- function(glycans) {
+get_involved_enzymes <- function(glycans, return_list = NULL) {
   if (is.character(glycans)) {
     glycans <- glyparse::auto_parse(glycans)
   } else if (!glyrepr::is_glycan_structure(glycans)) {
@@ -35,12 +42,26 @@ get_involved_enzymes <- function(glycans) {
       "x" = "Got {.cls {class(glycans)}}."
     ))
   }
+  checkmate::assert_flag(return_list, null.ok = TRUE)
+  if (is.null(return_list)) {
+    return_list <- length(glycans) > 1
+  }
+  if (!return_list && length(glycans) > 1) {
+    cli::cli_abort(c(
+      "When {.arg return_list} is FALSE, {.arg glycans} must have length 1.",
+      "x" = "Length of {.arg glycans}: {.val {length(glycans)}}."
+    ))
+  }
 
   # Compute is_n once for all enzymes to avoid repeated computation
   is_n <- glymotif::is_n_glycan(glycans)
   masks <- purrr::map(glyenzy_enzymes, ~ .safe_is_synthesized_by(glycans, .x, is_n))
   mast_mat <- do.call(cbind, masks)
-  purrr::map(seq_along(glycans), ~ names(glyenzy_enzymes)[mast_mat[.x, ]])
+  res <- purrr::map(seq_along(glycans), ~ names(glyenzy_enzymes)[mast_mat[.x, ]])
+  if (!return_list) {
+    res <- res[[1]]
+  }
+  res
 }
 
 # Like `.is_synthesized_by()`, but returns FALSE instead of throwing error.
