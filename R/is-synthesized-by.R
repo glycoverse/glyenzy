@@ -40,7 +40,7 @@
 #'
 #' For N-glycans, additional logic is applied to handle special cases.
 #' Products of **ALG** enzymes and **MGAT1** are often further trimmed
-#' by exoglycosidases, meaning that the final glycan product may no longer
+#' by glycoside hydrolases, meaning that the final glycan product may no longer
 #' contain the original motif.
 #' In these cases, the function instead looks for specific motif markers
 #' to determine enzyme involvement.
@@ -116,7 +116,7 @@ is_synthesized_by <- function(glycans, enzyme) {
 .is_synthesized_by_mgat1 <- .make_n_glycan_guard(.is_synthesized_by_mgat1)
 
 # Special case for MOGS
-# This exoglycosidase catalyzes only one trimming step.
+# This glycoside hydrolase catalyzes only one trimming step.
 # If the acceptor motif is not found, it is synthesized by the enzyme.
 .is_synthesized_by_mogs <- function(glycans, enzyme) {
   !glymotif::have_motif(glycans, enzyme$rules[[1]]$acceptor)
@@ -124,7 +124,7 @@ is_synthesized_by <- function(glycans, enzyme) {
 .is_synthesized_by_mogs <- .make_n_glycan_guard(.is_synthesized_by_mogs)
 
 # Special case for MAN1B1
-# This exoglycosidase catalyzes only one trimming step from Man(9)GlcNAc(2) to Man(8)GlcNAc(2).
+# This glycoside hydrolase catalyzes only one trimming step from Man(9)GlcNAc(2) to Man(8)GlcNAc(2).
 # One special case is Man(5)GlcNAc(2), which can and cannot be synthesized by MAN1B1.
 # We just assume it is synthesized by MAN1B1, as this is the major route.
 # Please check Fig. 115.2 of Handbook of Glycosyltransferases and Related Genes for details.
@@ -138,7 +138,7 @@ is_synthesized_by <- function(glycans, enzyme) {
 .is_synthesized_by_man1b1 <- .make_n_glycan_guard(.is_synthesized_by_man1b1)
 
 # Special case for MAN1A1, MAN1A2, and MAN1C1
-# These exoglycosidases catalyze Man(a1-2) trimming.
+# These glycoside hydrolases catalyze Man(a1-2) trimming.
 .is_synthesized_by_man123 <- function(glycans, enzyme) {
   glycan_type <- glymotif::n_glycan_type(glycans)
   n_man <- glyrepr::count_mono(glycans, "Man")
@@ -157,7 +157,7 @@ is_synthesized_by <- function(glycans, enzyme) {
 .is_synthesized_by_man123 <- .make_n_glycan_guard(.is_synthesized_by_man123)
 
 # Special case for MAN2A1 and MAN2A2
-# These exoglycosidases catalyze Man(a1-3) and Man(a1-6) trimming
+# These glycoside hydrolases catalyze Man(a1-3) and Man(a1-6) trimming
 # after MGAT1 adds the b1-2 GlcNAc.
 .is_synthesized_by_man2a12 <- function(glycans, enzyme) {
   !glymotif::have_motif(
@@ -189,8 +189,8 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param ... Ignored.
 #' @noRd
 .is_synthesized_by_default <- function(glycans, enzyme, ...) {
-  if (enzyme$type == "GD") {
-    cli::cli_abort("Exoglycosidases except a few involved in N-glycan biosynthesis are not supported yet.")
+  if (enzyme$type == "GH") {
+    cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
   }
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   have_products_mat <- glymotif::have_motifs(glycans, products)

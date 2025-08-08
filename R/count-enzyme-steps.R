@@ -137,8 +137,8 @@ count_enzyme_steps <- function(glycans, enzyme) {
 .count_enzyme_steps_ganab <- .make_n_glycan_guard(.count_enzyme_steps_ganab, type = "integer")
 
 .count_enzyme_steps_default <- function(glycans, enzyme, ...) {
-  if (enzyme$type == "GD") {
-    cli::cli_abort("Exoglycosidases except a few involved in N-glycan biosynthesis are not supported yet.")
+  if (enzyme$type == "GH") {
+    cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
   }
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   count_products_mat <- glymotif::count_motifs(glycans, products)

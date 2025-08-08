@@ -55,7 +55,7 @@ If any rule matches, the function returns \code{TRUE}.
 
 For N-glycans, additional logic is applied to handle special cases.
 Products of \strong{ALG} enzymes and \strong{MGAT1} are often further trimmed
-by exoglycosidases, meaning that the final glycan product may no longer
+by glycoside hydrolases, meaning that the final glycan product may no longer
 contain the original motif.
 In these cases, the function instead looks for specific motif markers
 to determine enzyme involvement.

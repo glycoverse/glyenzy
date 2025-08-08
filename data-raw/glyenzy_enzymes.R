@@ -12,7 +12,7 @@
 #   each exception is a dictionary with the following keys:
 #     - "motif": the motif to be rejected
 #     - "alignment": alignment of the motif
-# - "type": "GT" for glycosyltransferase or "GD" for exoglycosidase
+# - "type": "GT" for glycosyltransferase or "GH" for glycoside hydrolase
 # - "species": species of the enzyme
 #
 # ## Additional Notes
@@ -59,7 +59,7 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
     rejects_alignment <- rejects_alignment_list
   }
 
-  glyenzy:::new_enzyme_rule(acceptor, product, acceptor_alignment, rejects, rejects_alignment, enzyme_type)
+  glyenzy:::new_enzyme_rule(acceptor, product, acceptor_alignment, rejects, rejects_alignment)
 }
 
 # Helper function to create enzyme from JSON data (for data.frame row)
