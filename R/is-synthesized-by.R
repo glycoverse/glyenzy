@@ -1,21 +1,49 @@
-#' Is a Glycan Synthesized by an Enzyme?
+#' Determine Whether a Glycan Is Synthesized by a Given Enzyme
 #'
 #' @description
-#' Glycans are synthesized by a series of enzymatic reactions.
-#' This function checks if an enzyme is involved in the biosynthesis of a glycan.
-#'
-#' Only works for glycans with "concrete" residues (e.g. "Glc", "GalNAc"),
-#' not "generic" residues (e.g. "Hex", "HexNAc").
+#' Glycans are produced through a series of enzymatic reactions.
+#' This function checks whether a specific enzyme participates
+#' in the biosynthesis of a given glycan (or glycans).
 #'
 #' @details
-#' The implementation is simple: for each rule of the enzyme,
-#' check if the product motif exists in the glycan.
-#' If any rule is satisfied, return TRUE.
 #'
-#' For N-glycans, we have additional logic to handle special cases.
-#' The products of ALG enzymes and MGAT1 are further trimmed by other exoglycosidases.
-#' Therefore, checking the product doesn't reflect the enzyme's involvement.
-#' We checks special motif markers for these enzymes.
+#' # Important notes
+#'
+#' ## Inclusiveness
+#'
+#' The algorithm takes an intentionally inclusive approach,
+#' assuming that all possible isoenzymes capable of catalyzing
+#' a given reaction may be involved.
+#' Therefore, results should be interpreted with caution.
+#'
+#' For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-" will return
+#' both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depending
+#' on factors such as tissue specificity.
+#'
+#' ## Only "concrete" glycans
+#'
+#' The function only works for glycans containing **concrete** residues
+#' (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
+#' residues (e.g., `"Hex"`, `"HexNAc"`).
+#'
+#' ## Incomplete glycan structures
+#'
+#' If the glycan structure is incomplete or partially degraded,
+#' the result may be misleading.
+#'
+#' # Algorithm
+#'
+#' The basic approach is straightforward: for each reaction rule
+#' associated with the enzyme, the function checks whether the
+#' corresponding product motif appears in the glycan.
+#' If any rule matches, the function returns `TRUE`.
+#'
+#' For N-glycans, additional logic is applied to handle special cases.
+#' Products of **ALG** enzymes and **MGAT1** are often further trimmed
+#' by exoglycosidases, meaning that the final glycan product may no longer
+#' contain the original motif.
+#' In these cases, the function instead looks for specific motif markers
+#' to determine enzyme involvement.
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].

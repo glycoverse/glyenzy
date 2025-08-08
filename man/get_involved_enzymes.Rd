@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-involved-enzymes.R
 \name{get_involved_enzymes}
 \alias{get_involved_enzymes}
-\title{Get Involved Enzymes}
+\title{Identify Potentially Involved Enzymes}
 \usage{
 get_involved_enzymes(glycans)
 }
@@ -15,9 +15,36 @@ A list of character vectors, each containing the names of enzymes
 involved in the biosynthesis of the corresponding glycan.
 }
 \description{
-This function identifies all enzymes involved in the biosynthesis of a glycan.
-Note that the result can be misleading if the glycan is not intact.
+This function returns all possible isoenzymes associated with the biosynthetic
+steps of the input glycan.
 }
+\section{Important notes}{
+\subsection{Inclusiveness}{
+
+The algorithm takes an intentionally inclusive approach,
+assuming that all possible isoenzymes capable of catalyzing
+a given reaction may be involved.
+Therefore, results should be interpreted with caution.
+
+For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-" will return
+both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depending
+on factors such as tissue specificity.
+}
+
+\subsection{Only "concrete" glycans}{
+
+The function only works for glycans containing \strong{concrete} residues
+(e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
+residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
+}
+
+\subsection{Incomplete glycan structures}{
+
+If the glycan structure is incomplete or partially degraded,
+the result may be misleading.
+}
+}
+
 \examples{
 library(glyrepr)
 library(glyparse)

@@ -1,7 +1,9 @@
-#' Get Involved Enzymes
+#' Identify Potentially Involved Enzymes
 #'
-#' This function identifies all enzymes involved in the biosynthesis of a glycan.
-#' Note that the result can be misleading if the glycan is not intact.
+#' This function returns all possible isoenzymes associated with the biosynthetic
+#' steps of the input glycan.
+#'
+#' @inheritSection is_synthesized_by Important notes
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
