@@ -50,24 +50,14 @@ test_that("is_synthesized_by works for MOGS", {
   expect_equal(is_synthesized_by(glycans, "MOGS"), c(FALSE, TRUE, TRUE))
 })
 
-test_that("is_synthesized_by works for MAN1B1", {
+test_that("is_synthesized_by works for GANAB", {
   glycans <- c(
-    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  expect_equal(is_synthesized_by(glycans, "MAN1B1"), c(FALSE, TRUE, TRUE))
-})
-
-test_that("is_synthesized_by works for MAN1A1, MAN1A2, and MAN1C1", {
-  glycans <- c(
-    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  )
-  expect_equal(is_synthesized_by(glycans, "MAN1A1"), c(FALSE, FALSE, TRUE))
-  expect_equal(is_synthesized_by(glycans, "MAN1A2"), c(FALSE, FALSE, TRUE))
-  expect_equal(is_synthesized_by(glycans, "MAN1C1"), c(FALSE, FALSE, TRUE))
+  expect_equal(is_synthesized_by(glycans, "GANAB"), c(FALSE, FALSE, TRUE, TRUE))
 })
 
 test_that("is_synthesized_by works for MAN2A1 and MAN2A2", {
@@ -79,16 +69,6 @@ test_that("is_synthesized_by works for MAN2A1 and MAN2A2", {
   )
   expect_equal(is_synthesized_by(glycans, "MAN2A1"), c(FALSE, TRUE, TRUE, TRUE))
   expect_equal(is_synthesized_by(glycans, "MAN2A2"), c(FALSE, TRUE, TRUE, TRUE))
-})
-
-test_that("is_synthesized_by works for GANAB", {
-  glycans <- c(
-    "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  )
-  expect_equal(is_synthesized_by(glycans, "GANAB"), c(FALSE, FALSE, TRUE, TRUE))
 })
 
 test_that("is_synthesized_by works correctly for MAN1B1, MAN1A1, MAN1A2, and MAN1C1", {
