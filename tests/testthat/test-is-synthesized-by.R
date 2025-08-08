@@ -90,3 +90,35 @@ test_that("is_synthesized_by works for GANAB", {
   )
   expect_equal(is_synthesized_by(glycans, "GANAB"), c(FALSE, FALSE, TRUE, TRUE))
 })
+
+test_that("is_synthesized_by works correctly for MAN1B1, MAN1A1, MAN1A2, and MAN1C1", {
+  # Please check Fig. 115.2 of Handbook of Glycosyltransferases and Related Genes for details.
+  # For each composition, structures are assigned from top to bottom.
+  glycans <- c(
+    # Man(9)GlcNAc(2)
+    Man9 = "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    # Man(8)GlcNAc(2)
+    Man8_1 = "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man8_2 = "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man8_3 = "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    # Man(7)GlcNAc(2)
+    Man7_1 = "Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man7_2 = "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man7_3 = "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man7_4 = "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    # Man(6)GlcNAc(2)
+    Man6_1 = "Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man6_2 = "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    Man6_3 = "Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    # Man(5)GlcNAc(2)
+    Man5 = "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+
+  MAN1B1_res <- c(FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE)
+  MAN1A1_res <- c(FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE)
+  # MAN1A2 and MAN1C1 are the same as MAN1A1
+  expect_equal(is_synthesized_by(glycans, "MAN1B1"), MAN1B1_res)
+  expect_equal(is_synthesized_by(glycans, "MAN1A1"), MAN1A1_res)
+  expect_equal(is_synthesized_by(glycans, "MAN1A2"), MAN1A1_res)
+  expect_equal(is_synthesized_by(glycans, "MAN1C1"), MAN1A1_res)
+})

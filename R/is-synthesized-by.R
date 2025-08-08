@@ -107,7 +107,8 @@ is_synthesized_by <- function(glycans, enzyme) {
     ALG1 = , ALG2 = , ALG3 = , ALG6 = , ALG8 = , ALG9 = , ALG10 = ,
     ALG11 = , ALG12 = , ALG13 = , ALG14 = , DPAGT1 = .is_synthesized_by_alg,
     MGAT1 = .is_synthesized_by_mgat1,
-    MOGS = , MAN1B1 = .is_synthesized_by_mogs_man1b1,
+    MOGS = .is_synthesized_by_mogs,
+    MAN1B1 = .is_synthesized_by_man1b1,
     MAN1A1 = , MAN1A2 = , MAN1C1 = .is_synthesized_by_man123,
     MAN2A1 = , MAN2A2 = .is_synthesized_by_man2a12,
     GANAB = .is_synthesized_by_ganab,
@@ -153,13 +154,27 @@ is_synthesized_by <- function(glycans, enzyme) {
 }
 .is_synthesized_by_mgat1 <- .make_n_glycan_guard(.is_synthesized_by_mgat1)
 
-# Special case for MOGS and MAN1B1
-# These exoglycosidases catalyze only one trimming step.
+# Special case for MOGS
+# This exoglycosidase catalyzes only one trimming step.
 # If the acceptor motif is not found, it is synthesized by the enzyme.
-.is_synthesized_by_mogs_man1b1 <- function(glycans, enzyme) {
+.is_synthesized_by_mogs <- function(glycans, enzyme) {
   !glymotif::have_motif(glycans, enzyme$rules[[1]]$acceptor)
 }
-.is_synthesized_by_mogs_man1b1 <- .make_n_glycan_guard(.is_synthesized_by_mogs_man1b1)
+.is_synthesized_by_mogs <- .make_n_glycan_guard(.is_synthesized_by_mogs)
+
+# Special case for MAN1B1
+# This exoglycosidase catalyzes only one trimming step from Man(9)GlcNAc(2) to Man(8)GlcNAc(2).
+# One special case is Man(5)GlcNAc(2), which can and cannot be synthesized by MAN1B1.
+# We just assume it is synthesized by MAN1B1, as this is the major route.
+# Please check Fig. 115.2 of Handbook of Glycosyltransferases and Related Genes for details.
+.is_synthesized_by_man1b1 <- function(glycans, enzyme) {
+  !glymotif::have_motif(
+    glycans,
+    "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    alignment = "core"
+  )
+}
+.is_synthesized_by_man1b1 <- .make_n_glycan_guard(.is_synthesized_by_man1b1)
 
 # Special case for MAN1A1, MAN1A2, and MAN1C1
 # These exoglycosidases catalyze Man(a1-2) trimming.
