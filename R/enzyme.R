@@ -79,14 +79,7 @@ new_enzyme <- function(name, rules, type, species) {
 #' @noRd
 validate_enzyme <- function(x) {
   checkmate::assert_class(x, "glyenzy_enzyme")
-  if (purrr::some(x$rules, ~ .x$type != x$type)) {
-    cli::cli_abort(c(
-      "All rules must have the same type as the enzyme.",
-      "i" = "Enzyme type: {.val {x$type}}.",
-      "x" = "Got rule types: {.val {purrr::map_chr(x$rules, ~ .x$type)}}."
-    ))
-  }
-  purrr::walk(x$rules, validate_enzyme_rule)
+  purrr::walk(x$rules, ~ validate_enzyme_rule(.x, type = x$type))
   invisible(x)
 }
 
@@ -100,10 +93,9 @@ validate_enzyme <- function(x) {
 #' @param acceptor_alignment A character string, representing the alignment of the `acceptor`.
 #' @param rejects A `glyrepr_structure` vector, representing the motifs that the enzyme rejects.
 #' @param rejects_alignment A character vector, representing the alignment of the `rejects`.
-#' @param type A character string, representing the type of the enzyme, "GT" or "GD".
 #'
 #' @noRd
-new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, rejects_alignment, type) {
+new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, rejects_alignment) {
   checkmate::assert_class(acceptor, "glyrepr_structure")
   checkmate::assert_class(product, "glyrepr_structure")
   # Allow NULL for acceptor_alignment (de novo synthesis)
@@ -112,7 +104,6 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, reje
   }
   checkmate::assert_class(rejects, "glyrepr_structure")
   checkmate::assert_subset(rejects_alignment, c("substructure", "core", "terminal", "whole"))
-  checkmate::assert_choice(type, c("GT", "GD"))
 
   structure(
     list(
@@ -120,8 +111,7 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, reje
       product = product,
       acceptor_alignment = acceptor_alignment,
       rejects = rejects,
-      rejects_alignment = rejects_alignment,
-      type = type
+      rejects_alignment = rejects_alignment
     ),
     class = "glyenzy_enzyme_rule"
   )
@@ -135,8 +125,9 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, reje
 #' 3. `acceptor` and `product` are valid for the enzyme type
 #'
 #' @param x A `glyenzy_enzyme_rule` object.
+#' @param type A character string, representing the type of the enzyme, "GT" or "GD".
 #' @noRd
-validate_enzyme_rule <- function(x) {
+validate_enzyme_rule <- function(x, type) {
   checkmate::assert_class(x, "glyenzy_enzyme_rule")
 
   # Allow empty acceptor for de novo synthesis (e.g., DPAGT1)
@@ -157,7 +148,7 @@ validate_enzyme_rule <- function(x) {
 
   # Check acceptor and product (skip for de novo synthesis)
   if (length(x$acceptor) > 0) {
-    if (x$type == "GT") {
+    if (type == "GT") {
       .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
     } else {
       .check_product_acceptor(x$product, x$acceptor, "product", "acceptor")

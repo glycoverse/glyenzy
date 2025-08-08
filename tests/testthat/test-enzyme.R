@@ -10,7 +10,7 @@ test_that("new_enzyme_rule creates valid enzyme rule objects", {
   rejects <- glyparse::parse_iupac_condensed(character(0))
   rejects_alignment <- character(0)
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment, "GT")
+  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment)
 
   expect_s3_class(rule, "glyenzy_enzyme_rule")
   expect_equal(rule$acceptor, acceptor)
@@ -18,7 +18,6 @@ test_that("new_enzyme_rule creates valid enzyme rule objects", {
   expect_equal(rule$acceptor_alignment, "terminal")
   expect_equal(rule$rejects, rejects)
   expect_equal(rule$rejects_alignment, rejects_alignment)
-  expect_equal(rule$type, "GT")
 })
 
 # Test de novo synthesis (DPAGT1-like)
@@ -28,13 +27,12 @@ test_that("new_enzyme_rule handles de novo synthesis", {
   rejects <- glyparse::parse_iupac_condensed(character(0))
   rejects_alignment <- character(0)
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, NULL, rejects, rejects_alignment, "GT")
+  rule <- glyenzy:::new_enzyme_rule(acceptor, product, NULL, rejects, rejects_alignment)
 
   expect_s3_class(rule, "glyenzy_enzyme_rule")
   expect_equal(length(rule$acceptor), 0)
   expect_equal(rule$product, product)
   expect_null(rule$acceptor_alignment)
-  expect_equal(rule$type, "GT")
 })
 
 # Test enzyme with rejects
@@ -44,7 +42,7 @@ test_that("new_enzyme_rule handles rejects", {
   rejects <- glyparse::parse_iupac_condensed(c("Gal(b1-4)GalNAc(a1-", "Neu5Ac(a2-6)Gal(b1-3)GalNAc(a1-"))
   rejects_alignment <- c("terminal", "terminal")
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment, "GT")
+  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment)
 
   expect_s3_class(rule, "glyenzy_enzyme_rule")
   expect_equal(rule$rejects, rejects)
@@ -58,7 +56,7 @@ test_that("new_enzyme creates valid enzyme objects", {
   rejects <- glyparse::parse_iupac_condensed(character(0))
   rejects_alignment <- character(0)
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment, "GT")
+  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment)
   enzyme <- glyenzy:::new_enzyme("ST3GAL2", list(rule), "GT", "human")
 
   expect_s3_class(enzyme, "glyenzy_enzyme")
