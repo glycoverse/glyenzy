@@ -23,3 +23,27 @@
     res
   }
 }
+
+.process_glycans_arg <- function(x) {
+  if (is.character(x)) {
+    x <- glyparse::auto_parse(x)
+  } else if (!glyrepr::is_glycan_structure(x)) {
+    cli::cli_abort(c(
+      "{.arg glycans} must be a {.cls glyrepr_structure} vector or a character vector of glycan structure strings.",
+      "x" = "Got {.cls {class(x)}}."
+    ))
+  }
+  return(x)
+}
+
+.process_enzyme_arg <- function(x) {
+  if (is.character(x)) {
+    x <- enzyme(x)
+  } else if (!inherits(x, "glyenzy_enzyme")) {
+    cli::cli_abort(c(
+      "{.arg enzyme} must be a {.cls glyenzy_enzyme} object or a character string of gene symbol.",
+      "x" = "Got {.cls {class(x)}}."
+    ))
+  }
+  return(x)
+}

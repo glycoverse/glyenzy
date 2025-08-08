@@ -34,14 +34,7 @@
 #'
 #' @export
 get_involved_enzymes <- function(glycans, return_list = NULL) {
-  if (is.character(glycans)) {
-    glycans <- glyparse::auto_parse(glycans)
-  } else if (!glyrepr::is_glycan_structure(glycans)) {
-    cli::cli_abort(c(
-      "{.arg glycans} must be a {.cls glyrepr_structure} vector or a character vector of glycan structure strings.",
-      "x" = "Got {.cls {class(glycans)}}."
-    ))
-  }
+  glycans <- .process_glycans_arg(glycans)
   checkmate::assert_flag(return_list, null.ok = TRUE)
   if (is.null(return_list)) {
     return_list <- length(glycans) > 1
