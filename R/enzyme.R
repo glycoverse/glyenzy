@@ -228,7 +228,7 @@ enhance_enzyme_rule <- function(x, type) {
 .enhance_gh_enzyme_rule <- function(x) {
   acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor)
   product_graph <- glyrepr::get_structure_graphs(x$product)
-  match_res <- glymotif::match_motif(x$acceptor, x$product, alignment = "core")[[1]]  # only one glycan, so `[[1]]`
+  match_res <- glymotif::match_motif(x$acceptor, x$product, alignment = "core")[[1]][[1]]  # only one glycan, so `[[1]]`
 
   # The node index of the removed residue in the acceptor
   removed_residue_idx <- setdiff(1:igraph::vcount(acceptor_graph), match_res)
