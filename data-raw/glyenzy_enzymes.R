@@ -25,7 +25,7 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
 .create_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
   # Handle null acceptor (for DPAGT1)
   if (is.null(rule_data$acceptor) || is.na(rule_data$acceptor)) {
-    acceptor <- glyparse::parse_iupac_condensed(character(0))
+    acceptor <- NULL
     acceptor_alignment <- NULL
   } else {
     acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
@@ -63,9 +63,10 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
   # Remove NULL rules (those with NA values)
   rules <- purrr::compact(rules)
 
-  # Create and validate enzyme
+  # Create and validate enzyme, and enhance it
   enzyme <- glyenzy:::new_enzyme(name, rules, type, species)
   glyenzy:::validate_enzyme(enzyme)
+  enzyme <- glyenzy:::enhance_enzyme(enzyme)
 
   enzyme
 }
