@@ -40,22 +40,10 @@
 apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  checkmate::assert_flag(return_list, null.ok = TRUE)
-  if (is.null(return_list)) {
-    return_list <- length(glycans) > 1
-  }
-  if (!return_list && length(glycans) > 1) {
-    cli::cli_abort(c(
-      "When {.arg return_list} is FALSE, {.arg glycans} must have length 1.",
-      "x" = "Length of {.arg glycans}: {.val {length(glycans)}}."
-    ))
-  }
+  return_list <- .validate_return_list(return_list, length(glycans))
 
   res <- .apply_enzyme(glycans, enzyme)
-  if (!return_list) {
-    res <- res[[1]]
-  }
-  res
+  .format_result(res, return_list)
 }
 
 #' Apply an enzyme to a vector of glycan graphs

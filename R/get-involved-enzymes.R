@@ -35,26 +35,14 @@
 #' @export
 get_involved_enzymes <- function(glycans, return_list = NULL) {
   glycans <- .process_glycans_arg(glycans)
-  checkmate::assert_flag(return_list, null.ok = TRUE)
-  if (is.null(return_list)) {
-    return_list <- length(glycans) > 1
-  }
-  if (!return_list && length(glycans) > 1) {
-    cli::cli_abort(c(
-      "When {.arg return_list} is FALSE, {.arg glycans} must have length 1.",
-      "x" = "Length of {.arg glycans}: {.val {length(glycans)}}."
-    ))
-  }
+  return_list <- .validate_return_list(return_list, length(glycans))
 
   # Compute is_n once for all enzymes to avoid repeated computation
   is_n <- glymotif::is_n_glycan(glycans)
   masks <- purrr::map(glyenzy_enzymes, ~ .safe_is_synthesized_by(glycans, .x, is_n))
   mast_mat <- do.call(cbind, masks)
   res <- purrr::map(seq_along(glycans), ~ names(glyenzy_enzymes)[mast_mat[.x, ]])
-  if (!return_list) {
-    res <- res[[1]]
-  }
-  res
+  .format_result(res, return_list)
 }
 
 # Like `.is_synthesized_by()`, but returns FALSE instead of throwing error.

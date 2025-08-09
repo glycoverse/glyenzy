@@ -47,3 +47,33 @@
   }
   return(x)
 }
+
+# Validate and process return_list parameter early
+.validate_return_list <- function(return_list, input_length) {
+  checkmate::assert_flag(return_list, null.ok = TRUE)
+  checkmate::assert_integerish(input_length, len = 1, lower = 1)
+
+  if (is.null(return_list)) {
+    return_list <- input_length > 1
+  }
+  if (!return_list && input_length > 1) {
+    cli::cli_abort(c(
+      "When {.arg return_list} is FALSE, input must have length 1.",
+      "x" = "Input length: {.val {input_length}}."
+    ))
+  }
+
+  return_list
+}
+
+# Format result based on return_list setting
+.format_result <- function(result_list, return_list) {
+  checkmate::assert_list(result_list)
+  checkmate::assert_flag(return_list)
+
+  if (!return_list) {
+    result_list[[1]]
+  } else {
+    result_list
+  }
+}
