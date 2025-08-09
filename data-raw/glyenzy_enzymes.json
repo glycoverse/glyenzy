@@ -3,11 +3,11 @@
         "name": "ALG1",
         "rules": [
             {
-                "acceptor": "GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -17,18 +17,18 @@
         "name": "ALG2",
         "rules": [
             {
-                "acceptor": "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             },
             {
-                "acceptor": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -38,11 +38,11 @@
         "name": "ALG3",
         "rules": [
             {
-                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -52,11 +52,11 @@
         "name": "ALG6",
         "rules": [
             {
-                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -66,11 +66,11 @@
         "name": "ALG8",
         "rules": [
             {
-                "acceptor": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -80,11 +80,11 @@
         "name": "ALG9",
         "rules": [
             {
-                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -94,11 +94,11 @@
         "name": "ALG10",
         "rules": [
             {
-                "acceptor": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -108,18 +108,18 @@
         "name": "ALG11",
         "rules": [
             {
-                "acceptor": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             },
             {
-                "acceptor": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -129,11 +129,11 @@
         "name": "ALG12",
         "rules": [
             {
-                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -143,11 +143,11 @@
         "name": "ALG13",
         "rules": [
             {
-                "acceptor": "GlcNAc(b1-",
+                "acceptor": "GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
@@ -157,11 +157,11 @@
         "name": "ALG14",
         "rules": [
             {
-                "acceptor": "GlcNAc(b1-",
+                "acceptor": "GlcNAc(a1-",
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "GlcNAc(b1-4)GlcNAc(b1-"
+                "product": "GlcNAc(b1-4)GlcNAc(a1-"
             }
         ],
         "type": "GT",
