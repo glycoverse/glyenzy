@@ -48,6 +48,15 @@
   return(x)
 }
 
+.process_enzymes_arg <- function(x) {
+  if (is.character(x)) {
+    x <- purrr::map(x, enzyme)
+  } else if (!purrr::every(x, ~ inherits(.x, "glyenzy_enzyme"))) {
+    cli::cli_abort("{.arg enzymes} must be a character vector of gene symbols or a list of {.cls glyenzy_enzyme} objects.")
+  }
+  return(unname(x))
+}
+
 # Validate and process return_list parameter early
 .validate_return_list <- function(return_list, input_length) {
   checkmate::assert_flag(return_list, null.ok = TRUE)
