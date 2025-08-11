@@ -210,25 +210,43 @@ find_synthesis_path <- function(from, to, enzymes = NULL, max_steps = 10,
     igraph::graph_from_data_frame(edges, directed = TRUE, 
                                   vertices = tibble::tibble(name = vertices))
   } else {
-    # Return all paths graph
+    # Return all valid paths as the union subgraph of all from->to paths
+    # Build explored graph from all_edges, then prune to only vertices/edges
+    # that are both reachable from `from` and can reach `to`.
     if (length(all_edges) == 0L) {
-      # No edges found
       vertices <- tibble::tibble(name = from_key)
       return(igraph::graph_from_data_frame(
-        tibble::tibble(from = character(0), to = character(0), 
+        tibble::tibble(from = character(0), to = character(0),
                        enzyme = character(0), step = integer(0)),
         directed = TRUE, vertices = vertices
       ))
     }
-    
+
     edges_df <- do.call(rbind, purrr::map(all_edges, ~ tibble::tibble(
       from = .x$from, to = .x$to, enzyme = .x$enzyme, step = .x$step
     )))
-    
-    # Get all unique vertices
-    all_vertices <- unique(c(edges_df$from, edges_df$to))
-    vertices <- tibble::tibble(name = all_vertices)
-    
-    igraph::graph_from_data_frame(edges_df, directed = TRUE, vertices = vertices)
+    edges_df <- unique(edges_df)
+
+    g_all <- igraph::graph_from_data_frame(edges_df, directed = TRUE)
+
+    # If `to` never seen in explored graph, no valid path exists
+    if (!(to_key %in% igraph::V(g_all)$name)) {
+      cli::cli_abort("No synthesis path found within {.val {max_steps}} steps.")
+    }
+
+    vid_from <- which(igraph::V(g_all)$name == from_key)
+    vid_to   <- which(igraph::V(g_all)$name == to_key)
+
+    # Vertices reachable from `from`
+    reach_from <- igraph::subcomponent(g_all, vid_from, mode = "out")
+    # Vertices that can reach `to` in original graph = vertices in the in-component of `to`
+    reach_to   <- igraph::subcomponent(g_all, vid_to, mode = "in")
+
+    keep <- intersect(reach_from, reach_to)
+    if (length(keep) == 0L) {
+      cli::cli_abort("No synthesis path found within {.val {max_steps}} steps.")
+    }
+
+    igraph::induced_subgraph(g_all, vids = keep)
   }
 }

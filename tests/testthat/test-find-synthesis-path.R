@@ -116,15 +116,15 @@ test_that("find_synthesis_path return='all' includes multiple paths", {
   suppressMessages(devtools::load_all())
   
   # Use a simple case where we know there should be paths
-  from <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  to <- "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  enzymes <- "MGAT2"
+  from <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  to <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  enzymes <- "MAN2A1"
   
-  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 3, return = "all"))
+  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 2, return = "all"))
   
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
-  expect_gte(nrow(edges), 1L)  # Should have at least one edge
+  expect_equal(nrow(edges), 4L)
 })
 
 test_that("find_synthesis_path validates input lengths", {
