@@ -81,6 +81,22 @@ test_that("DPAGT1 enzyme works correctly", {
   expect_snapshot(print(dpagt1))
 })
 
+# Test acceptor_idx field for GT enzymes
+test_that("acceptor_idx is correctly calculated for GT enzymes", {
+  # Test a regular GT enzyme (ST3GAL3)
+  st3gal3 <- enzyme("ST3GAL3")
+  rule <- st3gal3$rules[[1]]
+
+  # Check that acceptor_idx is set
+  expect_true("acceptor_idx" %in% names(rule))
+  expect_type(rule$acceptor_idx, "integer")
+  expect_true(rule$acceptor_idx > 0)
+
+  # acceptor_idx should be within the range of acceptor nodes
+  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor))
+  expect_true(rule$acceptor_idx <= acceptor_size)
+})
+
 # Test product_idx field for GT enzymes
 test_that("product_idx is correctly calculated for GT enzymes", {
   # Test a regular GT enzyme (ST3GAL3)
@@ -96,20 +112,24 @@ test_that("product_idx is correctly calculated for GT enzymes", {
   acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor))
   product_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$product))
   expect_equal(product_size, acceptor_size + 1)
+
+  # product_idx should be within the range of product nodes
+  expect_true(rule$product_idx <= product_size)
 })
 
-# Test product_idx field for de novo synthesis
-test_that("product_idx is correctly set for de novo synthesis", {
+# Test acceptor_idx and product_idx fields for de novo synthesis
+test_that("acceptor_idx and product_idx are correctly set for de novo synthesis", {
   dpagt1 <- enzyme("DPAGT1")
   rule <- dpagt1$rules[[1]]
 
+  # For de novo synthesis, acceptor_idx should be 0 (no acceptor)
+  expect_equal(rule$acceptor_idx, 0)
   # For de novo synthesis, product_idx should be 1 (only one residue)
   expect_equal(rule$product_idx, 1)
-  expect_equal(rule$acceptor_idx, 0)
 })
 
-# Test product_idx field for GH enzymes
-test_that("product_idx is NULL for GH enzymes", {
+# Test acceptor_idx and product_idx fields for GH enzymes
+test_that("acceptor_idx and product_idx are correctly set for GH enzymes", {
   # Create a mock GH enzyme rule for testing
   acceptor <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   product <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
@@ -119,7 +139,14 @@ test_that("product_idx is NULL for GH enzymes", {
   rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment)
   enhanced_rule <- glyenzy:::enhance_enzyme_rule(rule, "GH")
 
-  # For GH enzymes, product_idx should be NULL
-  expect_null(enhanced_rule$product_idx)
+  # For GH enzymes, acceptor_idx should point to the removed residue
   expect_type(enhanced_rule$acceptor_idx, "integer")
+  expect_true(enhanced_rule$acceptor_idx > 0)
+
+  # acceptor_idx should be within the range of acceptor nodes
+  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(acceptor))
+  expect_true(enhanced_rule$acceptor_idx <= acceptor_size)
+
+  # For GH enzymes, product_idx should be NULL (no new residue added)
+  expect_null(enhanced_rule$product_idx)
 })
