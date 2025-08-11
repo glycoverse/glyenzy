@@ -92,6 +92,7 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
     graph_list <- purrr::compact(graph_list)
   } else {
     graph_list <- purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x))
+    graph_list <- purrr::compact(graph_list)
   }
   glyrepr::as_glycan_structure(graph_list)
 }
@@ -146,16 +147,29 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 
 #' Remove a residue from a glycan graph
 #'
+#' Only allow removing a terminal (leaf) residue. If the target residue has
+#' children (i.e., out-degree > 0), the removal would split the tree into a
+#' forest and violate the out-tree invariant. In such cases, return NULL so the
+#' caller can drop this invalid product.
+#'
 #' @param graph An igraph object representing the glycan structure.
 #' @param idx_to_remove The index of the node to remove.
 #'
-#' @returns A new igraph object with the residue removed.
+#' @returns A new igraph object with the residue removed, or NULL when the
+#'   residue is not terminal.
 #' @noRd
 .remove_residue <- function(graph, idx_to_remove) {
+  # Ensure the residue is terminal; otherwise, removing it breaks the out-tree
+  if (igraph::degree(graph, v = idx_to_remove, mode = "out") > 0) {
+    return(NULL)
+  }
   edges <- igraph::incident(graph, idx_to_remove, mode = "all")
   new_graph <- igraph::delete_edges(graph, edges)
   new_graph <- igraph::delete_vertices(new_graph, idx_to_remove)
   # Reset vertex names to maintain consistency with indices after deletion
   igraph::V(new_graph)$name <- as.character(seq_len(igraph::vcount(new_graph)))
-  new_graph
+  # Validate; if invalid for any reason, signal caller to drop it
+  tryCatch({
+    glyrepr:::validate_single_glycan_structure(new_graph)
+  }, error = function(e) return(NULL))
 }

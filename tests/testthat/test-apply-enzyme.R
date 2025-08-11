@@ -116,3 +116,24 @@ test_that("apply_enzyme works for DPAGT1", {
   res <- apply_enzyme("GlcNAc(b1-", "DPAGT1")
   expect_equal(res, glyrepr::glycan_structure())
 })
+
+# ===== Regression Tests =====
+test_that("apply_enzyme regression: GH enzymes do not create invalid out-tree structures", {
+  # Test that GH enzymes only remove terminal residues and do not break tree structure
+  # This prevents the "Glycan structure must be an out tree" error
+
+  # Use a high-mannose structure where some GH enzymes might try to remove non-terminal residues
+  glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  # Test various GH enzymes that trim mannose residues
+  gh_enzymes <- c("MAN1A1", "MAN1A2", "MAN1C1", "MAN2A1", "MAN2A2", "GANAB", "MAN1B1")
+
+  for (enzyme_name in gh_enzymes) {
+    # Should not throw "out tree" validation errors
+    expect_no_error({
+      res <- suppressMessages(apply_enzyme(glycan, enzyme_name))
+      # Result should be a valid glyrepr_structure (possibly empty if no valid products)
+      expect_s3_class(res, "glyrepr_structure")
+    })
+  }
+})
