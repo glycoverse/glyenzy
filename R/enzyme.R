@@ -22,7 +22,7 @@
 #'
 #' 1. `name`: the name of the enzyme, usually the gene symbol.
 #' 2. `rules`: a list of `glyenzy_enzyme_rule` objects.
-#'    Each rule is a list with five fields:
+#'    Each rule is a list with the following fields:
 #'    - `acceptor`: the motif that the enzyme recognizes
 #'    - `acceptor_alignment`: the alignment of the `acceptor`
 #'    - `rejects`: the motifs that the enzyme reject to act on
@@ -31,6 +31,9 @@
 #'    - `acceptor_idx`: the node index of the acceptor where the enzyme acts on.
 #'      For GTs, this is the node new residue is attached to.
 #'      For GHs, this is the node that is removed.
+#'    - `product_idx`: the node index of the product residue in the product structure.
+#'      For GTs, this is the index of the newly added residue in the product.
+#'      For GHs, this is `NULL` (no new residue is added).
 #'    - `new_residue`: the new residue added by the enzyme. For GHs, this is `NULL`.
 #'    - `new_linkage`: the linkage of the new residue. For GHs, this is `NULL`.
 #' 3. `type`: the type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
@@ -180,6 +183,9 @@ validate_enzyme_rule <- function(x, type) {
 #' - `acceptor_idx`: The node index of the acceptor where the enzyme acts on.
 #'   For GTs, this is the node new residue is attached to.
 #'   For GHs, this is the node that is removed.
+#' - `product_idx`: The node index of the product residue in the product structure.
+#'   For GTs, this is the index of the newly added residue in the product.
+#'   For GHs, this is `NULL` (no new residue is added).
 #' - `new_residue`: The new residue added by the enzyme. For GHs, this is `NULL`.
 #' - `new_linkage`: The linkage of the new residue. For GHs, this is `NULL`.
 #'
@@ -196,7 +202,9 @@ enhance_enzyme_rule <- function(x, type) {
 
 .enhance_gt_enzyme_rule <- function(x) {
   if (is.null(x$acceptor)) {
+    # Handle de novo synthesis
     x$acceptor_idx <- 0
+    x$product_idx <- 1
     x$new_residue <- NULL
     x$new_linkage <- NULL
     return(x)
@@ -220,6 +228,7 @@ enhance_enzyme_rule <- function(x, type) {
 
   # Add new fields
   x$acceptor_idx <- acceptor_idx
+  x$product_idx <- new_residue_idx  # For GT: index of newly added residue in product
   x$new_residue <- new_residue
   x$new_linkage <- new_linkage
   x
@@ -235,6 +244,7 @@ enhance_enzyme_rule <- function(x, type) {
 
   # Add new fields
   x$acceptor_idx <- removed_residue_idx
+  x$product_idx <- NULL  # For GH: no new residue is added
   x$new_residue <- NULL
   x$new_linkage <- NULL
   x

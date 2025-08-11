@@ -31,7 +31,7 @@ An \code{enzyme()} is a list with the following elements:
 \enumerate{
 \item \code{name}: the name of the enzyme, usually the gene symbol.
 \item \code{rules}: a list of \code{glyenzy_enzyme_rule} objects.
-Each rule is a list with five fields:
+Each rule is a list with the following fields:
 \itemize{
 \item \code{acceptor}: the motif that the enzyme recognizes
 \item \code{acceptor_alignment}: the alignment of the \code{acceptor}
@@ -41,6 +41,9 @@ Each rule is a list with five fields:
 \item \code{acceptor_idx}: the node index of the acceptor where the enzyme acts on.
 For GTs, this is the node new residue is attached to.
 For GHs, this is the node that is removed.
+\item \code{product_idx}: the node index of the product residue in the product structure.
+For GTs, this is the index of the newly added residue in the product.
+For GHs, this is \code{NULL} (no new residue is added).
 \item \code{new_residue}: the new residue added by the enzyme. For GHs, this is \code{NULL}.
 \item \code{new_linkage}: the linkage of the new residue. For GHs, this is \code{NULL}.
 }

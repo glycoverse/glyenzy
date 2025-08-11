@@ -80,3 +80,46 @@ test_that("DPAGT1 enzyme works correctly", {
   expect_equal(dpagt1$type, "GT")
   expect_snapshot(print(dpagt1))
 })
+
+# Test product_idx field for GT enzymes
+test_that("product_idx is correctly calculated for GT enzymes", {
+  # Test a regular GT enzyme (ST3GAL3)
+  st3gal3 <- enzyme("ST3GAL3")
+  rule <- st3gal3$rules[[1]]
+
+  # Check that product_idx is set
+  expect_true("product_idx" %in% names(rule))
+  expect_type(rule$product_idx, "integer")
+  expect_true(rule$product_idx > 0)
+
+  # For ST3GAL3, the product should have one more residue than acceptor
+  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor))
+  product_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$product))
+  expect_equal(product_size, acceptor_size + 1)
+})
+
+# Test product_idx field for de novo synthesis
+test_that("product_idx is correctly set for de novo synthesis", {
+  dpagt1 <- enzyme("DPAGT1")
+  rule <- dpagt1$rules[[1]]
+
+  # For de novo synthesis, product_idx should be 1 (only one residue)
+  expect_equal(rule$product_idx, 1)
+  expect_equal(rule$acceptor_idx, 0)
+})
+
+# Test product_idx field for GH enzymes
+test_that("product_idx is NULL for GH enzymes", {
+  # Create a mock GH enzyme rule for testing
+  acceptor <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
+  product <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
+  rejects <- glyparse::parse_iupac_condensed(character(0))
+  rejects_alignment <- character(0)
+
+  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects, rejects_alignment)
+  enhanced_rule <- glyenzy:::enhance_enzyme_rule(rule, "GH")
+
+  # For GH enzymes, product_idx should be NULL
+  expect_null(enhanced_rule$product_idx)
+  expect_type(enhanced_rule$acceptor_idx, "integer")
+})
