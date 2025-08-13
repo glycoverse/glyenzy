@@ -39,7 +39,7 @@
 #' If any rule matches, the function returns `TRUE`.
 #'
 #' For N-glycans, additional logic is applied to handle special cases.
-#' Products of **ALG** enzymes and **MGAT1** are often further trimmed
+#' Products of **MGAT1** are often further trimmed
 #' by glycoside hydrolases, meaning that the final glycan product may no longer
 #' contain the original motif.
 #' In these cases, the function instead looks for specific motif markers
@@ -87,8 +87,6 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @noRd
 .is_synthesized_by <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(enzyme$name,
-    ALG1 = , ALG2 = , ALG3 = , ALG6 = , ALG8 = , ALG9 = , ALG10 = ,
-    ALG11 = , ALG12 = , ALG13 = , ALG14 = , DPAGT1 = .is_synthesized_by_alg,
     MGAT1 = .is_synthesized_by_mgat1,
     MOGS = .is_synthesized_by_mogs,
     MAN1B1 = .is_synthesized_by_man1b1,
@@ -100,12 +98,7 @@ is_synthesized_by <- function(glycans, enzyme) {
   .f(glycans, enzyme, is_n)
 }
 
-# Special case for ALG family and DPAGT1
-# These enzymes involve in the the biosynthesis process of all N-glycans.
-.is_synthesized_by_alg <- function(glycans, enzyme) {
-  rep(TRUE, length(glycans))
-}
-.is_synthesized_by_alg <- .make_n_glycan_guard(.is_synthesized_by_alg)
+
 
 # Special case for MGAT1
 # After MGAT1 adds the b1-2 GlcNAc, two mannoses are trimmed.

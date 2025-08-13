@@ -46,18 +46,6 @@ count_enzyme_steps <- function(glycans, enzyme) {
 #' @noRd
 .count_enzyme_steps <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(enzyme$name,
-    ALG2 = ,
-    ALG11 = .count_enzyme_steps_alg2_11,
-    ALG1 = ,
-    ALG3 = ,
-    ALG6 = ,
-    ALG8 = ,
-    ALG9 = ,
-    ALG10 = ,
-    ALG12 = ,
-    ALG13 = ,
-    ALG14 = ,
-    DPAGT1 = .count_enzyme_steps_alg,
     MGAT1 = .count_enzyme_steps_mgat1,
     MOGS = .count_enzyme_steps_mogs,
     MAN1B1 = .count_enzyme_steps_man1b1,
@@ -75,13 +63,7 @@ count_enzyme_steps <- function(glycans, enzyme) {
 # Here we use `.is_synthesized_by` functions to handle N-glycans.
 # See the corresponding functions in `is_synthesized_by.R` for details.
 
-.count_enzyme_steps_alg2_11 <- function(glycans, enzyme, is_n) {
-  2L * .is_synthesized_by_alg(glycans, enzyme, is_n)
-}
 
-.count_enzyme_steps_alg <- function(glycans, enzyme, is_n) {
-  1L * .is_synthesized_by_alg(glycans, enzyme, is_n)
-}
 
 .count_enzyme_steps_mgat1 <- function(glycans, enzyme, is_n) {
   1L * .is_synthesized_by_mgat1(glycans, enzyme, is_n)

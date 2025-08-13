@@ -82,9 +82,6 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @returns A `glyrepr_structure` vector of all possible products.
 #' @noRd
 .apply_rule_single <- function(graph, rule, type) {
-  if (is.null(rule$acceptor)) {
-    return(glyrepr::glycan_structure())
-  }
   match_res <- .match_rule(graph, rule)
   indices_to_act_on <- purrr::map_int(match_res, ~ .x[rule$acceptor_idx])
   if (type == "GT") {

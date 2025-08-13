@@ -40,18 +40,6 @@ test_that("count_enzyme_steps works for B4GALT1", {
 })
 
 # ===== Special cases for N-glycans =====
-test_that("count_enzyme_steps works for ALG enzymes and DPAGT1", {
-  glycans <- c(
-    "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",  # N-glycan
-    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"  # O-glycan
-  )
-  expect_equal(count_enzyme_steps(glycans, "ALG1"), c(1L, 0L))
-  expect_equal(count_enzyme_steps(glycans, "ALG2"), c(2L, 0L))
-  expect_equal(count_enzyme_steps(glycans, "ALG3"), c(1L, 0L))
-  expect_equal(count_enzyme_steps(glycans, "ALG11"), c(2L, 0L))
-  expect_equal(count_enzyme_steps(glycans, "DPAGT1"), c(1L, 0L))
-})
-
 test_that("count_enzyme_steps works for MGAT1", {
   glycans <- c(
     "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",

@@ -20,21 +20,6 @@ test_that("new_enzyme_rule creates valid enzyme rule objects", {
   expect_equal(rule$rejects_alignment, rejects_alignment)
 })
 
-# Test de novo synthesis (DPAGT1-like)
-test_that("new_enzyme_rule handles de novo synthesis", {
-  acceptor <- glyparse::parse_iupac_condensed(character(0))
-  product <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
-  rejects <- glyparse::parse_iupac_condensed(character(0))
-  rejects_alignment <- character(0)
-
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, NULL, rejects, rejects_alignment)
-
-  expect_s3_class(rule, "glyenzy_enzyme_rule")
-  expect_equal(length(rule$acceptor), 0)
-  expect_equal(rule$product, product)
-  expect_null(rule$acceptor_alignment)
-})
-
 # Test enzyme with rejects
 test_that("new_enzyme_rule handles rejects", {
   acceptor <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
@@ -72,15 +57,6 @@ test_that("print.glyenzy_enzyme works correctly", {
   expect_snapshot(print(enzyme_obj))
 })
 
-# Test DPAGT1 enzyme (de novo synthesis)
-test_that("DPAGT1 enzyme works correctly", {
-  dpagt1 <- enzyme("DPAGT1")
-  expect_s3_class(dpagt1, "glyenzy_enzyme")
-  expect_equal(dpagt1$name, "DPAGT1")
-  expect_equal(dpagt1$type, "GT")
-  expect_snapshot(print(dpagt1))
-})
-
 # Test acceptor_idx field for GT enzymes
 test_that("acceptor_idx is correctly calculated for GT enzymes", {
   # Test a regular GT enzyme (ST3GAL3)
@@ -115,17 +91,6 @@ test_that("product_idx is correctly calculated for GT enzymes", {
 
   # product_idx should be within the range of product nodes
   expect_true(rule$product_idx <= product_size)
-})
-
-# Test acceptor_idx and product_idx fields for de novo synthesis
-test_that("acceptor_idx and product_idx are correctly set for de novo synthesis", {
-  dpagt1 <- enzyme("DPAGT1")
-  rule <- dpagt1$rules[[1]]
-
-  # For de novo synthesis, acceptor_idx should be 0 (no acceptor)
-  expect_equal(rule$acceptor_idx, 0)
-  # For de novo synthesis, product_idx should be 1 (only one residue)
-  expect_equal(rule$product_idx, 1)
 })
 
 # Test acceptor_idx and product_idx fields for GH enzymes

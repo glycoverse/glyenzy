@@ -111,12 +111,6 @@ test_that("apply_enzyme works for ST6GAL2", {
   )
 })
 
-# ===== Edge Cases =====
-test_that("apply_enzyme works for DPAGT1", {
-  res <- apply_enzyme("GlcNAc(b1-", "DPAGT1")
-  expect_equal(res, glyrepr::glycan_structure())
-})
-
 # ===== Regression Tests =====
 test_that("apply_enzyme regression: GH enzymes do not create invalid out-tree structures", {
   # Test that GH enzymes only remove terminal residues and do not break tree structure

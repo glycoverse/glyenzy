@@ -115,12 +115,9 @@ enhance_enzyme <- function(x) {
 #'
 #' @noRd
 new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, rejects_alignment) {
-  checkmate::assert_class(acceptor, "glyrepr_structure", null.ok = TRUE)
-  checkmate::assert_class(product, "glyrepr_structure", null.ok = TRUE)
-  # Allow NULL for acceptor_alignment (de novo synthesis)
-  if (!is.null(acceptor_alignment)) {
-    checkmate::assert_choice(acceptor_alignment, c("substructure", "core", "terminal", "whole"))
-  }
+  checkmate::assert_class(acceptor, "glyrepr_structure")
+  checkmate::assert_class(product, "glyrepr_structure")
+  checkmate::assert_choice(acceptor_alignment, c("substructure", "core", "terminal", "whole"))
   checkmate::assert_class(rejects, "glyrepr_structure")
   checkmate::assert_subset(rejects_alignment, c("substructure", "core", "terminal", "whole"))
 
@@ -149,9 +146,8 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, reje
 validate_enzyme_rule <- function(x, type) {
   checkmate::assert_class(x, "glyenzy_enzyme_rule")
 
-  # Allow empty acceptor for de novo synthesis (e.g., DPAGT1)
-  if (length(x$acceptor) != 1 && length(x$acceptor) != 0) {
-    cli::cli_abort("The {.arg acceptor} must be a single structure or empty (for de novo synthesis).")
+  if (length(x$acceptor) != 1) {
+    cli::cli_abort("The {.arg acceptor} must be a single structure.")
   }
   if (length(x$product) != 1) {
     cli::cli_abort("The {.arg product} must be a single structure.")
@@ -165,13 +161,11 @@ validate_enzyme_rule <- function(x, type) {
     ))
   }
 
-  # Check acceptor and product (skip for de novo synthesis)
-  if (length(x$acceptor) > 0) {
-    if (type == "GT") {
-      .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
-    } else {
-      .check_product_acceptor(x$product, x$acceptor, "product", "acceptor")
-    }
+  # Check acceptor and product
+  if (type == "GT") {
+    .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
+  } else {
+    .check_product_acceptor(x$product, x$acceptor, "product", "acceptor")
   }
 
   invisible(x)
@@ -201,15 +195,6 @@ enhance_enzyme_rule <- function(x, type) {
 }
 
 .enhance_gt_enzyme_rule <- function(x) {
-  if (is.null(x$acceptor)) {
-    # Handle de novo synthesis
-    x$acceptor_idx <- 0
-    x$product_idx <- 1
-    x$new_residue <- NULL
-    x$new_linkage <- NULL
-    return(x)
-  }
-
   acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor)
   product_graph <- glyrepr::get_structure_graphs(x$product)
   match_res <- glymotif::match_motif(x$product, x$acceptor, alignment = "core")[[1]][[1]]  # only one glycan and one match, so `[[1]][[1]]`
@@ -296,14 +281,8 @@ print.glyenzy_enzyme <- function(x, ...) {
   cli::cli_h2("Rules ({.val {length(x$rules)}})")
   if (length(x$rules) > 0) {
     purrr::iwalk(x$rules, function(rule, i) {
-      # Handle null acceptor (for DPAGT1)
-      if (length(rule$acceptor) == 0) {
-        cli::cli_alert("Rule {.val {i}}: {.emph de novo synthesis}")
-        cli::cli_text("  Acceptor: {.emph none}")
-      } else {
-        cli::cli_alert("Rule {.val {i}}: {.field {rule$acceptor_alignment}} alignment")
-        cli::cli_text("  Acceptor: {.val {as.character(rule$acceptor)}}")
-      }
+      cli::cli_alert("Rule {.val {i}}: {.field {rule$acceptor_alignment}} alignment")
+      cli::cli_text("  Acceptor: {.val {as.character(rule$acceptor)}}")
       cli::cli_text("  Product:  {.val {as.character(rule$product)}}")
 
       # Show rejects for this rule

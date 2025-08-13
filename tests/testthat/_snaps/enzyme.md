@@ -20,19 +20,3 @@
       Acceptor: "Gal(b1-3)GalNAc(b1-"
       Product: "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
 
-# DPAGT1 enzyme works correctly
-
-    Code
-      print(dpagt1)
-    Message
-      
-      -- Enzyme: DPAGT1 --------------------------------------------------------------
-      i Type: "GT" (Glycosyltransferase)
-      i Species: "human"
-      
-      -- Rules (1) --
-      
-      > Rule 1: de novo synthesis
-      Acceptor: none
-      Product: "GlcNAc(b1-"
-

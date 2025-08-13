@@ -23,14 +23,8 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
 
 # Helper function to create enzyme rule from JSON data
 .create_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
-  # Handle null acceptor (for DPAGT1)
-  if (is.null(rule_data$acceptor) || is.na(rule_data$acceptor)) {
-    acceptor <- NULL
-    acceptor_alignment <- NULL
-  } else {
-    acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
-    acceptor_alignment <- rule_data$acceptor_alignment
-  }
+  acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
+  acceptor_alignment <- rule_data$acceptor_alignment
 
   product <- glyparse::parse_iupac_condensed(rule_data$product)
 
