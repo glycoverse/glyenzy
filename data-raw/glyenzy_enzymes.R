@@ -58,9 +58,16 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
   rules <- purrr::compact(rules)
 
   # Create and validate enzyme, and enhance it
-  enzyme <- glyenzy:::new_enzyme(name, rules, type, species)
-  glyenzy:::validate_enzyme(enzyme)
-  enzyme <- glyenzy:::enhance_enzyme(enzyme)
+  tryCatch(
+    {
+      enzyme <- glyenzy:::new_enzyme(name, rules, type, species)
+      glyenzy:::validate_enzyme(enzyme)
+      enzyme <- glyenzy:::enhance_enzyme(enzyme)
+    },
+    error = function(e) {
+      cli::cli_abort("Can't create valid enzyme for {.val {name}}", parent = e)
+    }
+  )
 
   enzyme
 }
