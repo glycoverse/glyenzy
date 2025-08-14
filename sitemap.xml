@@ -7,6 +7,16 @@
 <url><loc>https://glycoverse.github.io/glyenzy/SUPPORT.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyenzy/authors.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyenzy/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/apply_enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/count_enzyme_steps.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/find_synthesis_path.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/get_involved_enzymes.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/glyenzy-package.html</loc></url>
 <url><loc>https://glycoverse.github.io/glyenzy/reference/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/is_synthesized_by.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/print.glyenzy_enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.html</loc></url>
 </urlset>
 
