@@ -21,6 +21,14 @@ This function checks whether a specific enzyme participates
 in the biosynthesis of a given glycan (or glycans).
 }
 \section{Important notes}{
+\subsection{Applicability}{
+
+All algorithms and enzyme information in glyenzy are applicable only to humans,
+and specifically to N-glycans and O-GalNAc glycans.
+Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
+or for glycans in other species (e.g., plants, insects).
+}
+
 \subsection{Inclusiveness}{
 
 The algorithm takes an intentionally inclusive approach,
@@ -40,6 +48,14 @@ The function only works for glycans containing \strong{concrete} residues
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
 }
 
+\subsection{Substituents}{
+
+Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
+and the algorithms might fail for glycans with subtituents.
+If your glycans contains substituents,
+use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+}
+
 \subsection{Incomplete glycan structures}{
 
 If the glycan structure is incomplete or partially degraded,
@@ -54,7 +70,7 @@ corresponding product motif appears in the glycan.
 If any rule matches, the function returns \code{TRUE}.
 
 For N-glycans, additional logic is applied to handle special cases.
-Products of \strong{ALG} enzymes and \strong{MGAT1} are often further trimmed
+Products of \strong{MGAT1} are often further trimmed
 by glycoside hydrolases, meaning that the final glycan product may no longer
 contain the original motif.
 In these cases, the function instead looks for specific motif markers

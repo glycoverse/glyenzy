@@ -9,6 +9,13 @@
 #'
 #' # Important notes
 #'
+#' ## Applicability
+#'
+#' All algorithms and enzyme information in glyenzy are applicable only to humans,
+#' and specifically to N-glycans and O-GalNAc glycans.
+#' Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
+#' or for glycans in other species (e.g., plants, insects).
+#'
 #' ## Inclusiveness
 #'
 #' The algorithm takes an intentionally inclusive approach,
@@ -25,6 +32,13 @@
 #' The function only works for glycans containing **concrete** residues
 #' (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
 #' residues (e.g., `"Hex"`, `"HexNAc"`).
+#'
+#' ## Substituents
+#'
+#' Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
+#' and the algorithms might fail for glycans with subtituents.
+#' If your glycans contains substituents,
+#' use [glyrepr::remove_substituents()] to get clean glycans.
 #'
 #' ## Incomplete glycan structures
 #'

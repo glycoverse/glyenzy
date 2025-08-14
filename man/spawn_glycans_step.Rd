@@ -45,6 +45,14 @@ of steps and carefully select the enzymes.
 Also, you can use the \code{filter} argument to prune the results after each round.
 }
 \section{Important notes}{
+\subsection{Applicability}{
+
+All algorithms and enzyme information in glyenzy are applicable only to humans,
+and specifically to N-glycans and O-GalNAc glycans.
+Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
+or for glycans in other species (e.g., plants, insects).
+}
+
 \subsection{Inclusiveness}{
 
 The algorithm takes an intentionally inclusive approach,
@@ -62,6 +70,14 @@ on factors such as tissue specificity.
 The function only works for glycans containing \strong{concrete} residues
 (e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
+}
+
+\subsection{Substituents}{
+
+Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
+and the algorithms might fail for glycans with subtituents.
+If your glycans contains substituents,
+use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
 }
 
 \subsection{Incomplete glycan structures}{
