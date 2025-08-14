@@ -27,6 +27,7 @@ This function returns all possible isoenzymes associated with the biosynthetic
 steps of the input glycan.
 }
 \section{Important notes}{
+Here are some important notes for all functions in the \code{glyenzy} package.
 \subsection{Applicability}{
 
 All algorithms and enzyme information in glyenzy are applicable only to humans,
@@ -66,6 +67,15 @@ use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to
 
 If the glycan structure is incomplete or partially degraded,
 the result may be misleading.
+}
+
+\subsection{Starting points}{
+
+Throughout \code{glyenzy}, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
+and GalNAc(a1- for O-glycans.
+This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
+and OST, which transfered the precursor to Asn, are not considered here.
+Similarly, GALNTs for O-glycans are not considered.
 }
 }
 
