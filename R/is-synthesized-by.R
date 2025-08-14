@@ -200,6 +200,11 @@ is_synthesized_by <- function(glycans, enzyme) {
     cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
   }
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
-  have_products_mat <- glymotif::have_motifs(glycans, products)
+  acceptor_alignments <- purrr::map_chr(enzyme$rules, ~ .x$acceptor_alignment)
+  product_alignments <- dplyr::if_else(
+    acceptor_alignments %in% c("whole", "core"),
+    "core", "substructure"
+  )
+  have_products_mat <- glymotif::have_motifs(glycans, products, product_alignments)
   unname(rowSums(have_products_mat) > 0)
 }

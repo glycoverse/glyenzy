@@ -94,3 +94,9 @@ test_that("is_synthesized_by works correctly for MAN1B1, MAN1A1, MAN1A2, and MAN
   expect_equal(is_synthesized_by(glycans, "MAN1A2"), MAN1A1_res)
   expect_equal(is_synthesized_by(glycans, "MAN1C1"), MAN1A1_res)
 })
+
+# ===== Edge Cases =====
+test_that("is_synthesized_by handles product alignments", {
+  expect_true(is_synthesized_by("GlcNAc(b1-3)GalNAc(a1-", "B3GNT6"))
+  expect_false(is_synthesized_by("GlcNAc(b1-3)GalNAc(a1-3)GlcNAc(b1-", "B3GNT6"))
+})
