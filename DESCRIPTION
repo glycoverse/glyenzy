@@ -22,7 +22,9 @@ Imports:
     glyparse (>= 0.4.0),
     igraph,
     purrr,
-    dplyr
+    dplyr,
+    rlang,
+    tibble
 Remotes: 
     glycoverse/glyrepr,
     glycoverse/glyparse,

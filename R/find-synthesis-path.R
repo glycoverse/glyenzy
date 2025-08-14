@@ -493,7 +493,7 @@ find_synthesis_path <- function(
   # Construct path graph
   vertices <- unique(c(search_params$from_key, path_keys))
   edges <- tibble::tibble(
-    from = c(search_params$from_key, head(path_keys, -1L)),
+    from = c(search_params$from_key, utils::head(path_keys, -1L)),
     to = path_keys,
     enzyme = edge_enzymes,
     step = seq_along(edge_enzymes)

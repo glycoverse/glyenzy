@@ -33,7 +33,7 @@
 #' library(glyparse)
 #'
 #' # Rebuild the biosynthetic pathway of a glycan
-#' glycan <- "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+#' glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 #' path <- rebuild_biosynthesis(glycan, max_steps = 20)
 #'
 #' # View the path
