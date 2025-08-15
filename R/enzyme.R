@@ -60,6 +60,27 @@ enzyme <- function(symbol) {
   }
 }
 
+#' Get all enzymes
+#'
+#' Return a named list of all built-in enzymes,
+#' or a character vector of gene symbols if `return_str` is `TRUE`.
+#'
+#' @param return_str If `FALSE` (default), returns the enzyme list.
+#'   Otherwise returns a charactor vector of gene symbols.
+#'
+#' @returns A list of [enzyme()]s or a character vector.
+#' @examples
+#' all_enzymes(return_str = TRUE)
+#'
+#' @export
+all_enzymes <- function(return_str = FALSE) {
+  if (return_str) {
+    return(names(glyenzy_enzymes))
+  } else {
+    return(glyenzy_enzymes)
+  }
+}
+
 #' Create a new enzyme object
 #'
 #' @param name The name of the enzyme.
