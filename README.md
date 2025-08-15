@@ -27,11 +27,17 @@ from a given substrate structure and a set of enzymes.
 
 ## Installation
 
-You can install the development version of glyenzy from
+You can install the latest release of glyenzy from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
+pak::pak("glycoverse/glyenzy@*release")
+```
+
+Or install the development version:
+
+``` r
 pak::pak("glycoverse/glyenzy")
 ```
 

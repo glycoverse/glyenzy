@@ -33,10 +33,16 @@ and predicting the glycans that can be synthesized from a given substrate struct
 
 ## Installation
 
-You can install the development version of glyenzy from [GitHub](https://github.com/) with:
+You can install the latest release of glyenzy from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
+pak::pak("glycoverse/glyenzy@*release")
+```
+
+Or install the development version:
+
+``` r
 pak::pak("glycoverse/glyenzy")
 ```
 
