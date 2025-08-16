@@ -14,9 +14,6 @@ status](https://www.r-pkg.org/badges/version/glyenzy)](https://CRAN.R-project.or
 coverage](https://codecov.io/gh/glycoverse/glyenzy/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glyenzy)
 <!-- badges: end -->
 
-> \[!Note\] **This package is currently under development and is not for
-> production use.**
-
 The glyenzy package helps simulate the biosynthetic process of
 glycosylation in silico. Key features include: identifying the specific
 glycosyltransferase responsible for each glycosidic bond; reconstructing
@@ -40,6 +37,21 @@ Or install the development version:
 ``` r
 pak::pak("glycoverse/glyenzy")
 ```
+
+## Documentation
+
+-   🚀 Get started:
+    [Here](https://glycoverse.github.io/glyenzy/articles/glyenzy.html)
+-   📚 Reference:
+    [Here](https://glycoverse.github.io/glyenzy/reference/index.html)
+
+## Role in `glycoverse`
+
+As one of the most downstream components of the `glycoverse` ecosystem,
+this package builds on `glyrepr`, `glyparse`, and `glymotif`, with
+planned integration with `glydraw`. It is intended for direct use by
+omics researchers, providing practical, analysis-ready insights into
+glycan biosynthesis.
 
 ## Example
 
