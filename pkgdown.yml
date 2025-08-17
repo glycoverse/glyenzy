@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   glyenzy: glyenzy.html
-last_built: 2025-08-17T08:40Z
+last_built: 2025-08-17T08:42Z
 urls:
   reference: https://glycoverse.github.io/glyenzy/reference
   article: https://glycoverse.github.io/glyenzy/articles
