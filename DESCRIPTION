@@ -1,6 +1,6 @@
 Package: glyenzy
 Title: Deconstruction Glycosylation Biosynthesis
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person("Bin", "Fu", , "23110220018@m.fudan.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8567-2997"))
@@ -19,9 +19,9 @@ URL: https://glycoverse.github.io/glyenzy/
 Imports:
     checkmate,
     cli,
-    glymotif (>= 0.6.0),
-    glyrepr (>= 0.6.0),
-    glyparse (>= 0.4.0),
+    glymotif (>= 0.6.2),
+    glyrepr (>= 0.7.0),
+    glyparse (>= 0.4.3),
     igraph,
     purrr,
     dplyr,
