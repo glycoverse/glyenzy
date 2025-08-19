@@ -102,17 +102,8 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @returns A list of integer vectors, representing the node mapping from the acceptor to the glycan.
 #' @noRd
 .match_rule <- function(graph, rule) {
-  acceptor_graph <- glyrepr::get_structure_graphs(rule$acceptor)
-
-  # Here is an awkard situation.
-  # `glyrepr::get_structure_graphs()` returns a list when there are multiple graphs,
-  # and a single graph when there is only one graph.
-  # This is a bad design because the function is "type-unstable".
-  # Before any update is introduced in `glyrepr`, we have to work around it.
-  reject_graphs <- glyrepr::get_structure_graphs(rule$rejects)
-  if (igraph::is_igraph(reject_graphs)) {
-    reject_graphs <- list(reject_graphs)
-  }
+  acceptor_graph <- glyrepr::get_structure_graphs(rule$acceptor, return_list = FALSE)
+  reject_graphs <- glyrepr::get_structure_graphs(rule$rejects, return_list = TRUE)
 
   for (i in seq_along(reject_graphs)) {
     if (glymotif:::.have_motif_single(graph, reject_graphs[[i]], rule$rejects_alignment[[i]])) {

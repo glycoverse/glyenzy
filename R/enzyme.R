@@ -216,8 +216,8 @@ enhance_enzyme_rule <- function(x, type) {
 }
 
 .enhance_gt_enzyme_rule <- function(x) {
-  acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor)
-  product_graph <- glyrepr::get_structure_graphs(x$product)
+  acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE)
+  product_graph <- glyrepr::get_structure_graphs(x$product, return_list = FALSE)
   match_res <- glymotif::match_motif(x$product, x$acceptor, alignment = "core")[[1]][[1]]  # only one glycan and one match, so `[[1]][[1]]`
 
   # The node index of the new residue in the product
@@ -241,8 +241,8 @@ enhance_enzyme_rule <- function(x, type) {
 }
 
 .enhance_gh_enzyme_rule <- function(x) {
-  acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor)
-  product_graph <- glyrepr::get_structure_graphs(x$product)
+  acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE)
+  product_graph <- glyrepr::get_structure_graphs(x$product, return_list = FALSE)
   match_res <- glymotif::match_motif(x$acceptor, x$product, alignment = "core")[[1]][[1]]  # only one glycan, so `[[1]]`
 
   # The node index of the removed residue in the acceptor
@@ -272,8 +272,8 @@ enhance_enzyme_rule <- function(x, type) {
 #'
 #' @noRd
 .check_product_acceptor <- function(smaller, larger, smaller_name, larger_name) {
-  smaller_graph <- glyrepr::get_structure_graphs(smaller)
-  larger_graph <- glyrepr::get_structure_graphs(larger)
+  smaller_graph <- glyrepr::get_structure_graphs(smaller, return_list = FALSE)
+  larger_graph <- glyrepr::get_structure_graphs(larger, return_list = FALSE)
   match_res <- glymotif::match_motif(larger, smaller, alignment = "core")[[1]]  # only one glycan, so `[[1]]`
   # `smaller` is a substructure of `larger`
   if (length(match_res) != 1) {

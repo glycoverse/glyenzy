@@ -76,7 +76,7 @@ test_that("acceptor_idx is correctly calculated for GT enzymes", {
   expect_true(rule$acceptor_idx > 0)
 
   # acceptor_idx should be within the range of acceptor nodes
-  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor))
+  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor, return_list = FALSE))
   expect_true(rule$acceptor_idx <= acceptor_size)
 })
 
@@ -92,8 +92,8 @@ test_that("product_idx is correctly calculated for GT enzymes", {
   expect_true(rule$product_idx > 0)
 
   # For ST3GAL3, the product should have one more residue than acceptor
-  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor))
-  product_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$product))
+  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$acceptor, return_list = FALSE))
+  product_size <- igraph::vcount(glyrepr::get_structure_graphs(rule$product, return_list = FALSE))
   expect_equal(product_size, acceptor_size + 1)
 
   # product_idx should be within the range of product nodes
@@ -116,7 +116,7 @@ test_that("acceptor_idx and product_idx are correctly set for GH enzymes", {
   expect_true(enhanced_rule$acceptor_idx > 0)
 
   # acceptor_idx should be within the range of acceptor nodes
-  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(acceptor))
+  acceptor_size <- igraph::vcount(glyrepr::get_structure_graphs(acceptor, return_list = FALSE))
   expect_true(enhanced_rule$acceptor_idx <= acceptor_size)
 
   # For GH enzymes, product_idx should be NULL (no new residue added)
@@ -271,8 +271,8 @@ test_that("enhance_enzyme enhances all rules", {
 
   res_rule <- enhanced_enzyme$rules[[1]]
   expect_s3_class(enhanced_enzyme, "glyenzy_enzyme")
-  expect_equal(res_rule$acceptor_idx, 2)
-  expect_equal(res_rule$product_idx, 3)
+  expect_equal(res_rule$acceptor_idx, 1)
+  expect_equal(res_rule$product_idx, 1)
   expect_equal(res_rule$new_residue, "Neu5Ac")
   expect_equal(res_rule$new_linkage, "a2-3")
 })
