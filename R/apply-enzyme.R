@@ -46,9 +46,9 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   .format_result(res, return_list)
 }
 
-#' Apply an enzyme to a vector of glycan graphs
+#' Apply an enzyme to a vector of glycan structures
 #'
-#' @param glycans A `glyrepr_structure` vector of glycan graphs.
+#' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
 #'
 #' @returns A list of `glyrepr_structure` vectors, with the same length as `glycans`.
@@ -56,33 +56,36 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'   corresponding glycan in `glycans`.
 #' @noRd
 .apply_enzyme <- function(glycans, enzyme) {
-  glyrepr::smap(glycans, ~ .apply_enzyme_single(.x, enzyme))
+  rule_res <- purrr::map(enzyme$rules, ~ .apply_rule(glycans, .x, enzyme$type))
+  res <- purrr::pmap(rule_res, c)
+  purrr::map(res, unique)
 }
 
-#' Apply an enzyme to a single glycan graph
+#' Apply an enzyme rule to a vector of glycan structures
 #'
-#' This function combines all products from each rule.
+#' @param glycans A `glyrepr_structure` vector.
+#' @param rule A `glyenzy_enzyme_rule` object.
+#' @param type The type of the enzyme, "GT" or "GH".
 #'
-#' @param graph An igraph object representing the glycan structure.
-#' @param enzyme A `glyenzy_enzyme` object.
-#'
-#' @returns A `glyrepr_structure` vector of all possible products.
+#' @returns A list of `glyrepr_structure` vectors, with the same length as `glycans`.
+#'   Each element in the list corresponds to the products of the enzyme on the
+#'   corresponding glycan in `glycans`.
 #' @noRd
-.apply_enzyme_single <- function(graph, enzyme) {
-  struc_list <- purrr::map(enzyme$rules, ~ .apply_rule_single(graph, .x, enzyme$type))
-  unique(do.call(c, struc_list))
+.apply_rule <- function(glycans, rule, type) {
+  rule_matches <- .match_rule(glycans, rule)
+  glyrepr::smap2(glycans, rule_matches, ~ .apply_rule_single(.x, .y, rule, type))
 }
 
 #' Apply a single rule to a glycan graph
 #'
 #' @param graph An igraph object representing the glycan structure.
+#' @param match_res A list of integer vectors, representing the node mapping from the acceptor to the glycan.
 #' @param rule A `glyenzy_enzyme_rule` object.
 #' @param type The type of the enzyme, "GT" or "GH".
 #'
-#' @returns A `glyrepr_structure` vector of all possible products.
+#' @returns A list of `glyrepr_structure` vectors, with the same length as `match_res`.
 #' @noRd
-.apply_rule_single <- function(graph, rule, type) {
-  match_res <- .match_rule(graph, rule)
+.apply_rule_single <- function(graph, match_res, rule, type) {
   indices_to_act_on <- purrr::map_int(match_res, ~ .x[rule$acceptor_idx])
   if (type == "GT") {
     graph_list <- purrr::map(indices_to_act_on, ~ .add_residue(graph, .x, rule$new_residue, rule$new_linkage))
@@ -94,23 +97,25 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   glyrepr::as_glycan_structure(graph_list)
 }
 
-#' Match a rule on a glycan graph
+#' Match a rule's acceptor on a glycan structure
 #'
-#' @param graph An igraph object representing the glycan structure.
+#' @param glycans A `glyrepr_structure` vector
 #' @param rule A `glyenzy_enzyme_rule` object.
 #'
-#' @returns A list of integer vectors, representing the node mapping from the acceptor to the glycan.
+#' @returns A nested list with two layers: the outer layer corresponds to the
+#'   glycans in `glycans`, and the inner layer corresponds to different matches
+#'   of the rule on the corresponding glycan.
 #' @noRd
-.match_rule <- function(graph, rule) {
-  acceptor_graph <- glyrepr::get_structure_graphs(rule$acceptor, return_list = FALSE)
-  reject_graphs <- glyrepr::get_structure_graphs(rule$rejects, return_list = TRUE)
-
-  for (i in seq_along(reject_graphs)) {
-    if (glymotif:::.have_motif_single(graph, reject_graphs[[i]], rule$rejects_alignment[[i]])) {
-      return(list())
-    }
+.match_rule <- function(glycans, rule) {
+  if (length(rule$rejects) > 0) {
+    have_rejects_mat <- glymotif::have_motifs(glycans, rule$rejects, rule$rejects_alignment)
+    have_rejects <- unname(rowSums(have_rejects_mat) > 0)
+  } else {
+    have_rejects <- rep(FALSE, length(glycans))
   }
-  glymotif:::.match_motif_single(graph, acceptor_graph, rule$acceptor_alignment)
+  res <- glymotif::match_motif(glycans, rule$acceptor, rule$acceptor_alignment)
+  res[have_rejects] <- list(list())
+  res
 }
 
 #' Add a residue to a glycan graph
