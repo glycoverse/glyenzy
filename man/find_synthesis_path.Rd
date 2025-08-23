@@ -10,7 +10,7 @@ find_synthesis_path(
   enzymes = NULL,
   max_steps = 10,
   filter = NULL,
-  return = c("shortest", "all")
+  return = c("one", "all")
 )
 }
 \arguments{
@@ -30,9 +30,9 @@ Default is 10.}
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
 a logical vector of the same length.}
 
-\item{return}{One of \code{"shortest"} or \code{"all"}. If \code{"shortest"}, returns the
+\item{return}{One of \code{"one"} or \code{"all"}. If \code{"one"}, returns the
 first shortest path found. If \code{"all"}, returns a graph containing all
-possible paths within \code{max_steps}.}
+possible paths within \code{max_steps}. Default is \code{"one"}.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).

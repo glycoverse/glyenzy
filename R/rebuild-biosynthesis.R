@@ -18,9 +18,9 @@
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length.
-#' @param return One of `"shortest"` or `"all"`. If `"shortest"`, returns the
+#' @param return One of `"one"` or `"all"`. If `"one"`, returns the
 #'   first shortest path found. If `"all"`, returns a graph containing all
-#'   possible paths within `max_steps`.
+#'   possible paths within `max_steps`. Default is `"one"`.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
 #'   Vertices represent glycan structures with `name` attribute containing
@@ -45,7 +45,7 @@ rebuild_biosynthesis <- function(
   enzymes = NULL,
   max_steps = 20,
   filter = NULL,
-  return = c("shortest", "all")
+  return = c("one", "all")
 ) {
   return <- rlang::arg_match(return)
 
