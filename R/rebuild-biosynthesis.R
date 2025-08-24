@@ -48,9 +48,9 @@ rebuild_biosynthesis <- function(
   checkmate::assert_true(length(glycan) == 1L)
   checkmate::assert_int(max_steps, lower = 1)
 
-  # Find all possible paths
+  # Find all possible paths using unified BFS logic
   starting_glycan <- .decide_starting_glycan(glycan)
-  find_synthesis_path(starting_glycan, glycan, enzymes, max_steps, filter)
+  .perform_bfs_synthesis(starting_glycan, glycan, enzymes, max_steps, filter)
 }
 
 .decide_starting_glycan <- function(glycan) {
