@@ -8,7 +8,9 @@ rebuild_biosynthesis(glycans, enzymes = NULL, max_steps = 20, filter = NULL)
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a character vector
-of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. Can also be a single glycan.}
+of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. Can also be a single glycan.
+If multiple glycans are provided, the starting structure will be decided by the first glycan.
+Therefore, please make sure \code{glycans} are not a mixed vector of N- and O-glycans.}
 
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}} objects.
 If \code{NULL} (default), all available enzymes will be used.}
@@ -18,7 +20,8 @@ Default is 20.}
 
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
-a logical vector of the same length.}
+a logical vector of the same length.
+It will be applied to all the generated glycans at each BFS step for pruning.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
@@ -29,8 +32,7 @@ indicating the step number. For multiple targets, the graph includes
 all synthesis paths needed to reach every target glycan.
 }
 \description{
-Reconstruct the biosynthetic pathway for one or more glycans from a given starting structure
-using enzymatic reactions.
+Reconstruct the biosynthetic pathway for one or more glycans using enzymatic reactions.
 This function uses a multi-target breadth-first search to find all feasible pathways
 that can synthesize all the target glycans.
 }
@@ -39,6 +41,59 @@ For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
 the N-glycan precursor transfered to Asn by OST.
 For O-glycans, the starting structure is assumed to be "GalNAc(a1-".
 }
+\section{Important notes}{
+Here are some important notes for all functions in the \code{glyenzy} package.
+\subsection{Applicability}{
+
+All algorithms and enzyme information in glyenzy are applicable only to humans,
+and specifically to N-glycans and O-GalNAc glycans.
+Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
+or for glycans in other species (e.g., plants, insects).
+}
+
+\subsection{Inclusiveness}{
+
+The algorithm takes an intentionally inclusive approach,
+assuming that all possible isoenzymes capable of catalyzing
+a given reaction may be involved.
+Therefore, results should be interpreted with caution.
+
+For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-" will return
+both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depending
+on factors such as tissue specificity.
+}
+
+\subsection{Only "concrete" glycans}{
+
+The function only works for glycans containing \strong{concrete} residues
+(e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
+residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
+}
+
+\subsection{Substituents}{
+
+Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
+and the algorithms might fail for glycans with subtituents.
+If your glycans contains substituents,
+use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+}
+
+\subsection{Incomplete glycan structures}{
+
+If the glycan structure is incomplete or partially degraded,
+the result may be misleading.
+}
+
+\subsection{Starting points}{
+
+Throughout \code{glyenzy}, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
+and GalNAc(a1- for O-glycans.
+This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
+and OST, which transfered the precursor to Asn, are not considered here.
+Similarly, GALNTs for O-glycans are not considered.
+}
+}
+
 \examples{
 library(glyrepr)
 library(glyparse)

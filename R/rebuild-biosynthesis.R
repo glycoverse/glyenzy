@@ -1,7 +1,6 @@
 #' Rebuild the Biosynthetic Path of Glycans
 #'
-#' Reconstruct the biosynthetic pathway for one or more glycans from a given starting structure
-#' using enzymatic reactions.
+#' Reconstruct the biosynthetic pathway for one or more glycans using enzymatic reactions.
 #' This function uses a multi-target breadth-first search to find all feasible pathways
 #' that can synthesize all the target glycans.
 #'
@@ -9,8 +8,12 @@
 #' the N-glycan precursor transfered to Asn by OST.
 #' For O-glycans, the starting structure is assumed to be "GalNAc(a1-".
 #'
+#' @inheritSection is_synthesized_by Important notes
+#'
 #' @param glycans A [glyrepr::glycan_structure()] vector, or a character vector
 #'   of strings supported by [glyparse::auto_parse()]. Can also be a single glycan.
+#'   If multiple glycans are provided, the starting structure will be decided by the first glycan.
+#'   Therefore, please make sure `glycans` are not a mixed vector of N- and O-glycans.
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()] objects.
 #'   If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
@@ -18,6 +21,7 @@
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length.
+#'   It will be applied to all the generated glycans at each BFS step for pruning.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
 #'   Vertices represent glycan structures with `name` attribute containing

@@ -4,6 +4,8 @@
 #' This function uses breadth-first search to find the shortest path or all possible paths
 #' within a given number of steps.
 #'
+#' @inheritSection rebuild_biosynthesis Important notes
+#'
 #' @param from A [glyrepr::glycan_structure()] scalar, or a character string
 #'   supported by [glyparse::auto_parse()]. The starting glycan structure.
 #' @param to A [glyrepr::glycan_structure()] scalar, or a character string
@@ -15,7 +17,7 @@
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length.
-
+#'   It will be applied to all the generated glycans at each BFS step for pruning.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
 #'   Vertices represent glycan structures with `name` attribute containing

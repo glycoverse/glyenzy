@@ -21,7 +21,8 @@ Default is 10.}
 
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
-a logical vector of the same length.}
+a logical vector of the same length.
+It will be applied to all the generated glycans at each BFS step for pruning.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
@@ -35,6 +36,59 @@ Find a synthesis path from one glycan structure to another using enzymatic react
 This function uses breadth-first search to find the shortest path or all possible paths
 within a given number of steps.
 }
+\section{Important notes}{
+Here are some important notes for all functions in the \code{glyenzy} package.
+\subsection{Applicability}{
+
+All algorithms and enzyme information in glyenzy are applicable only to humans,
+and specifically to N-glycans and O-GalNAc glycans.
+Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
+or for glycans in other species (e.g., plants, insects).
+}
+
+\subsection{Inclusiveness}{
+
+The algorithm takes an intentionally inclusive approach,
+assuming that all possible isoenzymes capable of catalyzing
+a given reaction may be involved.
+Therefore, results should be interpreted with caution.
+
+For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-" will return
+both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depending
+on factors such as tissue specificity.
+}
+
+\subsection{Only "concrete" glycans}{
+
+The function only works for glycans containing \strong{concrete} residues
+(e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
+residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
+}
+
+\subsection{Substituents}{
+
+Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
+and the algorithms might fail for glycans with subtituents.
+If your glycans contains substituents,
+use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+}
+
+\subsection{Incomplete glycan structures}{
+
+If the glycan structure is incomplete or partially degraded,
+the result may be misleading.
+}
+
+\subsection{Starting points}{
+
+Throughout \code{glyenzy}, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
+and GalNAc(a1- for O-glycans.
+This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
+and OST, which transfered the precursor to Asn, are not considered here.
+Similarly, GALNTs for O-glycans are not considered.
+}
+}
+
 \examples{
 library(glyrepr)
 library(glyparse)
