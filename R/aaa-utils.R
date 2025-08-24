@@ -93,11 +93,11 @@
 #' enzyme object list) and applies pre-filtering based on target glycan compatibility.
 #'
 #' @param enzymes Raw enzyme input (NULL, character vector, or enzyme object list)
-#' @param to_g Target glycan structure for pre-filtering (optional)
-#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycan
+#' @param to_gs Target glycan structures for pre-filtering (optional)
+#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycans
 #' @returns Character vector of enzyme names
 #' @noRd
-.process_synthesis_enzymes <- function(enzymes, to_g = NULL, apply_prefilter = TRUE) {
+.process_synthesis_enzymes <- function(enzymes, to_gs = NULL, apply_prefilter = TRUE) {
   # Get enzyme names from various input formats
   if (is.null(enzymes)) {
     enzyme_names <- names(glyenzy_enzymes)
@@ -112,28 +112,31 @@
     enzyme_names <- purrr::map_chr(enzymes, ~ .x$name)
   }
 
-  # Apply enzyme pre-filtering if requested and target glycan provided
-  if (apply_prefilter && !is.null(to_g)) {
-    # ALGORITHM: Enzyme Pre-filtering for Search Space Reduction
-    # ========================================================
+  # Apply enzyme pre-filtering if requested and target glycans provided
+  if (apply_prefilter && !is.null(to_gs)) {
+    # ALGORITHM: Multi-Target Enzyme Pre-filtering for Search Space Reduction
+    # =====================================================================
     # This optimization dramatically reduces the search space by filtering out enzymes
-    # that cannot possibly contribute to synthesizing the target glycan.
+    # that cannot possibly contribute to synthesizing any of the target glycans.
     #
     # Strategy: Use is_synthesized_by() to check if each enzyme could have been involved
-    # in creating the target structure. This is based on motif matching - if the target
-    # contains motifs that the enzyme produces, it's a candidate.
+    # in creating any of the target structures. An enzyme is included if it could
+    # contribute to at least one target glycan.
     #
     # Benefits:
     # - Reduces search branching factor from ~100 enzymes to typically 5-15 relevant ones
     # - Maintains completeness: no valid paths are missed since we only exclude enzymes
-    #   that provably cannot contribute to the target
+    #   that provably cannot contribute to any target
     # - Graceful degradation: if pre-filtering fails, we fall back to using all enzymes
     can_contribute <- tryCatch({
       purrr::map_lgl(enzyme_names, ~ {
-        tryCatch(
-          glyenzy::is_synthesized_by(to_g, .x),
-          error = function(e) FALSE
-        )
+        # Check if enzyme can contribute to any target glycan
+        any(purrr::map_lgl(to_gs, function(target) {
+          tryCatch(
+            glyenzy::is_synthesized_by(target, .x),
+            error = function(e) FALSE
+          )
+        }))
       })
     }, error = function(e) {
       rep(TRUE, length(enzyme_names))
@@ -141,7 +144,7 @@
 
     enzyme_names <- enzyme_names[can_contribute]
     if (length(enzyme_names) == 0L) {
-      cli::cli_abort("No enzymes are predicted to contribute to the target glycan.")
+      cli::cli_abort("No enzymes are predicted to contribute to any target glycan.")
     }
   }
 
@@ -154,21 +157,21 @@
 #' and BFS search execution. Used by both find_synthesis_path and rebuild_biosynthesis.
 #'
 #' @param from_g Starting glycan structure
-#' @param to_g Target glycan structure  
+#' @param to_gs Target glycan structures  
 #' @param enzymes Raw enzyme input
 #' @param max_steps Maximum search steps
 #' @param filter Optional filter function
 #' @returns igraph object representing synthesis path(s)
 #' @noRd
-.perform_bfs_synthesis <- function(from_g, to_g, enzymes, max_steps, filter = NULL) {
+.perform_bfs_synthesis <- function(from_g, to_gs, enzymes, max_steps, filter = NULL) {
   # Parse glycan structures and compute keys
   from_g <- glyrepr::as_glycan_structure(from_g)
-  to_g <- glyrepr::as_glycan_structure(to_g)
+  to_gs <- glyrepr::as_glycan_structure(to_gs)
   from_key <- as.character(from_g)[1]
-  to_key <- as.character(to_g)[1]
+  to_keys <- as.character(to_gs)
   
-  # Process enzyme list with pre-filtering
-  enzyme_names <- .process_synthesis_enzymes(enzymes, to_g, apply_prefilter = TRUE)
+  # Process enzyme list with pre-filtering for all targets
+  enzyme_names <- .process_synthesis_enzymes(enzymes, to_gs, apply_prefilter = TRUE)
   
   # Process filter function
   if (!is.null(filter)) {
@@ -178,19 +181,19 @@
   # Perform BFS search using core algorithm
   search_result <- bfs_synthesis_search(
     from_g = from_g,
-    to_g = to_g,
+    to_gs = to_gs,
     enzyme_names = enzyme_names,
     max_steps = max_steps,
     filter = filter,
     from_key = from_key,
-    to_key = to_key
+    to_keys = to_keys
   )
   
   # Build and return result graph
   build_synthesis_result_graph(
     search_result,
     from_key,
-    to_key,
+    to_keys,
     max_steps
   )
 }

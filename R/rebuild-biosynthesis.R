@@ -1,16 +1,16 @@
-#' Rebuild the Biosynthetic Path of a Glycan
+#' Rebuild the Biosynthetic Path of Glycans
 #'
-#' Reconstruct the biosynthetic pathway of a glycan from a given starting structure
+#' Reconstruct the biosynthetic pathway for one or more glycans from a given starting structure
 #' using enzymatic reactions.
-#' This function uses a combination of depth-first search and heuristics to find a likely pathway,
-#' or all feasible pathways.
+#' This function uses a multi-target breadth-first search to find all feasible pathways
+#' that can synthesize all the target glycans.
 #'
 #' For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
 #' the N-glycan precursor transfered to Asn by OST.
 #' For O-glycans, the starting structure is assumed to be "GalNAc(a1-".
 #'
-#' @param glycan A [glyrepr::glycan_structure()] scalar, or a character string
-#'   supported by [glyparse::auto_parse()].
+#' @param glycans A [glyrepr::glycan_structure()] vector, or a character vector
+#'   of strings supported by [glyparse::auto_parse()]. Can also be a single glycan.
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()] objects.
 #'   If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
@@ -23,34 +23,42 @@
 #'   Vertices represent glycan structures with `name` attribute containing
 #'   IUPAC-condensed strings. Edges represent enzymatic reactions with
 #'   `enzyme` attribute containing gene symbols and `step` attribute
-#'   indicating the step number.
+#'   indicating the step number. For multiple targets, the graph includes
+#'   all synthesis paths needed to reach every target glycan.
 #'
 #' @examples
 #' library(glyrepr)
 #' library(glyparse)
 #'
-#' # Rebuild the biosynthetic pathway of a glycan
+#' # Rebuild the biosynthetic pathway of a single glycan
 #' glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 #' path <- rebuild_biosynthesis(glycan, max_steps = 20)
+#'
+#' # Rebuild pathways for multiple glycans
+#' glycans <- c(
+#'   "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-",
+#'   "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
+#' )
+#' path <- rebuild_biosynthesis(glycans, max_steps = 20)
 #'
 #' # View the path
 #' igraph::as_data_frame(path, what = "edges")
 #'
 #' @export
 rebuild_biosynthesis <- function(
-  glycan,
+  glycans,
   enzymes = NULL,
   max_steps = 20,
   filter = NULL
 ) {
   # Parse and validate basic inputs first
-  glycan <- glyrepr::as_glycan_structure(glycan)
-  checkmate::assert_true(length(glycan) == 1L)
+  glycans <- glyrepr::as_glycan_structure(glycans)
+  checkmate::assert_true(length(glycans) >= 1L)
   checkmate::assert_int(max_steps, lower = 1)
 
   # Find all possible paths using unified BFS logic
-  starting_glycan <- .decide_starting_glycan(glycan)
-  .perform_bfs_synthesis(starting_glycan, glycan, enzymes, max_steps, filter)
+  starting_glycan <- .decide_starting_glycan(glycans[1])  # Use first glycan to decide starting point
+  .perform_bfs_synthesis(starting_glycan, glycans, enzymes, max_steps, filter)
 }
 
 .decide_starting_glycan <- function(glycan) {

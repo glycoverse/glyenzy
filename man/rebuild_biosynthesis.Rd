@@ -2,13 +2,13 @@
 % Please edit documentation in R/rebuild-biosynthesis.R
 \name{rebuild_biosynthesis}
 \alias{rebuild_biosynthesis}
-\title{Rebuild the Biosynthetic Path of a Glycan}
+\title{Rebuild the Biosynthetic Path of Glycans}
 \usage{
-rebuild_biosynthesis(glycan, enzymes = NULL, max_steps = 20, filter = NULL)
+rebuild_biosynthesis(glycans, enzymes = NULL, max_steps = 20, filter = NULL)
 }
 \arguments{
-\item{glycan}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} scalar, or a character string
-supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
+\item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a character vector
+of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. Can also be a single glycan.}
 
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}} objects.
 If \code{NULL} (default), all available enzymes will be used.}
@@ -25,13 +25,14 @@ An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing
 Vertices represent glycan structures with \code{name} attribute containing
 IUPAC-condensed strings. Edges represent enzymatic reactions with
 \code{enzyme} attribute containing gene symbols and \code{step} attribute
-indicating the step number.
+indicating the step number. For multiple targets, the graph includes
+all synthesis paths needed to reach every target glycan.
 }
 \description{
-Reconstruct the biosynthetic pathway of a glycan from a given starting structure
+Reconstruct the biosynthetic pathway for one or more glycans from a given starting structure
 using enzymatic reactions.
-This function uses a combination of depth-first search and heuristics to find a likely pathway,
-or all feasible pathways.
+This function uses a multi-target breadth-first search to find all feasible pathways
+that can synthesize all the target glycans.
 }
 \details{
 For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
@@ -42,9 +43,16 @@ For O-glycans, the starting structure is assumed to be "GalNAc(a1-".
 library(glyrepr)
 library(glyparse)
 
-# Rebuild the biosynthetic pathway of a glycan
+# Rebuild the biosynthetic pathway of a single glycan
 glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 path <- rebuild_biosynthesis(glycan, max_steps = 20)
+
+# Rebuild pathways for multiple glycans
+glycans <- c(
+  "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-",
+  "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
+)
+path <- rebuild_biosynthesis(glycans, max_steps = 20)
 
 # View the path
 igraph::as_data_frame(path, what = "edges")
