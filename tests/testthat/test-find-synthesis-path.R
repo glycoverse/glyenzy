@@ -3,17 +3,16 @@ test_that("find_synthesis_path finds shortest path for single enzyme", {
   to <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
   enzymes <- "ST6GAL1"
 
-  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 3, return = "one"))
+  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 3))
 
   expect_s3_class(g, "igraph")
 
   # Check edges
   edges <- igraph::as_data_frame(g, what = "edges")
-  expect_equal(nrow(edges), 1L)
-  expect_equal(edges$enzyme, "ST6GAL1")
-  expect_equal(edges$step, 1L)
-  expect_equal(edges$from, from)
-  expect_equal(edges$to, to)
+  expect_gte(nrow(edges), 1L)
+  expect_true("ST6GAL1" %in% edges$enzyme)
+  expect_true(from %in% edges$from)
+  expect_true(to %in% edges$to)
 
   # Check vertices
   vertices <- igraph::as_data_frame(g, what = "vertices")
@@ -27,19 +26,19 @@ test_that("find_synthesis_path works with glyrepr_structure input", {
   to_g <- glyparse::auto_parse("Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-")
   enzymes <- "ST6GAL1"
 
-  g <- suppressMessages(find_synthesis_path(from_g, to_g, enzymes, max_steps = 3, return = "one"))
+  g <- suppressMessages(find_synthesis_path(from_g, to_g, enzymes, max_steps = 3))
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
-  expect_equal(nrow(edges), 1L)
-  expect_equal(edges$enzyme, "ST6GAL1")
+  expect_gte(nrow(edges), 1L)
+  expect_true("ST6GAL1" %in% edges$enzyme)
 })
 
 test_that("find_synthesis_path returns empty graph when from equals to", {
   from <- "Gal(b1-4)GlcNAc(b1-"
   to <- "Gal(b1-4)GlcNAc(b1-"
 
-  g <- suppressMessages(find_synthesis_path(from, to, enzymes = "ST6GAL1", return = "one"))
+  g <- suppressMessages(find_synthesis_path(from, to, enzymes = "ST6GAL1"))
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
@@ -56,7 +55,7 @@ test_that("find_synthesis_path fails when no path exists", {
   enzymes <- "ST6GAL1"  # This enzyme won't help
 
   expect_error(
-    suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 2, return = "one")),
+    suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 2)),
     "No enzymes are predicted to contribute"
   )
 })
@@ -66,12 +65,12 @@ test_that("find_synthesis_path works with enzyme objects", {
   to <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
   enzymes <- list(enzyme("ST6GAL1"))
 
-  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 3, return = "one"))
+  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 3))
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
-  expect_equal(nrow(edges), 1L)
-  expect_equal(edges$enzyme, "ST6GAL1")
+  expect_gte(nrow(edges), 1L)
+  expect_true("ST6GAL1" %in% edges$enzyme)
 })
 
 test_that("find_synthesis_path fails with unknown enzyme", {
@@ -80,7 +79,7 @@ test_that("find_synthesis_path fails with unknown enzyme", {
   enzymes <- "UNKNOWN_ENZYME"
 
   expect_error(
-    find_synthesis_path(from, to, enzymes, max_steps = 3, return = "one"),
+    find_synthesis_path(from, to, enzymes, max_steps = 3),
     "Unknown enzymes"
   )
 })
@@ -89,22 +88,22 @@ test_that("find_synthesis_path works with NULL enzymes (uses all)", {
   from <- "Gal(b1-4)GlcNAc(b1-"
   to <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
 
-  g <- suppressMessages(find_synthesis_path(from, to, enzymes = NULL, max_steps = 3, return = "one"))
+  g <- suppressMessages(find_synthesis_path(from, to, enzymes = NULL, max_steps = 3))
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
-  expect_equal(nrow(edges), 1L)
+  expect_gte(nrow(edges), 1L)
   # Should find ST6GAL1 among all enzymes
-  expect_true(edges$enzyme %in% names(glyenzy_enzymes))
+  expect_true(all(edges$enzyme %in% names(glyenzy_enzymes)))
 })
 
-test_that("find_synthesis_path return='all' includes multiple paths", {
+test_that("find_synthesis_path includes multiple paths", {
   # Use a simple case where we know there should be paths
   from <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   to <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   enzymes <- "MAN2A1"
 
-  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 2, return = "all"))
+  g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 2))
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
@@ -130,7 +129,7 @@ test_that("find_synthesis_path works with filter function", {
   filter_fn <- function(glycans) rep(TRUE, length(glycans))
 
   g <- suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 3,
-                                           filter = filter_fn, return = "one"))
+                                           filter = filter_fn))
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")
@@ -141,7 +140,7 @@ test_that("find_synthesis_path regression: Man9 to Man3 does not throw out-tree 
   from <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   to <- "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 
-  g <- find_synthesis_path(from, to, enzymes = NULL, max_steps = 10, return = "one")
+  g <- find_synthesis_path(from, to, enzymes = NULL, max_steps = 10)
 
   expect_s3_class(g, "igraph")
   edges <- igraph::as_data_frame(g, what = "edges")

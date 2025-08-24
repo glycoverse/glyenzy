@@ -4,14 +4,7 @@
 \alias{find_synthesis_path}
 \title{Find Synthesis Path Between Glycan Structures}
 \usage{
-find_synthesis_path(
-  from,
-  to,
-  enzymes = NULL,
-  max_steps = 10,
-  filter = NULL,
-  return = c("one", "all")
-)
+find_synthesis_path(from, to, enzymes = NULL, max_steps = 10, filter = NULL)
 }
 \arguments{
 \item{from}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} scalar, or a character string
@@ -29,10 +22,6 @@ Default is 10.}
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
 a logical vector of the same length.}
-
-\item{return}{One of \code{"one"} or \code{"all"}. If \code{"one"}, returns the
-first shortest path found. If \code{"all"}, returns a graph containing all
-possible paths within \code{max_steps}. Default is \code{"one"}.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).

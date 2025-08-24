@@ -15,9 +15,7 @@
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length.
-#' @param return One of `"one"` or `"all"`. If `"one"`, returns the
-#'   first shortest path found. If `"all"`, returns a graph containing all
-#'   possible paths within `max_steps`. Default is `"one"`.
+
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
 #'   Vertices represent glycan structures with `name` attribute containing
@@ -43,10 +41,8 @@ find_synthesis_path <- function(
   to,
   enzymes = NULL,
   max_steps = 10,
-  filter = NULL,
-  return = c("one", "all")
+  filter = NULL
 ) {
-  return <- rlang::arg_match(return)
 
   # Parse and validate basic inputs first
   from_g <- glyrepr::as_glycan_structure(from)
@@ -68,10 +64,10 @@ find_synthesis_path <- function(
   )
 
   # Perform BFS search
-  search_result <- .perform_synthesis_search(search_params, return)
+  search_result <- .perform_synthesis_search(search_params)
 
   # Build and return result graph
-  .build_result_graph(search_result, search_params, return)
+  .build_result_graph(search_result, search_params)
 }
 
 #' Validate and process inputs for synthesis path search
@@ -180,10 +176,9 @@ find_synthesis_path <- function(
 
 #' Perform BFS search for synthesis paths
 #' @param search_params Validated search parameters
-#' @param return_mode Either "one" or "all"
 #' @returns List with search results
 #' @noRd
-.perform_synthesis_search <- function(search_params, return_mode) {
+.perform_synthesis_search <- function(search_params) {
   # ALGORITHM: Breadth-First Search (BFS) for Shortest Synthesis Paths
   # =================================================================
   # We use BFS to guarantee finding the shortest path (minimum number of enzymatic steps)
@@ -220,7 +215,7 @@ find_synthesis_path <- function(
     step <- step + 1L
 
     bfs_result <- .expand_bfs_frontier(
-      queue, queue_keys, search_params, step, return_mode,
+      queue, queue_keys, search_params, step,
       visited, parent, parent_enzyme, parent_step, all_edges
     )
 
@@ -231,7 +226,6 @@ find_synthesis_path <- function(
     if (length(bfs_result$found_keys) > 0L) {
       found <- TRUE
       found_keys <- c(found_keys, bfs_result$found_keys)
-      if (return_mode == "one") break  # Early termination for shortest path
     }
   }
 
@@ -253,7 +247,6 @@ find_synthesis_path <- function(
 #' @param queue_keys Current queue keys
 #' @param search_params Search parameters
 #' @param step Current step number
-#' @param return_mode Either "one" or "all"
 #' @param visited Environment tracking visited nodes
 #' @param parent Environment tracking parent relationships
 #' @param parent_enzyme Environment tracking parent enzymes
@@ -266,7 +259,6 @@ find_synthesis_path <- function(
   queue_keys,
   search_params,
   step,
-  return_mode,
   visited,
   parent,
   parent_enzyme,
@@ -302,7 +294,7 @@ find_synthesis_path <- function(
     # Try each candidate enzyme on current glycan
     for (ez_name in search_params$enzyme_names) {
       expansion_result <- .expand_single_node(
-        curr_g, curr_key, ez_name, search_params, step, return_mode,
+        curr_g, curr_key, ez_name, search_params, step,
         visited, parent, parent_enzyme, parent_step, all_edges
       )
 
@@ -310,16 +302,6 @@ find_synthesis_path <- function(
       new_queue_keys <- c(new_queue_keys, expansion_result$new_keys)
       all_edges <- expansion_result$all_edges
       found_keys <- c(found_keys, expansion_result$found_keys)
-
-      # Early termination for shortest path mode
-      if (length(expansion_result$found_keys) > 0L && return_mode == "one") {
-        return(list(
-          queue = new_queue,
-          queue_keys = new_queue_keys,
-          all_edges = all_edges,
-          found_keys = found_keys
-        ))
-      }
     }
   }
 
@@ -337,7 +319,6 @@ find_synthesis_path <- function(
 #' @param ez_name Enzyme name
 #' @param search_params Search parameters
 #' @param step Current step number
-#' @param return_mode Either "one" or "all"
 #' @param visited Environment tracking visited nodes
 #' @param parent Environment tracking parent relationships
 #' @param parent_enzyme Environment tracking parent enzymes
@@ -351,7 +332,6 @@ find_synthesis_path <- function(
   ez_name,
   search_params,
   step,
-  return_mode,
   visited,
   parent,
   parent_enzyme,
@@ -412,11 +392,9 @@ find_synthesis_path <- function(
     pk <- prod_keys[[j]]
 
     # Record exploration edge for complete graph construction
-    if (return_mode == "all") {
-      all_edges[[length(all_edges) + 1L]] <- list(
-        from = curr_key, to = pk, enzyme = ez_name, step = step
-      )
-    }
+    all_edges[[length(all_edges) + 1L]] <- list(
+      from = curr_key, to = pk, enzyme = ez_name, step = step
+    )
 
     # Handle new (unvisited) glycan structures
     if (!rlang::env_has(visited, pk)) {
@@ -445,15 +423,10 @@ find_synthesis_path <- function(
 #' Build result graph from search results
 #' @param search_result Results from BFS search
 #' @param search_params Search parameters
-#' @param return_mode Either "one" or "all"
 #' @return igraph object representing synthesis path(s)
 #' @noRd
-.build_result_graph <- function(search_result, search_params, return_mode) {
-  if (return_mode == "one") {
-    .build_shortest_path_graph(search_result, search_params)
-  } else {
-    .build_all_paths_graph(search_result, search_params)
-  }
+.build_result_graph <- function(search_result, search_params) {
+  .build_all_paths_graph(search_result, search_params)
 }
 
 #' Build shortest path graph

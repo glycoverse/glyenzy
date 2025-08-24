@@ -4,7 +4,7 @@
 
 test_that("rebuild_biosynthesis works for a high-mannose N-glycan", {
   glycan <- "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  path <- rebuild_biosynthesis(glycan, return = "all")
+  path <- rebuild_biosynthesis(glycan)
 
   # The path starts with the N-glycan precursor
   root_node <- igraph::V(path)[igraph::degree(path, mode = "in") == 0]
@@ -19,7 +19,7 @@ test_that("rebuild_biosynthesis works for a high-mannose N-glycan", {
 
 test_that("rebuild_biosynthesis works for a complex N-glycan", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  path <- rebuild_biosynthesis(glycan, return = "all")
+  path <- rebuild_biosynthesis(glycan)
 
   # The path starts with the N-glycan precursor
   root_node <- igraph::V(path)[igraph::degree(path, mode = "in") == 0]
@@ -38,7 +38,7 @@ test_that("rebuild_biosynthesis works for a complex N-glycan", {
 
 test_that("rebuild_biosynthesis works for an O-GalNAc glycan", {
   glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
-  path <- rebuild_biosynthesis(glycan, return = "all")
+  path <- rebuild_biosynthesis(glycan)
 
   # The path starts with GalNAc(a1-
   root_node <- igraph::V(path)[igraph::degree(path, mode = "in") == 0]
@@ -54,8 +54,9 @@ test_that("rebuild_biosynthesis works for an O-GalNAc glycan", {
   expect_gt(igraph::ecount(path), igraph::vcount(path) - 1)
 })
 
-test_that("rebuild_biosynthesis works with return_all is FALSE (default)", {
+test_that("rebuild_biosynthesis works with complete graph (all paths)", {
   glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
   path <- rebuild_biosynthesis(glycan)
-  expect_equal(igraph::ecount(path), igraph::vcount(path) - 1)
+  # Should return complete graph with multiple paths
+  expect_gte(igraph::ecount(path), igraph::vcount(path) - 1)
 })
