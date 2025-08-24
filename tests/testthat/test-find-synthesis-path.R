@@ -34,9 +34,9 @@ test_that("find_synthesis_path works with glyrepr_structure input", {
   expect_true("ST6GAL1" %in% edges$enzyme)
 })
 
-test_that("find_synthesis_path returns empty graph when from equals to", {
-  from <- "Gal(b1-4)GlcNAc(b1-"
-  to <- "Gal(b1-4)GlcNAc(b1-"
+test_that("find_synthesis_path raises error when from equals to", {
+  from <- "Gal(b1-3)GalNAc(a1-"
+  to <- "Gal(b1-3)GalNAc(a1-"
 
   g <- suppressMessages(find_synthesis_path(from, to, enzymes = "ST6GAL1"))
 
@@ -56,7 +56,7 @@ test_that("find_synthesis_path fails when no path exists", {
 
   expect_error(
     suppressMessages(find_synthesis_path(from, to, enzymes, max_steps = 2)),
-    "No enzymes are predicted to contribute"
+    "No synthesis path found"
   )
 })
 
@@ -116,7 +116,7 @@ test_that("find_synthesis_path validates input lengths", {
 
   expect_error(
     find_synthesis_path(from, to, enzymes = "ST6GAL1"),
-    "length\\(from_g\\) == 1L && length\\(to_g\\) == 1L"
+    "must have length 1."
   )
 })
 

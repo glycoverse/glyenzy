@@ -45,33 +45,14 @@ find_synthesis_path <- function(
   max_steps = 10,
   filter = NULL
 ) {
-
   # Parse and validate basic inputs first
-  from_g <- glyrepr::as_glycan_structure(from)
-  to_g <- glyrepr::as_glycan_structure(to)
-  checkmate::assert_true(length(from_g) == 1L && length(to_g) == 1L)
+  from <- .process_glycan_arg(from)
+  to <- .process_glycan_arg(to)
+  enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
   checkmate::assert_int(max_steps, lower = 1)
-
-  from_key <- as.character(from_g)[1]
-  to_key <- as.character(to_g)[1]
-
-  # Check for trivial case first
-  if (from_key == to_key) {
-    return(.create_empty_path_graph(from_key))
+  if (!is.null(filter)) {
+    filter <- rlang::as_function(filter)
   }
-
   # Perform BFS search using unified logic
-  .perform_bfs_synthesis(from_g, to_g, enzymes, max_steps, filter)
-}
-
-#' Create empty path graph for trivial case (from == to)
-#' @param node_key Single node name
-#' @returns igraph object with single node and no edges
-#' @noRd
-.create_empty_path_graph <- function(node_key) {
-  vertices <- tibble::tibble(name = node_key)
-  igraph::graph_from_data_frame(
-    tibble::tibble(from = character(0), to = character(0), enzyme = character(0), step = integer(0)),
-    directed = TRUE, vertices = vertices
-  )
+  .perform_bfs_synthesis(from, to, enzymes, max_steps, filter)
 }

@@ -24,6 +24,17 @@
   }
 }
 
+.process_glycan_arg <- function(x) {
+  if (length(x) == 1L) {
+    .process_glycans_arg(x)
+  } else {
+    cli::cli_abort(c(
+      "{.arg x} must have length 1.",
+      "x" = "Got {.val {length(x)}}."
+    ))
+  }
+}
+
 .process_glycans_arg <- function(x) {
   if (is.character(x)) {
     x <- glyparse::auto_parse(x)
@@ -134,27 +145,17 @@
 #' and BFS search execution. Used by both find_synthesis_path and rebuild_biosynthesis.
 #'
 #' @param from_g Starting glycan structure
-#' @param to_gs Target glycan structures  
-#' @param enzymes Raw enzyme input
+#' @param to_gs Target glycan structures
+#' @param enzymes List of `glyenzy_enzyme` objects to use
 #' @param max_steps Maximum search steps
 #' @param filter Optional filter function
 #' @returns igraph object representing synthesis path(s)
 #' @noRd
 .perform_bfs_synthesis <- function(from_g, to_gs, enzymes, max_steps, filter = NULL) {
   # Parse glycan structures and compute keys
-  from_g <- glyrepr::as_glycan_structure(from_g)
-  to_gs <- glyrepr::as_glycan_structure(to_gs)
   from_key <- as.character(from_g)[1]
   to_keys <- as.character(to_gs)
-  
-  # Process enzyme list with pre-filtering for all targets
-  enzymes <- .process_enzymes_arg(enzymes, to_gs, apply_prefilter = TRUE)
-  
-  # Process filter function
-  if (!is.null(filter)) {
-    filter <- rlang::as_function(filter)
-  }
-  
+
   # Perform BFS search using core algorithm
   search_result <- bfs_synthesis_search(
     from_g = from_g,

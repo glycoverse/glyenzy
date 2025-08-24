@@ -56,9 +56,12 @@ rebuild_biosynthesis <- function(
   filter = NULL
 ) {
   # Parse and validate basic inputs first
-  glycans <- glyrepr::as_glycan_structure(glycans)
-  checkmate::assert_true(length(glycans) >= 1L)
+  glycans <- .process_glycans_arg(glycans)
+  enzymes <- .process_enzymes_arg(enzymes, glycans, apply_prefilter = TRUE)
   checkmate::assert_int(max_steps, lower = 1)
+  if (!is.null(filter)) {
+    filter <- rlang::as_function(filter)
+  }
 
   # Find all possible paths using unified BFS logic
   starting_glycan <- .decide_starting_glycan(glycans[1])  # Use first glycan to decide starting point
