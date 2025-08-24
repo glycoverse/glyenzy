@@ -12,7 +12,7 @@
 #'
 #' @param from_g Starting glycan structure (single glyrepr::glycan_structure)
 #' @param to_gs Target glycan structures (glyrepr::glycan_structure vector)
-#' @param enzyme_names Character vector of enzyme names to use
+#' @param enzymes List of `glyenzy_enzyme` objects to use
 #' @param max_steps Maximum number of synthesis steps to explore
 #' @param filter Optional function to filter glycan structures at each step
 #' @param from_key Optional pre-computed string key for starting glycan
@@ -34,7 +34,7 @@
 bfs_synthesis_search <- function(
   from_g,
   to_gs,
-  enzyme_names,
+  enzymes,
   max_steps,
   filter = NULL,
   from_key = NULL,
@@ -94,7 +94,7 @@ bfs_synthesis_search <- function(
     step <- step + 1L
 
     bfs_result <- .expand_bfs_frontier_core(
-      queue, queue_keys, remaining_targets, enzyme_names, filter, step,
+      queue, queue_keys, remaining_targets, enzymes, filter, step,
       visited, parent, parent_enzyme, parent_step, all_edges
     )
 
@@ -127,7 +127,7 @@ bfs_synthesis_search <- function(
 #' @param queue Current queue of glycan structures
 #' @param queue_keys Current queue keys
 #' @param to_keys Target glycan keys for goal testing
-#' @param enzyme_names Available enzyme names
+#' @param enzymes List of `glyenzy_enzyme` objects to use
 #' @param filter Optional filter function
 #' @param step Current step number
 #' @param visited Environment tracking visited nodes
@@ -141,7 +141,7 @@ bfs_synthesis_search <- function(
   queue,
   queue_keys,
   to_keys,
-  enzyme_names,
+  enzymes,
   filter,
   step,
   visited,
@@ -177,9 +177,9 @@ bfs_synthesis_search <- function(
     curr_key <- frontier_keys[[i]]
 
     # Try each candidate enzyme on current glycan
-    for (ez_name in enzyme_names) {
+    for (ez in enzymes) {
       expansion_result <- .expand_single_node_core(
-        curr_g, curr_key, ez_name, to_keys, filter, step,
+        curr_g, curr_key, ez, to_keys, filter, step,
         visited, parent, parent_enzyme, parent_step, all_edges
       )
 
@@ -202,7 +202,7 @@ bfs_synthesis_search <- function(
 #'
 #' @param curr_g Current glycan structure
 #' @param curr_key Current glycan key
-#' @param ez_name Enzyme name
+#' @param ez Enzyme object
 #' @param to_keys Target glycan keys for goal testing
 #' @param filter Optional filter function
 #' @param step Current step number
@@ -216,7 +216,7 @@ bfs_synthesis_search <- function(
 .expand_single_node_core <- function(
   curr_g,
   curr_key,
-  ez_name,
+  ez,
   to_keys,
   filter,
   step,
@@ -245,7 +245,7 @@ bfs_synthesis_search <- function(
   # - Batch processing of multiple products from single enzyme application
 
   # Apply enzyme to current glycan structure
-  products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez_name))
+  products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
   if (length(products) == 0L) {
     return(list(
       new_structures = list(),
@@ -281,14 +281,14 @@ bfs_synthesis_search <- function(
 
     # Record exploration edge for complete graph construction
     all_edges[[length(all_edges) + 1L]] <- list(
-      from = curr_key, to = pk, enzyme = ez_name, step = step
+      from = curr_key, to = pk, enzyme = ez$name, step = step
     )
 
     # Handle new (unvisited) glycan structures
     if (!rlang::env_has(visited, pk)) {
       rlang::env_poke(visited, pk, TRUE)
       rlang::env_poke(parent, pk, curr_key)
-      rlang::env_poke(parent_enzyme, pk, ez_name)
+      rlang::env_poke(parent_enzyme, pk, ez$name)
       rlang::env_poke(parent_step, pk, step)
       new_structures[[length(new_structures) + 1L]] <- products[j]
       new_keys <- c(new_keys, pk)

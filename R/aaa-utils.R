@@ -48,13 +48,54 @@
   return(x)
 }
 
-.process_enzymes_arg <- function(x) {
-  if (is.character(x)) {
-    x <- purrr::map(x, enzyme)
-  } else if (!purrr::every(x, ~ inherits(.x, "glyenzy_enzyme"))) {
-    cli::cli_abort("{.arg enzymes} must be a character vector of gene symbols or a list of {.cls glyenzy_enzyme} objects.")
+#' Process and validate enzyme list for synthesis search
+#'
+#' This function processes various enzyme input formats (NULL, character vector, 
+#' enzyme object list) and applies pre-filtering based on target glycan compatibility.
+#'
+#' @param enzymes Raw enzyme input (NULL, character vector, or enzyme object list)
+#' @param glycans Target glycan structures for pre-filtering (optional)
+#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycans
+#' @returns A list of `glyenzy_enzyme` objects.
+#' @noRd
+.process_enzymes_arg <- function(enzymes, glycans = NULL, apply_prefilter = TRUE) {
+  # Get enzyme names from various input formats
+  if (is.null(enzymes)) {
+    enzyme_names <- names(glyenzy_enzymes)
+  } else if (is.character(enzymes)) {
+    enzyme_names <- enzymes
+    unknown <- setdiff(enzyme_names, names(glyenzy_enzymes))
+    if (length(unknown) > 0) {
+      cli::cli_abort("Unknown enzymes: {.val {unknown}}.")
+    }
+  } else {
+    checkmate::assert_list(enzymes, types = "glyenzy_enzyme")
+    enzyme_names <- purrr::map_chr(enzymes, ~ .x$name)
   }
-  return(unname(x))
+
+  # Apply enzyme pre-filtering if requested and target glycans provided
+  if (apply_prefilter && !is.null(glycans)) {
+    can_contribute <- tryCatch({
+      purrr::map_lgl(enzyme_names, ~ {
+        # Check if enzyme can contribute to any target glycan
+        any(purrr::map_lgl(glycans, function(target) {
+          tryCatch(
+            glyenzy::is_synthesized_by(target, .x),
+            error = function(e) FALSE
+          )
+        }))
+      })
+    }, error = function(e) {
+      rep(TRUE, length(enzyme_names))
+    })
+
+    enzyme_names <- enzyme_names[can_contribute]
+    if (length(enzyme_names) == 0L) {
+      cli::cli_abort("No enzymes are predicted to contribute to any target glycan.")
+    }
+  }
+
+  unname(glyenzy_enzymes[enzyme_names])
 }
 
 # Validate and process return_list parameter early
@@ -87,70 +128,6 @@
   }
 }
 
-#' Process and validate enzyme list for synthesis search
-#'
-#' This function processes various enzyme input formats (NULL, character vector, 
-#' enzyme object list) and applies pre-filtering based on target glycan compatibility.
-#'
-#' @param enzymes Raw enzyme input (NULL, character vector, or enzyme object list)
-#' @param to_gs Target glycan structures for pre-filtering (optional)
-#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycans
-#' @returns Character vector of enzyme names
-#' @noRd
-.process_synthesis_enzymes <- function(enzymes, to_gs = NULL, apply_prefilter = TRUE) {
-  # Get enzyme names from various input formats
-  if (is.null(enzymes)) {
-    enzyme_names <- names(glyenzy_enzymes)
-  } else if (is.character(enzymes)) {
-    enzyme_names <- enzymes
-    unknown <- setdiff(enzyme_names, names(glyenzy_enzymes))
-    if (length(unknown) > 0) {
-      cli::cli_abort("Unknown enzymes: {.val {unknown}}.")
-    }
-  } else {
-    checkmate::assert_list(enzymes, types = "glyenzy_enzyme")
-    enzyme_names <- purrr::map_chr(enzymes, ~ .x$name)
-  }
-
-  # Apply enzyme pre-filtering if requested and target glycans provided
-  if (apply_prefilter && !is.null(to_gs)) {
-    # ALGORITHM: Multi-Target Enzyme Pre-filtering for Search Space Reduction
-    # =====================================================================
-    # This optimization dramatically reduces the search space by filtering out enzymes
-    # that cannot possibly contribute to synthesizing any of the target glycans.
-    #
-    # Strategy: Use is_synthesized_by() to check if each enzyme could have been involved
-    # in creating any of the target structures. An enzyme is included if it could
-    # contribute to at least one target glycan.
-    #
-    # Benefits:
-    # - Reduces search branching factor from ~100 enzymes to typically 5-15 relevant ones
-    # - Maintains completeness: no valid paths are missed since we only exclude enzymes
-    #   that provably cannot contribute to any target
-    # - Graceful degradation: if pre-filtering fails, we fall back to using all enzymes
-    can_contribute <- tryCatch({
-      purrr::map_lgl(enzyme_names, ~ {
-        # Check if enzyme can contribute to any target glycan
-        any(purrr::map_lgl(to_gs, function(target) {
-          tryCatch(
-            glyenzy::is_synthesized_by(target, .x),
-            error = function(e) FALSE
-          )
-        }))
-      })
-    }, error = function(e) {
-      rep(TRUE, length(enzyme_names))
-    })
-
-    enzyme_names <- enzyme_names[can_contribute]
-    if (length(enzyme_names) == 0L) {
-      cli::cli_abort("No enzymes are predicted to contribute to any target glycan.")
-    }
-  }
-
-  enzyme_names
-}
-
 #' Perform BFS synthesis search with common input processing
 #'
 #' This is a high-level wrapper that handles input validation, enzyme processing,
@@ -171,7 +148,7 @@
   to_keys <- as.character(to_gs)
   
   # Process enzyme list with pre-filtering for all targets
-  enzyme_names <- .process_synthesis_enzymes(enzymes, to_gs, apply_prefilter = TRUE)
+  enzymes <- .process_enzymes_arg(enzymes, to_gs, apply_prefilter = TRUE)
   
   # Process filter function
   if (!is.null(filter)) {
@@ -182,7 +159,7 @@
   search_result <- bfs_synthesis_search(
     from_g = from_g,
     to_gs = to_gs,
-    enzyme_names = enzyme_names,
+    enzymes = enzymes,
     max_steps = max_steps,
     filter = filter,
     from_key = from_key,
