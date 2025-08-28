@@ -87,13 +87,13 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @noRd
 .apply_rule_single <- function(graph, match_res, rule, type) {
   indices_to_act_on <- purrr::map_int(match_res, ~ .x[rule$acceptor_idx])
-  if (type == "GT") {
-    graph_list <- purrr::map(indices_to_act_on, ~ .add_residue(graph, .x, rule$new_residue, rule$new_linkage))
-    graph_list <- purrr::compact(graph_list)
-  } else {
-    graph_list <- purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x))
-    graph_list <- purrr::compact(graph_list)
-  }
+  graph_list <- switch(
+    type,
+    GT = purrr::map(indices_to_act_on, ~ .add_residue(graph, .x, rule$new_residue, rule$new_linkage)),
+    GH = purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x)),
+    cli::cli_abort("Unsupported enzyme type: {type}")
+  )
+  graph_list <- purrr::compact(graph_list)
   glyrepr::as_glycan_structure(graph_list)
 }
 

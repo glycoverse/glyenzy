@@ -119,9 +119,20 @@ count_enzyme_steps <- function(glycans, enzyme) {
 .count_enzyme_steps_ganab <- .make_n_glycan_guard(.count_enzyme_steps_ganab, type = "integer")
 
 .count_enzyme_steps_default <- function(glycans, enzyme, ...) {
-  if (enzyme$type == "GH") {
-    cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
-  }
+  fn <- switch(
+    enzyme$type,
+    GH = .count_enzyme_steps_gh,
+    GT = .count_enzyme_steps_gt,
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
+  fn(glycans, enzyme)
+}
+
+.count_enzyme_steps_gh <- function(glycans, enzyme) {
+  cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
+}
+
+.count_enzyme_steps_gt <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   count_products_mat <- glymotif::count_motifs(glycans, products)
   unname(rowSums(count_products_mat))

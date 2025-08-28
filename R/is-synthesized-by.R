@@ -206,9 +206,20 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param ... Ignored.
 #' @noRd
 .is_synthesized_by_default <- function(glycans, enzyme, ...) {
-  if (enzyme$type == "GH") {
-    cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
-  }
+  fn <- switch(
+    enzyme$type,
+    GH = .is_synthesized_by_gh,
+    GT = .is_synthesized_by_gt,
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
+  fn(glycans, enzyme)
+}
+
+.is_synthesized_by_gh <- function(glycans, enzyme) {
+  cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
+}
+
+.is_synthesized_by_gt <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   acceptor_alignments <- purrr::map_chr(enzyme$rules, ~ .x$acceptor_alignment)
   product_alignments <- dplyr::if_else(

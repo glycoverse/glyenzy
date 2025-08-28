@@ -182,12 +182,12 @@ validate_enzyme_rule <- function(x, type) {
     ))
   }
 
-  # Check acceptor and product
-  if (type == "GT") {
-    .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
-  } else {
-    .check_product_acceptor(x$product, x$acceptor, "product", "acceptor")
-  }
+  switch(
+    type,
+    GT = .check_product_acceptor(x$acceptor, x$product, "acceptor", "product"),
+    GH = .check_product_acceptor(x$product, x$acceptor, "product", "acceptor"),
+    cli::cli_abort("Unsupported enzyme type: {type}")
+  )
 
   invisible(x)
 }
@@ -295,7 +295,13 @@ print.glyenzy_enzyme <- function(x, ...) {
   cli::cli_h1("Enzyme: {.field {x$name}}")
 
   # Basic information
-  cli::cli_alert_info("Type: {.val {x$type}} ({.emph {if (x$type == 'GT') 'Glycosyltransferase' else 'Glycoside hydrolase'}})")
+  type_str <- switch(
+    x$type,
+    GT = "Glycosyltransferase",
+    GH = "Glycoside hydrolase",
+    cli::cli_abort("Unsupported enzyme type: {x$type}")
+  )
+  cli::cli_alert_info("Type: {.val {x$type}} ({.emph {type_str}})")
   cli::cli_alert_info("Species: {.val {x$species}}")
 
   # Rules section
