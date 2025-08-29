@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,25 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="glyenzy-020">glyenzy 0.2.0<a class="anchor" aria-label="anchor" href="#glyenzy-020"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
+<ul><li>Remove <code>return</code> parameter from <code><a href="../reference/find_synthesis_path.html">find_synthesis_path()</a></code> and <code><a href="../reference/rebuild_biosynthesis.html">rebuild_biosynthesis()</a></code>. Now they always return all possible paths.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-2-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/rebuild_biosynthesis.html">rebuild_biosynthesis()</a></code> now supports multiple target glycans. The resulting graph contains all given target glycans and intermediate glycans.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-fixes-0-2-0">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-0-2-0"></a></h3>
+<ul><li>Update documentations of <code><a href="../reference/find_synthesis_path.html">find_synthesis_path()</a></code> and <code><a href="../reference/rebuild_biosynthesis.html">rebuild_biosynthesis()</a></code> to include some important notes.</li>
+<li>Fix bugs in <code><a href="../reference/find_synthesis_path.html">find_synthesis_path()</a></code> and <code><a href="../reference/rebuild_biosynthesis.html">rebuild_biosynthesis()</a></code> that glycan structure strings other than IUPAC-condensed format cannot be parsed.</li>
+<li>Add checks in all functions to ensure that the input glycans have intact linkages and no substituents, and raise errors with helpful messages if not.</li>
+<li>Refactor <code><a href="../reference/apply_enzyme.html">apply_enzyme()</a></code> to stop using internal <code>glymotif</code> functions to avoid fragile dependency.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="glyenzy-011">glyenzy 0.1.1<a class="anchor" aria-label="anchor" href="#glyenzy-011"></a></h2>
 <div class="section level3">
