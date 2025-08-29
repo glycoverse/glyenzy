@@ -26,7 +26,8 @@ Imports:
     purrr,
     dplyr,
     rlang,
-    tibble
+    tibble,
+    stringr
 Remotes: 
     glycoverse/glyrepr,
     glycoverse/glyparse,

@@ -44,7 +44,40 @@
       "x" = "Got {.cls {class(x)}}."
     ))
   }
+
+  has_intact_linkages <- .has_intact_linkages(x)
+  if (!all(has_intact_linkages)) {
+    cli::cli_abort(c(
+      "All linkages must be intact (no `?`).",
+      "x" = "These glycans have unknown linkages: {.val {unique(x[!has_intact_linkages])}}."
+    ))
+  }
+
+  has_substituents <- .has_substituents(x)
+  if (any(has_substituents)) {
+    cli::cli_abort(c(
+      "Glycans with substituents are not supported.",
+      "x" = "These glycans have substituents: {.val {unique(x[has_substituents])}}.",
+      "i" = "Use {.fn glyrepr::remove_substituents} to get clean glycans."
+    ))
+  }
+
   return(x)
+}
+
+.has_intact_linkages <- function(x) {
+  all_linkages_intact <- function(graph) {
+    (all(!stringr::str_detect(igraph::E(graph)$linkage, stringr::fixed("?"))) &&
+     !stringr::str_detect(graph$anomer, stringr::fixed("?")))
+  }
+  glyrepr::smap_lgl(x, all_linkages_intact)
+}
+
+.has_substituents <- function(x) {
+  has_sub_single <- function(graph) {
+    purrr::some(igraph::V(graph)$sub, ~ .x != "")
+  }
+  glyrepr::smap_lgl(x, has_sub_single)
 }
 
 .process_enzyme_arg <- function(x) {
