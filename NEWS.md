@@ -1,3 +1,9 @@
+# glyenzy 0.2.1
+
+## Minor improvements and bug fixes
+
+* Update dependencies to depend on release versions of glycoverse packages.
+
 # glyenzy 0.2.0
 
 ## Breaking changes
