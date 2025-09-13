@@ -107,7 +107,7 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
 #' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
-#'   If `NULL`, it will be computed by [glymotif::is_n_glycan()].
+#'   If `NULL`, it will be computed.
 #' @noRd
 .is_synthesized_by <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(enzyme$name,
@@ -157,10 +157,15 @@ is_synthesized_by <- function(glycans, enzyme) {
 # Special case for MAN1A1, MAN1A2, and MAN1C1
 # These glycoside hydrolases catalyze Man(a1-2) trimming.
 .is_synthesized_by_man123 <- function(glycans, enzyme) {
-  glycan_type <- glymotif::n_glycan_type(glycans)
+  motifs <- c(
+    "a_branch" = "Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  have_motifs_mat <- glymotif::have_motifs(glycans, motifs, alignment = "core")
   n_man <- glyrepr::count_mono(glycans, "Man")
   dplyr::case_when(
-    glycan_type %in% c("complex", "hybrid", "paucimannose") ~ TRUE,
+    rowSums(have_motifs_mat) == 0L ~ TRUE,
     n_man == 9 ~ FALSE,
     n_man <= 7 ~ TRUE,
     # 8 mannoses

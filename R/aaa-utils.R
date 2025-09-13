@@ -10,7 +10,7 @@
   force(.f)
   function(glycans, enzyme, is_n = NULL) {
     if (is.null(is_n)) {
-      is_n <- glymotif::is_n_glycan(glycans)
+      is_n <- .is_n_glycan(glycans)
     }
     if (type == "logical") {
       res <- rep(FALSE, length(glycans))
@@ -22,6 +22,10 @@
     }
     res
   }
+}
+
+.is_n_glycan <- function(x) {
+  glymotif::have_motif(x, "N-Glycan core basic")
 }
 
 .process_glycan_arg <- function(x) {

@@ -38,7 +38,7 @@ get_involved_enzymes <- function(glycans, return_list = NULL) {
   return_list <- .validate_return_list(return_list, length(glycans))
 
   # Compute is_n once for all enzymes to avoid repeated computation
-  is_n <- glymotif::is_n_glycan(glycans)
+  is_n <- .is_n_glycan(glycans)
   masks <- purrr::map(glyenzy_enzymes, ~ .safe_is_synthesized_by(glycans, .x, is_n))
   mast_mat <- do.call(cbind, masks)
   res <- purrr::map(seq_along(glycans), ~ names(glyenzy_enzymes)[mast_mat[.x, ]])

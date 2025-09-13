@@ -72,11 +72,11 @@ test_that("spawn_glycans works with function filter", {
   enzymes <- c("B4GALT1", "ST3GAL3")
 
   # Filter to keep only N-glycans
-  filter_func <- function(x) glymotif::is_n_glycan(x)
+  filter_func <- function(x) glymotif::have_motif(x, "N-Glycan core basic")
   result <- suppressMessages(spawn_glycans(glycans, enzymes, n_steps = 2, filter = filter_func))
 
   expect_s3_class(result, "glyrepr_structure")
-  expect_true(all(glymotif::is_n_glycan(result)))
+  expect_true(all(filter_func(result)))
 })
 
 test_that("spawn_glycans works with formula filter", {
@@ -87,10 +87,11 @@ test_that("spawn_glycans works with formula filter", {
   enzymes <- c("B4GALT1", "ST3GAL3")
 
   # Filter to keep only N-glycans using formula syntax
-  result <- suppressMessages(spawn_glycans(glycans, enzymes, n_steps = 2, filter = ~ glymotif::is_n_glycan(.x)))
+  filter_fn <- function(x) glymotif::have_motif(x, "N-Glycan core basic")
+  result <- suppressMessages(spawn_glycans(glycans, enzymes, n_steps = 2, filter = ~ filter_fn(.x)))
 
   expect_s3_class(result, "glyrepr_structure")
-  expect_true(all(glymotif::is_n_glycan(result)))
+  expect_true(all(filter_fn(result)))
 })
 
 test_that("spawn_glycans works with is_synthesized_by filter", {

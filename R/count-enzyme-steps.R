@@ -42,7 +42,7 @@ count_enzyme_steps <- function(glycans, enzyme) {
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
 #' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
-#'   If `NULL`, it will be computed by [glymotif::is_n_glycan()].
+#'   If `NULL`, it will be computed.
 #' @noRd
 .count_enzyme_steps <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(enzyme$name,
@@ -79,22 +79,33 @@ count_enzyme_steps <- function(glycans, enzyme) {
 
 # Special case for MAN1A1 and MAN1A2
 .count_enzyme_steps_man12 <- function(glycans, enzyme) {
-  b_branch_motif <- "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  motifs <- c(
+    "a_branch" = "Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  have_motifs_mat <- glymotif::have_motifs(glycans, motifs, alignment = "core")
   special_glycan <- "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  is_special <- glymotif::have_motif(glycans, special_glycan, alignment = "whole")
   dplyr::case_when(
-    glymotif::n_glycan_type(glycans) != "highmannose" ~ 3L,
-    glymotif::have_motif(glycans, special_glycan, alignment = "whole") ~ 1L,
-    glymotif::have_motif(glycans, b_branch_motif, alignment = "core") ~ 9L - glyrepr::count_mono(glycans, "Man"),
+    rowSums(have_motifs_mat) == 0L ~ 3L,
+    is_special ~ 1L,
+    have_motifs_mat[, "b_branch"] ~ 9L - glyrepr::count_mono(glycans, "Man"),
     TRUE ~ 8L - glyrepr::count_mono(glycans, "Man")
   )
 }
 .count_enzyme_steps_man12 <- .make_n_glycan_guard(.count_enzyme_steps_man12, type = "integer")
 
 .count_enzyme_steps_man3 <- function(glycans, enzyme) {
-  b_branch_motif <- "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  motifs <- c(
+    "a_branch" = "Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  have_motifs_mat <- glymotif::have_motifs(glycans, motifs, alignment = "core")
   dplyr::case_when(
-    glymotif::n_glycan_type(glycans) != "highmannose" ~ 3L,
-    glymotif::have_motif(glycans, b_branch_motif, alignment = "core") ~ 9L - glyrepr::count_mono(glycans, "Man"),
+    rowSums(have_motifs_mat) == 0L ~ 3L,
+    have_motifs_mat[, "b_branch"] ~ 9L - glyrepr::count_mono(glycans, "Man"),
     TRUE ~ 8L - glyrepr::count_mono(glycans, "Man")
   )
 }

@@ -69,7 +69,7 @@ rebuild_biosynthesis <- function(
 }
 
 .decide_starting_glycan <- function(glycan) {
-  if (glymotif::is_n_glycan(glycan)) {
+  if (.is_n_glycan(glycan)) {
     start <- glyparse::parse_iupac_condensed("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
   } else {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
