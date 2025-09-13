@@ -41,8 +41,8 @@ test_that("apply_enzyme works for MGAT3", {
   res <- apply_enzyme(glycans, "MGAT3")
 
   expect_equal(length(res), 5L)
-  expect_equal(as.character(res[[1]]), "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)][GlcNAc(b1-4)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
-  expect_equal(as.character(res[[2]]), "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)][GlcNAc(b1-4)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(as.character(res[[1]]), "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(as.character(res[[2]]), "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
   expect_equal(res[[3]], glyrepr::glycan_structure())
   expect_equal(res[[4]], glyrepr::glycan_structure())
   expect_equal(res[[5]], glyrepr::glycan_structure())
