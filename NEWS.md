@@ -1,3 +1,9 @@
+# glyenzy 0.2.2
+
+## Minor improvements and bug fixes
+
+* Fix bugs introduced by the breaking changes in `glymotif` v0.7.0 and `glyrepr` v0.7.0.
+
 # glyenzy 0.2.1
 
 ## Minor improvements and bug fixes
