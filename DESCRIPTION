@@ -33,6 +33,6 @@ Remotes:
     glycoverse/glyparse@*release,
     glycoverse/glymotif@*release
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 LazyData: true
 VignetteBuilder: knitr
