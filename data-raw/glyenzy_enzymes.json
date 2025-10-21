@@ -690,11 +690,11 @@
         "name": "ST3GAL2",
         "rules": [
             {
-                "acceptor": "Gal(b1-3)GalNAc(a1-",
+                "acceptor": "Gal(b1-3)GalNAc(b1-4)Gal(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-4)Gal(b1-"
             }
         ],
         "type": "GT",
@@ -716,13 +716,6 @@
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-3)GalNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "rejects_alignment": [],
-                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
             }
         ],
         "type": "GT",
@@ -737,20 +730,20 @@
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
-            },
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ST3GAL5",
+        "rules": [
             {
-                "acceptor": "Gal(b1-3)GlcNAc(b1-",
+                "acceptor": "Gal(b1-4)Glc(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-3)GalNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "rejects_alignment": [],
-                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
+                "product": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
