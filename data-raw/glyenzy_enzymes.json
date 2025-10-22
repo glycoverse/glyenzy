@@ -883,21 +883,28 @@
         "species": "human"
     },
     {
+        "name": "ST8SIA1",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
         "name": "ST8SIA2",
         "rules": [
             {
-                "acceptor": "Neu5Ac(a2-3/6)Gal(b1-4)GlcNAc(b1-",
+                "acceptor": "Neu5Ac(a2-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3/6)Gal(b1-4)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Neu5Ac(a2-8)Neu5Ac(a2-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "rejects_alignment": [],
-                "product": "Neu5Ac(a2-8)Neu5Ac(a2-8)Neu5Ac(a2-"
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
             }
         ],
         "type": "GT",
@@ -907,11 +914,11 @@
         "name": "ST8SIA3",
         "rules": [
             {
-                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor": "Neu5Ac(a2-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
             }
         ],
         "type": "GT",
@@ -921,18 +928,32 @@
         "name": "ST8SIA4",
         "rules": [
             {
-                "acceptor": "Neu5Ac(a2-3/6)Gal(b1-4)GlcNAc(b1-",
+                "acceptor": "Neu5Ac(a2-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3/6)Gal(b1-4)GlcNAc(b1-"
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "ST8SIA5",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)GalNAc(b1-"
             },
             {
-                "acceptor": "Neu5Ac(a2-8)Neu5Ac(a2-",
+                "acceptor": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-8)Neu5Ac(a2-8)Neu5Ac(a2-"
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
@@ -942,11 +963,18 @@
         "name": "ST8SIA6",
         "rules": [
             {
-                "acceptor": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
+                "acceptor": "Gal(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Neu5Ac(a2-8)Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
+                "product": "Neu5Ac(a2-8)Gal(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-6)GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-6)GalNAc(a1-"
             }
         ],
         "type": "GT",
