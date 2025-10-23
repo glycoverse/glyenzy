@@ -1392,5 +1392,19 @@
         ],
         "type": "GT",
         "species": "human"
+    },
+    {
+        "name": "B3GLCT",
+        "rules": [
+            {
+                "acceptor": "Fuc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Glc(b1-3)Fuc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
     }
 ]
