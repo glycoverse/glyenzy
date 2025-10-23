@@ -1154,5 +1154,243 @@
         ],
         "type": "GT",
         "species": "human"
+    },
+    {
+        "name": "B3GAT3",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-3)Gal(b1-4)Xyl2P(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl2P(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "CHPF",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)GalNAc(b1-"
+            },
+            {
+                "acceptor": "GalNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GalNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "CHPF2",
+        "rules": [
+            {
+                "acceptor": "GalNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GalNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "CHSY1",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)GalNAc(b1-"
+            },
+            {
+                "acceptor": "GalNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GalNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "CHSY3",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)GalNAc(b1-"
+            },
+            {
+                "acceptor": "GalNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GalNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "EXT1",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(a1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-4)GlcNAc(a1-4)GlcA(b1-"
+            },
+            {
+                "acceptor": "GlcA(b1-4)GlcNAc(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcNAc(a1-4)GlcA(b1-4)GlcNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "EXT2",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(a1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-4)GlcNAc(a1-4)GlcA(b1-"
+            },
+            {
+                "acceptor": "GlcA(b1-4)GlcNAc(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcNAc(a1-4)GlcA(b1-4)GlcNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "HAS1",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcNAc(b1-4)GlcA(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GlcNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "HAS2",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcNAc(b1-4)GlcA(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GlcNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "HAS3",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcNAc(b1-4)GlcA(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-4)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)GlcNAc(b1-4)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "LARGE1",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-?)Xyl(?1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)GlcA(b1-?)Xyl(?1-"
+            },
+            {
+                "acceptor": "Xyl(a1-3)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)Xyl(a1-3)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "LARGE2",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-?)Xyl(?1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)GlcA(b1-?)Xyl(?1-"
+            },
+            {
+                "acceptor": "Xyl(a1-3)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)Xyl(a1-3)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
     }
 ]
