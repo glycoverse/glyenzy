@@ -1539,5 +1539,89 @@
         ],
         "type": "GT",
         "species": "human"
+    },
+    {
+        "name": "GXYLT1",
+        "rules": [
+            {
+                "acceptor": "Glc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)Glc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GXYLT2",
+        "rules": [
+            {
+                "acceptor": "Glc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)Glc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "LARGE1",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-?)Xyl(?1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)GlcA(b1-?)Xyl(?1-"
+            },
+            {
+                "acceptor": "Xyl(a1-3)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)Xyl(a1-3)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "LARGE2",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-?)Xyl(?1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)GlcA(b1-?)Xyl(?1-"
+            },
+            {
+                "acceptor": "Xyl(a1-3)GlcA(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GlcA(b1-3)Xyl(a1-3)GlcA(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "XXYLT1",
+        "rules": [
+            {
+                "acceptor": "Xyl(a1-3)Glc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Xyl(a1-3)Xyl(a1-3)Glc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
     }
 ]
