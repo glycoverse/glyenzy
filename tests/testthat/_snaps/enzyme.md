@@ -8,7 +8,7 @@
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
       
-      -- Rules (3) --
+      -- Rules (2) --
       
       > Rule 1: terminal alignment
       Acceptor: "Gal(b1-3)GlcNAc(b1-"
@@ -16,9 +16,6 @@
       > Rule 2: terminal alignment
       Acceptor: "Gal(b1-4)GlcNAc(b1-"
       Product: "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
-      > Rule 3: terminal alignment
-      Acceptor: "Gal(b1-3)GalNAc(b1-"
-      Product: "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
 
 # print.glyenzy_enzyme works with enzyme with no rules
 

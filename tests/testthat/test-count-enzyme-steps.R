@@ -1,19 +1,19 @@
 # ===== Input Type =====
 test_that("count_enzyme_steps works for `glyrepr_structure` and `glyenzy_enzyme`", {
-  glycans <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-")
-  enzyme <- glyenzy::enzyme("ST3GAL3")
+  glycans <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
+  enzyme <- enzyme("ST3GAL3")
   expect_equal(count_enzyme_steps(glycans, enzyme), 1L)
 })
 
 test_that("count_enzyme_steps works for characters", {
-  glycan <- "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
+  glycan <- "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
   enzyme <- "ST3GAL3"
   expect_equal(count_enzyme_steps(glycan, enzyme), 1L)
 })
 
 test_that("count_enzyme_steps works vectorizedly", {
   glycans <- c(
-    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-",
+    "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-",
     "Gal(b1-3)GalNAc(a1-"
   )
   expect_equal(count_enzyme_steps(glycans, "ST3GAL3"), c(1L, 0L))
