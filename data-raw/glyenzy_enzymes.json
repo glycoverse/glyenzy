@@ -477,14 +477,14 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Gal(b1-?)[Fuc(a1-2)]GlcNAc(b1-"
+                "product": "Fuc(a1-2)Gal(b1-?)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-?)GalNAc(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Gal(b1-?)[Fuc(a1-2)]GalNAc(b1-"
+                "product": "Fuc(a1-2)Gal(b1-?)GalNAc(b1-"
             }
         ],
         "type": "GT",
@@ -498,14 +498,14 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Gal(b1-?)[Fuc(a1-2)]GlcNAc(b1-"
+                "product": "Fuc(a1-2)Gal(b1-?)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-?)GalNAc(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "Gal(b1-?)[Fuc(a1-2)]GalNAc(b1-"
+                "product": "Fuc(a1-2)Gal(b1-?)GalNAc(b1-"
             }
         ],
         "type": "GT",
