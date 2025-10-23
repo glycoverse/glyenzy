@@ -44,6 +44,13 @@ bfs_synthesis_search <- function(
   if (is.null(from_key)) from_key <- as.character(from_g)[1]
   if (is.null(to_keys)) to_keys <- as.character(to_gs)
 
+  target_key_map <- fastmap::fastmap()
+  remaining_targets_map <- fastmap::fastmap()
+  for (target_key in to_keys) {
+    target_key_map$set(target_key, TRUE)
+    remaining_targets_map$set(target_key, TRUE)
+  }
+
   # Check for trivial case - any target is the same as starting glycan
   trivial_targets <- to_keys[to_keys == from_key]
   if (length(trivial_targets) > 0L) {
@@ -66,7 +73,7 @@ bfs_synthesis_search <- function(
   # - visited: Hash set (environment) to avoid revisiting the same glycan
   # - parent/parent_enzyme/parent_step: Backtracking information for path reconstruction
   # - all_edges: Complete exploration graph for "all" mode
-  # - remaining_targets: Set of target keys not yet found
+  # - remaining_targets_map: Hash-backed set of target keys not yet found
   #
   # Multi-target BFS properties:
   # - Completeness: Will find all targets if they exist within max_steps
@@ -85,16 +92,15 @@ bfs_synthesis_search <- function(
   parent_step <- rlang::env()
 
   found_keys <- character(0)
-  remaining_targets <- to_keys  # Track which targets still need to be found
   step <- 0L
   all_edges <- list()
 
   # BFS main loop: explore level by level until all targets found
-  while (length(queue) > 0L && step < max_steps && length(remaining_targets) > 0L) {
+  while (length(queue) > 0L && step < max_steps && remaining_targets_map$size() > 0L) {
     step <- step + 1L
 
     bfs_result <- .expand_bfs_frontier_core(
-      queue, queue_keys, remaining_targets, enzymes, filter, step,
+      queue, queue_keys, target_key_map, enzymes, filter, step,
       visited, parent, parent_enzyme, parent_step, all_edges
     )
 
@@ -104,13 +110,17 @@ bfs_synthesis_search <- function(
 
     if (length(bfs_result$found_keys) > 0L) {
       found_keys <- c(found_keys, bfs_result$found_keys)
-      # Remove found targets from remaining targets
-      remaining_targets <- setdiff(remaining_targets, bfs_result$found_keys)
+      for (found_key in bfs_result$found_keys) {
+        if (remaining_targets_map$has(found_key)) {
+          remaining_targets_map$remove(found_key)
+        }
+      }
     }
   }
 
-  if (length(remaining_targets) > 0L) {
-    cli::cli_abort("No synthesis path found for {length(remaining_targets)} target(s) within {.val {max_steps}} steps.")
+  if (remaining_targets_map$size() > 0L) {
+    missing_targets <- remaining_targets_map$keys()
+    cli::cli_abort("No synthesis path found for {length(missing_targets)} target(s) within {.val {max_steps}} steps.")
   }
 
   list(
@@ -126,7 +136,7 @@ bfs_synthesis_search <- function(
 #'
 #' @param queue Current queue of glycan structures
 #' @param queue_keys Current queue keys
-#' @param to_keys Target glycan keys for goal testing
+#' @param target_key_map Hash map of target glycan keys for goal testing
 #' @param enzymes List of `glyenzy_enzyme` objects to use
 #' @param filter Optional filter function
 #' @param step Current step number
@@ -140,7 +150,7 @@ bfs_synthesis_search <- function(
 .expand_bfs_frontier_core <- function(
   queue,
   queue_keys,
-  to_keys,
+  target_key_map,
   enzymes,
   filter,
   step,
@@ -179,7 +189,7 @@ bfs_synthesis_search <- function(
     # Try each candidate enzyme on current glycan
     for (ez in enzymes) {
       expansion_result <- .expand_single_node_core(
-        curr_g, curr_key, ez, to_keys, filter, step,
+        curr_g, curr_key, ez, target_key_map, filter, step,
         visited, parent, parent_enzyme, parent_step, all_edges
       )
 
@@ -203,7 +213,7 @@ bfs_synthesis_search <- function(
 #' @param curr_g Current glycan structure
 #' @param curr_key Current glycan key
 #' @param ez Enzyme object
-#' @param to_keys Target glycan keys for goal testing
+#' @param target_key_map Hash map of target glycan keys for goal testing
 #' @param filter Optional filter function
 #' @param step Current step number
 #' @param visited Environment tracking visited nodes
@@ -217,7 +227,7 @@ bfs_synthesis_search <- function(
   curr_g,
   curr_key,
   ez,
-  to_keys,
+  target_key_map,
   filter,
   step,
   visited,
@@ -295,7 +305,7 @@ bfs_synthesis_search <- function(
     }
 
     # Goal test: check if any target structure reached
-    if (pk %in% to_keys) {
+    if (target_key_map$has(pk)) {
       found_keys <- c(found_keys, pk)
     }
   }

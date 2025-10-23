@@ -24,6 +24,7 @@ Imports:
     glyparse (>= 0.4.3),
     igraph,
     purrr,
+    fastmap,
     dplyr,
     rlang,
     tibble,
