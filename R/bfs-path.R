@@ -91,7 +91,8 @@ bfs_synthesis_search <- function(
   parent_enzyme <- rlang::env()
   parent_step <- rlang::env()
 
-  found_keys <- character(0)
+  found_keys <- character(max(1L, length(to_keys)))
+  found_tail <- 0L
   step <- 0L
   all_edges <- list()
 
@@ -109,7 +110,15 @@ bfs_synthesis_search <- function(
     all_edges <- bfs_result$all_edges
 
     if (length(bfs_result$found_keys) > 0L) {
-      found_keys <- c(found_keys, bfs_result$found_keys)
+      required_found <- found_tail + length(bfs_result$found_keys)
+      if (required_found > length(found_keys)) {
+        new_len <- max(required_found, max(1L, length(found_keys) * 2L))
+        length(found_keys) <- new_len
+      }
+      target_idx <- seq.int(found_tail + 1L, required_found)
+      found_keys[target_idx] <- bfs_result$found_keys
+      found_tail <- required_found
+
       for (found_key in bfs_result$found_keys) {
         if (remaining_targets_map$has(found_key)) {
           remaining_targets_map$remove(found_key)
@@ -124,7 +133,7 @@ bfs_synthesis_search <- function(
   }
 
   list(
-    found_keys = found_keys,
+    found_keys = if (found_tail == 0L) character() else found_keys[seq_len(found_tail)],
     all_edges = all_edges,
     parent = parent,
     parent_enzyme = parent_enzyme,
@@ -177,9 +186,13 @@ bfs_synthesis_search <- function(
 
   frontier <- queue
   frontier_keys <- queue_keys
-  new_queue <- list()
-  new_queue_keys <- character()
-  found_keys <- character()
+  new_queue_capacity <- max(1L, length(frontier))
+  new_queue <- vector("list", new_queue_capacity)
+  new_queue_keys <- character(new_queue_capacity)
+  queue_tail <- 0L
+  found_capacity <- max(1L, length(frontier))
+  found_keys_storage <- character(found_capacity)
+  found_tail <- 0L
 
   # Expand each glycan in current frontier
   for (i in seq_along(frontier)) {
@@ -193,18 +206,43 @@ bfs_synthesis_search <- function(
         visited, parent, parent_enzyme, parent_step, all_edges
       )
 
-      new_queue <- c(new_queue, expansion_result$new_structures)
-      new_queue_keys <- c(new_queue_keys, expansion_result$new_keys)
+      new_count <- length(expansion_result$new_structures)
+      if (new_count > 0L) {
+        required_capacity <- queue_tail + new_count
+        if (required_capacity > length(new_queue)) {
+          new_len <- max(required_capacity, max(1L, length(new_queue) * 2L))
+          length(new_queue) <- new_len
+          length(new_queue_keys) <- new_len
+        }
+        for (idx in seq_len(new_count)) {
+          target_pos <- queue_tail + idx
+          new_queue[[target_pos]] <- expansion_result$new_structures[[idx]]
+          new_queue_keys[[target_pos]] <- expansion_result$new_keys[[idx]]
+        }
+        queue_tail <- queue_tail + new_count
+      }
       all_edges <- expansion_result$all_edges
-      found_keys <- c(found_keys, expansion_result$found_keys)
+      found_count <- length(expansion_result$found_keys)
+      if (found_count > 0L) {
+        required_found <- found_tail + found_count
+        if (required_found > length(found_keys_storage)) {
+          new_len <- max(required_found, max(1L, length(found_keys_storage) * 2L))
+          length(found_keys_storage) <- new_len
+        }
+        for (idx in seq_len(found_count)) {
+          target_pos <- found_tail + idx
+          found_keys_storage[[target_pos]] <- expansion_result$found_keys[[idx]]
+        }
+        found_tail <- found_tail + found_count
+      }
     }
   }
 
   list(
-    queue = new_queue,
-    queue_keys = new_queue_keys,
+    queue = if (queue_tail == 0L) list() else new_queue[seq_len(queue_tail)],
+    queue_keys = if (queue_tail == 0L) character() else new_queue_keys[seq_len(queue_tail)],
     all_edges = all_edges,
-    found_keys = found_keys
+    found_keys = if (found_tail == 0L) character() else found_keys_storage[seq_len(found_tail)]
   )
 }
 
@@ -281,9 +319,12 @@ bfs_synthesis_search <- function(
   }
 
   prod_keys <- as.character(products)
-  new_structures <- list()
-  new_keys <- character()
-  found_keys <- character()
+  max_candidates <- length(products)
+  new_structures <- vector("list", max_candidates)
+  new_keys <- character(max_candidates)
+  new_tail <- 0L
+  found_keys_storage <- character(max_candidates)
+  found_tail <- 0L
 
   # Process each product structure
   for (j in seq_along(products)) {
@@ -300,21 +341,23 @@ bfs_synthesis_search <- function(
       rlang::env_poke(parent, pk, curr_key)
       rlang::env_poke(parent_enzyme, pk, ez$name)
       rlang::env_poke(parent_step, pk, step)
-      new_structures[[length(new_structures) + 1L]] <- products[j]
-      new_keys <- c(new_keys, pk)
+      new_tail <- new_tail + 1L
+      new_structures[[new_tail]] <- products[j]
+      new_keys[[new_tail]] <- pk
     }
 
     # Goal test: check if any target structure reached
     if (target_key_map$has(pk)) {
-      found_keys <- c(found_keys, pk)
+      found_tail <- found_tail + 1L
+      found_keys_storage[[found_tail]] <- pk
     }
   }
 
   list(
-    new_structures = new_structures,
-    new_keys = new_keys,
+    new_structures = if (new_tail == 0L) list() else new_structures[seq_len(new_tail)],
+    new_keys = if (new_tail == 0L) character() else new_keys[seq_len(new_tail)],
     all_edges = all_edges,
-    found_keys = found_keys
+    found_keys = if (found_tail == 0L) character() else found_keys_storage[seq_len(found_tail)]
   )
 }
 
