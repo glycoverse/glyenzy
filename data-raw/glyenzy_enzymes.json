@@ -859,7 +859,7 @@
         "rules": [
             {
                 "acceptor": "Gal(b1-3)GalNAc(a1-",
-                "acceptor_alignment": "whole",
+                "acceptor_alignment": "core",
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
