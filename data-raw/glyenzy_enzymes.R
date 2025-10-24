@@ -21,6 +21,11 @@ library(purrr)
 # Read JSON data
 json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
 
+# Check if there are duplicate enzyme names
+if (any(duplicated(json_data$name))) {
+  cli::cli_abort("Duplicate enzyme names found: {.val {json_data$name[duplicated(json_data$name)]}}")
+}
+
 # Helper function to create enzyme rule from JSON data
 .create_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
   acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
