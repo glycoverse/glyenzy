@@ -1086,20 +1086,6 @@
         "species": "human"
     },
     {
-        "name": "B4GALNT2",
-        "rules": [
-            {
-                "acceptor": "Neu5Ac(a2-3)Gal(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "rejects_alignment": [],
-                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-"
-            }
-        ],
-        "type": "GT",
-        "species": "human"
-    },
-    {
         "name": "C1GALT1",
         "rules": [
             {
@@ -1205,6 +1191,20 @@
         "species": "human"
     },
     {
+        "name": "B3GALNT1",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-3)Gal(b1-4)Gal(b1-4)Glc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
         "name": "B3GALNT2",
         "rules": [
             {
@@ -1213,6 +1213,111 @@
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "GalNAc(b1-3)GlcNAc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "B4GALNT1",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)Gal(b1-4)Glc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "B4GALNT2",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-?)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-?)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-?)GalNAc(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-?)GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "B4GALNT3",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "B4GALNT4",
+        "rules": [
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "CSGALNACT1",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl(b1-"
+            },
+            {
+                "acceptor": "GlcA(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)GalNAc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "CSGALNACT2",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl(b1-"
+            },
+            {
+                "acceptor": "GlcA(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "rejects_alignment": [],
+                "product": "GalNAc(b1-4)GlcA(b1-3)GalNAc(b1-"
             }
         ],
         "type": "GT",
