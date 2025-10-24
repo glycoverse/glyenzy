@@ -7,4 +7,6 @@ NULL
 
 ignore_unused_imports <- function() {
   dplyr::case_when
+  R6::is.R6
+  fastmap::fastmap
 }
