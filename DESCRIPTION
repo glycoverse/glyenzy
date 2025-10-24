@@ -28,7 +28,8 @@ Imports:
     dplyr,
     rlang,
     tibble,
-    stringr
+    stringr,
+    R6
 Remotes: 
     glycoverse/glyrepr@*release,
     glycoverse/glyparse@*release,

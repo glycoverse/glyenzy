@@ -6,9 +6,7 @@
 
 #' Perform BFS search for synthesis paths between glycan structures
 #'
-#' This function implements a breadth-first search algorithm to find synthesis
-#' paths from a starting glycan to one or more target glycans using enzymatic
-#' reactions.
+#' This function instantiates the BFS R6 engine and returns its results.
 #'
 #' @param from_g Starting glycan structure (single glyrepr::glycan_structure)
 #' @param to_gs Target glycan structures (glyrepr::glycan_structure vector)
@@ -40,326 +38,259 @@ bfs_synthesis_search <- function(
   from_key = NULL,
   to_keys = NULL
 ) {
-  # Compute keys if not provided
-  if (is.null(from_key)) from_key <- as.character(from_g)[1]
-  if (is.null(to_keys)) to_keys <- as.character(to_gs)
-
-  target_key_map <- fastmap::fastmap()
-  remaining_targets_map <- fastmap::fastmap()
-  for (target_key in to_keys) {
-    target_key_map$set(target_key, TRUE)
-    remaining_targets_map$set(target_key, TRUE)
-  }
-
-  # Check for trivial case - any target is the same as starting glycan
-  trivial_targets <- to_keys[to_keys == from_key]
-  if (length(trivial_targets) > 0L) {
-    return(list(
-      found_keys = trivial_targets,
-      all_edges = list(),
-      parent = rlang::env(),
-      parent_enzyme = rlang::env(),
-      parent_step = rlang::env()
-    ))
-  }
-
-  # ALGORITHM: Multi-Target Breadth-First Search (BFS) for Shortest Synthesis Paths
-  # ==============================================================================
-  # We use BFS to guarantee finding the shortest path (minimum number of enzymatic steps)
-  # from the starting glycan to multiple target glycans.
-  #
-  # Key data structures:
-  # - queue: Current frontier of glycan structures to explore
-  # - visited: Hash set (environment) to avoid revisiting the same glycan
-  # - parent/parent_enzyme/parent_step: Backtracking information for path reconstruction
-  # - all_edges: Complete exploration graph for "all" mode
-  # - remaining_targets_map: Hash-backed set of target keys not yet found
-  #
-  # Multi-target BFS properties:
-  # - Completeness: Will find all targets if they exist within max_steps
-  # - Optimality: First path to each target is guaranteed to be shortest
-  # - Termination: Continues until all targets found or max_steps reached
-  # - Time complexity: O(b^d) where b=branching factor, d=maximum target depth
-  # - Space complexity: O(b^d) for storing the frontier and visited set
-
-  # Initialize BFS state
-  queue <- list(from_g)
-  queue_keys <- c(from_key)
-  visited <- rlang::env()  # Hash set for O(1) lookup
-  rlang::env_poke(visited, from_key, TRUE)
-  parent <- rlang::env()
-  parent_enzyme <- rlang::env()
-  parent_step <- rlang::env()
-
-  found_keys <- character(max(1L, length(to_keys)))
-  found_tail <- 0L
-  step <- 0L
-  all_edges <- list()
-
-  # BFS main loop: explore level by level until all targets found
-  while (length(queue) > 0L && step < max_steps && remaining_targets_map$size() > 0L) {
-    step <- step + 1L
-
-    bfs_result <- .expand_bfs_frontier_core(
-      queue, queue_keys, target_key_map, enzymes, filter, step,
-      visited, parent, parent_enzyme, parent_step, all_edges
-    )
-
-    queue <- bfs_result$queue
-    queue_keys <- bfs_result$queue_keys
-    all_edges <- bfs_result$all_edges
-
-    if (length(bfs_result$found_keys) > 0L) {
-      required_found <- found_tail + length(bfs_result$found_keys)
-      if (required_found > length(found_keys)) {
-        new_len <- max(required_found, max(1L, length(found_keys) * 2L))
-        length(found_keys) <- new_len
-      }
-      target_idx <- seq.int(found_tail + 1L, required_found)
-      found_keys[target_idx] <- bfs_result$found_keys
-      found_tail <- required_found
-
-      for (found_key in bfs_result$found_keys) {
-        if (remaining_targets_map$has(found_key)) {
-          remaining_targets_map$remove(found_key)
-        }
-      }
-    }
-  }
-
-  if (remaining_targets_map$size() > 0L) {
-    missing_targets <- remaining_targets_map$keys()
-    cli::cli_abort("No synthesis path found for {length(missing_targets)} target(s) within {.val {max_steps}} steps.")
-  }
-
-  list(
-    found_keys = if (found_tail == 0L) character() else found_keys[seq_len(found_tail)],
-    all_edges = all_edges,
-    parent = parent,
-    parent_enzyme = parent_enzyme,
-    parent_step = parent_step
+  engine <- BfsSynthesisSearch$new(
+    from_g = from_g,
+    to_gs = to_gs,
+    enzymes = enzymes,
+    max_steps = max_steps,
+    filter = filter,
+    from_key = from_key,
+    to_keys = to_keys
   )
+
+  engine$run()
 }
 
-#' Expand BFS frontier by one step (core algorithm)
+#' BFS synthesis search as an R6 engine
 #'
-#' @param queue Current queue of glycan structures
-#' @param queue_keys Current queue keys
-#' @param target_key_map Hash map of target glycan keys for goal testing
-#' @param enzymes List of `glyenzy_enzyme` objects to use
-#' @param filter Optional filter function
-#' @param step Current step number
-#' @param visited Environment tracking visited nodes
-#' @param parent Environment tracking parent relationships
-#' @param parent_enzyme Environment tracking parent enzymes
-#' @param parent_step Environment tracking parent steps
-#' @param all_edges List of all explored edges
-#' @return List with updated queue and found targets
+#' Encapsulates breadth-first search state for synthesizing glycans into an R6
+#' object. This replaces the earlier functional implementation that required
+#' passing numerous state-tracking arguments between helper functions.
+#'
+#' R6 fields expose the mutable state used across the BFS expansion steps. This
+#' keeps the algorithm logic cohesive and avoids error-prone argument plumbing.
+#'
 #' @noRd
-.expand_bfs_frontier_core <- function(
-  queue,
-  queue_keys,
-  target_key_map,
-  enzymes,
-  filter,
-  step,
-  visited,
-  parent,
-  parent_enzyme,
-  parent_step,
-  all_edges
-) {
-  # ALGORITHM: BFS Frontier Expansion with Enzymatic Reactions
-  # =========================================================
-  # This function implements one level of BFS expansion in the glycan synthesis space.
-  # Each glycan in the current frontier is expanded by applying all candidate enzymes.
-  #
-  # Key aspects:
-  # 1. Systematic exploration: Try every enzyme on every glycan in current level
-  # 2. Duplicate detection: Use visited set to avoid cycles and redundant exploration
-  # 3. Parent tracking: Maintain backpointers for path reconstruction
-  # 4. Early termination: Stop immediately when target found (shortest mode)
-  # 5. Complete exploration: Continue until exhausted (all mode)
-  #
-  # Branching factor: |enzymes| × |products_per_enzyme|
-  # Typical values: 5-15 enzymes × 1-3 products = 5-45 new states per glycan
+BfsSynthesisSearch <- R6::R6Class(
+  "BfsSynthesisSearch",
+  public = list(
+    from_g = NULL,
+    to_gs = NULL,
+    enzymes = NULL,
+    max_steps = NULL,
+    filter = NULL,
+    from_key = NULL,
+    to_keys = NULL,
+    target_key_map = NULL,
+    remaining_targets_map = NULL,
+    queue = NULL,
+    queue_keys = NULL,
+    visited = NULL,
+    parent = NULL,
+    parent_enzyme = NULL,
+    parent_step = NULL,
+    all_edges = NULL,
+    found_keys_storage = NULL,
+    found_tail = 0L,
+    step = 0L,
 
-  frontier <- queue
-  frontier_keys <- queue_keys
-  new_queue_capacity <- max(1L, length(frontier))
-  new_queue <- vector("list", new_queue_capacity)
-  new_queue_keys <- character(new_queue_capacity)
-  queue_tail <- 0L
-  found_capacity <- max(1L, length(frontier))
-  found_keys_storage <- character(found_capacity)
-  found_tail <- 0L
+    initialize = function(
+      from_g,
+      to_gs,
+      enzymes,
+      max_steps,
+      filter = NULL,
+      from_key = NULL,
+      to_keys = NULL
+    ) {
+      self$from_g <- from_g
+      self$to_gs <- to_gs
+      self$enzymes <- enzymes
+      self$max_steps <- max_steps
+      self$filter <- filter
+      self$from_key <- if (is.null(from_key)) as.character(from_g)[1] else from_key
+      self$to_keys <- if (is.null(to_keys)) as.character(to_gs) else to_keys
 
-  # Expand each glycan in current frontier
-  for (i in seq_along(frontier)) {
-    curr_g <- frontier[[i]]
-    curr_key <- frontier_keys[[i]]
+      self$target_key_map <- fastmap::fastmap()
+      self$remaining_targets_map <- fastmap::fastmap()
+      for (target_key in self$to_keys) {
+        self$target_key_map$set(target_key, TRUE)
+        self$remaining_targets_map$set(target_key, TRUE)
+      }
 
-    # Try each candidate enzyme on current glycan
-    for (ez in enzymes) {
-      expansion_result <- .expand_single_node_core(
-        curr_g, curr_key, ez, target_key_map, filter, step,
-        visited, parent, parent_enzyme, parent_step, all_edges
+      self$queue <- list(self$from_g)
+      self$queue_keys <- c(self$from_key)
+      self$visited <- rlang::env()
+      rlang::env_poke(self$visited, self$from_key, TRUE)
+      self$parent <- rlang::env()
+      self$parent_enzyme <- rlang::env()
+      self$parent_step <- rlang::env()
+      self$all_edges <- list()
+
+      self$found_keys_storage <- character(max(1L, length(self$to_keys)))
+      self$found_tail <- 0L
+      self$step <- 0L
+    },
+
+    run = function() {
+      trivial_targets <- self$to_keys[self$to_keys == self$from_key]
+      if (length(trivial_targets) > 0L) {
+        return(list(
+          found_keys = trivial_targets,
+          all_edges = list(),
+          parent = rlang::env(),
+          parent_enzyme = rlang::env(),
+          parent_step = rlang::env()
+        ))
+      }
+
+      while (
+        length(self$queue) > 0L &&
+          self$step < self$max_steps &&
+          self$remaining_targets_map$size() > 0L
+      ) {
+        self$step <- self$step + 1L
+
+        found_keys <- private$expand_frontier()
+        if (length(found_keys) > 0L) {
+          private$record_found_keys(found_keys)
+        }
+      }
+
+      if (self$remaining_targets_map$size() > 0L) {
+        missing_targets <- self$remaining_targets_map$keys()
+        cli::cli_abort(
+          "No synthesis path found for {length(missing_targets)} target(s) within {.val {self$max_steps}} steps."
+        )
+      }
+
+      list(
+        found_keys = if (self$found_tail == 0L) {
+          character()
+        } else {
+          self$found_keys_storage[seq_len(self$found_tail)]
+        },
+        all_edges = self$all_edges,
+        parent = self$parent,
+        parent_enzyme = self$parent_enzyme,
+        parent_step = self$parent_step
       )
+    }
+  ),
 
-      new_count <- length(expansion_result$new_structures)
-      if (new_count > 0L) {
-        required_capacity <- queue_tail + new_count
-        if (required_capacity > length(new_queue)) {
-          new_len <- max(required_capacity, max(1L, length(new_queue) * 2L))
-          length(new_queue) <- new_len
-          length(new_queue_keys) <- new_len
+  private = list(
+    # Expand entire BFS frontier for current step.
+    # Applies every enzyme to all glycans in the queue, collects successors,
+    # and accumulates any target hits produced during this level.
+    expand_frontier = function() {
+      frontier <- self$queue
+      frontier_keys <- self$queue_keys
+
+      new_queue <- list()
+      new_queue_keys <- character(0)
+      found_keys <- character(0)
+
+      for (i in seq_along(frontier)) {
+        curr_g <- frontier[[i]]
+        curr_key <- frontier_keys[[i]]
+
+        for (ez in self$enzymes) {
+          expansion_result <- private$expand_single(curr_g, curr_key, ez)
+
+          if (length(expansion_result$new_structures) > 0L) {
+            start_idx <- length(new_queue)
+            for (j in seq_along(expansion_result$new_structures)) {
+              new_queue[[start_idx + j]] <- expansion_result$new_structures[[j]]
+              new_queue_keys[start_idx + j] <- expansion_result$new_keys[[j]]
+            }
+          }
+
+          if (length(expansion_result$found_keys) > 0L) {
+            found_keys <- c(found_keys, expansion_result$found_keys)
+          }
         }
-        for (idx in seq_len(new_count)) {
-          target_pos <- queue_tail + idx
-          new_queue[[target_pos]] <- expansion_result$new_structures[[idx]]
-          new_queue_keys[[target_pos]] <- expansion_result$new_keys[[idx]]
-        }
-        queue_tail <- queue_tail + new_count
       }
-      all_edges <- expansion_result$all_edges
-      found_count <- length(expansion_result$found_keys)
-      if (found_count > 0L) {
-        required_found <- found_tail + found_count
-        if (required_found > length(found_keys_storage)) {
-          new_len <- max(required_found, max(1L, length(found_keys_storage) * 2L))
-          length(found_keys_storage) <- new_len
+
+      self$queue <- new_queue
+      self$queue_keys <- new_queue_keys
+
+      found_keys
+    },
+
+    # Expand one glycan by applying a single enzyme.
+    # Generates candidate products, filters them, registers edges, updates
+    # parent bookkeeping, and returns the new frontier entries plus targets hit.
+    expand_single = function(curr_g, curr_key, ez) {
+      products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
+      if (length(products) == 0L) {
+        return(list(
+          new_structures = list(),
+          new_keys = character(0),
+          found_keys = character(0)
+        ))
+      }
+
+      if (!is.null(self$filter)) {
+        keep <- self$filter(products)
+        checkmate::assert_logical(keep, len = length(products), any.missing = FALSE)
+        products <- products[keep]
+        if (length(products) == 0L) {
+          return(list(
+            new_structures = list(),
+            new_keys = character(0),
+            found_keys = character(0)
+          ))
         }
-        for (idx in seq_len(found_count)) {
-          target_pos <- found_tail + idx
-          found_keys_storage[[target_pos]] <- expansion_result$found_keys[[idx]]
+      }
+
+      prod_keys <- as.character(products)
+      new_structures <- list()
+      new_keys <- character(0)
+      found_keys <- character(0)
+
+      for (j in seq_along(products)) {
+        pk <- prod_keys[[j]]
+
+        self$all_edges[[length(self$all_edges) + 1L]] <- list(
+          from = curr_key,
+          to = pk,
+          enzyme = ez$name,
+          step = self$step
+        )
+
+        if (!rlang::env_has(self$visited, pk)) {
+          rlang::env_poke(self$visited, pk, TRUE)
+          rlang::env_poke(self$parent, pk, curr_key)
+          rlang::env_poke(self$parent_enzyme, pk, ez$name)
+          rlang::env_poke(self$parent_step, pk, self$step)
+
+          new_structures[[length(new_structures) + 1L]] <- products[j]
+          new_keys[length(new_keys) + 1L] <- pk
         }
-        found_tail <- found_tail + found_count
+
+        if (self$target_key_map$has(pk)) {
+          found_keys <- c(found_keys, pk)
+        }
+      }
+
+      list(
+        new_structures = new_structures,
+        new_keys = new_keys,
+        found_keys = found_keys
+      )
+    },
+
+    # Integrate newly discovered targets into tracking buffers and remaining set.
+    # Resizes storage if needed and removes matched targets from the active goal set.
+    record_found_keys = function(keys) {
+      required <- self$found_tail + length(keys)
+      if (required > length(self$found_keys_storage)) {
+        new_len <- max(required, max(1L, length(self$found_keys_storage) * 2L))
+        length(self$found_keys_storage) <- new_len
+      }
+
+      idx <- seq.int(self$found_tail + 1L, required)
+      self$found_keys_storage[idx] <- keys
+      self$found_tail <- required
+
+      for (found_key in keys) {
+        if (self$remaining_targets_map$has(found_key)) {
+          self$remaining_targets_map$remove(found_key)
+        }
       }
     }
-  }
-
-  list(
-    queue = if (queue_tail == 0L) list() else new_queue[seq_len(queue_tail)],
-    queue_keys = if (queue_tail == 0L) character() else new_queue_keys[seq_len(queue_tail)],
-    all_edges = all_edges,
-    found_keys = if (found_tail == 0L) character() else found_keys_storage[seq_len(found_tail)]
   )
-}
-
-#' Expand a single node with a single enzyme (core algorithm)
-#'
-#' @param curr_g Current glycan structure
-#' @param curr_key Current glycan key
-#' @param ez Enzyme object
-#' @param target_key_map Hash map of target glycan keys for goal testing
-#' @param filter Optional filter function
-#' @param step Current step number
-#' @param visited Environment tracking visited nodes
-#' @param parent Environment tracking parent relationships
-#' @param parent_enzyme Environment tracking parent enzymes
-#' @param parent_step Environment tracking parent steps
-#' @param all_edges List of all explored edges
-#' @return List with new structures and found targets
-#' @noRd
-.expand_single_node_core <- function(
-  curr_g,
-  curr_key,
-  ez,
-  target_key_map,
-  filter,
-  step,
-  visited,
-  parent,
-  parent_enzyme,
-  parent_step,
-  all_edges
-) {
-  # ALGORITHM: Single Enzymatic Reaction Expansion
-  # =============================================
-  # This function simulates applying one specific enzyme to one glycan structure,
-  # generating all possible product structures and managing the search state.
-  #
-  # Process:
-  # 1. Enzymatic reaction: Apply enzyme to current glycan using biochemical rules
-  # 2. Product filtering: Apply user-defined filter to prune unwanted intermediates
-  # 3. Duplicate detection: Check if products have been seen before (cycle prevention)
-  # 4. State management: Update visited set, parent pointers, and exploration graph
-  # 5. Goal testing: Check if any product matches the target structure
-  #
-  # Key optimizations:
-  # - Early return on empty products (enzyme not applicable)
-  # - Hash-based duplicate detection for O(1) lookup
-  # - Lazy edge recording (only for "all" mode to save memory)
-  # - Batch processing of multiple products from single enzyme application
-
-  # Apply enzyme to current glycan structure
-  products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
-  if (length(products) == 0L) {
-    return(list(
-      new_structures = list(),
-      new_keys = character(),
-      all_edges = all_edges,
-      found_keys = character()
-    ))
-  }
-
-  # Apply user-defined filter to prune search space
-  if (!is.null(filter)) {
-    keep <- filter(products)
-    checkmate::assert_logical(keep, len = length(products), any.missing = FALSE)
-    products <- products[keep]
-    if (length(products) == 0L) {
-      return(list(
-        new_structures = list(),
-        new_keys = character(),
-        all_edges = all_edges,
-        found_keys = character()
-      ))
-    }
-  }
-
-  prod_keys <- as.character(products)
-  max_candidates <- length(products)
-  new_structures <- vector("list", max_candidates)
-  new_keys <- character(max_candidates)
-  new_tail <- 0L
-  found_keys_storage <- character(max_candidates)
-  found_tail <- 0L
-
-  # Process each product structure
-  for (j in seq_along(products)) {
-    pk <- prod_keys[[j]]
-
-    # Record exploration edge for complete graph construction
-    all_edges[[length(all_edges) + 1L]] <- list(
-      from = curr_key, to = pk, enzyme = ez$name, step = step
-    )
-
-    # Handle new (unvisited) glycan structures
-    if (!rlang::env_has(visited, pk)) {
-      rlang::env_poke(visited, pk, TRUE)
-      rlang::env_poke(parent, pk, curr_key)
-      rlang::env_poke(parent_enzyme, pk, ez$name)
-      rlang::env_poke(parent_step, pk, step)
-      new_tail <- new_tail + 1L
-      new_structures[[new_tail]] <- products[j]
-      new_keys[[new_tail]] <- pk
-    }
-
-    # Goal test: check if any target structure reached
-    if (target_key_map$has(pk)) {
-      found_tail <- found_tail + 1L
-      found_keys_storage[[found_tail]] <- pk
-    }
-  }
-
-  list(
-    new_structures = if (new_tail == 0L) list() else new_structures[seq_len(new_tail)],
-    new_keys = if (new_tail == 0L) character() else new_keys[seq_len(new_tail)],
-    all_edges = all_edges,
-    found_keys = if (found_tail == 0L) character() else found_keys_storage[seq_len(found_tail)]
-  )
-}
+)
 
 #' Build result graph from BFS search results
 #'
@@ -379,8 +310,7 @@ build_synthesis_result_graph <- function(search_result, from_key, to_keys, max_s
     # Return single-node graph for trivial case
     vertices <- tibble::tibble(name = from_key)
     return(igraph::graph_from_data_frame(
-      tibble::tibble(from = character(0), to = character(0),
-                     enzyme = character(0), step = integer(0)),
+      tibble::tibble(from = character(0), to = character(0), enzyme = character(0), step = integer(0)),
       directed = TRUE, vertices = vertices
     ))
   }
@@ -422,7 +352,7 @@ build_synthesis_result_graph <- function(search_result, from_key, to_keys, max_s
 
   # Forward reachability: vertices reachable from starting glycan
   reach_from <- igraph::subcomponent(g_all, vid_from, mode = "out")
-  
+
   # Backward reachability: vertices that can reach any target glycan
   reach_to_any <- integer(0)
   for (vid_to in vid_to_list) {
