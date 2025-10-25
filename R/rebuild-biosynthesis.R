@@ -4,16 +4,12 @@
 #' This function uses a multi-target breadth-first search to find all feasible pathways
 #' that can synthesize all the target glycans.
 #'
-#' For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
-#' the N-glycan precursor transfered to Asn by OST.
-#' For O-glycans, the starting structure is assumed to be "GalNAc(a1-".
-#'
 #' @inheritSection is_synthesized_by Important notes
 #'
 #' @param glycans A [glyrepr::glycan_structure()] vector, or a character vector
 #'   of strings supported by [glyparse::auto_parse()]. Can also be a single glycan.
 #'   If multiple glycans are provided, the starting structure will be decided by the first glycan.
-#'   Therefore, please make sure `glycans` are not a mixed vector of N- and O-glycans.
+#'   Therefore, please make sure `glycans` are not of mixed glycan types.
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()] objects.
 #'   If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
@@ -71,8 +67,21 @@ rebuild_biosynthesis <- function(
 .decide_starting_glycan <- function(glycan) {
   if (.is_n_glycan(glycan)) {
     start <- glyparse::parse_iupac_condensed("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
-  } else {
+  } else if (glymotif::have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
+  } else if (glymotif::have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {
+    start <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
+  } else if (glymotif::have_motif(glycan, "Man(a1-", alignment = "core")) {
+    start <- glyparse::parse_iupac_condensed("Man(a1-")
+  } else if (glymotif::have_motif(glycan, "Fuc(a1-", alignment = "core")) {
+    start <- glyparse::parse_iupac_condensed("Fuc(a1-")
+  } else if (glymotif::have_motif(glycan, "Glc(b1-", alignment = "core")) {
+    start <- glyparse::parse_iupac_condensed("Glc(b1-")
+  } else {
+    cli::cli_abort(c(
+      "Cannot decide the starting point for the given glycan(s).",
+      "i" = "Currenly, only N-glycans and O-glycans are supported."
+    ))
   }
-  return(start)
+  start
 }

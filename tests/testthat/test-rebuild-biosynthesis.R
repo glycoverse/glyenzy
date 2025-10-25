@@ -54,6 +54,21 @@ test_that("rebuild_biosynthesis works for an O-GalNAc glycan", {
   expect_gt(igraph::ecount(path), igraph::vcount(path) - 1)
 })
 
+test_that("rebuild_biosynthesis works with O-Man glycans", {
+  glycan <- "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-"
+  path <- rebuild_biosynthesis(glycan)
+
+  # The path starts with Man(a1-
+  root_node <- igraph::V(path)[igraph::degree(path, mode = "in") == 0]
+  expect_equal(length(root_node), 1L)
+  expect_equal(root_node$name, "Man(a1-")
+
+  # The path ends with the input glycan
+  end_node <- igraph::V(path)[igraph::degree(path, mode = "out") == 0]
+  expect_equal(length(end_node), 1L)
+  expect_equal(end_node$name, glycan)
+})
+
 test_that("rebuild_biosynthesis works with complete graph (all paths)", {
   glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
   path <- rebuild_biosynthesis(glycan)
