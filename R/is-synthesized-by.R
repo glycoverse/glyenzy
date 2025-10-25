@@ -49,11 +49,13 @@
 #'
 #' ## Starting points
 #'
-#' Throughout `glyenzy`, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
-#' and GalNAc(a1- for O-glycans.
-#' This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
-#' and OST, which transfered the precursor to Asn, are not considered here.
-#' Similarly, GALNTs for O-glycans are not considered.
+#' - For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
+#'   the N-glycan precursor transfered to Asn by OST.
+#' - For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".
+#' - For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".
+#' - For O-Man glycans, the starting structure is assumed to be "Man(a1-".
+#' - For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".
+#' - For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
 #'
 #' # Algorithm
 #'

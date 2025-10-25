@@ -10,7 +10,7 @@ rebuild_biosynthesis(glycans, enzymes = NULL, max_steps = 20, filter = NULL)
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a character vector
 of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. Can also be a single glycan.
 If multiple glycans are provided, the starting structure will be decided by the first glycan.
-Therefore, please make sure \code{glycans} are not a mixed vector of N- and O-glycans.}
+Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}} objects.
 If \code{NULL} (default), all available enzymes will be used.}
@@ -35,11 +35,6 @@ all synthesis paths needed to reach every target glycan.
 Reconstruct the biosynthetic pathway for one or more glycans using enzymatic reactions.
 This function uses a multi-target breadth-first search to find all feasible pathways
 that can synthesize all the target glycans.
-}
-\details{
-For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
-the N-glycan precursor transfered to Asn by OST.
-For O-glycans, the starting structure is assumed to be "GalNAc(a1-".
 }
 \section{Important notes}{
 Here are some important notes for all functions in the \code{glyenzy} package.
@@ -85,12 +80,15 @@ the result may be misleading.
 }
 
 \subsection{Starting points}{
-
-Throughout \code{glyenzy}, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
-and GalNAc(a1- for O-glycans.
-This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
-and OST, which transfered the precursor to Asn, are not considered here.
-Similarly, GALNTs for O-glycans are not considered.
+\itemize{
+\item For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
+the N-glycan precursor transfered to Asn by OST.
+\item For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".
+\item For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".
+\item For O-Man glycans, the starting structure is assumed to be "Man(a1-".
+\item For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".
+\item For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
+}
 }
 }
 
