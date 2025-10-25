@@ -11,7 +11,7 @@ in the biosynthesis of a given glycan (or glycans)."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,13 +119,14 @@ the result may be misleading.</p>
 <div class="section">
 <h3 id="starting-points">Starting points<a class="anchor" aria-label="anchor" href="#starting-points"></a></h3>
 
-
-<p>Throughout <code>glyenzy</code>, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
-and GalNAc(a1- for O-glycans.
-This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
-and OST, which transfered the precursor to Asn, are not considered here.
-Similarly, GALNTs for O-glycans are not considered.</p>
-</div>
+<ul><li><p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
+the N-glycan precursor transfered to Asn by OST.</p></li>
+<li><p>For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".</p></li>
+<li><p>For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".</p></li>
+<li><p>For O-Man glycans, the starting structure is assumed to be "Man(a1-".</p></li>
+<li><p>For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".</p></li>
+<li><p>For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".</p></li>
+</ul></div>
 
     </div>
     <div class="section level2">

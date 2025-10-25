@@ -9,7 +9,7 @@ or a character vector of gene symbols if return_str is TRUE."><meta property="og
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,19 +61,27 @@ Otherwise returns a charactor vector of gene symbols.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">all_enzymes</span><span class="op">(</span>return_str <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "MOGS"       "GANAB"      "MAN1B1"     "MAN1A1"     "MAN1A2"    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "MAN1C1"     "MAN2A1"     "MAN2A2"     "MGAT1"      "MGAT2"     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "MGAT3"      "MGAT4A"     "MGAT4B"     "MGAT5"      "MGAT5B"    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "B3GNT2"     "B3GNT3"     "B3GNT4"     "B3GNT6"     "B3GNT8"    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "B3GALT1"    "B3GALT2"    "B3GALT4"    "B3GALT5"    "B4GALT1"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "B4GALT2"    "B4GALT3"    "B4GALT4"    "B4GALT5"    "FUT1"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "FUT2"       "FUT3"       "FUT4"       "FUT7"       "FUT8"      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "FUT9"       "FUT10"      "ST6GAL1"    "ST6GAL2"    "ST3GAL1"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "ST3GAL2"    "ST3GAL3"    "ST3GAL4"    "ST3GAL6"    "ST6GALNAC1"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "ST6GALNAC2" "ST6GALNAC3" "ST6GALNAC4" "ST8SIA2"    "ST8SIA3"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "ST8SIA4"    "ST8SIA6"    "A4GNT"      "B4GALNT2"   "C1GALT1"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [56] "GCNT1"      "GCNT2"      "GCNT3"      "GCNT4"      "B3GALNT2"  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [61] "B3GAT1"     "B3GAT2"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] "MOGS"       "GANAB"      "MAN1B1"     "MAN1A1"     "MAN1A2"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] "MAN1C1"     "MAN2A1"     "MAN2A2"     "MGAT1"      "MGAT2"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [11] "MGAT3"      "MGAT4A"     "MGAT4B"     "MGAT5"      "MGAT5B"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] "B3GNT2"     "B3GNT3"     "B3GNT4"     "B3GNT5"     "B3GNT6"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [21] "B3GNT7"     "B3GNT8"     "LFNG"       "MFNG"       "RFNG"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26] "B3GALT1"    "B3GALT2"    "B3GALT4"    "B3GALT5"    "B3GALT6"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] "B4GALT1"    "B4GALT2"    "B4GALT3"    "B4GALT4"    "B4GALT5"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36] "B4GALT6"    "B4GALT7"    "FUT1"       "FUT2"       "FUT3"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] "FUT4"       "FUT5"       "FUT6"       "FUT7"       "FUT8"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] "FUT9"       "ST6GAL1"    "ST6GAL2"    "ST3GAL1"    "ST3GAL2"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51] "ST3GAL3"    "ST3GAL4"    "ST3GAL5"    "ST3GAL6"    "ST6GALNAC1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [56] "ST6GALNAC2" "ST6GALNAC3" "ST6GALNAC4" "ST6GALNAC5" "ST6GALNAC6"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] "ST8SIA1"    "ST8SIA2"    "ST8SIA3"    "ST8SIA4"    "ST8SIA5"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] "ST8SIA6"    "A4GNT"      "C1GALT1"    "GCNT1"      "GCNT2"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71] "GCNT3"      "GCNT4"      "B3GALNT1"   "B3GALNT2"   "B4GALNT1"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] "B4GALNT2"   "B4GALNT3"   "B4GALNT4"   "CSGALNACT1" "CSGALNACT2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81] "B3GAT1"     "B3GAT2"     "B3GAT3"     "CHPF"       "CHPF2"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] "CHSY1"      "CHSY3"      "EXT1"       "EXT2"       "EXTL1"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] "EXTL2"      "EXTL3"      "HAS1"       "HAS2"       "HAS3"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [96] "B3GLCT"     "A4GALT"     "ABO"        "GXYLT1"     "GXYLT2"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [101] "LARGE1"     "LARGE2"     "XXYLT1"     "POMGNT1"    "POMGNT2"   </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,8 +108,8 @@ a story! (We’ll skip the rightmost peptide bond for now.)</p>
 the enzymes that might have had a hand in building your glycan:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_involved_enzymes.html">get_involved_enzymes</a></span><span class="op">(</span><span class="va">glycan</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "C1GALT1" "GCNT1"  </span></span>
-<span><span class="co">#&gt; [8] "GCNT3"   "GCNT4"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "B4GALT6" "C1GALT1"</span></span>
+<span><span class="co">#&gt;  [8] "GCNT1"   "GCNT3"   "GCNT4"</span></span></code></pre></div>
 <p>Cool, right? Not only does it spot the enzymes from our diagram, but
 it also whispers about B4GALT1/2/3/4 potentially being involved. (Don’t
 worry, we’ll unpack this mystery soon!)</p>
@@ -118,9 +118,8 @@ add a new enzyme to the mix? Let’s give ST3GAL2 a chance to work its
 magic:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/apply_enzyme.html">apply_enzyme</a></span><span class="op">(</span><span class="va">glycan</span>, <span class="st">"ST3GAL2"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;glycan_structure[1]&gt;</span></span>
-<span><span class="co">#&gt; [1] <span style="color: #AF5FAF;">Neu5Ac</span>(<span style="color: #B2B2B2;">a2-3</span>)<span style="color: #FFD700;">Gal</span>(<span style="color: #B2B2B2;">b1-3</span>)[<span style="color: #FFD700;">Gal</span>(<span style="color: #B2B2B2;">b1-4</span>)<span style="color: #0087D7;">GlcNAc</span>(<span style="color: #B2B2B2;">b1-6</span>)]<span style="color: #FFD700;">GalNAc</span>(<span style="color: #B2B2B2;">a1-</span></span></span>
-<span><span class="co">#&gt; # Unique structures: 1</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;glycan_structure[0]&gt;</span></span>
+<span><span class="co">#&gt; # Unique structures: 0</span></span></code></pre></div>
 <p>Fascinating! 🎯 The function returns a
 <code><a href="https://glycoverse.github.io/glyrepr/reference/glycan_structure.html" class="external-link">glyrepr::glycan_structure()</a></code> vector, but the real story is
 what happened: a shiny new sialic acid got attached to the β1-3 Gal,
@@ -146,7 +145,7 @@ into action?</li>
 <strong>What’s the timeline?</strong> In what order did these
 biochemical events unfold?</li>
 </ul>
-<p>Behind the scenes, glyenzy has catalogued the reaction rules of 62
+<p>Behind the scenes, glyenzy has catalogued the reaction rules of 105
 enzymes in its molecular database. Want to peek at any enzyme’s profile?
 Just use <code>enzyme("MGAT3")</code> and prepare to be amazed by the
 biochemical details!</p>
@@ -171,9 +170,9 @@ structures directly to enzyme expression levels! 📊</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rebuild_biosynthesis.html">rebuild_biosynthesis</a></span><span class="op">(</span><span class="va">glycan</span><span class="op">)</span></span>
 <span><span class="va">path</span></span>
-<span><span class="co">#&gt; IGRAPH 1bddd0f DN-- 4 9 -- </span></span>
+<span><span class="co">#&gt; IGRAPH 869d82b DN-- 4 10 -- </span></span>
 <span><span class="co">#&gt; + attr: name (v/c), enzyme (e/c), step (e/n)</span></span>
-<span><span class="co">#&gt; + edges from 1bddd0f (vertex names):</span></span>
+<span><span class="co">#&gt; + edges from 869d82b (vertex names):</span></span>
 <span><span class="co">#&gt; [1] GalNAc(a1-                       -&gt;Gal(b1-3)GalNAc(a1-                       </span></span>
 <span><span class="co">#&gt; [2] Gal(b1-3)GalNAc(a1-              -&gt;Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         </span></span>
 <span><span class="co">#&gt; [3] Gal(b1-3)GalNAc(a1-              -&gt;Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         </span></span>
@@ -285,8 +284,8 @@ keep in mind:</p>
 <h3 id="species-and-scope">Species and Scope<a class="anchor" aria-label="anchor" href="#species-and-scope"></a>
 </h3>
 <p>glyenzy is currently a human-centric package, focusing specifically
-on N-glycans and O-GalNAc glycans. If you’re working with GAGs,
-glycolipids, or glycans from plants or insects, the results might not be
+on N-glycans and O-glycans. If you’re working with GAGs, glycolipids, or
+glycans from mouse, plants or insects, the results might not be
 accurate. We’re basically specialists, not generalists! 🎯</p>
 </div>
 <div class="section level3">
@@ -336,8 +335,15 @@ narratives:</p>
 <strong>N-glycans</strong>: Begin with the Glc₃Man₉GlcNAc₂ precursor
 (post-OST transfer)</li>
 <li>
-<strong>O-glycans</strong>: Start with GalNAc(α1- (post-GALNT
-addition)</li>
+<strong>O-GalNAc glycans</strong>: Start with GalNAc(α1-</li>
+<li>
+<strong>O-GlcNAc glycans</strong>: Start with GlcNAc(b1-</li>
+<li>
+<strong>O-Man glycans</strong>: Start with Man(a1-</li>
+<li>
+<strong>O-Fuc glycans</strong>: Start with Fuc(a1-</li>
+<li>
+<strong>O-Glc glycans</strong>: Start with Glc(b1-</li>
 </ul>
 <p>This means we don’t track the earlier steps – ALGs building the
 N-glycan precursor, OST transferring it to asparagine, or GALNTs adding

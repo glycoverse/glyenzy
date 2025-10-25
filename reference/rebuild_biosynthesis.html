@@ -11,7 +11,7 @@ that can synthesize all the target glycans."><meta property="og:image" content="
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@ that can synthesize all the target glycans.</p>
 <dd><p>A <code><a href="https://glycoverse.github.io/glyrepr/reference/glycan_structure.html" class="external-link">glyrepr::glycan_structure()</a></code> vector, or a character vector
 of strings supported by <code><a href="https://glycoverse.github.io/glyparse/reference/auto_parse.html" class="external-link">glyparse::auto_parse()</a></code>. Can also be a single glycan.
 If multiple glycans are provided, the starting structure will be decided by the first glycan.
-Therefore, please make sure <code>glycans</code> are not a mixed vector of N- and O-glycans.</p></dd>
+Therefore, please make sure <code>glycans</code> are not of mixed glycan types.</p></dd>
 
 
 <dt id="arg-enzymes">enzymes<a class="anchor" aria-label="anchor" href="#arg-enzymes"></a></dt>
@@ -83,12 +83,6 @@ IUPAC-condensed strings. Edges represent enzymatic reactions with
 <code>enzyme</code> attribute containing gene symbols and <code>step</code> attribute
 indicating the step number. For multiple targets, the graph includes
 all synthesis paths needed to reach every target glycan.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
-the N-glycan precursor transfered to Asn by OST.
-For O-glycans, the starting structure is assumed to be "GalNAc(a1-".</p>
     </div>
     <div class="section level2">
     <h2 id="important-notes">Important notes<a class="anchor" aria-label="anchor" href="#important-notes"></a></h2>
@@ -145,13 +139,14 @@ the result may be misleading.</p>
 <div class="section">
 <h3 id="starting-points">Starting points<a class="anchor" aria-label="anchor" href="#starting-points"></a></h3>
 
-
-<p>Throughout <code>glyenzy</code>, the starting glycan is the Glc(3)Man(9)GlcNAc(2) precursor for N-glycans,
-and GalNAc(a1- for O-glycans.
-This means that enzymes involved in N-glycan precursor biosynthesis, mainly ALGs,
-and OST, which transfered the precursor to Asn, are not considered here.
-Similarly, GALNTs for O-glycans are not considered.</p>
-</div>
+<ul><li><p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
+the N-glycan precursor transfered to Asn by OST.</p></li>
+<li><p>For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".</p></li>
+<li><p>For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".</p></li>
+<li><p>For O-Man glycans, the starting structure is assumed to be "Man(a1-".</p></li>
+<li><p>For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".</p></li>
+<li><p>For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".</p></li>
+</ul></div>
 
     </div>
 
@@ -181,15 +176,24 @@ Similarly, GALNTs for O-glycans are not considered.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                 to  enzyme step</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                                              Gal(b1-3)GalNAc(a1- C1GALT1    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2                                  GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-  B3GNT3    2</span>
@@ -198,15 +202,24 @@ Similarly, GALNTs for O-glycans are not considered.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT3    3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT4    3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT5    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9             Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT6    3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT4    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT9    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT4    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT9    5</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
