@@ -196,8 +196,8 @@ Before you go wild with glyenzy, here are some important caveats to keep in mind
 
 ### Species and Scope
 
-glyenzy is currently a human-centric package, focusing specifically on N-glycans and O-GalNAc glycans.
-If you're working with GAGs, glycolipids, or glycans from plants or insects,
+glyenzy is currently a human-centric package, focusing specifically on N-glycans and O-glycans.
+If you're working with GAGs, glycolipids, or glycans from mouse, plants or insects,
 the results might not be accurate. We're basically specialists, not generalists! 🎯
 
 ### The "Better Safe Than Sorry" Approach
@@ -234,7 +234,11 @@ Make sure your input represents the full, intact glycan for reliable results! �
 glyenzy has specific starting points for its biosynthetic narratives:
 
 - **N-glycans**: Begin with the Glc₃Man₉GlcNAc₂ precursor (post-OST transfer)
-- **O-glycans**: Start with GalNAc(α1- (post-GALNT addition)
+- **O-GalNAc glycans**: Start with GalNAc(α1-
+- **O-GlcNAc glycans**: Start with GlcNAc(b1-
+- **O-Man glycans**: Start with Man(a1-
+- **O-Fuc glycans**: Start with Fuc(a1-
+- **O-Glc glycans**: Start with Glc(b1-
 
 This means we don't track the earlier steps – ALGs building the N-glycan precursor,
 OST transferring it to asparagine, or GALNTs adding the initial GalNAc.
