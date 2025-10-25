@@ -211,26 +211,26 @@ BfsSynthesisSearch <- R6::R6Class(
     # Generates candidate products, filters them, registers edges, updates
     # parent bookkeeping, and returns the new frontier entries plus targets hit.
     expand_single = function(curr_g, curr_key, ez) {
-      products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
-      if (length(products) == 0L) {
-        return(list(
+      zero_products <- function() {
+        list(
           new_structures = list(),
           new_keys = character(0),
           found_keys = character(0)
-        ))
+        )
       }
+
+      products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
+      if (length(products) == 0L) return(zero_products())
+
+      keep <- is_promising_intermediate(products, self$to_gs)
+      products <- products[keep]
+      if (length(products) == 0L) return(zero_products())
 
       if (!is.null(self$filter)) {
         keep <- self$filter(products)
         checkmate::assert_logical(keep, len = length(products), any.missing = FALSE)
         products <- products[keep]
-        if (length(products) == 0L) {
-          return(list(
-            new_structures = list(),
-            new_keys = character(0),
-            found_keys = character(0)
-          ))
-        }
+        if (length(products) == 0L) return(zero_products())
       }
 
       prod_keys <- as.character(products)
@@ -291,6 +291,47 @@ BfsSynthesisSearch <- R6::R6Class(
     }
   )
 )
+
+#' Decide if the glycan is ready for MGAT2 or has been synthesized by MGAT2
+#'
+#' For N-glycans, mgat2_ready() returns TRUE if the α1-3/6 mannoses
+#' on the α1-6 arm of the core Man have already been trimmed (i.e. the structure
+#' is past the MAN2A1/2 trimming stage and is ready for / has passed MGAT2).
+#' For non-N-glycans, the returned value is not biologically meaningful and is
+#' only used downstream together with .is_n_glycan().
+#'
+#' @param glycans A glyrepr::glycan_structure vector.
+#'
+#' @returns A logical vector of the same length as `glycans`.
+#' @noRd
+mgat2_ready <- function(glycans) {
+  !glymotif::have_motif(glycans, "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+}
+
+#' Check if any product is a promising intermediate
+#'
+#' A glycan is not a promising intermediate if it isn't a substructure (core-aligned)
+#' of any of the target glycans.
+#' N-glycans not ready for MGAT2 are always considered as promising intermediates.
+#'
+#' This pruning is crucial for the performance of the BFS search.
+#' By removing unpromising intermediates, the search space is reduced significantly.
+#'
+#' This pruning is based on the assumption that,
+#' apart from N-glycans before mannose trimming,
+#' all other enzymatic steps in the biosynthesis of a glycan are
+#' catalyzed by glycosyltransferases.
+#'
+#' @param products A glyrepr::glycan_structure vector.
+#' @param target_glycans A glyrepr::glycan_structure vector.
+#' @returns A logical vector of the same length as `products`.
+#' @noRd
+is_promising_intermediate <- function(products, target_glycans) {
+  res_mat <- glymotif::have_motifs(target_glycans, products, alignment = "core")
+  res <- colSums(res_mat) > 0L
+  res[.is_n_glycan(products) & !mgat2_ready(products)] <- TRUE
+  res
+}
 
 #' Build result graph from BFS search results
 #'
