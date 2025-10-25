@@ -25,6 +25,8 @@ each containing the names of enzymes involved in the biosynthesis of the corresp
 \description{
 This function returns all possible isoenzymes associated with the biosynthetic
 steps of the input glycan.
+Note that this function ignores the residues in glycans
+that cannot be matched to any enzyme rules.
 }
 \section{Important notes}{
 Here are some important notes for all functions in the \code{glyenzy} package.

@@ -2,6 +2,8 @@
 #'
 #' This function returns all possible isoenzymes associated with the biosynthetic
 #' steps of the input glycan.
+#' Note that this function ignores the residues in glycans
+#' that cannot be matched to any enzyme rules.
 #'
 #' @inheritSection is_synthesized_by Important notes
 #'
