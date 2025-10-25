@@ -49,6 +49,14 @@
     ))
   }
 
+  is_concrete <- .is_concrete_glycan(x)
+  if (!all(is_concrete)) {
+    cli::cli_abort(c(
+      "All glycans must have concrete monosaccharides (e.g. Gal, GlcNAc, etc.).",
+      "x" = "These glycans are not concrete: {.val {unique(x[!is_concrete])}}."
+    ))
+  }
+
   has_intact_linkages <- .has_intact_linkages(x)
   if (!all(has_intact_linkages)) {
     cli::cli_abort(c(
@@ -66,7 +74,11 @@
     ))
   }
 
-  return(x)
+  x
+}
+
+.is_concrete_glycan <- function(x) {
+  glyrepr::get_mono_type(x) == "concrete"
 }
 
 .has_intact_linkages <- function(x) {
