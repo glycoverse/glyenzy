@@ -4,8 +4,18 @@ Version: 0.3.0.9000
 Authors@R: 
     person("Bin", "Fu", , "23110220018@m.fudan.edu.cn", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8567-2997"))
-Description: Resolve the glycosyltransferases involved in constructing 
-    each glycosidic linkage at the bond level for every glycan.
+Description: 
+    Simulates the biosynthetic process of glycosylation in silico, enabling
+    computational analysis of glycan biosynthesis pathways. Key features include:
+    identifying specific glycosyltransferases responsible for each glycosidic bond
+    at the bond level; reconstructing complete biosynthetic pathways for given
+    glycans; exploring possible transformations between two glycan structures via
+    glycosyltransferases and glycosidases; and predicting glycans that can be
+    synthesized from substrate structures and enzyme sets. The package supports
+    multiple glycan types including N-glycans, O-GalNAc, O-Man, O-GlcNAc, O-Fuc,
+    and O-Glc. As a downstream component of the glycoverse ecosystem, it integrates
+    seamlessly with 'glyrepr', 'glyparse', and 'glymotif' to provide practical,
+    analysis-ready insights into glycan biosynthesis for omics researchers.
 License: MIT + file LICENSE
 Suggests: 
     knitr,
