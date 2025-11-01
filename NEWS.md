@@ -1,4 +1,9 @@
-# glyenzy (development version)
+# glyenzy 0.3.2
+
+## Minor improvements and fixes
+
+* Fix errors in the rules of some enzymes, including B3GALT1, B3GALT2, and FUT8.
+* Fix a bug in progress bar of `spawn_glycans()`.
 
 # glyenzy 0.3.1
 
