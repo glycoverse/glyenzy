@@ -87,12 +87,13 @@ spawn_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
   }
   pool <- vector("list", n_steps + 1)
   pool[[1]] <- glycans
+  n_glycans <- length(glycans)
 
   # Initialize progress bar
   cli::cli_progress_bar(
     "Spawning glycans",
     total = n_steps,
-    format = "{cli::pb_spin} Step {cli::pb_current}/{cli::pb_total} | {cli::pb_bar} {cli::pb_percent}"
+    format = "{cli::pb_spin} Step {cli::pb_current}/{cli::pb_total} | {cli::pb_bar} {cli::pb_percent} | current number of glycans: {n_glycans}"
   )
 
   for (i in 1:n_steps) {
@@ -106,6 +107,7 @@ spawn_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
     }
     glycans <- new_glycans
     pool[[i + 1]] <- new_glycans
+    n_glycans <- length(new_glycans)
     cli::cli_progress_update()
   }
 
