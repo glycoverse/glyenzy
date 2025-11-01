@@ -31,10 +31,9 @@ Imports:
     stringr,
     R6
 Remotes: 
-    glycoverse/glyrepr@*release,
     glycoverse/glyparse@*release,
     glycoverse/glymotif@*release
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1)
 LazyData: true
 VignetteBuilder: knitr
