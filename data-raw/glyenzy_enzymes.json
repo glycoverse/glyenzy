@@ -439,7 +439,7 @@
         "rules": [
             {
                 "acceptor": "GlcNAc(b1-",
-                "acceptor_alignment": "core",
+                "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Gal(b1-3)GlcNAc(b1-"
@@ -453,7 +453,7 @@
         "rules": [
             {
                 "acceptor": "GlcNAc(b1-",
-                "acceptor_alignment": "core",
+                "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Gal(b1-3)GlcNAc(b1-"
@@ -795,11 +795,11 @@
         "name": "FUT8",
         "rules": [
             {
-                "acceptor": "GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor": "GlcNAc(b1-2)Man(b1-3)[Man(b1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "core",
                 "rejects": [],
                 "rejects_alignment": [],
-                "product": "GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+                "product": "GlcNAc(b1-2)Man(b1-3)[Man(b1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
