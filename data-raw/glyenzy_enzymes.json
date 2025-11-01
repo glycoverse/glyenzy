@@ -439,7 +439,7 @@
         "rules": [
             {
                 "acceptor": "GlcNAc(b1-",
-                "acceptor_alignment": "core",
+                "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Gal(b1-3)GlcNAc(b1-"
@@ -453,7 +453,7 @@
         "rules": [
             {
                 "acceptor": "GlcNAc(b1-",
-                "acceptor_alignment": "core",
+                "acceptor_alignment": "terminal",
                 "rejects": [],
                 "rejects_alignment": [],
                 "product": "Gal(b1-3)GlcNAc(b1-"
