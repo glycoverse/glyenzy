@@ -96,8 +96,6 @@ spawn_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
   )
 
   for (i in 1:n_steps) {
-    cli::cli_progress_update()
-
     new_glycans <- .spawn_glycans_step(glycans, enzymes)
     if (length(new_glycans) == 0L) {
       cli::cli_progress_done()
@@ -108,6 +106,7 @@ spawn_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
     }
     glycans <- new_glycans
     pool[[i + 1]] <- new_glycans
+    cli::cli_progress_update()
   }
 
   cli::cli_progress_done()
