@@ -156,10 +156,11 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects, reje
 
 #' Validate a `glyenzy_enzyme_rule` object
 #'
-#' This function checks three things:
+#' This function checks four things:
 #' 1. `acceptor` and `product` are both single structures
 #' 2. `rejects` and `rejects_alignment` have the same length
 #' 3. `acceptor` and `product` are valid for the enzyme type
+#' 4. `acceptor` is the substructure of all `rejects`
 #'
 #' @param x A `glyenzy_enzyme_rule` object.
 #' @param type A character string, representing the type of the enzyme, "GT" or "GH".
@@ -188,6 +189,15 @@ validate_enzyme_rule <- function(x, type) {
     GH = .check_product_acceptor(x$product, x$acceptor, "product", "acceptor"),
     cli::cli_abort("Unsupported enzyme type: {type}")
   )
+
+  if (length(x$rejects) > 0) {
+    if (x$acceptor_alignment == "whole") {
+      cli::cli_abort("Cannot set {.field rejects} when the acceptor alignment is {.val whole}.")
+    }
+    if (!all(glymotif::have_motifs(x$rejects, x$acceptor, x$acceptor_alignment))) {
+      cli::cli_abort("The {.arg acceptor} must be the substructure of all {.arg rejects}.")
+    }
+  }
 
   invisible(x)
 }
