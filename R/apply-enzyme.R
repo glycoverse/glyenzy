@@ -107,15 +107,60 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'   of the rule on the corresponding glycan.
 #' @noRd
 .match_rule <- function(glycans, rule) {
-  if (length(rule$rejects) > 0) {
-    have_rejects_mat <- glymotif::have_motifs(glycans, rule$rejects, rule$rejects_alignment)
-    have_rejects <- unname(rowSums(have_rejects_mat) > 0)
-  } else {
-    have_rejects <- rep(FALSE, length(glycans))
-  }
   res <- glymotif::match_motif(glycans, rule$acceptor, rule$acceptor_alignment)
-  res[have_rejects] <- list(list())
+  if (length(rule$rejects) > 0) {
+    rej_match_res <- glymotif::match_motifs(glycans, rule$rejects, rule$acceptor_alignment)
+    res <- .reject_matches(res, rej_match_res)
+  }
   res
+}
+
+#' Update the match results of the acceptor to exclude the reject matches
+#'
+#' @param acc_match_res A nested list with two layers: the outer layer corresponds to the
+#'   glycans in `glycans`, and the inner layer corresponds to different matches
+#'   of the rule on the corresponding glycan.
+#' @param rej_match_res A nested list with three layers: the outermost layer corresponds to the
+#'   reject motifs, the middle layer corresponds to the glycans, and the innermost layer corresponds to
+#'   different matches of the reject on the corresponding glycan.
+#'
+#' @returns An updated version of `acc_match_res` to exclude the reject matches.
+#' @noRd
+.reject_matches <- function(acc_match_res, rej_match_res) {
+  updated_res <- vector("list", length(acc_match_res))
+  for (i in seq_along(acc_match_res)) {
+    # i means the i-th glycan
+
+    # ===== Reject Matching Algorithm Details =====
+
+    # For each glycan, it can have multiple matches of the acceptor.
+    # Each match is a integer vector of the node indices in the glycan that are matched.
+    # Also, for each glycan, it can have multiple matches of the reject motifs (yes, maybe more than one reject motifs).
+    # A match is considered to be "valid" if it is not a subset of any reject match.
+    # Note that we don't care which motif the reject match is from,
+    # because any reject motif can cause the enzyme to reject the glycan match.
+
+    # ===== End of Reject Matching Algorithm Details =====
+
+    acc_match_i <- acc_match_res[[i]]  # unknown length
+    rej_match_i <- purrr::map(rej_match_res, purrr::pluck, i)  # outer: length(rule$rejects), inner: unknown length
+    rej_match_i <- purrr::list_flatten(rej_match_i)
+    to_reject_i <- purrr::map_lgl(acc_match_i, .reject_one_match, rej_matches = rej_match_i)
+    updated_res[[i]] <- acc_match_i[!to_reject_i]
+  }
+  updated_res
+}
+
+#' Whether to reject one glycan match based on the reject matches
+#'
+#' @param acc_match A integer vector, one match result of the acceptor on a glycan.
+#' @param rej_matches All matches of the reject motifs on the same glycan.
+#'
+#' @returns A logical scalar, TRUE if the match should be rejected, FALSE otherwise.
+#' @noRd
+.reject_one_match <- function(acc_match, rej_matches) {
+  is_subset_of <- function(a, b) all(a %in% b)
+  purrr::some(rej_matches, ~ is_subset_of(acc_match, .x))
 }
 
 #' Add a residue to a glycan graph

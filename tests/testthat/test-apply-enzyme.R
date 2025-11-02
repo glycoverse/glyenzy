@@ -71,6 +71,24 @@ test_that("apply_enzyme works for B4GALT1", {
   )
 })
 
+test_that("apply_enzyme works with special reject rules", {
+  # The N-glycan has two galactosylated antennas, one of which has a a1-3 fucose
+  glycan <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  # And we define an enzyme that only afucosylated Gal can be sialylated
+  rule <- new_enzyme_rule(
+    acceptor = glyrepr::as_glycan_structure("Gal(b1-4)GlcNAc(b1-"),
+    product = glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"),
+    acceptor_alignment = "terminal",
+    rejects = glyrepr::as_glycan_structure("Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"),
+    rejects_alignment = "terminal"
+  )
+  enzyme <- new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
+  enzyme <- enhance_enzyme(enzyme)
+  res <- apply_enzyme(glycan, enzyme)
+  # In the result, only one glycan should be generated, with the afucosylated Gal being sialylated
+  expect_equal(as.character(res), "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+})
+
 # ===== Normal Cases for GH Enzymes =====
 test_that("apply_enzyme works for MAN2A1", {
   glycans <- c(
