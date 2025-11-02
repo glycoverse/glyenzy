@@ -79,8 +79,7 @@ test_that("apply_enzyme works with special reject rules", {
     acceptor = glyrepr::as_glycan_structure("Gal(b1-4)GlcNAc(b1-"),
     product = glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"),
     acceptor_alignment = "terminal",
-    rejects = glyrepr::as_glycan_structure("Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"),
-    rejects_alignment = "terminal"
+    rejects = glyrepr::as_glycan_structure("Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
   )
   enzyme <- new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
   enzyme <- enhance_enzyme(enzyme)

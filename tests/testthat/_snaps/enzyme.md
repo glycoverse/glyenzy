@@ -47,6 +47,6 @@
       Acceptor: "Gal(b1-3)GalNAc(a1-"
       Product: "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
       Rejects:
-      "Gal(b1-4)GalNAc(a1-" (terminal)
-      "Neu5Ac(a2-6)Gal(b1-3)GalNAc(a1-" (terminal)
+      "Gal(b1-4)GalNAc(a1-"
+      "Neu5Ac(a2-6)Gal(b1-3)GalNAc(a1-"
 
