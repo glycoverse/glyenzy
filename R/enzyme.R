@@ -181,7 +181,7 @@ validate_enzyme_rule <- function(x, type) {
     if (x$acceptor_alignment == "whole") {
       cli::cli_abort("Cannot set {.field rejects} when the acceptor alignment is {.val whole}.")
     }
-    if (!all(glymotif::have_motifs(x$rejects, x$acceptor, x$acceptor_alignment))) {
+    if (!all(glymotif::have_motifs(x$rejects, x$acceptor, alignments = "substructure"))) {
       cli::cli_abort("The {.arg acceptor} must be the substructure of all {.arg rejects}.")
     }
     n_mono_acc <- igraph::vcount(glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE))
