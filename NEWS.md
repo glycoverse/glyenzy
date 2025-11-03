@@ -1,5 +1,20 @@
 # glyenzy (development version)
 
+## Breaking changes
+
+* Strengthen validation of the `rejects` field in enzyme rules: each reject must contain the acceptor motif.
+* Rework `rejects` handling in `apply_enzyme()` (and callers) to evaluate rejects per match rather than per glycan, improving accuracy for glycans with multiple acceptor matches.
+* Update built-in rules for MAN2A1, MAN2A2, MGAT3, MGAT4A, and MGAT4B to align with the new reject semantics.
+* Remove the now-redundant `rejects_alignment` field from `enzyme_rule` objects; `acceptor_alignment` is reused for reject checks.
+
+## New features
+
+* Add `create_enzyme()`, enabling programmatic construction of custom enzymes.
+
+## Minor improvements and fixes
+
+* `spawn_glycans()` now shows live glycan counts in the progress bar.
+
 # glyenzy 0.3.2
 
 ## Minor improvements and fixes
