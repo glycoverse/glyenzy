@@ -1,4 +1,4 @@
-# glyenzy (development version)
+# glyenzy 0.4.0
 
 ## Breaking changes
 
