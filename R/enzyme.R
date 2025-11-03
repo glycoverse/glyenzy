@@ -184,6 +184,11 @@ validate_enzyme_rule <- function(x, type) {
     if (!all(glymotif::have_motifs(x$rejects, x$acceptor, x$acceptor_alignment))) {
       cli::cli_abort("The {.arg acceptor} must be the substructure of all {.arg rejects}.")
     }
+    n_mono_acc <- igraph::vcount(glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE))
+    n_mono_rej <- glyrepr::smap_int(x$rejects, ~ igraph::vcount(.x))
+    if (any(n_mono_rej == n_mono_acc)) {
+      cli::cli_abort("{.field rejects} cannot be the same as {.field acceptor}.")
+    }
   }
 
   invisible(x)
