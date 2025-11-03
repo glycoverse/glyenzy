@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,25 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="glyenzy-development-version">glyenzy (development version)<a class="anchor" aria-label="anchor" href="#glyenzy-development-version"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>Strengthen validation of the <code>rejects</code> field in enzyme rules: each reject must contain the acceptor motif.</li>
+<li>Rework <code>rejects</code> handling in <code><a href="../reference/apply_enzyme.html">apply_enzyme()</a></code> (and callers) to evaluate rejects per match rather than per glycan, improving accuracy for glycans with multiple acceptor matches.</li>
+<li>Update built-in rules for MAN2A1, MAN2A2, MGAT3, MGAT4A, and MGAT4B to align with the new reject semantics.</li>
+<li>Remove the now-redundant <code>rejects_alignment</code> field from <code>enzyme_rule</code> objects; <code>acceptor_alignment</code> is reused for reject checks.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>Add <code><a href="../reference/create_enzyme.html">create_enzyme()</a></code>, enabling programmatic construction of custom enzymes.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-fixes-development-version">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/spawn_glycans_step.html">spawn_glycans()</a></code> now shows live glycan counts in the progress bar.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="glyenzy-032">glyenzy 0.3.2<a class="anchor" aria-label="anchor" href="#glyenzy-032"></a></h2>
 <div class="section level3">
