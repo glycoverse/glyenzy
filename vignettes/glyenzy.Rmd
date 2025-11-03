@@ -68,16 +68,16 @@ but it also whispers about B4GALT1/2/3/4 potentially being involved.
 (Don't worry, we'll unpack this mystery soon!)
 
 But wait, there's more! What if we want to see what happens when we add a new enzyme to the mix?
-Let's give ST3GAL2 a chance to work its magic:
+Let's give ST3GAL1 a chance to work its magic:
 
 ```{r}
-apply_enzyme(glycan, "ST3GAL2")
+apply_enzyme(glycan, "ST3GAL1")
 ```
 
 Fascinating! 🎯 The function returns a `glyrepr::glycan_structure()` vector,
 but the real story is what happened: a shiny new sialic acid got attached to the β1-3 Gal,
 while the β1-4 Gal was completely ignored.
-Why? Because ST3GAL2 is incredibly picky – it only recognizes "Gal(β1-3)GalNAc(α1-" as its substrate.
+Why? Because ST3GAL1 is incredibly picky – it only recognizes "Gal(β1-3)GalNAc(α1-" as its substrate.
 
 Getting the hang of it? Great! Let's explore what else glyenzy can do for you.
 
