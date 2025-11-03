@@ -167,8 +167,8 @@ create_enzyme <- function(name, rules, type, species) {
 
   rules <- purrr::map(rules, .create_rule)
   enz <- new_enzyme(name, rules, type, species)
-  glyenzy:::validate_enzyme(enz)
-  glyenzy:::enhance_enzyme(enz)
+  validate_enzyme(enz)
+  enhance_enzyme(enz)
 }
 
 .create_rule <- function(rule_data) {

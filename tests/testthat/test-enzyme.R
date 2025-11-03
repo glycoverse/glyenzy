@@ -16,7 +16,7 @@ test_that("new_enzyme_rule creates valid enzyme rule objects", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_s3_class(rule, "glyenzy_enzyme_rule")
   expect_equal(rule$acceptor, acceptor)
@@ -31,7 +31,7 @@ test_that("new_enzyme_rule handles rejects", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(c("Gal(b1-4)GalNAc(a1-", "Neu5Ac(a2-6)Gal(b1-3)GalNAc(a1-"))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_s3_class(rule, "glyenzy_enzyme_rule")
   expect_equal(rule$rejects, rejects)
@@ -43,8 +43,8 @@ test_that("new_enzyme creates valid enzyme objects", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enzyme <- glyenzy:::new_enzyme("ST3GAL2", list(rule), "GT", "human")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enzyme <- new_enzyme("ST3GAL2", list(rule), "GT", "human")
 
   expect_s3_class(enzyme, "glyenzy_enzyme")
   expect_equal(enzyme$name, "ST3GAL2")
@@ -102,8 +102,8 @@ test_that("acceptor_idx and product_idx are correctly set for GH enzymes", {
   product <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enhanced_rule <- glyenzy:::enhance_enzyme_rule(rule, "GH")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enhanced_rule <- enhance_enzyme_rule(rule, "GH")
 
   # For GH enzymes, acceptor_idx should point to the removed residue
   expect_type(enhanced_rule$acceptor_idx, "integer")
@@ -144,15 +144,15 @@ test_that("validate_enzyme works with valid enzyme", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enzyme_obj <- glyenzy:::new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enzyme_obj <- new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
 
-  expect_invisible(glyenzy:::validate_enzyme(enzyme_obj))
+  expect_invisible(validate_enzyme(enzyme_obj))
 })
 
 test_that("validate_enzyme fails with invalid class", {
   expect_error(
-    glyenzy:::validate_enzyme(list(name = "test")),
+    validate_enzyme(list(name = "test")),
     "Assertion on 'x' failed"
   )
 })
@@ -163,9 +163,9 @@ test_that("validate_enzyme_rule works with valid GT rule", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
-  expect_invisible(glyenzy:::validate_enzyme_rule(rule, "GT"))
+  expect_invisible(validate_enzyme_rule(rule, "GT"))
 })
 
 test_that("validate_enzyme_rule works with valid GH rule", {
@@ -173,9 +173,9 @@ test_that("validate_enzyme_rule works with valid GH rule", {
   product <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
-  expect_invisible(glyenzy:::validate_enzyme_rule(rule, "GH"))
+  expect_invisible(validate_enzyme_rule(rule, "GH"))
 })
 
 test_that("validate_enzyme_rule fails with multiple acceptors", {
@@ -183,10 +183,10 @@ test_that("validate_enzyme_rule fails with multiple acceptors", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    glyenzy:::validate_enzyme_rule(rule, "GT"),
+    validate_enzyme_rule(rule, "GT"),
     "acceptor.*must be a single structure"
   )
 })
@@ -196,10 +196,10 @@ test_that("validate_enzyme_rule fails with multiple products", {
   product <- glyparse::parse_iupac_condensed(c("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", "Neu5Ac(a2-6)Gal(b1-3)GalNAc(a1-"))
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    glyenzy:::validate_enzyme_rule(rule, "GT"),
+    validate_enzyme_rule(rule, "GT"),
     "product.*must be a single structure"
   )
 })
@@ -209,10 +209,10 @@ test_that("validate_enzyme_rule fails when acceptor is not substructure of produ
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    glyenzy:::validate_enzyme_rule(rule, "GT"),
+    validate_enzyme_rule(rule, "GT"),
     "acceptor.*must be a substructure"
   )
 })
@@ -222,10 +222,10 @@ test_that("validate_enzyme_rule fails when product is not substructure of accept
   product <- glyparse::parse_iupac_condensed("Man(a1-3)GalNAc(a1-")  # Different structure
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    glyenzy:::validate_enzyme_rule(rule, "GH"),
+    validate_enzyme_rule(rule, "GH"),
     "product.*must be a substructure"
   )
 })
@@ -236,10 +236,10 @@ test_that("enhance_enzyme enhances all rules", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enzyme_obj <- glyenzy:::new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enzyme_obj <- new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
 
-  enhanced_enzyme <- glyenzy:::enhance_enzyme(enzyme_obj)
+  enhanced_enzyme <- enhance_enzyme(enzyme_obj)
 
   res_rule <- enhanced_enzyme$rules[[1]]
   expect_s3_class(enhanced_enzyme, "glyenzy_enzyme")
@@ -255,8 +255,8 @@ test_that("enhance_enzyme_rule works for GT enzymes", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enhanced_rule <- glyenzy:::enhance_enzyme_rule(rule, "GT")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enhanced_rule <- enhance_enzyme_rule(rule, "GT")
 
   expect_true("acceptor_idx" %in% names(enhanced_rule))
   expect_true("product_idx" %in% names(enhanced_rule))
@@ -273,8 +273,8 @@ test_that("enhance_enzyme_rule works for GH enzymes", {
   product <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enhanced_rule <- glyenzy:::enhance_enzyme_rule(rule, "GH")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enhanced_rule <- enhance_enzyme_rule(rule, "GH")
 
   expect_true("acceptor_idx" %in% names(enhanced_rule))
   expect_type(enhanced_rule$acceptor_idx, "integer")
@@ -286,7 +286,7 @@ test_that("enhance_enzyme_rule works for GH enzymes", {
 
 # Test print method edge cases
 test_that("print.glyenzy_enzyme works with enzyme with no rules", {
-  enzyme_obj <- glyenzy:::new_enzyme("EMPTY_ENZYME", list(), "GT", "human")
+  enzyme_obj <- new_enzyme("EMPTY_ENZYME", list(), "GT", "human")
   expect_snapshot(print(enzyme_obj))
 })
 
@@ -295,8 +295,8 @@ test_that("print.glyenzy_enzyme works with enzyme with rejects", {
   product <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-")
   rejects <- glyparse::parse_iupac_condensed(c("Gal(b1-4)GalNAc(a1-", "Neu5Ac(a2-6)Gal(b1-3)GalNAc(a1-"))
 
-  rule <- glyenzy:::new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enzyme_obj <- glyenzy:::new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
+  rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
+  enzyme_obj <- new_enzyme("TEST_ENZYME", list(rule), "GT", "human")
 
   expect_snapshot(print(enzyme_obj))
 })
