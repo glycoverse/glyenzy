@@ -1,4 +1,8 @@
-# glyenzy (development version)
+# glyenzy 0.4.1
+
+## Minor improvements and fixes
+
+* glyenzy now depends on the CRAN version of glyparse.
 
 # glyenzy 0.4.0
 
