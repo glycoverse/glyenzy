@@ -41,7 +41,6 @@ Imports:
     stringr,
     R6
 Remotes: 
-    glycoverse/glyparse@*release,
     glycoverse/glymotif@*release
 Depends: 
     R (>= 4.1)
