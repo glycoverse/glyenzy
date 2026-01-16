@@ -4,6 +4,7 @@
 .httr-oauth
 .DS_Store
 .quarto
+.worktrees
 docs
 inst/doc
 /doc/
