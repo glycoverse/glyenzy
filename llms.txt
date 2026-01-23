@@ -11,7 +11,13 @@ from a given substrate structure and a set of enzymes.
 ## Installation
 
 You can install the latest release of glyenzy from
-[GitHub](https://github.com/) with:
+[r-universe](https://glycoverse.r-universe.dev/glyenzy):
+
+``` r
+install.packages('glyenzy', repos = c('https://glycoverse.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+Or from [GitHub](https://github.com/glycoverse/glyenzy):
 
 ``` r
 # install.packages("remotes")

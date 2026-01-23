@@ -7,13 +7,13 @@
 
 ## Citation
 
-Fu B (2025). *glyenzy: Deconstruction Glycosylation Biosynthesis*. R
-package version 0.4.1, <https://glycoverse.github.io/glyenzy/>.
+Fu B (2026). *glyenzy: Deconstruction Glycosylation Biosynthesis*. R
+package version 0.4.1.9000, <https://glycoverse.github.io/glyenzy/>.
 
     @Manual{,
       title = {glyenzy: Deconstruction Glycosylation Biosynthesis},
       author = {Bin Fu},
-      year = {2025},
-      note = {R package version 0.4.1},
+      year = {2026},
+      note = {R package version 0.4.1.9000},
       url = {https://glycoverse.github.io/glyenzy/},
     }
