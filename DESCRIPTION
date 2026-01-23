@@ -29,9 +29,9 @@ URL: https://glycoverse.github.io/glyenzy/
 Imports:
     checkmate,
     cli,
-    glymotif (>= 0.10.0),
-    glyrepr (>= 0.7.4),
-    glyparse (>= 0.5.3),
+    glymotif (>= 0.12.0.9000),
+    glyrepr (>= 0.9.0.9000),
+    glyparse (>= 0.5.3.9000),
     igraph,
     purrr,
     fastmap,
@@ -41,7 +41,9 @@ Imports:
     stringr,
     R6
 Remotes: 
-    glycoverse/glymotif@*release
+    glycoverse/glymotif,
+    glycoverse/glyrepr,
+    glycoverse/glyparse
 Depends: 
     R (>= 4.1)
 LazyData: true
