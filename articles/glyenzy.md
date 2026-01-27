@@ -130,9 +130,9 @@ Ready for the grand finale? Meet
 ``` r
 path <- rebuild_biosynthesis(glycan)
 path
-#> IGRAPH 3096fe4 DN-- 4 10 -- 
+#> IGRAPH 07bb9c9 DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from 3096fe4 (vertex names):
+#> + edges from 07bb9c9 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
