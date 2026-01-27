@@ -2,6 +2,10 @@
 
 ## glyenzy (development version)
 
+### Minor improvements and fixes
+
+- Update internal data to adapt to glyrepr 0.10.0.
+
 ## glyenzy 0.4.1
 
 ### Minor improvements and fixes
