@@ -12,6 +12,8 @@ status](https://www.r-pkg.org/badges/version/glyenzy)](https://CRAN.R-project.or
 [![R-CMD-check](https://github.com/glycoverse/glyenzy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/glycoverse/glyenzy/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/glycoverse/glyenzy/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glyenzy)
+[![R-universe
+version](https://glycoverse.r-universe.dev/glyenzy/badges/version)](https://glycoverse.r-universe.dev/glyenzy)
 <!-- badges: end -->
 
 The glyenzy package helps simulate the biosynthetic process of
