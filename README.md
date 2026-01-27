@@ -9,11 +9,11 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/glyenzy)](https://CRAN.R-project.org/package=glyenzy)
+[![R-universe
+version](https://glycoverse.r-universe.dev/glyenzy/badges/version)](https://glycoverse.r-universe.dev/glyenzy)
 [![R-CMD-check](https://github.com/glycoverse/glyenzy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/glycoverse/glyenzy/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/glycoverse/glyenzy/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glyenzy)
-[![R-universe
-version](https://glycoverse.r-universe.dev/glyenzy/badges/version)](https://glycoverse.r-universe.dev/glyenzy)
 <!-- badges: end -->
 
 The glyenzy package helps simulate the biosynthetic process of
