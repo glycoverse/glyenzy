@@ -40,8 +40,6 @@ Imports:
     tibble,
     stringr,
     R6
-Remotes: 
-    glycoverse/glymotif@*release
 Depends: 
     R (>= 4.1)
 LazyData: true
