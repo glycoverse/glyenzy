@@ -1,6 +1,10 @@
 # Changelog
 
-## glyenzy (development version)
+## glyenzy 0.4.3
+
+### Minor improvements and fixes
+
+- Update dependency strategy to use the r-universe repo.
 
 ## glyenzy 0.4.2
 
