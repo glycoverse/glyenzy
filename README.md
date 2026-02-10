@@ -27,23 +27,25 @@ from a given substrate structure and a set of enzymes.
 ## Installation
 
 You can install the latest release of glyenzy from
-[r-universe](https://glycoverse.r-universe.dev/glyenzy):
+[r-universe](https://glycoverse.r-universe.dev/glyenzy)
+(**recommended**):
 
 ``` r
-install.packages('glyenzy', repos = c('https://glycoverse.r-universe.dev', 'https://cloud.r-project.org'))
+# install.packages("pak")
+pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
+pak::pkg_install("glyenzy")
 ```
 
 Or from [GitHub](https://github.com/glycoverse/glyenzy):
 
 ``` r
-# install.packages("remotes")
-remotes::install_github("glycoverse/glyenzy@*release")
+pak::pkg_install("glycoverse/glyenzy@*release")
 ```
 
-Or install the development version:
+Or install the development version (NOT recommended):
 
 ``` r
-remotes::install_github("glycoverse/glyenzy")
+pak::pkg_install("glycoverse/glyenzy")
 ```
 
 ## Documentation
@@ -65,6 +67,7 @@ glycan biosynthesis.
 
 ``` r
 library(glyrepr)
+#> Warning: 程序包'glyrepr'是用R版本4.5.2 来建造的
 library(glyenzy)
 ```
 
