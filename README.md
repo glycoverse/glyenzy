@@ -26,6 +26,10 @@ from a given substrate structure and a set of enzymes.
 
 ## Installation
 
+The glyenzy package is not a core glycoverse package. You need to
+install it individually even if you have installed the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse).
+
 You can install the latest release of glyenzy from
 [r-universe](https://glycoverse.r-universe.dev/glyenzy)
 (**recommended**):
@@ -47,6 +51,11 @@ Or install the development version (NOT recommended):
 ``` r
 pak::pkg_install("glycoverse/glyenzy")
 ```
+
+**Note:** Tips and troubleshooting for the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse) are also
+applicable here: [Installation of
+glycoverse](https://github.com/glycoverse/glycoverse#installation).
 
 ## Documentation
 

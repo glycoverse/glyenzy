@@ -31,6 +31,9 @@ and predicting the glycans that can be synthesized from a given substrate struct
 
 ## Installation
 
+The glyenzy package is not a core glycoverse package.
+You need to install it individually even if you have installed the meta-package [glycoverse](https://github.com/glycoverse/glycoverse).
+
 You can install the latest release of glyenzy from [r-universe](https://glycoverse.r-universe.dev/glyenzy) (**recommended**):
 
 ```r
@@ -41,15 +44,18 @@ pak::pkg_install("glyenzy")
 
 Or from [GitHub](https://github.com/glycoverse/glyenzy):
 
-``` r
+```r
 pak::pkg_install("glycoverse/glyenzy@*release")
 ```
 
 Or install the development version (NOT recommended):
 
-``` r
+```r
 pak::pkg_install("glycoverse/glyenzy")
 ```
+
+**Note:** Tips and troubleshooting for the meta-package [glycoverse](https://github.com/glycoverse/glycoverse)
+are also applicable here: [Installation of glycoverse](https://github.com/glycoverse/glycoverse#installation).
 
 ## Documentation
 
