@@ -1,0 +1,26 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/CONTRIBUTING.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/LICENSE-text.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/LICENSE.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/SUPPORT.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/articles/glyenzy.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/articles/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/authors.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/news/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/all_enzymes.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/apply_enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme_steps.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/create_enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/find_synthesis_path.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/get_involved_enzymes.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/glyenzy-package.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/is_synthesized_by.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/print.glyenzy_enzyme.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/rebuild_biosynthesis.html</loc></url>
+<url><loc>https://glycoverse.github.io/glyenzy/dev/reference/spawn_glycans_step.html</loc></url>
+</urlset>
+
