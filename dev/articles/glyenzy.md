@@ -17,6 +17,7 @@ predict what new structures might emerge from a biochemical reaction,
 glyenzy has you covered.
 
 ``` r
+
 library(glyrepr)
 library(glyenzy)
 library(igraph)
@@ -53,16 +54,18 @@ That’s the beauty of glycan biosynthesis – every connection has a story!
 Here’s our star glycan in IUPAC-condensed notation:
 
 ``` r
+
 glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 ```
 
 Time to meet your new best friend:
-[`get_involved_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/get_involved_enzymes.md)
+[`find_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/find_enzyme.md)
 👋 This clever function reveals all the enzymes that might have had a
 hand in building your glycan:
 
 ``` r
-get_involved_enzymes(glycan)
+
+find_enzyme(glycan)
 #>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "B4GALT6" "C1GALT1"
 #>  [8] "GCNT1"   "GCNT3"   "GCNT4"
 ```
@@ -75,6 +78,7 @@ But wait, there’s more! What if we want to see what happens when we add
 a new enzyme to the mix? Let’s give ST3GAL1 a chance to work its magic:
 
 ``` r
+
 apply_enzyme(glycan, "ST3GAL1")
 #> <glycan_structure[1]>
 #> [1] Neu5Ac(a2-3)Gal(b1-3)[Gal(b1-4)GlcNAc(b1-6)]GalNAc(a1-
@@ -111,28 +115,29 @@ Combined with the sophisticated motif-matching algorithms from
 `glymotif`, we can reconstruct any glycan’s complete biography.
 
 You’ve already met
-[`get_involved_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/get_involved_enzymes.md)
+[`find_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/find_enzyme.md)
 – perfect for getting the full cast of characters. But sometimes you
 want more targeted intel:
 
-- [`is_synthesized_by()`](https://glycoverse.github.io/glyenzy/dev/reference/is_synthesized_by.md)
+- [`have_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/have_enzyme.md)
   answers “Was enzyme X involved?” with a simple yes/no
-- [`count_enzyme_steps()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme_steps.md)
+- [`count_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme.md)
   tells you exactly how many times an enzyme got busy
 
 This intel is gold for multiomics analysis – imagine linking glycan
 structures directly to enzyme expression levels! 📊
 
 Ready for the grand finale? Meet
-[`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/rebuild_biosynthesis.md)
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
 – the function that reconstructs a glycan’s complete life story:
 
 ``` r
-path <- rebuild_biosynthesis(glycan)
+
+path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH e746637 DN-- 4 10 -- 
+#> IGRAPH e5d4b84 DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from e746637 (vertex names):
+#> + edges from e5d4b84 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -152,8 +157,9 @@ two vertices.
 Let’s try this with a more complex N-glycan:
 
 ``` r
+
 glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-path <- rebuild_biosynthesis(glycan)
+path <- trace_biosynthesis(glycan)
 plot(
   path,
   layout = layout_as_tree(path),
@@ -177,6 +183,7 @@ existing structures. Let’s start simple and work our way up to some
 serious biochemical wizardry.
 
 ``` r
+
 # The humble GalNAc core of O-glycan
 glycan <- "GalNAc(a1-"
 ```
@@ -184,6 +191,7 @@ glycan <- "GalNAc(a1-"
 What happens if we introduce C1GALT1 to this lonely GalNAc?
 
 ``` r
+
 apply_enzyme(glycan, "C1GALT1")
 #> <glycan_structure[1]>
 #> [1] Gal(b1-3)GalNAc(a1-
@@ -202,6 +210,7 @@ bundled in a
 vector.
 
 ``` r
+
 # A bi-antennary agalactosylated N-glycan (fancy name for "no galactose yet")
 glycan <- "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 apply_enzyme(glycan, "B4GALT1")
@@ -221,14 +230,15 @@ Toss in some glycan substrates, add a cocktail of enzymes, and watch the
 magic unfold over multiple reaction steps.
 
 Use
-[`spawn_glycans()`](https://glycoverse.github.io/glyenzy/dev/reference/spawn_glycans_step.md)
+[`grow_glycans()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
 for the full experience, or
-[`spawn_glycans_step()`](https://glycoverse.github.io/glyenzy/dev/reference/spawn_glycans_step.md)
+[`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
 if you prefer to watch the drama unfold step by step:
 
 ``` r
+
 # Our trusty bi-antennary N-glycan meets three enzyme friends
-spawn_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
+grow_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
 #> ⠙ Step 4/5 | ■■■■■■■■■■■■■■■■■■■■■■■■■         80% | current number of glycans:…
 #> ⠙ Step 5/5 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | current number of glycans:…
 #> <glycan_structure[32]>
