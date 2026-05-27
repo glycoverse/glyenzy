@@ -69,10 +69,10 @@ enzyme <- function(symbol) {
 #'
 #' @returns A list of [enzyme()]s or a character vector.
 #' @examples
-#' all_enzymes(return_str = TRUE)
+#' db_enzymes(return_str = TRUE)
 #'
 #' @export
-all_enzymes <- function(return_str = FALSE) {
+db_enzymes <- function(return_str = FALSE) {
   if (return_str) {
     return(names(glyenzy_enzymes))
   } else {
@@ -136,7 +136,10 @@ enhance_enzyme <- function(x) {
 new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects) {
   checkmate::assert_class(acceptor, "glyrepr_structure")
   checkmate::assert_class(product, "glyrepr_structure")
-  checkmate::assert_choice(acceptor_alignment, c("substructure", "core", "terminal", "whole"))
+  checkmate::assert_choice(
+    acceptor_alignment,
+    c("substructure", "core", "terminal", "whole")
+  )
   checkmate::assert_class(rejects, "glyrepr_structure")
 
   structure(
@@ -179,15 +182,30 @@ validate_enzyme_rule <- function(x, type) {
 
   if (length(x$rejects) > 0) {
     if (x$acceptor_alignment == "whole") {
-      cli::cli_abort("Cannot set {.field rejects} when the acceptor alignment is {.val whole}.")
+      cli::cli_abort(
+        "Cannot set {.field rejects} when the acceptor alignment is {.val whole}."
+      )
     }
-    if (!all(glymotif::have_motifs(x$rejects, x$acceptor, alignments = "substructure"))) {
-      cli::cli_abort("The {.arg acceptor} must be the substructure of all {.arg rejects}.")
+    if (
+      !all(glymotif::have_motifs(
+        x$rejects,
+        x$acceptor,
+        alignments = "substructure"
+      ))
+    ) {
+      cli::cli_abort(
+        "The {.arg acceptor} must be the substructure of all {.arg rejects}."
+      )
     }
-    n_mono_acc <- igraph::vcount(glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE))
+    n_mono_acc <- igraph::vcount(glyrepr::get_structure_graphs(
+      x$acceptor,
+      return_list = FALSE
+    ))
     n_mono_rej <- glyrepr::smap_int(x$rejects, ~ igraph::vcount(.x))
     if (any(n_mono_rej == n_mono_acc)) {
-      cli::cli_abort("{.field rejects} cannot be the same as {.field acceptor}.")
+      cli::cli_abort(
+        "{.field rejects} cannot be the same as {.field acceptor}."
+      )
     }
   }
 
@@ -218,9 +236,16 @@ enhance_enzyme_rule <- function(x, type) {
 }
 
 .enhance_gt_enzyme_rule <- function(x) {
-  acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE)
+  acceptor_graph <- glyrepr::get_structure_graphs(
+    x$acceptor,
+    return_list = FALSE
+  )
   product_graph <- glyrepr::get_structure_graphs(x$product, return_list = FALSE)
-  match_res <- glymotif::match_motif(x$product, x$acceptor, alignment = "core")[[1]][[1]]  # only one glycan and one match, so `[[1]][[1]]`
+  match_res <- glymotif::match_motif(
+    x$product,
+    x$acceptor,
+    alignment = "core"
+  )[[1]][[1]] # only one glycan and one match, so `[[1]][[1]]`
 
   # The node index of the new residue in the product
   new_residue_idx <- setdiff(1:igraph::vcount(product_graph), match_res)
@@ -229,30 +254,41 @@ enhance_enzyme_rule <- function(x, type) {
   parent_idx <- igraph::neighbors(product_graph, new_residue_idx, mode = "in")
   # And map it to the acceptor graph
   acceptor_idx <- match(parent_idx, match_res)
-  
+
   # Get the new residue and new linkage
   new_residue <- igraph::V(product_graph)[new_residue_idx]$mono
-  new_linkage <- igraph::incident(product_graph, new_residue_idx, mode = "in")$linkage
+  new_linkage <- igraph::incident(
+    product_graph,
+    new_residue_idx,
+    mode = "in"
+  )$linkage
 
   # Add new fields
   x$acceptor_idx <- acceptor_idx
-  x$product_idx <- new_residue_idx  # For GT: index of newly added residue in product
+  x$product_idx <- new_residue_idx # For GT: index of newly added residue in product
   x$new_residue <- new_residue
   x$new_linkage <- new_linkage
   x
 }
 
 .enhance_gh_enzyme_rule <- function(x) {
-  acceptor_graph <- glyrepr::get_structure_graphs(x$acceptor, return_list = FALSE)
+  acceptor_graph <- glyrepr::get_structure_graphs(
+    x$acceptor,
+    return_list = FALSE
+  )
   product_graph <- glyrepr::get_structure_graphs(x$product, return_list = FALSE)
-  match_res <- glymotif::match_motif(x$acceptor, x$product, alignment = "core")[[1]][[1]]  # only one glycan, so `[[1]]`
+  match_res <- glymotif::match_motif(
+    x$acceptor,
+    x$product,
+    alignment = "core"
+  )[[1]][[1]] # only one glycan, so `[[1]]`
 
   # The node index of the removed residue in the acceptor
   removed_residue_idx <- setdiff(1:igraph::vcount(acceptor_graph), match_res)
 
   # Add new fields
   x$acceptor_idx <- removed_residue_idx
-  x$product_idx <- NULL  # For GH: no new residue is added
+  x$product_idx <- NULL # For GH: no new residue is added
   x$new_residue <- NULL
   x$new_linkage <- NULL
   x
@@ -273,18 +309,27 @@ enhance_enzyme_rule <- function(x, type) {
 #'   Used for error messages.
 #'
 #' @noRd
-.check_product_acceptor <- function(smaller, larger, smaller_name, larger_name) {
+.check_product_acceptor <- function(
+  smaller,
+  larger,
+  smaller_name,
+  larger_name
+) {
   smaller_graph <- glyrepr::get_structure_graphs(smaller, return_list = FALSE)
   larger_graph <- glyrepr::get_structure_graphs(larger, return_list = FALSE)
-  match_res <- glymotif::match_motif(larger, smaller, alignment = "core")[[1]]  # only one glycan, so `[[1]]`
+  match_res <- glymotif::match_motif(larger, smaller, alignment = "core")[[1]] # only one glycan, so `[[1]]`
   # `smaller` is a substructure of `larger`
   if (length(match_res) != 1) {
-    cli::cli_abort("{.arg {smaller_name}} must be a substructure of {.arg {larger_name}}.")
+    cli::cli_abort(
+      "{.arg {smaller_name}} must be a substructure of {.arg {larger_name}}."
+    )
   }
-  match_res <- match_res[[1]]  # only one match, so `[[1]]`
+  match_res <- match_res[[1]] # only one match, so `[[1]]`
   # `larger` has only one more residue than `smaller`
   if (igraph::vcount(larger_graph) - igraph::vcount(smaller_graph) != 1) {
-    cli::cli_abort("{.arg {larger_name}} must have exactly one more residue than {.arg {smaller_name}}.")
+    cli::cli_abort(
+      "{.arg {larger_name}} must have exactly one more residue than {.arg {smaller_name}}."
+    )
   }
 }
 
@@ -310,7 +355,9 @@ print.glyenzy_enzyme <- function(x, ...) {
   cli::cli_h2("Rules ({.val {length(x$rules)}})")
   if (length(x$rules) > 0) {
     purrr::iwalk(x$rules, function(rule, i) {
-      cli::cli_alert("Rule {.val {i}}: {.field {rule$acceptor_alignment}} alignment")
+      cli::cli_alert(
+        "Rule {.val {i}}: {.field {rule$acceptor_alignment}} alignment"
+      )
       cli::cli_text("  Acceptor: {.val {as.character(rule$acceptor)}}")
       cli::cli_text("  Product:  {.val {as.character(rule$product)}}")
 

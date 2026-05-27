@@ -1,8 +1,8 @@
 #' Breadth-First Search for Glycan Synthesis Paths
 #'
 #' Core BFS algorithms for finding synthesis paths between glycan structures.
-#' These functions provide the algorithmic foundation for both find_synthesis_path()
-#' and rebuild_biosynthesis().
+#' These functions provide the algorithmic foundation for both path_biosynthesis()
+#' and trace_biosynthesis().
 
 #' Perform BFS search for synthesis paths between glycan structures
 #'
@@ -98,7 +98,11 @@ BfsSynthesisSearch <- R6::R6Class(
       self$enzymes <- enzymes
       self$max_steps <- max_steps
       self$filter <- filter
-      self$from_key <- if (is.null(from_key)) as.character(from_g)[1] else from_key
+      self$from_key <- if (is.null(from_key)) {
+        as.character(from_g)[1]
+      } else {
+        from_key
+      }
       self$to_keys <- if (is.null(to_keys)) as.character(to_gs) else to_keys
 
       self$target_key_map <- fastmap::fastmap()
@@ -220,15 +224,23 @@ BfsSynthesisSearch <- R6::R6Class(
       }
 
       products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
-      if (length(products) == 0L) return(zero_products())
+      if (length(products) == 0L) {
+        return(zero_products())
+      }
 
       keep <- is_promising_intermediate(products, self$to_gs)
       products <- products[keep]
-      if (length(products) == 0L) return(zero_products())
+      if (length(products) == 0L) {
+        return(zero_products())
+      }
 
       if (!is.null(self$filter)) {
         keep <- self$filter(products)
-        checkmate::assert_logical(keep, len = length(products), any.missing = FALSE)
+        checkmate::assert_logical(
+          keep,
+          len = length(products),
+          any.missing = FALSE
+        )
         products <- products[keep]
         if (length(products) == 0L) return(zero_products())
       }
@@ -305,7 +317,10 @@ BfsSynthesisSearch <- R6::R6Class(
 #' @returns A logical vector of the same length as `glycans`.
 #' @noRd
 mgat2_ready <- function(glycans) {
-  !glymotif::have_motif(glycans, "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  !glymotif::have_motif(
+    glycans,
+    "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
 }
 
 #' Check if any product is a promising intermediate
@@ -346,19 +361,39 @@ is_promising_intermediate <- function(products, target_glycans) {
 #'
 #' @returns igraph object representing synthesis path(s)
 #' @noRd
-build_synthesis_result_graph <- function(search_result, from_key, to_keys, max_steps) {
+build_synthesis_result_graph <- function(
+  search_result,
+  from_key,
+  to_keys,
+  max_steps
+) {
   if (length(search_result$all_edges) == 0L) {
     # Return single-node graph for trivial case
     vertices <- tibble::tibble(name = from_key)
     return(igraph::graph_from_data_frame(
-      tibble::tibble(from = character(0), to = character(0), enzyme = character(0), step = integer(0)),
-      directed = TRUE, vertices = vertices
+      tibble::tibble(
+        from = character(0),
+        to = character(0),
+        enzyme = character(0),
+        step = integer(0)
+      ),
+      directed = TRUE,
+      vertices = vertices
     ))
   }
 
-  edges_df <- do.call(rbind, purrr::map(search_result$all_edges, ~ tibble::tibble(
-    from = .x$from, to = .x$to, enzyme = .x$enzyme, step = .x$step
-  )))
+  edges_df <- do.call(
+    rbind,
+    purrr::map(
+      search_result$all_edges,
+      ~ tibble::tibble(
+        from = .x$from,
+        to = .x$to,
+        enzyme = .x$enzyme,
+        step = .x$step
+      )
+    )
+  )
   edges_df <- unique(edges_df)
 
   g_all <- igraph::graph_from_data_frame(edges_df, directed = TRUE)
@@ -366,7 +401,9 @@ build_synthesis_result_graph <- function(search_result, from_key, to_keys, max_s
   # Check if all targets are present in the graph
   missing_targets <- setdiff(to_keys, igraph::V(g_all)$name)
   if (length(missing_targets) > 0L) {
-    cli::cli_abort("No synthesis path found for {length(missing_targets)} target(s) within {.val {max_steps}} steps.")
+    cli::cli_abort(
+      "No synthesis path found for {length(missing_targets)} target(s) within {.val {max_steps}} steps."
+    )
   }
 
   # ALGORITHM: Multi-Target Dead-End Pruning via Bidirectional Reachability
@@ -389,7 +426,9 @@ build_synthesis_result_graph <- function(search_result, from_key, to_keys, max_s
   # Result: All dead-end branches are automatically pruned
 
   vid_from <- which(igraph::V(g_all)$name == from_key)
-  vid_to_list <- sapply(to_keys, function(key) which(igraph::V(g_all)$name == key))
+  vid_to_list <- sapply(to_keys, function(key) {
+    which(igraph::V(g_all)$name == key)
+  })
 
   # Forward reachability: vertices reachable from starting glycan
   reach_from <- igraph::subcomponent(g_all, vid_from, mode = "out")

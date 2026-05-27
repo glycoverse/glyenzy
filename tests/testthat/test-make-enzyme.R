@@ -1,5 +1,5 @@
-test_that("create_enzyme works with GT", {
-  enz <- create_enzyme(
+test_that("make_enzyme works with GT", {
+  enz <- make_enzyme(
     name = "MySiaT",
     rules = list(
       list(
@@ -15,8 +15,8 @@ test_that("create_enzyme works with GT", {
   expect_snapshot(enz)
 })
 
-test_that("create_enzyme works with GT with rejects", {
-  enz <- create_enzyme(
+test_that("make_enzyme works with GT with rejects", {
+  enz <- make_enzyme(
     name = "MySiaT",
     rules = list(
       list(
@@ -37,8 +37,8 @@ test_that("create_enzyme works with GT with rejects", {
   expect_snapshot(enz)
 })
 
-test_that("create_enzyme works with GH", {
-  enz <- create_enzyme(
+test_that("make_enzyme works with GH", {
+  enz <- make_enzyme(
     name = "MyGalH",
     rules = list(
       list(
@@ -54,8 +54,8 @@ test_that("create_enzyme works with GH", {
   expect_snapshot(enz)
 })
 
-test_that("create_enzyme works with GT with multiple rules", {
-  enz <- create_enzyme(
+test_that("make_enzyme works with GT with multiple rules", {
+  enz <- make_enzyme(
     name = "MySiaT",
     rules = list(
       list(

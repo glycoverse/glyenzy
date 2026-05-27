@@ -22,18 +22,20 @@ json_data <- jsonlite::fromJSON("data-raw/glyenzy_enzymes.json")
 
 # Check if there are duplicate enzyme names
 if (any(duplicated(json_data$name))) {
-  cli::cli_abort("Duplicate enzyme names found: {.val {json_data$name[duplicated(json_data$name)]}}")
+  cli::cli_abort(
+    "Duplicate enzyme names found: {.val {json_data$name[duplicated(json_data$name)]}}"
+  )
 }
 
 # Helper function to create enzyme rule from JSON data
-.create_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
+.make_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
   acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
   acceptor_alignment <- rule_data$acceptor_alignment
 
   product <- glyparse::parse_iupac_condensed(rule_data$product)
 
   # Handle rejects - they are stored as lists in JSON
-  rejects_list <- rule_data$rejects[[1]]  # Extract the list content
+  rejects_list <- rule_data$rejects[[1]] # Extract the list content
 
   if (length(rejects_list) == 0) {
     rejects <- glyparse::parse_iupac_condensed(character(0))
@@ -45,7 +47,7 @@ if (any(duplicated(json_data$name))) {
 }
 
 # Helper function to create enzyme from JSON data (for data.frame row)
-.create_enzyme_from_json <- function(i, json_data) {
+.make_enzyme_from_json <- function(i, json_data) {
   name <- json_data$name[i]
   type <- json_data$type[i]
   species <- json_data$species[i]
@@ -53,7 +55,7 @@ if (any(duplicated(json_data$name))) {
   # Create rules
   rules_data <- json_data$rules[[i]]
   rules <- purrr::map(seq_len(nrow(rules_data)), function(j) {
-    .create_enzyme_rule_from_json(rules_data[j, ], enzyme_type = type)
+    .make_enzyme_rule_from_json(rules_data[j, ], enzyme_type = type)
   })
   # Remove NULL rules (those with NA values)
   rules <- purrr::compact(rules)
@@ -74,7 +76,11 @@ if (any(duplicated(json_data$name))) {
 }
 
 # Create list of enzymes
-glyenzy_enzymes <- purrr::map(seq_len(nrow(json_data)), .create_enzyme_from_json, json_data = json_data)
+glyenzy_enzymes <- purrr::map(
+  seq_len(nrow(json_data)),
+  .make_enzyme_from_json,
+  json_data = json_data
+)
 
 # Set names to gene symbols
 names(glyenzy_enzymes) <- json_data$name

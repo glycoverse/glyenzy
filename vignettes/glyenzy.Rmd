@@ -56,11 +56,11 @@ Here's our star glycan in IUPAC-condensed notation:
 glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 ```
 
-Time to meet your new best friend: `get_involved_enzymes()` 👋
+Time to meet your new best friend: `find_enzyme()` 👋
 This clever function reveals all the enzymes that might have had a hand in building your glycan:
 
 ```{r}
-get_involved_enzymes(glycan)
+find_enzyme(glycan)
 ```
 
 Cool, right? Not only does it spot the enzymes from our diagram,
@@ -89,27 +89,27 @@ Ever wondered about a glycan's backstory? glyenzy is your molecular detective, r
 - **How many times?** How often did each enzyme swing into action?
 - **What's the timeline?** In what order did these biochemical events unfold?
 
-Behind the scenes, glyenzy has catalogued the reaction rules of `r length(all_enzymes(return_str = TRUE))` enzymes
+Behind the scenes, glyenzy has catalogued the reaction rules of `r length(db_enzymes(return_str = TRUE))` enzymes
 in its molecular database. Want to peek at any enzyme's profile?
 Just use `enzyme("MGAT3")` and prepare to be amazed by the biochemical details!
 
 Combined with the sophisticated motif-matching algorithms from `glymotif`,
 we can reconstruct any glycan's complete biography.
 
-You've already met `get_involved_enzymes()` – perfect for getting the full cast of characters.
+You've already met `find_enzyme()` – perfect for getting the full cast of characters.
 But sometimes you want more targeted intel:
 
-- `is_synthesized_by()` answers "Was enzyme X involved?" with a simple yes/no
-- `count_enzyme_steps()` tells you exactly how many times an enzyme got busy
+- `have_enzyme()` answers "Was enzyme X involved?" with a simple yes/no
+- `count_enzyme()` tells you exactly how many times an enzyme got busy
 
 This intel is gold for multiomics analysis – imagine linking glycan structures
 directly to enzyme expression levels! 📊
 
-Ready for the grand finale? Meet `rebuild_biosynthesis()` –
+Ready for the grand finale? Meet `trace_biosynthesis()` –
 the function that reconstructs a glycan's complete life story:
 
 ```{r}
-path <- rebuild_biosynthesis(glycan)
+path <- trace_biosynthesis(glycan)
 path
 ```
 
@@ -122,7 +122,7 @@ Let's try this with a more complex N-glycan:
 
 ```{r, fig.width=6, fig.height=6}
 glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-path <- rebuild_biosynthesis(glycan)
+path <- trace_biosynthesis(glycan)
 plot(
   path,
   layout = layout_as_tree(path),
@@ -173,12 +173,12 @@ Ready for some serious fun? Let's create a molecular primordial soup!
 Toss in some glycan substrates, add a cocktail of enzymes,
 and watch the magic unfold over multiple reaction steps.
 
-Use `spawn_glycans()` for the full experience,
-or `spawn_glycans_step()` if you prefer to watch the drama unfold step by step:
+Use `grow_glycans()` for the full experience,
+or `grow_glycans_step()` if you prefer to watch the drama unfold step by step:
 
 ```{r}
 # Our trusty bi-antennary N-glycan meets three enzyme friends
-spawn_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
+grow_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
 ```
 
 What a party! 🎉 Here's what each enzyme brought to the table:
