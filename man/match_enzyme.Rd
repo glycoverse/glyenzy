@@ -77,6 +77,7 @@ the N-glycan precursor transfered to Asn by OST.
 }
 
 \examples{
-match_enzyme("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-", "ST3GAL3")
+glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
+match_enzyme(glycan, "ST3GAL3")
 
 }
