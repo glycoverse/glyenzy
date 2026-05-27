@@ -1,10 +1,10 @@
-#' Rebuild the Biosynthetic Path of Glycans
+#' Trace the Biosynthetic Path of Glycans
 #'
 #' Reconstruct the biosynthetic pathway for one or more glycans using enzymatic reactions.
 #' This function uses a multi-target breadth-first search to find all feasible pathways
 #' that can synthesize all the target glycans.
 #'
-#' @inheritSection is_synthesized_by Important notes
+#' @inheritSection have_enzyme Important notes
 #'
 #' @param glycans A [glyrepr::glycan_structure()] vector, or a character vector
 #'   of strings supported by [glyparse::auto_parse()]. Can also be a single glycan.
@@ -32,20 +32,20 @@
 #'
 #' # Rebuild the biosynthetic pathway of a single glycan
 #' glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
-#' path <- rebuild_biosynthesis(glycan, max_steps = 20)
+#' path <- trace_biosynthesis(glycan, max_steps = 20)
 #'
 #' # Rebuild pathways for multiple glycans
 #' glycans <- c(
 #'   "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-",
 #'   "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 #' )
-#' path <- rebuild_biosynthesis(glycans, max_steps = 20)
+#' path <- trace_biosynthesis(glycans, max_steps = 20)
 #'
 #' # View the path
 #' igraph::as_data_frame(path, what = "edges")
 #'
 #' @export
-rebuild_biosynthesis <- function(
+trace_biosynthesis <- function(
   glycans,
   enzymes = NULL,
   max_steps = 20,
@@ -60,13 +60,15 @@ rebuild_biosynthesis <- function(
   }
 
   # Find all possible paths using unified BFS logic
-  starting_glycan <- .decide_starting_glycan(glycans[1])  # Use first glycan to decide starting point
+  starting_glycan <- .decide_starting_glycan(glycans[1]) # Use first glycan to decide starting point
   .perform_bfs_synthesis(starting_glycan, glycans, enzymes, max_steps, filter)
 }
 
 .decide_starting_glycan <- function(glycan) {
   if (.is_n_glycan(glycan)) {
-    start <- glyparse::parse_iupac_condensed("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+    start <- glyparse::parse_iupac_condensed(
+      "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    )
   } else if (glymotif::have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
   } else if (glymotif::have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {

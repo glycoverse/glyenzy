@@ -1,10 +1,10 @@
-#' Find Synthesis Path Between Glycan Structures
+#' Find a Biosynthesis Path Between Glycan Structures
 #'
 #' Find a synthesis path from one glycan structure to another using enzymatic reactions.
 #' This function uses breadth-first search to find the shortest path or all possible paths
 #' within a given number of steps.
 #'
-#' @inheritSection rebuild_biosynthesis Important notes
+#' @inheritSection trace_biosynthesis Important notes
 #'
 #' @param from A [glyrepr::glycan_structure()] scalar, or a character string
 #'   supported by [glyparse::auto_parse()]. The starting glycan structure.
@@ -32,13 +32,13 @@
 #' # Find shortest path
 #' from <- "Gal(b1-4)GlcNAc(b1-"
 #' to <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
-#' path <- find_synthesis_path(from, to, enzymes = "ST6GAL1", max_steps = 3)
+#' path <- path_biosynthesis(from, to, enzymes = "ST6GAL1", max_steps = 3)
 #'
 #' # View the path
 #' igraph::as_data_frame(path, what = "edges")
 #'
 #' @export
-find_synthesis_path <- function(
+path_biosynthesis <- function(
   from,
   to,
   enzymes = NULL,

@@ -74,7 +74,7 @@ glycan biosynthesis.
 
 ``` r
 library(glyrepr)
-#> Warning: 程序包'glyrepr'是用R版本4.5.2 来建造的
+#> Warning: package 'glyrepr' was built under R version 4.5.2
 library(glyenzy)
 ```
 
@@ -88,7 +88,7 @@ And you want to know what enzymes participates in the biosynthesis of
 this glycan…
 
 ``` r
-get_involved_enzymes(glycan)
+find_enzyme(glycan)
 #>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "B4GALT6" "C1GALT1"
 #>  [8] "GCNT1"   "GCNT3"   "GCNT4"
 ```

@@ -1,4 +1,4 @@
-#' Create A Custom Enzyme
+#' Make a Custom Enzyme
 #'
 #' This function creates a custom enzyme object,
 #' which can be used in all functions in this package that accept an enzyme argument.
@@ -87,7 +87,7 @@
 #' library(glyrepr)
 #'
 #' # Create a custom enzyme that adds a Neu5Ac residue to the Gal residue
-#' create_enzyme(
+#' make_enzyme(
 #'   name = "MySiaT",
 #'   rules = list(
 #'     list(
@@ -102,7 +102,7 @@
 #' )
 #'
 #' # Create a custom enzyme that removes a Gal residue from a Gal(b1-4)GlcNAc(b1-` motif
-#' create_enzyme(
+#' make_enzyme(
 #'   name = "MyGalH",
 #'   rules = list(
 #'     list(
@@ -117,7 +117,7 @@
 #' )
 #'
 #' # Create a custom enzyme with rejects
-#' create_enzyme(
+#' make_enzyme(
 #'   name = "MySiaT",
 #'   rules = list(
 #'     list(
@@ -137,7 +137,7 @@
 #' )
 #'
 #' # Create a custom enzyme with more than one rule
-#' create_enzyme(
+#' make_enzyme(
 #'   name = "MySiaT",
 #'   rules = list(
 #'     list(
@@ -158,7 +158,7 @@
 #'   species = "human"
 #' )
 #' @export
-create_enzyme <- function(name, rules, type, species) {
+make_enzyme <- function(name, rules, type, species) {
   # Type checks
   checkmate::assert_string(name)
   checkmate::assert_list(rules, types = "list", min.len = 1L)
@@ -174,7 +174,10 @@ create_enzyme <- function(name, rules, type, species) {
 .create_rule <- function(rule_data) {
   acceptor <- .process_glycan_arg(rule_data$acceptor)
   acceptor_alignment <- rule_data$acceptor_alignment
-  checkmate::assert_choice(acceptor_alignment, c("substructure", "core", "terminal", "whole"))
+  checkmate::assert_choice(
+    acceptor_alignment,
+    c("substructure", "core", "terminal", "whole")
+  )
   if (is.null(rule_data$rejects)) {
     rejects <- glyrepr::glycan_structure()
   } else {

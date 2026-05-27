@@ -5,7 +5,7 @@
 #' Note that this function ignores the residues in glycans
 #' that cannot be matched to any enzyme rules.
 #'
-#' @inheritSection is_synthesized_by Important notes
+#' @inheritSection have_enzyme Important notes
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
@@ -29,28 +29,31 @@
 #'   "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
 #'   "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 #' ))
-#' get_involved_enzymes(glycans)
+#' find_enzyme(glycans)
 #'
 #' # Or use characters directly
-#' get_involved_enzymes("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+#' find_enzyme("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
 #'
 #' @export
-get_involved_enzymes <- function(glycans, return_list = NULL) {
+find_enzyme <- function(glycans, return_list = NULL) {
   glycans <- .process_glycans_arg(glycans)
   return_list <- .validate_return_list(return_list, length(glycans))
 
   # Compute is_n once for all enzymes to avoid repeated computation
   is_n <- .is_n_glycan(glycans)
-  masks <- purrr::map(glyenzy_enzymes, ~ .safe_is_synthesized_by(glycans, .x, is_n))
+  masks <- purrr::map(glyenzy_enzymes, ~ .safe_have_enzyme(glycans, .x, is_n))
   mast_mat <- do.call(cbind, masks)
-  res <- purrr::map(seq_along(glycans), ~ names(glyenzy_enzymes)[mast_mat[.x, ]])
+  res <- purrr::map(
+    seq_along(glycans),
+    ~ names(glyenzy_enzymes)[mast_mat[.x, ]]
+  )
   .format_result(res, return_list)
 }
 
-# Like `.is_synthesized_by()`, but returns FALSE instead of throwing error.
-.safe_is_synthesized_by <- function(glycans, enzyme, is_n) {
+# Like `.have_enzyme()`, but returns FALSE instead of throwing error.
+.safe_have_enzyme <- function(glycans, enzyme, is_n) {
   tryCatch(
-    .is_synthesized_by(glycans, enzyme, is_n),
+    .have_enzyme(glycans, enzyme, is_n),
     error = function(e) rep(FALSE, length(glycans))
   )
 }

@@ -14,7 +14,8 @@
     }
     if (type == "logical") {
       res <- rep(FALSE, length(glycans))
-    } else {  # type is integer
+    } else {
+      # type is integer
       res <- rep(0, length(glycans))
     }
     if (any(is_n)) {
@@ -84,7 +85,7 @@
 .has_intact_linkages <- function(x) {
   all_linkages_intact <- function(graph) {
     (all(!stringr::str_detect(igraph::E(graph)$linkage, stringr::fixed("?"))) &&
-     !stringr::str_detect(graph$anomer, stringr::fixed("?")))
+      !stringr::str_detect(graph$anomer, stringr::fixed("?")))
   }
   glyrepr::smap_lgl(x, all_linkages_intact)
 }
@@ -110,7 +111,7 @@
 
 #' Process and validate enzyme list for synthesis search
 #'
-#' This function processes various enzyme input formats (NULL, character vector, 
+#' This function processes various enzyme input formats (NULL, character vector,
 #' enzyme object list) and applies pre-filtering based on target glycan compatibility.
 #'
 #' @param enzymes Raw enzyme input (NULL, character vector, or enzyme object list)
@@ -118,7 +119,11 @@
 #' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycans
 #' @returns A list of `glyenzy_enzyme` objects.
 #' @noRd
-.process_enzymes_arg <- function(enzymes, glycans = NULL, apply_prefilter = TRUE) {
+.process_enzymes_arg <- function(
+  enzymes,
+  glycans = NULL,
+  apply_prefilter = TRUE
+) {
   # Get enzyme names from various input formats
   if (is.null(enzymes)) {
     enzyme_names <- names(glyenzy_enzymes)
@@ -135,23 +140,31 @@
 
   # Apply enzyme pre-filtering if requested and target glycans provided
   if (apply_prefilter && !is.null(glycans)) {
-    can_contribute <- tryCatch({
-      purrr::map_lgl(enzyme_names, ~ {
-        # Check if enzyme can contribute to any target glycan
-        any(purrr::map_lgl(glycans, function(target) {
-          tryCatch(
-            glyenzy::is_synthesized_by(target, .x),
-            error = function(e) FALSE
-          )
-        }))
-      })
-    }, error = function(e) {
-      rep(TRUE, length(enzyme_names))
-    })
+    can_contribute <- tryCatch(
+      {
+        purrr::map_lgl(
+          enzyme_names,
+          ~ {
+            # Check if enzyme can contribute to any target glycan
+            any(purrr::map_lgl(glycans, function(target) {
+              tryCatch(
+                glyenzy::have_enzyme(target, .x),
+                error = function(e) FALSE
+              )
+            }))
+          }
+        )
+      },
+      error = function(e) {
+        rep(TRUE, length(enzyme_names))
+      }
+    )
 
     enzyme_names <- enzyme_names[can_contribute]
     if (length(enzyme_names) == 0L) {
-      cli::cli_abort("No enzymes are predicted to contribute to any target glycan.")
+      cli::cli_abort(
+        "No enzymes are predicted to contribute to any target glycan."
+      )
     }
   }
 
@@ -191,7 +204,7 @@
 #' Perform BFS synthesis search with common input processing
 #'
 #' This is a high-level wrapper that handles input validation, enzyme processing,
-#' and BFS search execution. Used by both find_synthesis_path and rebuild_biosynthesis.
+#' and BFS search execution. Used by both path_biosynthesis and trace_biosynthesis.
 #'
 #' @param from_g Starting glycan structure
 #' @param to_gs Target glycan structures
@@ -200,7 +213,13 @@
 #' @param filter Optional filter function
 #' @returns igraph object representing synthesis path(s)
 #' @noRd
-.perform_bfs_synthesis <- function(from_g, to_gs, enzymes, max_steps, filter = NULL) {
+.perform_bfs_synthesis <- function(
+  from_g,
+  to_gs,
+  enzymes,
+  max_steps,
+  filter = NULL
+) {
   # Parse glycan structures and compute keys
   from_key <- as.character(from_g)[1]
   to_keys <- as.character(to_gs)
@@ -215,7 +234,7 @@
     from_key = from_key,
     to_keys = to_keys
   )
-  
+
   # Build and return result graph
   build_synthesis_result_graph(
     search_result,

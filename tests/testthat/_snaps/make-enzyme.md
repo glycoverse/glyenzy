@@ -1,4 +1,4 @@
-# create_enzyme works with GT
+# make_enzyme works with GT
 
     Code
       enz
@@ -14,7 +14,7 @@
       Acceptor: "Gal(b1-4)GlcNAc(b1-"
       Product: "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
 
-# create_enzyme works with GT with rejects
+# make_enzyme works with GT with rejects
 
     Code
       enz
@@ -33,7 +33,7 @@
       "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
       "Fuc(a1-2)Gal(b1-4)GlcNAc(b1-"
 
-# create_enzyme works with GH
+# make_enzyme works with GH
 
     Code
       enz
@@ -49,7 +49,7 @@
       Acceptor: "Gal(b1-4)GlcNAc(b1-"
       Product: "GlcNAc(b1-"
 
-# create_enzyme works with GT with multiple rules
+# make_enzyme works with GT with multiple rules
 
     Code
       enz

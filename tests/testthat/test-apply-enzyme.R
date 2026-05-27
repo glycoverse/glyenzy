@@ -1,6 +1,8 @@
 # ===== Input Type =====
 test_that("apply_enzyme takes `glyrepr_structure` and `glyenzy_enzyme` as inputs", {
-  glycan <- glyparse::parse_iupac_condensed("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  glycan <- glyparse::parse_iupac_condensed(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
   enzyme <- enzyme("MGAT3")
   expect_s3_class(apply_enzyme(glycan, enzyme), "glyrepr_structure")
 })
@@ -13,7 +15,13 @@ test_that("apply_enzyme takes characters as inputs", {
 
 test_that("apply_enzyme rejects invalid inputs", {
   expect_error(apply_enzyme(123, "MGAT3"), "`glycans` must be")
-  expect_error(apply_enzyme("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", 123), "`enzyme` must be")
+  expect_error(
+    apply_enzyme(
+      "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+      123
+    ),
+    "`enzyme` must be"
+  )
 })
 
 test_that("apply_enzyme works vectorizedly", {
@@ -41,8 +49,14 @@ test_that("apply_enzyme works for MGAT3", {
   res <- apply_enzyme(glycans, "MGAT3")
 
   expect_equal(length(res), 5L)
-  expect_equal(as.character(res[[1]]), "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
-  expect_equal(as.character(res[[2]]), "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(
+    as.character(res[[1]]),
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[[2]]),
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
   expect_equal(res[[3]], glyrepr::glycan_structure())
   expect_equal(res[[4]], glyrepr::glycan_structure())
   expect_equal(res[[5]], glyrepr::glycan_structure())
@@ -61,7 +75,10 @@ test_that("apply_enzyme works for B4GALT1", {
 
   expect_equal(length(res), 3L)
   expect_equal(res[[1]], glyrepr::glycan_structure())
-  expect_equal(as.character(res[[2]]), "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(
+    as.character(res[[2]]),
+    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
   expect_equal(
     sort(as.character(res[[3]])),
     sort(c(
@@ -85,7 +102,10 @@ test_that("apply_enzyme works with special reject rules", {
   enzyme <- enhance_enzyme(enzyme)
   res <- apply_enzyme(glycan, enzyme)
   # In the result, only one glycan should be generated, with the afucosylated Gal being sialylated
-  expect_equal(as.character(res), "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(
+    as.character(res),
+    "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
 })
 
 # ===== Normal Cases for GH Enzymes =====
@@ -110,7 +130,10 @@ test_that("apply_enzyme works for MAN2A1", {
       "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
     ))
   )
-  expect_equal(as.character(res[[2]]), "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(
+    as.character(res[[2]]),
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
   expect_equal(res[[3]], glyrepr::glycan_structure())
   expect_equal(res[[4]], glyrepr::glycan_structure())
 })
@@ -137,7 +160,15 @@ test_that("apply_enzyme regression: GH enzymes do not create invalid out-tree st
   glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 
   # Test various GH enzymes that trim mannose residues
-  gh_enzymes <- c("MAN1A1", "MAN1A2", "MAN1C1", "MAN2A1", "MAN2A2", "GANAB", "MAN1B1")
+  gh_enzymes <- c(
+    "MAN1A1",
+    "MAN1A2",
+    "MAN1C1",
+    "MAN2A1",
+    "MAN2A2",
+    "GANAB",
+    "MAN1B1"
+  )
 
   for (enzyme_name in gh_enzymes) {
     # Should not throw "out tree" validation errors

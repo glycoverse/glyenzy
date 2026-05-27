@@ -83,23 +83,23 @@
 #'
 #' # Use `glycan_structure()` and `enzyme()`
 #' glycan <- auto_parse("Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-")
-#' is_synthesized_by(glycan, enzyme("ST6GAL1"))
+#' have_enzyme(glycan, enzyme("ST6GAL1"))
 #'
 #' # Or use characters directly
-#' is_synthesized_by("Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-", "ST6GAL1")
+#' have_enzyme("Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-", "ST6GAL1")
 #'
 #' # Vectorized input
 #' glycans <- c(
 #'   "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
 #'   "Gal(b1-4)GlcNAc(b1-"
 #' )
-#' is_synthesized_by(glycans, "ST6GAL1")
+#' have_enzyme(glycans, "ST6GAL1")
 #'
 #' @export
-is_synthesized_by <- function(glycans, enzyme) {
+have_enzyme <- function(glycans, enzyme) {
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  .is_synthesized_by(glycans, enzyme)
+  .have_enzyme(glycans, enzyme)
 }
 
 #' Is a Glycan Synthesized by an Enzyme? (Internal)
@@ -111,54 +111,60 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
 #'   If `NULL`, it will be computed.
 #' @noRd
-.is_synthesized_by <- function(glycans, enzyme, is_n = NULL) {
-  .f <- switch(enzyme$name,
-    MGAT1 = .is_synthesized_by_mgat1,
-    MOGS = .is_synthesized_by_mogs,
-    MAN1B1 = .is_synthesized_by_man1b1,
-    MAN1A1 = , MAN1A2 = , MAN1C1 = .is_synthesized_by_man123,
-    MAN2A1 = , MAN2A2 = .is_synthesized_by_man2a12,
-    GANAB = .is_synthesized_by_ganab,
-    .is_synthesized_by_default
+.have_enzyme <- function(glycans, enzyme, is_n = NULL) {
+  .f <- switch(
+    enzyme$name,
+    MGAT1 = .have_enzyme_mgat1,
+    MOGS = .have_enzyme_mogs,
+    MAN1B1 = .have_enzyme_man1b1,
+    MAN1A1 = ,
+    MAN1A2 = ,
+    MAN1C1 = .have_enzyme_man123,
+    MAN2A1 = ,
+    MAN2A2 = .have_enzyme_man2a12,
+    GANAB = .have_enzyme_ganab,
+    .have_enzyme_default
   )
   .f(glycans, enzyme, is_n)
 }
 
 
-
 # Special case for MGAT1
 # After MGAT1 adds the b1-2 GlcNAc, two mannoses are trimmed.
 # Therefore, checking the product doesn't reflect its involvement.
-.is_synthesized_by_mgat1 <- function(glycans, enzyme) {
-  glymotif::have_motif(glycans, "GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+.have_enzyme_mgat1 <- function(glycans, enzyme) {
+  glymotif::have_motif(
+    glycans,
+    "GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
 }
-.is_synthesized_by_mgat1 <- .make_n_glycan_guard(.is_synthesized_by_mgat1)
+.have_enzyme_mgat1 <- .make_n_glycan_guard(.have_enzyme_mgat1)
 
 # Special case for MOGS
 # This glycoside hydrolase catalyzes only one trimming step.
 # If the acceptor motif is not found, it is synthesized by the enzyme.
-.is_synthesized_by_mogs <- function(glycans, enzyme) {
+.have_enzyme_mogs <- function(glycans, enzyme) {
   !glymotif::have_motif(glycans, enzyme$rules[[1]]$acceptor)
 }
-.is_synthesized_by_mogs <- .make_n_glycan_guard(.is_synthesized_by_mogs)
+.have_enzyme_mogs <- .make_n_glycan_guard(.have_enzyme_mogs)
 
 # Special case for MAN1B1
 # This glycoside hydrolase catalyzes only one trimming step from Man(9)GlcNAc(2) to Man(8)GlcNAc(2).
 # One special case is Man(5)GlcNAc(2), which can and cannot be synthesized by MAN1B1.
 # We just assume it is synthesized by MAN1B1, as this is the major route.
 # Please check Fig. 115.2 of Handbook of Glycosyltransferases and Related Genes for details.
-.is_synthesized_by_man1b1 <- function(glycans, enzyme) {
+.have_enzyme_man1b1 <- function(glycans, enzyme) {
   !glymotif::have_motif(
     glycans,
     "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     alignment = "core"
   )
 }
-.is_synthesized_by_man1b1 <- .make_n_glycan_guard(.is_synthesized_by_man1b1)
+.have_enzyme_man1b1 <- .make_n_glycan_guard(.have_enzyme_man1b1)
 
 # Special case for MAN1A1, MAN1A2, and MAN1C1
 # These glycoside hydrolases catalyze Man(a1-2) trimming.
-.is_synthesized_by_man123 <- function(glycans, enzyme) {
+.have_enzyme_man123 <- function(glycans, enzyme) {
   motifs <- c(
     "a_branch" = "Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
@@ -178,30 +184,30 @@ is_synthesized_by <- function(glycans, enzyme) {
     )
   )
 }
-.is_synthesized_by_man123 <- .make_n_glycan_guard(.is_synthesized_by_man123)
+.have_enzyme_man123 <- .make_n_glycan_guard(.have_enzyme_man123)
 
 # Special case for MAN2A1 and MAN2A2
 # These glycoside hydrolases catalyze Man(a1-3) and Man(a1-6) trimming
 # after MGAT1 adds the b1-2 GlcNAc.
-.is_synthesized_by_man2a12 <- function(glycans, enzyme) {
+.have_enzyme_man2a12 <- function(glycans, enzyme) {
   !glymotif::have_motif(
     glycans,
     "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     alignment = "core"
   )
 }
-.is_synthesized_by_man2a12 <- .make_n_glycan_guard(.is_synthesized_by_man2a12)
+.have_enzyme_man2a12 <- .make_n_glycan_guard(.have_enzyme_man2a12)
 
 # Special case for GANAB
 # This enzyme removes two Glcs.
-.is_synthesized_by_ganab <- function(glycans, enzyme) {
+.have_enzyme_ganab <- function(glycans, enzyme) {
   !glymotif::have_motif(
     glycans,
     "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     alignment = "core"
   )
 }
-.is_synthesized_by_ganab <- .make_n_glycan_guard(.is_synthesized_by_ganab)
+.have_enzyme_ganab <- .make_n_glycan_guard(.have_enzyme_ganab)
 
 #' Is a Glycan Synthesized by an Enzyme? (Default Case)
 #'
@@ -212,27 +218,34 @@ is_synthesized_by <- function(glycans, enzyme) {
 #' @param enzyme A `glyenzy_enzyme` object.
 #' @param ... Ignored.
 #' @noRd
-.is_synthesized_by_default <- function(glycans, enzyme, ...) {
+.have_enzyme_default <- function(glycans, enzyme, ...) {
   fn <- switch(
     enzyme$type,
-    GH = .is_synthesized_by_gh,
-    GT = .is_synthesized_by_gt,
+    GH = .have_enzyme_gh,
+    GT = .have_enzyme_gt,
     cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
   )
   fn(glycans, enzyme)
 }
 
-.is_synthesized_by_gh <- function(glycans, enzyme) {
-  cli::cli_abort("Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet.")
+.have_enzyme_gh <- function(glycans, enzyme) {
+  cli::cli_abort(
+    "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
+  )
 }
 
-.is_synthesized_by_gt <- function(glycans, enzyme) {
+.have_enzyme_gt <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   acceptor_alignments <- purrr::map_chr(enzyme$rules, ~ .x$acceptor_alignment)
   product_alignments <- dplyr::if_else(
     acceptor_alignments %in% c("whole", "core"),
-    "core", "substructure"
+    "core",
+    "substructure"
   )
-  have_products_mat <- glymotif::have_motifs(glycans, products, product_alignments)
+  have_products_mat <- glymotif::have_motifs(
+    glycans,
+    products,
+    product_alignments
+  )
   unname(rowSums(have_products_mat) > 0)
 }
