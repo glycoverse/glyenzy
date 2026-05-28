@@ -27,3 +27,5 @@
   : Print method for glyenzy_enzyme objects
 - [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
   : Trace the Biosynthetic Path of Glycans
+- [`view_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/view_enzyme.md)
+  : View Residues Added by an Enzyme
