@@ -37,9 +37,9 @@
 #'
 #' ## Substituents
 #'
-#' Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
-#' and the algorithms might fail for glycans with subtituents.
-#' If your glycans contains substituents,
+#' Substituents (e.g. sulfation, phosphorylation) are not supported yet,
+#' and the algorithms might fail for glycans with substituents.
+#' If your glycans contain substituents,
 #' use [glyrepr::remove_substituents()] to get clean glycans.
 #'
 #' ## Incomplete glycan structures
@@ -50,7 +50,7 @@
 #' ## Starting points
 #'
 #' - For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
-#'   the N-glycan precursor transfered to Asn by OST.
+#'   the N-glycan precursor transferred to Asn by OST.
 #' - For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".
 #' - For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".
 #' - For O-Man glycans, the starting structure is assumed to be "Man(a1-".
@@ -236,12 +236,7 @@ have_enzyme <- function(glycans, enzyme) {
 
 .have_enzyme_gt <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
-  acceptor_alignments <- purrr::map_chr(enzyme$rules, ~ .x$acceptor_alignment)
-  product_alignments <- dplyr::if_else(
-    acceptor_alignments %in% c("whole", "core"),
-    "core",
-    "substructure"
-  )
+  product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
   have_products_mat <- glymotif::have_motifs(
     glycans,
     products,

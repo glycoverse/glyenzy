@@ -75,9 +75,9 @@ residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
 
 \subsection{Substituents}{
 
-Subtituents (e.g. sulfation, phosphorylation) is not supported yet,
-and the algorithms might fail for glycans with subtituents.
-If your glycans contains substituents,
+Substituents (e.g. sulfation, phosphorylation) are not supported yet,
+and the algorithms might fail for glycans with substituents.
+If your glycans contain substituents,
 use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
 }
 
@@ -90,7 +90,7 @@ the result may be misleading.
 \subsection{Starting points}{
 \itemize{
 \item For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
-the N-glycan precursor transfered to Asn by OST.
+the N-glycan precursor transferred to Asn by OST.
 \item For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".
 \item For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".
 \item For O-Man glycans, the starting structure is assumed to be "Man(a1-".
