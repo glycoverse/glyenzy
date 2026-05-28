@@ -119,6 +119,8 @@ apply_enzyme(glycan, "ST3GAL1")
   : Determine Whether a Glycan Is Synthesized by a Given Enzyme
 - [`make_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/make_enzyme.md)
   : Make a Custom Enzyme
+- [`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md)
+  : Match Residues Added by an Enzyme
 - [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
   : Find a Biosynthesis Path Between Glycan Structures
 - [`print(`*`<glyenzy_enzyme>`*`)`](https://glycoverse.github.io/glyenzy/dev/reference/print.glyenzy_enzyme.md)

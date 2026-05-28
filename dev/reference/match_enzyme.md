@@ -1,12 +1,12 @@
-# Count Enzyme Involvement
+# Match Residues Added by an Enzyme
 
-Count how many times an enzyme is involved in the biosynthesis of a
-glycan.
+This function finds residues in glycans that match the product motifs of
+a glycosyltransferase and returns their node indices.
 
 ## Usage
 
 ``` r
-count_enzyme(glycans, enzyme)
+match_enzyme(glycans, enzyme)
 ```
 
 ## Arguments
@@ -14,19 +14,20 @@ count_enzyme(glycans, enzyme)
 - glycans:
 
   A
-  [`glyrepr::glycan_structure()`](https://glycoverse.github.io/glyrepr/reference/glycan_structure.html),
-  or a character vector of glycan structure strings supported by
-  [`glyparse::auto_parse()`](https://glycoverse.github.io/glyparse/reference/auto_parse.html).
+  [`glyrepr::glycan_structure()`](https://glycoverse.github.io/glyrepr/reference/glycan_structure.html)
+  vector.
 
 - enzyme:
 
-  An
+  A glycosyltransferase
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  or a gene symbol.
+  or a gene symbol for one. Glycoside hydrolases are not supported.
 
 ## Value
 
-An integer vector of the same length as `glycans`.
+A list of integer vectors with the same length as `glycans`. Each
+integer vector contains node indices for residues added by `enzyme` in
+the corresponding glycan.
 
 ## Important notes
 
@@ -90,23 +91,9 @@ may be misleading.
 ## Examples
 
 ``` r
-library(glyrepr)
-library(glyparse)
-
-# Use `glycan_structure()` and `enzyme()`
-glycan <- auto_parse("Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-")
-count_enzyme(glycan, enzyme("ST6GAL1"))
+glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
+match_enzyme(glycan, "ST3GAL3")
+#> [[1]]
 #> [1] 1
-
-# Or use characters directly
-count_enzyme("Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-", "ST6GAL1")
-#> [1] 1
-
-# Vectorized input
-glycans <- c(
-  "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
-  "Gal(b1-4)GlcNAc(b1-"
-)
-count_enzyme(glycans, "ST6GAL1")
-#> [1] 1 0
+#> 
 ```

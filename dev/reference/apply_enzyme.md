@@ -71,9 +71,9 @@ residues (e.g., `"Hex"`, `"HexNAc"`).
 
 ### Substituents
 
-Subtituents (e.g. sulfation, phosphorylation) is not supported yet, and
-the algorithms might fail for glycans with subtituents. If your glycans
-contains substituents, use
+Substituents (e.g. sulfation, phosphorylation) are not supported yet,
+and the algorithms might fail for glycans with substituents. If your
+glycans contain substituents, use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
 to get clean glycans.
 
@@ -85,7 +85,7 @@ may be misleading.
 ### Starting points
 
 - For N-glycans, the starting structure is assumed to be
-  "Glc(3)Man(9)GlcNAc(2)", the N-glycan precursor transfered to Asn by
+  "Glc(3)Man(9)GlcNAc(2)", the N-glycan precursor transferred to Asn by
   OST.
 
 - For O-GalNAc glycans, the starting structure is assumed to be
