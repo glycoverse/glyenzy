@@ -109,6 +109,19 @@
   return(x)
 }
 
+#' Get product alignment for final-product enzyme matching
+#'
+#' @param rule A `glyenzy_enzyme_rule` object.
+#'
+#' @returns An alignment string.
+#' @noRd
+.product_alignment <- function(rule) {
+  if (rule$acceptor_alignment %in% c("whole", "core")) {
+    return("core")
+  }
+  "substructure"
+}
+
 #' Process and validate enzyme list for synthesis search
 #'
 #' This function processes various enzyme input formats (NULL, character vector,

@@ -6,7 +6,8 @@
 #' @inheritSection have_enzyme Important notes
 #'
 #' @param glycans A [glyrepr::glycan_structure()] vector.
-#' @param enzyme An [enzyme()] or a gene symbol.
+#' @param enzyme A glycosyltransferase [enzyme()] or a gene symbol for one.
+#'   Glycoside hydrolases are not supported.
 #'
 #' @return A list of integer vectors with the same length as `glycans`.
 #'   Each integer vector contains node indices for residues added by `enzyme`
@@ -75,15 +76,16 @@ match_enzyme <- function(glycans, enzyme) {
 #' @returns A list of integer vectors with the same length as `glycans`.
 #' @noRd
 .match_enzyme_rule <- function(glycans, rule) {
+  product_alignment <- .product_alignment(rule)
   product_matches <- glymotif::match_motif(
     glycans,
     rule$product,
-    alignment = "substructure"
+    alignment = product_alignment
   )
-  acceptor_matches <- glymotif::match_motif(
+  acceptor_matches <- .match_product_acceptor_motifs(
     glycans,
-    rule$acceptor,
-    alignment = "substructure"
+    rule,
+    product_alignment
   )
 
   purrr::map2(
@@ -91,6 +93,35 @@ match_enzyme <- function(glycans, enzyme) {
     acceptor_matches,
     ~ .match_enzyme_rule_single(.x, .y, rule)
   )
+}
+
+#' Match acceptor motifs inside final product glycans
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param rule A `glyenzy_enzyme_rule` object.
+#' @param product_alignment The alignment mode used for final product matching.
+#'
+#' @returns A nested list of acceptor match indices.
+#' @noRd
+.match_product_acceptor_motifs <- function(
+  glycans,
+  rule,
+  product_alignment
+) {
+  res <- glymotif::match_motif(
+    glycans,
+    rule$acceptor,
+    alignment = product_alignment
+  )
+  if (length(rule$rejects) > 0) {
+    rej_match_res <- glymotif::match_motifs(
+      glycans,
+      rule$rejects,
+      product_alignment
+    )
+    res <- .reject_matches(res, rej_match_res)
+  }
+  res
 }
 
 #' Match residues added by one enzyme rule in one glycan
