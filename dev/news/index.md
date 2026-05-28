@@ -2,6 +2,37 @@
 
 ## glyenzy (development version)
 
+### Breaking changes
+
+- Rename APIs to use shorter, consistent names:
+  - `all_enzymes()` to
+    [`db_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/db_enzymes.md)
+  - `create_enzyme()` to
+    [`make_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/make_enzyme.md)
+  - `get_involved_enzymes()` to
+    [`find_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/find_enzyme.md)
+  - `is_synthesized_by()` to
+    [`have_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/have_enzyme.md)
+  - `count_enzyme_steps()` to
+    [`count_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme.md)
+  - `find_synthesis_path()` to
+    [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  - `rebuild_biosynthesis()` to
+    [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  - `spawn_glycans()` to
+    [`grow_glycans()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
+  - `spawn_glycans_step()` to
+    [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
+
+### New features
+
+- Add
+  [`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md)
+  to identify the residues added by a glycosyltransferase.
+- Add
+  [`view_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/view_enzyme.md)
+  to visualize residues added by an enzyme on a glycan cartoon.
+
 ## glyenzy 0.4.3
 
 ### Minor improvements and fixes
