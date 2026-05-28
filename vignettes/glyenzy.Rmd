@@ -78,11 +78,12 @@ The next sections walk through the main workflows in a little more detail.
 
 ## Tracing Glycan Origins
 
-For an existing glycan, `glyenzy` can help answer three common questions:
+For an existing glycan, `glyenzy` can help answer four common questions:
 
-- **Which enzymes?** Which glycosyltransferases and glycoside hydrolases were involved?
-- **How often?** How many times could each enzyme have acted?
-- **In what order?** What biosynthetic sequence could produce the structure?
+- **Which enzymes?** Which glycosyltransferases and glycoside hydrolases were involved? (`find_enzyme()`)
+- **How often?** How many times could each enzyme have acted? (`count_enzyme()`)
+- **In what order?** What biosynthetic sequence could produce the structure? (`trace_biosynthesis()`)
+- **Specifically?** Which residues were added by which enzymes? (`match_enzyme()`)
 
 Behind the scenes, glyenzy has catalogued the reaction rules of `r length(db_enzymes(return_str = TRUE))` enzymes
 in its enzyme database. Use `enzyme("MGAT3")` to inspect a specific enzyme rule.
@@ -95,6 +96,9 @@ For more targeted checks:
 
 - `have_enzyme()` answers "Was enzyme X involved?" with a simple yes/no
 - `count_enzyme()` returns how many times an enzyme is inferred to act
+- `match_enzyme()` identifies the residues added by a specific enzyme
+
+You will also find `view_enzyme()` useful for visualizing the residues added by an enzyme on a glycan cartoon.
 
 These summaries can be useful in multiomics analysis,
 where glycan structures are compared with enzyme expression levels.
