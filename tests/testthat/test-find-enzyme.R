@@ -41,3 +41,8 @@ test_that("find_enzyme considers starter GTs", {
   glycan <- glyrepr::n_glycan_core()
   expect_true("DPAGT1" %in% find_enzyme(glycan))
 })
+
+test_that("find_enzyme works for paucimannose glycans", {
+  glycan <- "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_true("MAN1B1" %in% find_enzyme(glycan))
+})

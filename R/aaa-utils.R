@@ -26,7 +26,7 @@
 }
 
 .is_n_glycan <- function(x) {
-  glymotif::have_motif(x, "N-Glycan core basic")
+  glymotif::have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
 }
 
 .process_glycan_arg <- function(x) {
