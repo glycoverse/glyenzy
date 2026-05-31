@@ -74,7 +74,6 @@ glycan biosynthesis.
 
 ``` r
 library(glyrepr)
-#> Warning: 程序包'glyrepr'是用R版本4.5.2 来建造的
 library(glyenzy)
 ```
 
@@ -84,7 +83,7 @@ Say we have a glycan…
 glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 ```
 
-![](man/figures/H2N2.png)
+<img src="man/figures/H2N2.png" style="width:50.0%" />
 
 And you want to know what enzymes participates in the biosynthesis of
 this glycan…
@@ -110,4 +109,4 @@ apply_enzyme(glycan, "ST3GAL1")
 #> # Unique structures: 1
 ```
 
-![](man/figures/H2N2S1.png)
+<img src="man/figures/H2N2S1.png" style="width:50.0%" />
