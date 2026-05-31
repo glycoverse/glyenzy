@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Identify Potentially Involved Enzymes
 #'
 #' This function returns all possible isoenzymes associated with the biosynthetic
