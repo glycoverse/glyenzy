@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Make a Custom Enzyme
 #'
 #' This function creates a custom enzyme object,
