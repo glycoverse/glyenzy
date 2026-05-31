@@ -50,21 +50,6 @@ if (any(duplicated(json_data$name))) {
   glyenzy:::new_enzyme_rule(acceptor, product, acceptor_alignment, rejects)
 }
 
-.infer_enzyme_action <- function(type, rules) {
-  if (type != "GT") {
-    return(NULL)
-  }
-
-  starter_rules <- purrr::map_lgl(
-    rules,
-    ~ glyenzy:::.is_starter_acceptor(.x$acceptor)
-  )
-  if (any(starter_rules)) {
-    return("starter")
-  }
-  "transfer"
-}
-
 # Helper function to create enzyme from JSON data (for data.frame row)
 .make_enzyme_from_json <- function(i, json_data) {
   name <- json_data$name[i]
@@ -78,12 +63,11 @@ if (any(duplicated(json_data$name))) {
   })
   # Remove NULL rules (those with NA values)
   rules <- purrr::compact(rules)
-  action <- .infer_enzyme_action(type, rules)
 
   # Create and validate enzyme, and enhance it
   tryCatch(
     {
-      enzyme <- glyenzy:::new_enzyme(name, rules, type, species, action)
+      enzyme <- glyenzy:::new_enzyme(name, rules, type, species)
       glyenzy:::validate_enzyme(enzyme)
       enzyme <- glyenzy:::enhance_enzyme(enzyme)
     },
