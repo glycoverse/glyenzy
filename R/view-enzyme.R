@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' View Residues Added by an Enzyme
 #'
 #' Visualize where an enzyme contributes residues to a glycan structure.
