@@ -113,3 +113,19 @@ test_that("count_enzyme works for MAN1A1, MAN1A2, and MAN1C1", {
   expect_equal(count_enzyme(glycans, "MAN1A2"), MAN1A1_res)
   expect_equal(count_enzyme(glycans, "MAN1C1"), MAN1C1_res)
 })
+
+# ===== Starter cases =====
+test_that("count_enzyme works for DPAGT1", {
+  expect_equal(count_enzyme(glyrepr::n_glycan_core(), "DPAGT1"), 1L)
+  expect_equal(count_enzyme(glyrepr::o_glycan_core_1(), "DPAGT1"), 0L)
+})
+
+test_that("count_enzyme works for FUT10", {
+  expect_equal(count_enzyme("Gal(b1-4)GlcNAc(b1-3)Fuc(a1-", "FUT10"), 1L)
+  expect_equal(count_enzyme(glyrepr::o_glycan_core_1(), "FUT10"), 0L)
+})
+
+test_that("count_enzyme works for POGLUT2", {
+  expect_equal(count_enzyme("Xyl(a1-3)Glc(a1-", "POGLUT2"), 1L)
+  expect_equal(count_enzyme(glyrepr::o_glycan_core_1(), "POGLUT2"), 0L)
+})
