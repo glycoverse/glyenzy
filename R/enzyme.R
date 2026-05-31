@@ -30,6 +30,7 @@
 #'    - `acceptor_idx`: the node index of the acceptor where the enzyme acts on.
 #'      For GTs, this is the node new residue is attached to.
 #'      For GHs, this is the node that is removed.
+#'      For starter GTs like DPAGT1, `acceptor_idx` is 0.
 #'    - `product_idx`: the node index of the product residue in the product structure.
 #'      For GTs, this is the index of the newly added residue in the product.
 #'      For GHs, this is `NULL` (no new residue is added).
@@ -166,11 +167,20 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects) {
 validate_enzyme_rule <- function(x, type) {
   checkmate::assert_class(x, "glyenzy_enzyme_rule")
 
-  if (length(x$acceptor) != 1) {
+  if (length(x$acceptor) > 1) {
     cli::cli_abort("The {.arg acceptor} must be a single structure.")
   }
   if (length(x$product) != 1) {
     cli::cli_abort("The {.arg product} must be a single structure.")
+  }
+
+  if (.is_starter_acceptor(x$acceptor)) {
+    if (type != "GT") {
+      cli::cli_abort("Only GT enzymes can have an empty {.field acceptor}.")
+    }
+    if (length(x$rejects) > 0) {
+      cli::cli_abort("{.field rejects} must be empty for starter GTs.")
+    }
   }
 
   switch(
@@ -236,6 +246,30 @@ enhance_enzyme_rule <- function(x, type) {
 }
 
 .enhance_gt_enzyme_rule <- function(x) {
+  if (.is_starter_acceptor(x$acceptor)) {
+    .enhance_gt_enzyme_rule_starter(x)
+  } else {
+    .enhance_gt_enzyme_rule_regular(x)
+  }
+}
+
+#' Enhance a starter GT rule
+#'
+#' @param x A starter `glyenzy_enzyme_rule` object.
+#'
+#' @returns A starter `glyenzy_enzyme_rule` with derived rule fields.
+#' @noRd
+.enhance_gt_enzyme_rule_starter <- function(x) {
+  product_graph <- glyrepr::get_structure_graphs(x$product, return_list = FALSE)
+
+  x$acceptor_idx <- 0L
+  x$product_idx <- 1L
+  x$new_residue <- igraph::V(product_graph)[[1]]$mono
+  x$new_linkage <- NULL
+  x
+}
+
+.enhance_gt_enzyme_rule_regular <- function(x) {
   acceptor_graph <- glyrepr::get_structure_graphs(
     x$acceptor,
     return_list = FALSE
@@ -315,6 +349,18 @@ enhance_enzyme_rule <- function(x, type) {
   smaller_name,
   larger_name
 ) {
+  # Special case for starter GTs
+  if (.is_starter_acceptor(smaller)) {
+    n_mono <- glyrepr::count_mono(larger)
+    if (length(n_mono) != 1L || n_mono != 1L) {
+      cli::cli_abort(
+        "{.arg {larger_name}} must be a monosaccharide for a starter GT."
+      )
+    }
+    return(invisible(NULL))
+  }
+
+  # Regular case
   smaller_graph <- glyrepr::get_structure_graphs(smaller, return_list = FALSE)
   larger_graph <- glyrepr::get_structure_graphs(larger, return_list = FALSE)
   match_res <- glymotif::match_motif(larger, smaller, alignment = "core")[[1]] # only one glycan, so `[[1]]`
@@ -331,6 +377,16 @@ enhance_enzyme_rule <- function(x, type) {
       "{.arg {larger_name}} must have exactly one more residue than {.arg {smaller_name}}."
     )
   }
+}
+
+#' Check whether a rule uses an empty starter acceptor
+#'
+#' @param x A `glyrepr_structure` object.
+#'
+#' @returns `TRUE` if `x` is the empty glycan structure used by starter GTs.
+#' @noRd
+.is_starter_acceptor <- function(x) {
+  glyrepr::is_glycan_structure(x) && length(x) == 0L
 }
 
 #' Print method for glyenzy_enzyme objects

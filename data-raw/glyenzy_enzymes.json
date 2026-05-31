@@ -1687,5 +1687,440 @@
         ],
         "type": "GT",
         "species": "human"
+    },
+    {
+        "name": "DPAGT1",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GlcNAc(b1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "FUT10",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Fuc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "FUT11",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Fuc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POFUT1",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Fuc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POFUT2",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Fuc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POGLUT1",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Glc(b1-"
+            },
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Xyl(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POGLUT2",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Glc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POGLUT3",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Glc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POMT1",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "POMT2",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "TMTC1",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "TMTC2",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "TMTC3",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "TMTC4",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT1",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT2",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT3",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT4",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT5",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT6",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT7",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT8",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT9",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT10",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT11",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT12",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT13",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT14",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT15",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT16",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT17",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT18",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
+    },
+    {
+        "name": "GALNT19",
+        "rules": [
+            {
+                "acceptor": "",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "GalNAc(a1-"
+            }
+        ],
+        "type": "GT",
+        "species": "human"
     }
 ]
