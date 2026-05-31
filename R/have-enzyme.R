@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Determine Whether a Glycan Is Synthesized by a Given Enzyme
 #'
 #' @description

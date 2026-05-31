@@ -129,3 +129,19 @@ test_that("have_enzyme handles product alignments", {
   expect_true(have_enzyme("GlcNAc(b1-3)GalNAc(a1-", "B3GNT6"))
   expect_false(have_enzyme("GlcNAc(b1-3)GalNAc(a1-3)GlcNAc(b1-", "B3GNT6"))
 })
+
+# ===== Starter Cases =====
+test_that("have_enzyme works for DPAGT1", {
+  expect_true(have_enzyme(glyrepr::n_glycan_core(), "DPAGT1"))
+  expect_false(have_enzyme(glyrepr::o_glycan_core_1(), "DPAGT1"))
+})
+
+test_that("have_enzyme works for FUT10", {
+  expect_true(have_enzyme("Gal(b1-4)GlcNAc(b1-3)Fuc(a1-", "FUT10"))
+  expect_false(have_enzyme(glyrepr::o_glycan_core_1(), "FUT10"))
+})
+
+test_that("have_enzyme works for POGLUT2", {
+  expect_true(have_enzyme("Xyl(a1-3)Glc(a1-", "POGLUT2"))
+  expect_false(have_enzyme(glyrepr::o_glycan_core_1(), "POGLUT2"))
+})
