@@ -1,3 +1,5 @@
+# TODO: Add support for starter GTs.
+
 #' Trace the Biosynthetic Path of Glycans
 #'
 #' Reconstruct the biosynthetic pathway for one or more glycans using enzymatic reactions.
