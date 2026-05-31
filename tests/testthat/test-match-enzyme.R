@@ -79,3 +79,8 @@ test_that("match_enzyme only accepts glycosyltransferases", {
     "only supports glycosyltransferases"
   )
 })
+
+test_that("match_enzyme works with starter GTs", {
+  glycan <- glyrepr::n_glycan_core()
+  expect_equal(match_enzyme(glycan, "DPAGT1"), list(5L))
+})

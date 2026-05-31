@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Match Residues Added by an Enzyme
 #'
 #' This function finds residues in glycans that match the product motifs of a
@@ -50,6 +48,16 @@ match_enzyme <- function(glycans, enzyme) {
 .match_enzyme <- function(glycans, enzyme) {
   if (length(enzyme$rules) == 0L) {
     return(rep(list(integer()), length(glycans)))
+  }
+
+  if (.is_starter_gt(enzyme)) {
+    have_product <- .have_enzyme_gt(glycans, enzyme)
+    n_mono <- glyrepr::count_mono(glycans)
+    return(purrr::map2(
+      have_product,
+      n_mono,
+      ~ if (.x) .y else integer()
+    ))
   }
 
   rule_res <- purrr::map(enzyme$rules, ~ .match_enzyme_rule(glycans, .x))
