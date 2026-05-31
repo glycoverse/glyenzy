@@ -66,7 +66,7 @@ enzyme <- function(symbol) {
 #' or a character vector of gene symbols if `return_str` is `TRUE`.
 #'
 #' @param return_str If `FALSE` (default), returns the enzyme list.
-#'   Otherwise returns a charactor vector of gene symbols.
+#'   Otherwise returns a character vector of gene symbols.
 #' @param include_starter_gt If `TRUE` (default), includes starter GTs in the result.
 #'   Starter GTs are enzymes that initiate glycosylation by introducing the first sugar residue onto a non-glycan substrate.
 #'   For example, DPAGT1 is the starter GT for N-glycosylation.

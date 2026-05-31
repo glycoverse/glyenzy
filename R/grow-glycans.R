@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Grow Glycans with Enzymes
 #'
 #' @description
