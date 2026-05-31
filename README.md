@@ -74,7 +74,6 @@ glycan biosynthesis.
 
 ``` r
 library(glyrepr)
-#> Warning: package 'glyrepr' was built under R version 4.5.2
 library(glyenzy)
 ```
 
@@ -90,7 +89,10 @@ this glycan…
 ``` r
 find_enzyme(glycan)
 #>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "B4GALT6" "C1GALT1"
-#>  [8] "GCNT1"   "GCNT3"   "GCNT4"
+#>  [8] "GCNT1"   "GCNT3"   "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4" 
+#> [15] "GALNT5"  "GALNT6"  "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11"
+#> [22] "GALNT12" "GALNT13" "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18"
+#> [29] "GALNT19"
 ```
 
 Here you go!
