@@ -37,8 +37,7 @@
 #'    - `new_residue`: the new residue added by the enzyme. For GHs, this is `NULL`.
 #'    - `new_linkage`: the linkage of the new residue. For GHs, this is `NULL`.
 #' 3. `type`: the type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
-#' 4. `action`: the action of the enzyme. For GTs, this is `"transfer"` or `"starter"`.
-#' 5. `species`: the species of the enzyme, e.g. "human" or "mouse".
+#' 4. `species`: the species of the enzyme, e.g. "human" or "mouse".
 #'
 #' You can see all these information by printing the enzyme object.
 #'
@@ -88,24 +87,17 @@ db_enzymes <- function(return_str = FALSE) {
 #' @param rules A list of `glyenzy_enzyme_rule` objects.
 #' @param type The type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
 #' @param species The species of the enzyme, e.g. "human" or "mouse".
-#' @param action The enzyme action. For GTs, this is `"transfer"` or `"starter"`.
 #'
 #' @return A `glyenzy_enzyme` object.
 #' @noRd
-new_enzyme <- function(name, rules, type, species, action) {
+new_enzyme <- function(name, rules, type, species) {
   checkmate::assert_string(name)
   checkmate::assert_list(rules, types = "glyenzy_enzyme_rule")
   checkmate::assert_choice(type, c("GT", "GH"))
   checkmate::assert_string(species)
 
   structure(
-    list(
-      name = name,
-      rules = rules,
-      type = type,
-      action = action,
-      species = species
-    ),
+    list(name = name, rules = rules, type = type, species = species),
     class = "glyenzy_enzyme"
   )
 }
@@ -116,10 +108,9 @@ new_enzyme <- function(name, rules, type, species, action) {
 #' @noRd
 validate_enzyme <- function(x) {
   checkmate::assert_class(x, "glyenzy_enzyme")
-  action <- x$action
   purrr::walk(
     x$rules,
-    ~ validate_enzyme_rule(.x, type = x$type, action = action)
+    ~ validate_enzyme_rule(.x, type = x$type)
   )
   invisible(x)
 }
@@ -175,9 +166,8 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects) {
 #'
 #' @param x A `glyenzy_enzyme_rule` object.
 #' @param type A character string, representing the type of the enzyme, "GT" or "GH".
-#' @param action The enzyme action. For GTs, this is `"transfer"` or `"starter"`.
 #' @noRd
-validate_enzyme_rule <- function(x, type, action = NULL) {
+validate_enzyme_rule <- function(x, type) {
   checkmate::assert_class(x, "glyenzy_enzyme_rule")
 
   if (length(x$acceptor) > 1) {
@@ -188,15 +178,8 @@ validate_enzyme_rule <- function(x, type, action = NULL) {
   }
 
   if (.is_starter_acceptor(x$acceptor)) {
-    if (is.null(action)) {
-      cli::cli_abort(
-        "Starter GT rules require {.field action} to be {.val starter}."
-      )
-    }
-    if (action != "starter") {
-      cli::cli_abort(
-        "Only starter GT enzymes can have an empty {.field acceptor}."
-      )
+    if (type != "GT") {
+      cli::cli_abort("Only GT enzymes can have an empty {.field acceptor}.")
     }
     if (length(x$rejects) > 0) {
       cli::cli_abort("{.field rejects} must be empty for starter GTs.")
@@ -407,6 +390,18 @@ enhance_enzyme_rule <- function(x, type) {
 #' @noRd
 .is_starter_acceptor <- function(x) {
   glyrepr::is_glycan_structure(x) && length(x) == 0L
+}
+
+#' Check whether an enzyme is a starter GT
+#'
+#' @param x A `glyenzy_enzyme` object.
+#'
+#' @returns `TRUE` if `x` is a GT enzyme with at least one empty acceptor rule.
+#' @noRd
+.is_starter_gt <- function(x) {
+  inherits(x, "glyenzy_enzyme") &&
+    identical(x$type, "GT") &&
+    any(purrr::map_lgl(x$rules, ~ .is_starter_acceptor(.x$acceptor)))
 }
 
 #' Print method for glyenzy_enzyme objects
