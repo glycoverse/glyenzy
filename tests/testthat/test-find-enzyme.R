@@ -36,3 +36,8 @@ test_that("find_enzyme raises error when return_list = FALSE and length(glycans)
   )
   expect_error(find_enzyme(glycans, return_list = FALSE), "must have length 1")
 })
+
+test_that("find_enzyme considers starter GTs", {
+  glycan <- glyrepr::n_glycan_core()
+  expect_true("DPAGT1" %in% find_enzyme(glycan))
+})
