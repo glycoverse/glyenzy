@@ -106,16 +106,16 @@ glycans <- auto_parse(c(
 ))
 find_enzyme(glycans)
 #> [[1]]
-#> [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MAN2A1" "MAN2A2"
-#> [9] "MGAT1" 
+#>  [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MAN2A1" "MAN2A2"
+#>  [9] "MGAT1"  "DPAGT1"
 #> 
 #> [[2]]
 #>  [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MAN2A1" "MAN2A2"
-#>  [9] "MGAT1"  "MGAT2" 
+#>  [9] "MGAT1"  "MGAT2"  "DPAGT1"
 #> 
 
 # Or use characters directly
 find_enzyme("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
-#> [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MAN2A1" "MAN2A2"
-#> [9] "MGAT1" 
+#>  [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MAN2A1" "MAN2A2"
+#>  [9] "MGAT1"  "DPAGT1"
 ```

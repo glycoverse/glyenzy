@@ -6,7 +6,7 @@ gene symbols if `return_str` is `TRUE`.
 ## Usage
 
 ``` r
-db_enzymes(return_str = FALSE)
+db_enzymes(return_str = FALSE, include_starter_gt = TRUE)
 ```
 
 ## Arguments
@@ -14,7 +14,14 @@ db_enzymes(return_str = FALSE)
 - return_str:
 
   If `FALSE` (default), returns the enzyme list. Otherwise returns a
-  charactor vector of gene symbols.
+  character vector of gene symbols.
+
+- include_starter_gt:
+
+  If `TRUE` (default), includes starter GTs in the result. Starter GTs
+  are enzymes that initiate glycosylation by introducing the first sugar
+  residue onto a non-glycan substrate. For example, DPAGT1 is the
+  starter GT for N-glycosylation.
 
 ## Value
 
@@ -47,4 +54,11 @@ db_enzymes(return_str = TRUE)
 #>  [91] "EXTL2"      "EXTL3"      "HAS1"       "HAS2"       "HAS3"      
 #>  [96] "B3GLCT"     "A4GALT"     "ABO"        "GXYLT1"     "GXYLT2"    
 #> [101] "LARGE1"     "LARGE2"     "XXYLT1"     "POMGNT1"    "POMGNT2"   
+#> [106] "DPAGT1"     "FUT10"      "FUT11"      "POFUT1"     "POFUT2"    
+#> [111] "POGLUT1"    "POGLUT2"    "POGLUT3"    "POMT1"      "POMT2"     
+#> [116] "TMTC1"      "TMTC2"      "TMTC3"      "TMTC4"      "GALNT1"    
+#> [121] "GALNT2"     "GALNT3"     "GALNT4"     "GALNT5"     "GALNT6"    
+#> [126] "GALNT7"     "GALNT8"     "GALNT9"     "GALNT10"    "GALNT11"   
+#> [131] "GALNT12"    "GALNT13"    "GALNT14"    "GALNT15"    "GALNT16"   
+#> [136] "GALNT17"    "GALNT18"    "GALNT19"   
 ```

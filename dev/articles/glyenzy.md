@@ -57,7 +57,10 @@ returns the enzymes that may be involved in building a glycan:
 
 find_enzyme(glycan)
 #>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "B4GALT6" "C1GALT1"
-#>  [8] "GCNT1"   "GCNT3"   "GCNT4"
+#>  [8] "GCNT1"   "GCNT3"   "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4" 
+#> [15] "GALNT5"  "GALNT6"  "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11"
+#> [22] "GALNT12" "GALNT13" "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18"
+#> [29] "GALNT19"
 ```
 
 This includes the enzymes shown in the diagram, along with B4GALT1/2/3/4
@@ -99,7 +102,7 @@ For an existing glycan, `glyenzy` can help answer four common questions:
 - **Specifically?** Which residues were added by which enzymes?
   ([`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md))
 
-Behind the scenes, glyenzy has catalogued the reaction rules of 105
+Behind the scenes, glyenzy has catalogued the reaction rules of 138
 enzymes in its enzyme database. Use `enzyme("MGAT3")` to inspect a
 specific enzyme rule.
 
@@ -133,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 76c9a8a DN-- 4 10 -- 
+#> IGRAPH d6bff5a DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from 76c9a8a (vertex names):
+#> + edges from d6bff5a (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         

@@ -51,7 +51,8 @@ An `enzyme()` is a list with the following elements:
 
     - `acceptor_idx`: the node index of the acceptor where the enzyme
       acts on. For GTs, this is the node new residue is attached to. For
-      GHs, this is the node that is removed.
+      GHs, this is the node that is removed. For starter GTs like
+      DPAGT1, `acceptor_idx` is 0.
 
     - `product_idx`: the node index of the product residue in the
       product structure. For GTs, this is the index of the newly added

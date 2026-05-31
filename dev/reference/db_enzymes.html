@@ -41,7 +41,7 @@ or a character vector of gene symbols if <code>return_str</code> is <code>TRUE</
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_enzymes</span><span class="op">(</span>return_str <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_enzymes</span><span class="op">(</span>return_str <span class="op">=</span> <span class="cn">FALSE</span>, include_starter_gt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -50,7 +50,13 @@ or a character vector of gene symbols if <code>return_str</code> is <code>TRUE</
 
 <dl><dt id="arg-return-str">return_str<a class="anchor" aria-label="anchor" href="#arg-return-str"></a></dt>
 <dd><p>If <code>FALSE</code> (default), returns the enzyme list.
-Otherwise returns a charactor vector of gene symbols.</p></dd>
+Otherwise returns a character vector of gene symbols.</p></dd>
+
+
+<dt id="arg-include-starter-gt">include_starter_gt<a class="anchor" aria-label="anchor" href="#arg-include-starter-gt"></a></dt>
+<dd><p>If <code>TRUE</code> (default), includes starter GTs in the result.
+Starter GTs are enzymes that initiate glycosylation by introducing the first sugar residue onto a non-glycan substrate.
+For example, DPAGT1 is the starter GT for N-glycosylation.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -82,6 +88,13 @@ Otherwise returns a charactor vector of gene symbols.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [91] "EXTL2"      "EXTL3"      "HAS1"       "HAS2"       "HAS3"      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [96] "B3GLCT"     "A4GALT"     "ABO"        "GXYLT1"     "GXYLT2"    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [101] "LARGE1"     "LARGE2"     "XXYLT1"     "POMGNT1"    "POMGNT2"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [106] "DPAGT1"     "FUT10"      "FUT11"      "POFUT1"     "POFUT2"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [111] "POGLUT1"    "POGLUT2"    "POGLUT3"    "POMT1"      "POMT2"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [116] "TMTC1"      "TMTC2"      "TMTC3"      "TMTC4"      "GALNT1"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [121] "GALNT2"     "GALNT3"     "GALNT4"     "GALNT5"     "GALNT6"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [126] "GALNT7"     "GALNT8"     "GALNT9"     "GALNT10"    "GALNT11"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [131] "GALNT12"    "GALNT13"    "GALNT14"    "GALNT15"    "GALNT16"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [136] "GALNT17"    "GALNT18"    "GALNT19"   </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
