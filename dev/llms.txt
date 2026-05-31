@@ -64,7 +64,6 @@ glycan biosynthesis.
 ``` r
 
 library(glyrepr)
-#> Warning: 程序包'glyrepr'是用R版本4.5.2 来建造的
 library(glyenzy)
 ```
 
