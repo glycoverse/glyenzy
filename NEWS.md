@@ -19,6 +19,10 @@
 * Add `match_enzyme()` to identify the residues added by a glycosyltransferase. (#3)
 * Add `view_enzyme()` to visualize residues added by an enzyme on a glycan cartoon. (#4)
 
+## Minor improvements and fixes
+
+* Fix the bug that find_enzyme didn't support paucimannose glycans. (1c79a04)
+
 # glyenzy 0.4.3
 
 ## Minor improvements and fixes
