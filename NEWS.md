@@ -2,7 +2,7 @@
 
 ## Breaking changes
 
-* Rename APIs to use shorter, consistent names:
+* Rename APIs to use shorter, consistent names (#2):
     * `all_enzymes()` to `db_enzymes()`
     * `create_enzyme()` to `make_enzyme()`
     * `get_involved_enzymes()` to `find_enzyme()`
@@ -15,8 +15,9 @@
 
 ## New features
 
-* Add `match_enzyme()` to identify the residues added by a glycosyltransferase.
-* Add `view_enzyme()` to visualize residues added by an enzyme on a glycan cartoon.
+* Add support for initiating enzymes including DPAGT1, FUT10, FUT11, POFUT1, POFUT2, POGLUT1, POGLUT2, POGLUT3, POMT1, POMT2, TMTC1, TMTC2, TMTC3, TMTC4, and GALNT1 through GALNT19. (#5)
+* Add `match_enzyme()` to identify the residues added by a glycosyltransferase. (#3)
+* Add `view_enzyme()` to visualize residues added by an enzyme on a glycan cartoon. (#4)
 
 # glyenzy 0.4.3
 
