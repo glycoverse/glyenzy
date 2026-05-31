@@ -161,6 +161,7 @@ count_enzyme <- function(glycans, enzyme) {
 
 .count_enzyme_gt <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
-  count_products_mat <- glymotif::count_motifs(glycans, products)
+  product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
+  count_products_mat <- glymotif::count_motifs(glycans, products, alignment = product_alignments)
   unname(rowSums(count_products_mat))
 }
