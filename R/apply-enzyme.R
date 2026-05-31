@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Apply an Enzyme to a Glycan
 #'
 #' This function simulates the action of an enzyme on a glycan.
@@ -42,6 +40,9 @@
 apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
+  if (.is_starter_gt(enzyme)) {
+    return(glyrepr::glycan_structure())
+  }
   return_list <- .validate_return_list(return_list, length(glycans))
 
   res <- .apply_enzyme(glycans, enzyme)
