@@ -40,9 +40,6 @@
 apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  if (.is_starter_gt(enzyme)) {
-    return(glyrepr::glycan_structure())
-  }
   return_list <- .validate_return_list(return_list, length(glycans))
 
   res <- .apply_enzyme(glycans, enzyme)
@@ -59,6 +56,9 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'   corresponding glycan in `glycans`.
 #' @noRd
 .apply_enzyme <- function(glycans, enzyme) {
+  if (.is_starter_gt(enzyme)) {
+    return(glyrepr::glycan_structure())
+  }
   rule_res <- purrr::map(enzyme$rules, ~ .apply_rule(glycans, .x, enzyme$type))
   res <- purrr::pmap(rule_res, c)
   purrr::map(res, unique)
