@@ -41,7 +41,7 @@ We’ll start with a small O-glycan example:
 ![](resources/H2N2.png)
 
 In the diagram, each glycosidic bond is labeled with its responsible
-enzyme. (We’ll skip the rightmost peptide bond for now.)
+enzyme.
 
 Here is the same glycan in IUPAC-condensed notation:
 
@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH d6bff5a DN-- 4 10 -- 
+#> IGRAPH 758940f DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from d6bff5a (vertex names):
+#> + edges from 758940f (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -315,10 +315,6 @@ glyenzy uses specific starting points for biosynthetic reconstruction:
 - **O-Man glycans**: Start with Man(a1-
 - **O-Fuc glycans**: Start with Fuc(a1-
 - **O-Glc glycans**: Start with Glc(b1-
-
-This means we don’t track the earlier steps – ALGs building the N-glycan
-precursor, OST transferring it to asparagine, or GALNTs adding the
-initial GalNAc. The reconstruction starts after those events.
 
 ## Technical Notes
 
