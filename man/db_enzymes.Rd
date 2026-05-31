@@ -4,11 +4,15 @@
 \alias{db_enzymes}
 \title{Get all enzymes}
 \usage{
-db_enzymes(return_str = FALSE)
+db_enzymes(return_str = FALSE, include_starter_gt = TRUE)
 }
 \arguments{
 \item{return_str}{If \code{FALSE} (default), returns the enzyme list.
 Otherwise returns a charactor vector of gene symbols.}
+
+\item{include_starter_gt}{If \code{TRUE} (default), includes starter GTs in the result.
+Starter GTs are enzymes that initiate glycosylation by introducing the first sugar residue onto a non-glycan substrate.
+For example, DPAGT1 is the starter GT for N-glycosylation.}
 }
 \value{
 A list of \code{\link[=enzyme]{enzyme()}}s or a character vector.
