@@ -1,5 +1,3 @@
-# TODO: Add support for starter GTs.
-
 #' Find a Biosynthesis Path Between Glycan Structures
 #'
 #' Find a synthesis path from one glycan structure to another using enzymatic reactions.
