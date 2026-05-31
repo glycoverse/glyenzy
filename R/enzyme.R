@@ -73,11 +73,16 @@ enzyme <- function(symbol) {
 #' db_enzymes(return_str = TRUE)
 #'
 #' @export
-db_enzymes <- function(return_str = FALSE) {
-  if (return_str) {
-    return(names(glyenzy_enzymes))
+db_enzymes <- function(return_str = FALSE, include_starter_gt = TRUE) {
+  if (include_starter_gt) {
+    enzymes <- glyenzy_enzymes
   } else {
-    return(glyenzy_enzymes)
+    enzymes <- purrr::discard(glyenzy_enzymes, .is_starter_gt)
+  }
+  if (return_str) {
+    return(names(enzymes))
+  } else {
+    return(enzymes)
   }
 }
 

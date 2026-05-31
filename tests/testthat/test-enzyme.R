@@ -153,6 +153,11 @@ test_that("db_enzymes(return_str = FALSE) returns enzyme list", {
   expect_true(all(purrr::map_lgl(enzymes, ~ inherits(.x, "glyenzy_enzyme"))))
 })
 
+test_that("db_enzymes(include_starter_gt = FALSE) excludes starter GT enzymes", {
+  enzymes <- db_enzymes(return_str = TRUE, include_starter_gt = FALSE)
+  expect_false("DPAGT1" %in% enzymes)
+})
+
 # Test validate_enzyme function
 test_that("validate_enzyme works with valid enzyme", {
   acceptor <- glyparse::parse_iupac_condensed("Gal(b1-3)GalNAc(a1-")
