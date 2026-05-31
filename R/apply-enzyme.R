@@ -57,7 +57,7 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @noRd
 .apply_enzyme <- function(glycans, enzyme) {
   if (.is_starter_gt(enzyme)) {
-    return(glyrepr::glycan_structure())
+    return(rep(list(glyrepr::glycan_structure()), length(glycans)))
   }
   rule_res <- purrr::map(enzyme$rules, ~ .apply_rule(glycans, .x, enzyme$type))
   res <- purrr::pmap(rule_res, c)

@@ -53,6 +53,16 @@ test_that("grow_glycans handles early termination", {
   expect_equal(as.character(result), glycan)
 })
 
+test_that("grow_glycans handles starter GTs", {
+  glycan <- glyrepr::n_glycan_core()
+
+  step_result <- suppressMessages(grow_glycans_step(glycan, "DPAGT1"))
+  full_result <- suppressMessages(grow_glycans(glycan, "DPAGT1", n_steps = 1))
+
+  expect_equal(step_result, glyrepr::glycan_structure())
+  expect_equal(as.character(full_result), as.character(glycan))
+})
+
 # ===== Filter Parameter Tests =====
 test_that("grow_glycans works without filter (NULL)", {
   glycans <- c(
