@@ -44,7 +44,6 @@ We'll start with a small O-glycan example:
 ![](resources/H2N2.png)
 
 In the diagram, each glycosidic bond is labeled with its responsible enzyme.
-(We'll skip the rightmost peptide bond for now.)
 
 Here is the same glycan in IUPAC-condensed notation:
 
@@ -232,10 +231,6 @@ glyenzy uses specific starting points for biosynthetic reconstruction:
 - **O-Man glycans**: Start with Man(a1-
 - **O-Fuc glycans**: Start with Fuc(a1-
 - **O-Glc glycans**: Start with Glc(b1-
-
-This means we don't track the earlier steps – ALGs building the N-glycan precursor,
-OST transferring it to asparagine, or GALNTs adding the initial GalNAc.
-The reconstruction starts after those events.
 
 ## Technical Notes
 
