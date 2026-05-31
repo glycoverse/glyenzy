@@ -29,7 +29,11 @@ if (any(duplicated(json_data$name))) {
 
 # Helper function to create enzyme rule from JSON data
 .make_enzyme_rule_from_json <- function(rule_data, enzyme_type) {
-  acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
+  if (rule_data$acceptor == "") {
+    acceptor <- glyrepr::glycan_structure()
+  } else {
+    acceptor <- glyparse::parse_iupac_condensed(rule_data$acceptor)
+  }
   acceptor_alignment <- rule_data$acceptor_alignment
 
   product <- glyparse::parse_iupac_condensed(rule_data$product)
