@@ -1,3 +1,5 @@
+# TODO: Add support for starter GTs.
+
 #' Count Enzyme Involvement
 #'
 #' Count how many times an enzyme is involved in the biosynthesis of a glycan.

@@ -1,3 +1,5 @@
+# TODO: Add support for starter GTs.
+
 #' Apply an Enzyme to a Glycan
 #'
 #' This function simulates the action of an enzyme on a glycan.

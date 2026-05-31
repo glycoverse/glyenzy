@@ -1,3 +1,5 @@
+# TODO: Add support for starter GTs.
+
 #' Match Residues Added by an Enzyme
 #'
 #' This function finds residues in glycans that match the product motifs of a
