@@ -159,6 +159,23 @@ test_that("apply_enzyme is compatible with starter GTs", {
   expect_equal(res, glyrepr::glycan_structure())
 })
 
+test_that("apply_enzyme keeps return shape for starter GTs", {
+  glycans <- glyparse::parse_iupac_condensed(c(
+    "GlcNAc(b1-",
+    "GalNAc(a1-"
+  ))
+
+  res <- apply_enzyme(glycans, "DPAGT1", return_list = TRUE)
+
+  expect_type(res, "list")
+  expect_length(res, length(glycans))
+  purrr::walk(res, ~ expect_equal(.x, glyrepr::glycan_structure()))
+  expect_error(
+    apply_enzyme(glycans, "DPAGT1", return_list = FALSE),
+    "must have length 1"
+  )
+})
+
 # ===== Regression Tests =====
 test_that("apply_enzyme regression: GH enzymes do not create invalid out-tree structures", {
   # Test that GH enzymes only remove terminal residues and do not break tree structure
