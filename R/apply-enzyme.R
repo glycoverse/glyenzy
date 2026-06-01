@@ -139,6 +139,15 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   UseMethod(".apply_rule_action", enzyme)
 }
 
+.apply_rule_action.glyenzy_starter_gt_enzyme <- function(
+  enzyme,
+  graph,
+  indices_to_act_on,
+  rule
+) {
+  list()
+}
+
 .apply_rule_action.glyenzy_gt_enzyme <- function(
   enzyme,
   graph,
