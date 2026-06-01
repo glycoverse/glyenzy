@@ -145,6 +145,11 @@ new_enzyme <- function(name, rules, type, species) {
     "TMTC1", "TMTC2", "TMTC3", "TMTC4",
     paste0("GALNT", 1:19)
   )
+  npre_gts <- c(
+    "ALG13", "ALG14", "ALG1", "ALG2", "ALG11",
+    "ALG3", "ALG9", "ALG12", "ALG6", "ALG8",
+    "ALG10"
+  )
   cls <- switch(
     type,
     GT = c("glyenzy_gt_enzyme", "glyenzy_enzyme"),
@@ -153,7 +158,7 @@ new_enzyme <- function(name, rules, type, species) {
   if (name %in% starter_gts) {
     cls <- c("glyenzy_starter_gt_enzyme", cls)
   }
-  if (stringr::str_starts(name, "ALG")) {
+  if (name %in% npre_gts) {
     cls <- c("glyenzy_npre_gt_enzyme", cls)
   }
   cls
