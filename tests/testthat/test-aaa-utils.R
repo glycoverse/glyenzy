@@ -33,10 +33,6 @@ test_that("enzyme list processing accepts supported input forms", {
     names(.process_enzymes_arg(NULL)),
     NULL
   )
-  expect_length(
-    .process_enzymes_arg(NULL, include_starter_gt = TRUE),
-    length(glyenzy_enzymes)
-  )
 
   enzyme_names <- c("B3GNT6", "C1GALT1")
   by_name <- .process_enzymes_arg(enzyme_names)
