@@ -38,6 +38,9 @@ Most of the time, you can use \code{\link[=enzyme]{enzyme()}} with a gene symbol
 or just use the gene symbol directly in function arguments.
 Use this function only when you need to create an enzyme with custom rules.
 See the "Enzyme rules" section below for more details.
+
+For now you can only create regular glycosyltransferases (GTs) and glycoside hydrolases (GHs) with this function.
+Special enzymes like starter GTs for glycosylation initiation are reserved for predefined enzymes.
 }
 \section{Enzyme rules}{
 The enzyme rules are the core of an enzyme object.
