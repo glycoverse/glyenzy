@@ -29,6 +29,7 @@
 - Add support for initiating enzymes including DPAGT1, FUT10, FUT11,
   POFUT1, POFUT2, POGLUT1, POGLUT2, POGLUT3, POMT1, POMT2, TMTC1, TMTC2,
   TMTC3, TMTC4, and GALNT1 through GALNT19. (#5)
+- Add support for N-glycan precursor synthesis enzymes (ALGs). (#6)
 - Add
   [`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md)
   to identify the residues added by a glycosyltransferase. (#3)
