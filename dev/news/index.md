@@ -2,6 +2,8 @@
 
 ## glyenzy (development version)
 
+## glyenzy 0.5.0
+
 ### Breaking changes
 
 - Rename APIs to use shorter, consistent names (#2):
