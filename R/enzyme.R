@@ -73,17 +73,28 @@ enzyme <- function(symbol) {
 #' @param include_starter_gt If `TRUE` (default), includes starter GTs in the result.
 #'   Starter GTs are enzymes that initiate glycosylation by introducing the first sugar residue onto a non-glycan substrate.
 #'   For example, DPAGT1 is the starter GT for N-glycosylation.
+#' @param include_npre_gt If `TRUE` (default), includes GTs involved in N-glycan precursor synthesis in the result.
+#'   These GTs are responsible for building the N-glycan precursor before it is transferred to the target protein by OST.
 #'
 #' @returns A list of [enzyme()]s or a character vector.
 #' @examples
 #' db_enzymes(return_str = TRUE)
 #'
 #' @export
-db_enzymes <- function(return_str = FALSE, include_starter_gt = TRUE) {
+db_enzymes <- function(
+  return_str = FALSE,
+  include_starter_gt = TRUE,
+  include_npre_gt = TRUE
+) {
   if (include_starter_gt) {
     enzymes <- glyenzy_enzymes
   } else {
     enzymes <- purrr::discard(glyenzy_enzymes, .is_starter_gt)
+  }
+  if (include_npre_gt) {
+    enzymes <- enzymes
+  } else {
+    enzymes <- purrr::discard(enzymes, .is_npre_gt)
   }
   if (return_str) {
     return(names(enzymes))
@@ -513,14 +524,12 @@ enhance_enzyme_rule_gh <- function(x) {
   invisible(NULL)
 }
 
-#' Check whether an enzyme is a starter GT
-#'
-#' @param x A `glyenzy_enzyme` object.
-#'
-#' @returns `TRUE` if `x` is a GT enzyme with at least one empty acceptor rule.
-#' @noRd
 .is_starter_gt <- function(x) {
   inherits(x, "glyenzy_starter_gt_enzyme")
+}
+
+.is_npre_gt <- function(x) {
+  inherits(x, "glyenzy_npre_gt_enzyme")
 }
 
 #' Print method for glyenzy_enzyme objects
