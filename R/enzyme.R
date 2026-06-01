@@ -136,25 +136,6 @@ new_enzyme <- function(name, rules, type, species) {
   )
 }
 
-#' Create an enzyme-like object for S3 dispatch
-#'
-#' @param x A `glyenzy_enzyme` object or a broad enzyme type string.
-#' @param rules A list of rules used when `x` is a type string.
-#'
-#' @returns An enzyme-like object.
-#' @noRd
-.as_enzyme_context <- function(x, rules = list()) {
-  if (inherits(x, "glyenzy_enzyme")) {
-    return(x)
-  }
-
-  checkmate::assert_choice(x, c("GT", "GH"))
-  structure(
-    list(type = x, rules = rules),
-    class = .enzyme_classes(x, rules)
-  )
-}
-
 #' Check whether a rule list contains a starter GT rule
 #'
 #' @param rules A list of `glyenzy_enzyme_rule` objects.
@@ -171,22 +152,92 @@ new_enzyme <- function(name, rules, type, species) {
 #' @noRd
 validate_enzyme <- function(x) {
   checkmate::assert_class(x, "glyenzy_enzyme")
-  purrr::walk(
-    x$rules,
-    ~ validate_enzyme_rule(.x, type = x)
+  UseMethod("validate_enzyme", x)
+}
+
+#' @export
+#' @noRd
+validate_enzyme.glyenzy_starter_gt_enzyme <- function(x) {
+  purrr::walk(x$rules, validate_enzyme_rule_starter_or_gt)
+  invisible(x)
+}
+
+#' @export
+#' @noRd
+validate_enzyme.glyenzy_gt_enzyme <- function(x) {
+  purrr::walk(x$rules, validate_enzyme_rule_gt)
+  invisible(x)
+}
+
+#' @export
+#' @noRd
+validate_enzyme.glyenzy_gh_enzyme <- function(x) {
+  purrr::walk(x$rules, validate_enzyme_rule_gh)
+  invisible(x)
+}
+
+#' @export
+#' @noRd
+validate_enzyme.glyenzy_enzyme <- function(x) {
+  switch(
+    x$type,
+    GT = if (.is_starter_gt(x)) {
+      validate_enzyme.glyenzy_starter_gt_enzyme(x)
+    } else {
+      validate_enzyme.glyenzy_gt_enzyme(x)
+    },
+    GH = validate_enzyme.glyenzy_gh_enzyme(x),
+    cli::cli_abort("Unsupported enzyme type: {x$type}")
   )
   invisible(x)
 }
 
 #' Enhance a `glyenzy_enzyme` object
 #'
-#' This function enhances all rules by calling `enhance_enzyme_rule()` on each rule.
+#' This function dispatches on the enzyme class, then enhances all rules with
+#' enzyme-type-specific helper functions.
 #'
 #' @param x A `glyenzy_enzyme` object.
 #' @noRd
 enhance_enzyme <- function(x) {
-  x$rules <- purrr::map(x$rules, ~ enhance_enzyme_rule(.x, x))
+  checkmate::assert_class(x, "glyenzy_enzyme")
+  UseMethod("enhance_enzyme", x)
+}
+
+#' @export
+#' @noRd
+enhance_enzyme.glyenzy_starter_gt_enzyme <- function(x) {
+  x$rules <- purrr::map(x$rules, enhance_enzyme_rule_starter_or_gt)
   x
+}
+
+#' @export
+#' @noRd
+enhance_enzyme.glyenzy_gt_enzyme <- function(x) {
+  x$rules <- purrr::map(x$rules, enhance_enzyme_rule_gt)
+  x
+}
+
+#' @export
+#' @noRd
+enhance_enzyme.glyenzy_gh_enzyme <- function(x) {
+  x$rules <- purrr::map(x$rules, enhance_enzyme_rule_gh)
+  x
+}
+
+#' @export
+#' @noRd
+enhance_enzyme.glyenzy_enzyme <- function(x) {
+  switch(
+    x$type,
+    GT = if (.is_starter_gt(x)) {
+      enhance_enzyme.glyenzy_starter_gt_enzyme(x)
+    } else {
+      enhance_enzyme.glyenzy_gt_enzyme(x)
+    },
+    GH = enhance_enzyme.glyenzy_gh_enzyme(x),
+    cli::cli_abort("Unsupported enzyme type: {x$type}")
+  )
 }
 
 #' Create a new enzyme rule object
@@ -220,19 +271,13 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects) {
   )
 }
 
-#' Validate a `glyenzy_enzyme_rule` object
-#'
-#' This function checks four things:
-#' 1. `acceptor` and `product` are both single structures
-#' 2. `acceptor` and `product` are valid for the enzyme type
-#' 3. `acceptor` is the substructure of all `rejects`
+#' Validate fields shared by all enzyme rules
 #'
 #' @param x A `glyenzy_enzyme_rule` object.
-#' @param type A character string, representing the type of the enzyme, "GT" or "GH".
+#'
 #' @noRd
-validate_enzyme_rule <- function(x, type) {
+validate_enzyme_rule_common <- function(x) {
   checkmate::assert_class(x, "glyenzy_enzyme_rule")
-  enzyme <- .as_enzyme_context(type, list(x))
 
   if (length(x$acceptor) > 1) {
     cli::cli_abort("The {.arg acceptor} must be a single structure.")
@@ -241,139 +286,121 @@ validate_enzyme_rule <- function(x, type) {
     cli::cli_abort("The {.arg product} must be a single structure.")
   }
 
-  if (.is_starter_acceptor(x$acceptor)) {
-    if (!inherits(enzyme, "glyenzy_gt_enzyme")) {
-      cli::cli_abort("Only GT enzymes can have an empty {.field acceptor}.")
-    }
-    if (length(x$rejects) > 0) {
-      cli::cli_abort("{.field rejects} must be empty for starter GTs.")
-    }
+  invisible(x)
+}
+
+#' Validate reject rules shared by non-starter enzyme rules
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @noRd
+validate_enzyme_rule_rejects <- function(x) {
+  if (length(x$rejects) == 0L) {
+    return(invisible(x))
   }
 
-  .check_enzyme_rule_product_acceptor(enzyme, x)
-
-  if (length(x$rejects) > 0) {
-    if (x$acceptor_alignment == "whole") {
-      cli::cli_abort(
-        "Cannot set {.field rejects} when the acceptor alignment is {.val whole}."
-      )
-    }
-    if (
-      !all(glymotif::have_motifs(
-        x$rejects,
-        x$acceptor,
-        alignments = "substructure"
-      ))
-    ) {
-      cli::cli_abort(
-        "The {.arg acceptor} must be the substructure of all {.arg rejects}."
-      )
-    }
-    n_mono_acc <- igraph::vcount(glyrepr::get_structure_graphs(
+  if (x$acceptor_alignment == "whole") {
+    cli::cli_abort(
+      "Cannot set {.field rejects} when the acceptor alignment is {.val whole}."
+    )
+  }
+  if (
+    !all(glymotif::have_motifs(
+      x$rejects,
       x$acceptor,
-      return_list = FALSE
+      alignments = "substructure"
     ))
-    n_mono_rej <- glyrepr::smap_int(x$rejects, ~ igraph::vcount(.x))
-    if (any(n_mono_rej == n_mono_acc)) {
-      cli::cli_abort(
-        "{.field rejects} cannot be the same as {.field acceptor}."
-      )
-    }
+  ) {
+    cli::cli_abort(
+      "The {.arg acceptor} must be the substructure of all {.arg rejects}."
+    )
+  }
+  n_mono_acc <- igraph::vcount(glyrepr::get_structure_graphs(
+    x$acceptor,
+    return_list = FALSE
+  ))
+  n_mono_rej <- glyrepr::smap_int(x$rejects, ~ igraph::vcount(.x))
+  if (any(n_mono_rej == n_mono_acc)) {
+    cli::cli_abort(
+      "{.field rejects} cannot be the same as {.field acceptor}."
+    )
   }
 
   invisible(x)
 }
 
-#' Check product and acceptor structure for an enzyme rule
-#'
-#' @param enzyme A `glyenzy_enzyme` object.
-#' @param rule A `glyenzy_enzyme_rule` object.
-#'
-#' @noRd
-.check_enzyme_rule_product_acceptor <- function(enzyme, rule) {
-  UseMethod(".check_enzyme_rule_product_acceptor", enzyme)
-}
-
-.check_enzyme_rule_product_acceptor.glyenzy_gt_enzyme <- function(
-  enzyme,
-  rule
-) {
-  .check_product_acceptor(rule$acceptor, rule$product, "acceptor", "product")
-}
-
-.check_enzyme_rule_product_acceptor.glyenzy_gh_enzyme <- function(
-  enzyme,
-  rule
-) {
-  .check_product_acceptor(rule$product, rule$acceptor, "product", "acceptor")
-}
-
-.check_enzyme_rule_product_acceptor.glyenzy_enzyme <- function(enzyme, rule) {
-  switch(
-    enzyme$type,
-    GT = .check_enzyme_rule_product_acceptor.glyenzy_gt_enzyme(enzyme, rule),
-    GH = .check_enzyme_rule_product_acceptor.glyenzy_gh_enzyme(enzyme, rule),
-    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
-  )
-}
-
-#' Enhance a `glyenzy_enzyme_rule` object
-#'
-#' Add the following fields to a `glyenzy_enzyme_rule` object:
-#' - `acceptor_idx`: The node index of the acceptor where the enzyme acts on.
-#'   For GTs, this is the node new residue is attached to.
-#'   For GHs, this is the node that is removed.
-#' - `product_idx`: The node index of the product residue in the product structure.
-#'   For GTs, this is the index of the newly added residue in the product.
-#'   For GHs, this is `NULL` (no new residue is added).
-#' - `new_residue`: The new residue added by the enzyme. For GHs, this is `NULL`.
-#' - `new_linkage`: The linkage of the new residue. For GHs, this is `NULL`.
+#' Validate a regular GT enzyme rule
 #'
 #' @param x A `glyenzy_enzyme_rule` object.
-#' @param type A character string, representing the type of the enzyme, "GT" or "GH".
-#' @noRd
-enhance_enzyme_rule <- function(x, type) {
-  enzyme <- .as_enzyme_context(type, list(x))
-  .enhance_enzyme_rule_for(enzyme, x)
-}
-
-#' Enhance an enzyme rule for an enzyme type
 #'
-#' @param enzyme A `glyenzy_enzyme` object.
-#' @param rule A `glyenzy_enzyme_rule` object.
-#'
-#' @returns An enhanced `glyenzy_enzyme_rule` object.
 #' @noRd
-.enhance_enzyme_rule_for <- function(enzyme, rule) {
-  UseMethod(".enhance_enzyme_rule_for", enzyme)
-}
-
-.enhance_enzyme_rule_for.glyenzy_starter_gt_enzyme <- function(enzyme, rule) {
-  if (.is_starter_acceptor(rule$acceptor)) {
-    return(.enhance_gt_enzyme_rule_starter(rule))
+validate_enzyme_rule_gt <- function(x) {
+  validate_enzyme_rule_common(x)
+  if (.is_starter_acceptor(x$acceptor)) {
+    return(validate_enzyme_rule_starter(x))
   }
-  NextMethod()
+  .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
+  validate_enzyme_rule_rejects(x)
+  invisible(x)
 }
 
-.enhance_enzyme_rule_for.glyenzy_gt_enzyme <- function(enzyme, rule) {
-  .enhance_gt_enzyme_rule_regular(rule)
+#' Validate a starter GT enzyme rule
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @noRd
+validate_enzyme_rule_starter <- function(x) {
+  validate_enzyme_rule_common(x)
+  if (!.is_starter_acceptor(x$acceptor)) {
+    return(validate_enzyme_rule_gt(x))
+  }
+  if (length(x$rejects) > 0) {
+    cli::cli_abort("{.field rejects} must be empty for starter GTs.")
+  }
+  .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
+  invisible(x)
 }
 
-.enhance_enzyme_rule_for.glyenzy_gh_enzyme <- function(enzyme, rule) {
-  .enhance_gh_enzyme_rule(rule)
+#' Validate a starter GT rule or fall back to regular GT validation
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @noRd
+validate_enzyme_rule_starter_or_gt <- function(x) {
+  if (.is_starter_acceptor(x$acceptor)) {
+    validate_enzyme_rule_starter(x)
+  } else {
+    validate_enzyme_rule_gt(x)
+  }
 }
 
-.enhance_enzyme_rule_for.glyenzy_enzyme <- function(enzyme, rule) {
-  switch(
-    enzyme$type,
-    GT = if (.is_starter_acceptor(rule$acceptor)) {
-      .enhance_enzyme_rule_for.glyenzy_starter_gt_enzyme(enzyme, rule)
-    } else {
-      .enhance_enzyme_rule_for.glyenzy_gt_enzyme(enzyme, rule)
-    },
-    GH = .enhance_enzyme_rule_for.glyenzy_gh_enzyme(enzyme, rule),
-    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
-  )
+#' Validate a GH enzyme rule
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @noRd
+validate_enzyme_rule_gh <- function(x) {
+  validate_enzyme_rule_common(x)
+  if (.is_starter_acceptor(x$acceptor)) {
+    cli::cli_abort("Only GT enzymes can have an empty {.field acceptor}.")
+  }
+  .check_product_acceptor(x$product, x$acceptor, "product", "acceptor")
+  validate_enzyme_rule_rejects(x)
+  invisible(x)
+}
+
+#' Enhance a starter GT rule or fall back to regular GT enhancement
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @returns An enhanced `glyenzy_enzyme_rule`.
+#' @noRd
+enhance_enzyme_rule_starter_or_gt <- function(x) {
+  if (.is_starter_acceptor(x$acceptor)) {
+    enhance_enzyme_rule_starter(x)
+  } else {
+    enhance_enzyme_rule_gt(x)
+  }
 }
 
 #' Enhance a starter GT rule
@@ -382,7 +409,7 @@ enhance_enzyme_rule <- function(x, type) {
 #'
 #' @returns A starter `glyenzy_enzyme_rule` with derived rule fields.
 #' @noRd
-.enhance_gt_enzyme_rule_starter <- function(x) {
+enhance_enzyme_rule_starter <- function(x) {
   product_graph <- glyrepr::get_structure_graphs(x$product, return_list = FALSE)
 
   x$acceptor_idx <- 0L
@@ -392,7 +419,17 @@ enhance_enzyme_rule <- function(x, type) {
   x
 }
 
-.enhance_gt_enzyme_rule_regular <- function(x) {
+#' Enhance a regular GT rule
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @returns An enhanced `glyenzy_enzyme_rule`.
+#' @noRd
+enhance_enzyme_rule_gt <- function(x) {
+  if (.is_starter_acceptor(x$acceptor)) {
+    return(enhance_enzyme_rule_starter(x))
+  }
+
   acceptor_graph <- glyrepr::get_structure_graphs(
     x$acceptor,
     return_list = FALSE
@@ -428,7 +465,13 @@ enhance_enzyme_rule <- function(x, type) {
   x
 }
 
-.enhance_gh_enzyme_rule <- function(x) {
+#' Enhance a GH rule
+#'
+#' @param x A `glyenzy_enzyme_rule` object.
+#'
+#' @returns An enhanced `glyenzy_enzyme_rule`.
+#' @noRd
+enhance_enzyme_rule_gh <- function(x) {
   acceptor_graph <- glyrepr::get_structure_graphs(
     x$acceptor,
     return_list = FALSE

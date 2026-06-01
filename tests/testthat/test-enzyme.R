@@ -125,7 +125,7 @@ test_that("acceptor_idx and product_idx are correctly set for GH enzymes", {
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enhanced_rule <- enhance_enzyme_rule(rule, "GH")
+  enhanced_rule <- enhance_enzyme_rule_gh(rule)
 
   # For GH enzymes, acceptor_idx should point to the removed residue
   expect_type(enhanced_rule$acceptor_idx, "integer")
@@ -195,7 +195,7 @@ test_that("validate_enzyme_rule works with valid GT rule", {
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
-  expect_invisible(validate_enzyme_rule(rule, "GT"))
+  expect_invisible(validate_enzyme_rule_gt(rule))
 })
 
 test_that("validate_enzyme_rule works with valid GH rule", {
@@ -205,7 +205,17 @@ test_that("validate_enzyme_rule works with valid GH rule", {
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
-  expect_invisible(validate_enzyme_rule(rule, "GH"))
+  expect_invisible(validate_enzyme_rule_gh(rule))
+})
+
+test_that("validate_enzyme_rule_starter works with valid starter GT rule", {
+  acceptor <- glyrepr::glycan_structure()
+  product <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
+  rejects <- glyparse::parse_iupac_condensed(character(0))
+
+  rule <- new_enzyme_rule(acceptor, product, "core", rejects)
+
+  expect_invisible(validate_enzyme_rule_starter(rule))
 })
 
 test_that("validate_enzyme_rule fails with multiple acceptors", {
@@ -219,7 +229,7 @@ test_that("validate_enzyme_rule fails with multiple acceptors", {
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    validate_enzyme_rule(rule, "GT"),
+    validate_enzyme_rule_gt(rule),
     "acceptor.*must be a single structure"
   )
 })
@@ -235,7 +245,7 @@ test_that("validate_enzyme_rule fails with multiple products", {
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    validate_enzyme_rule(rule, "GT"),
+    validate_enzyme_rule_gt(rule),
     "product.*must be a single structure"
   )
 })
@@ -248,7 +258,7 @@ test_that("validate_enzyme_rule fails when acceptor is not substructure of produ
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    validate_enzyme_rule(rule, "GT"),
+    validate_enzyme_rule_gt(rule),
     "acceptor.*must be a substructure"
   )
 })
@@ -261,7 +271,7 @@ test_that("validate_enzyme_rule fails when product is not substructure of accept
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_error(
-    validate_enzyme_rule(rule, "GH"),
+    validate_enzyme_rule_gh(rule),
     "product.*must be a substructure"
   )
 })
@@ -292,7 +302,7 @@ test_that("enhance_enzyme_rule works for GT enzymes", {
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enhanced_rule <- enhance_enzyme_rule(rule, "GT")
+  enhanced_rule <- enhance_enzyme_rule_gt(rule)
 
   expect_true("acceptor_idx" %in% names(enhanced_rule))
   expect_true("product_idx" %in% names(enhanced_rule))
@@ -310,13 +320,27 @@ test_that("enhance_enzyme_rule works for GH enzymes", {
   rejects <- glyparse::parse_iupac_condensed(character(0))
 
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
-  enhanced_rule <- enhance_enzyme_rule(rule, "GH")
+  enhanced_rule <- enhance_enzyme_rule_gh(rule)
 
   expect_true("acceptor_idx" %in% names(enhanced_rule))
   expect_type(enhanced_rule$acceptor_idx, "integer")
   # For GH enzymes, these fields should be NULL
   expect_null(enhanced_rule$product_idx) # GH enzymes don't add residues
   expect_null(enhanced_rule$new_residue)
+  expect_null(enhanced_rule$new_linkage)
+})
+
+test_that("enhance_enzyme_rule_starter works for starter GT enzymes", {
+  acceptor <- glyrepr::glycan_structure()
+  product <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
+  rejects <- glyparse::parse_iupac_condensed(character(0))
+
+  rule <- new_enzyme_rule(acceptor, product, "core", rejects)
+  enhanced_rule <- enhance_enzyme_rule_starter(rule)
+
+  expect_equal(enhanced_rule$acceptor_idx, 0L)
+  expect_equal(enhanced_rule$product_idx, 1L)
+  expect_equal(enhanced_rule$new_residue, "GlcNAc")
   expect_null(enhanced_rule$new_linkage)
 })
 
