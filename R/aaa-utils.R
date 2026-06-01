@@ -137,51 +137,120 @@
   glycans = NULL,
   apply_prefilter = TRUE
 ) {
-  # Get enzyme names from various input formats
-  if (is.null(enzymes)) {
-    enzyme_names <- names(glyenzy_enzymes)
-  } else if (is.character(enzymes)) {
-    enzyme_names <- enzymes
-    unknown <- setdiff(enzyme_names, names(glyenzy_enzymes))
-    if (length(unknown) > 0) {
-      cli::cli_abort("Unknown enzymes: {.val {unknown}}.")
-    }
-  } else {
-    checkmate::assert_list(enzymes, types = "glyenzy_enzyme")
-    enzyme_names <- purrr::map_chr(enzymes, ~ .x$name)
-  }
-
-  # Apply enzyme pre-filtering if requested and target glycans provided
-  if (apply_prefilter && !is.null(glycans)) {
-    can_contribute <- tryCatch(
-      {
-        purrr::map_lgl(
-          enzyme_names,
-          ~ {
-            # Check if enzyme can contribute to any target glycan
-            any(purrr::map_lgl(glycans, function(target) {
-              tryCatch(
-                glyenzy::have_enzyme(target, .x),
-                error = function(e) FALSE
-              )
-            }))
-          }
-        )
-      },
-      error = function(e) {
-        rep(TRUE, length(enzyme_names))
-      }
-    )
-
-    enzyme_names <- enzyme_names[can_contribute]
-    if (length(enzyme_names) == 0L) {
-      cli::cli_abort(
-        "No enzymes are predicted to contribute to any target glycan."
-      )
-    }
-  }
+  enzyme_names <- .enzyme_names_from_arg(enzymes)
+  enzyme_names <- .prefilter_enzyme_names(
+    enzyme_names,
+    glycans,
+    apply_prefilter
+  )
 
   unname(glyenzy_enzymes[enzyme_names])
+}
+
+#' Get enzyme names from supported enzyme input forms
+#'
+#' @param enzymes Raw enzyme input (`NULL`, character vector, or enzyme object
+#'   list).
+#' @returns A character vector of enzyme names.
+#' @noRd
+.enzyme_names_from_arg <- function(enzymes) {
+  if (is.null(enzymes)) {
+    return(names(glyenzy_enzymes))
+  }
+
+  if (is.character(enzymes)) {
+    .check_known_enzyme_names(enzymes)
+    return(enzymes)
+  }
+
+  .enzyme_names_from_list(enzymes)
+}
+
+#' Validate enzyme names against the built-in enzyme table
+#'
+#' @param enzyme_names A character vector of enzyme names.
+#' @returns The input `enzyme_names`, invisibly.
+#' @noRd
+.check_known_enzyme_names <- function(enzyme_names) {
+  unknown <- setdiff(enzyme_names, names(glyenzy_enzymes))
+  if (length(unknown) > 0) {
+    cli::cli_abort("Unknown enzymes: {.val {unknown}}.")
+  }
+
+  invisible(enzyme_names)
+}
+
+#' Extract names from a list of enzyme objects
+#'
+#' @param enzymes A list of `glyenzy_enzyme` objects.
+#' @returns A character vector of enzyme names.
+#' @noRd
+.enzyme_names_from_list <- function(enzymes) {
+  checkmate::assert_list(enzymes, types = "glyenzy_enzyme")
+  purrr::map_chr(enzymes, "name")
+}
+
+#' Optionally prefilter enzyme names against target glycans
+#'
+#' @param enzyme_names A character vector of enzyme names.
+#' @param glycans Target glycan structures for pre-filtering.
+#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target
+#'   glycans.
+#' @returns A character vector of enzyme names.
+#' @noRd
+.prefilter_enzyme_names <- function(
+  enzyme_names,
+  glycans,
+  apply_prefilter
+) {
+  if (!apply_prefilter || is.null(glycans)) {
+    return(enzyme_names)
+  }
+
+  can_contribute <- .can_enzymes_contribute(enzyme_names, glycans)
+  enzyme_names <- enzyme_names[can_contribute]
+  if (length(enzyme_names) == 0L) {
+    cli::cli_abort(
+      "No enzymes are predicted to contribute to any target glycan."
+    )
+  }
+
+  enzyme_names
+}
+
+#' Check whether enzymes can contribute to any target glycan
+#'
+#' @param enzyme_names A character vector of enzyme names.
+#' @param glycans Target glycan structures.
+#' @returns A logical vector with one value per enzyme name.
+#' @noRd
+.can_enzymes_contribute <- function(enzyme_names, glycans) {
+  tryCatch(
+    purrr::map_lgl(
+      enzyme_names,
+      ~ any(purrr::map_lgl(
+        glycans,
+        .enzyme_contributes_to_target,
+        enzyme_name = .x
+      ))
+    ),
+    error = function(e) {
+      rep(TRUE, length(enzyme_names))
+    }
+  )
+}
+
+#' Check whether one enzyme can contribute to one target glycan
+#'
+#' @param target A target glycan structure.
+#' @param enzyme_name A single enzyme name.
+#' @returns `TRUE` when the enzyme can synthesize `target`; otherwise `FALSE`.
+#' @noRd
+.enzyme_contributes_to_target <- function(target, enzyme_name) {
+  tryCatch(
+    glyenzy::have_enzyme(target, enzyme_name),
+    error = function(e) FALSE
+  )
 }
 
 # Validate and process return_list parameter early

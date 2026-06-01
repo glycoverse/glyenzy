@@ -27,3 +27,61 @@ test_that("functions check glycan substituents", {
     "Glycans with substituents are not supported"
   )
 })
+
+test_that("enzyme list processing accepts supported input forms", {
+  expect_equal(
+    names(.process_enzymes_arg(NULL)),
+    NULL
+  )
+  expect_length(
+    .process_enzymes_arg(NULL),
+    length(glyenzy_enzymes)
+  )
+
+  enzyme_names <- c("B3GNT6", "C1GALT1")
+  by_name <- .process_enzymes_arg(enzyme_names)
+  expect_equal(
+    purrr::map_chr(by_name, "name"),
+    enzyme_names
+  )
+
+  by_object <- .process_enzymes_arg(purrr::map(enzyme_names, enzyme))
+  expect_equal(
+    purrr::map_chr(by_object, "name"),
+    enzyme_names
+  )
+})
+
+test_that("enzyme list processing rejects unknown enzyme names", {
+  expect_error(
+    .process_enzymes_arg(c("B3GNT6", "UNKNOWN_ENZYME")),
+    "Unknown enzymes"
+  )
+})
+
+test_that("enzyme list processing can prefilter against target glycans", {
+  glycan <- glyparse::auto_parse("Gal(b1-3)GalNAc(a1-")
+
+  filtered <- .process_enzymes_arg(
+    c("C1GALT1", "ST6GAL1"),
+    glycan,
+    apply_prefilter = TRUE
+  )
+  unfiltered <- .process_enzymes_arg(
+    c("C1GALT1", "ST6GAL1"),
+    glycan,
+    apply_prefilter = FALSE
+  )
+
+  expect_equal(purrr::map_chr(filtered, "name"), "C1GALT1")
+  expect_equal(purrr::map_chr(unfiltered, "name"), c("C1GALT1", "ST6GAL1"))
+})
+
+test_that("enzyme list processing errors when no enzyme can contribute", {
+  glycan <- glyparse::auto_parse("Gal(b1-3)GalNAc(a1-")
+
+  expect_error(
+    .process_enzymes_arg("ST6GAL1", glycan, apply_prefilter = TRUE),
+    "No enzymes are predicted to contribute"
+  )
+})
