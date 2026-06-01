@@ -53,7 +53,7 @@ trace_biosynthesis <- function(
 ) {
   # Parse and validate basic inputs first
   glycans <- .process_glycans_arg(glycans)
-  enzymes <- .process_enzymes_arg(enzymes, glycans, apply_prefilter = TRUE)
+  enzymes <- .process_enzymes_arg(enzymes, glycans = glycans, apply_prefilter = TRUE)
   checkmate::assert_int(max_steps, lower = 1)
   if (!is.null(filter)) {
     filter <- rlang::as_function(filter)

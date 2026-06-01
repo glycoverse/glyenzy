@@ -34,7 +34,7 @@ test_that("enzyme list processing accepts supported input forms", {
     NULL
   )
   expect_length(
-    .process_enzymes_arg(NULL),
+    .process_enzymes_arg(NULL, include_starter_gt = TRUE),
     length(glyenzy_enzymes)
   )
 
@@ -64,12 +64,12 @@ test_that("enzyme list processing can prefilter against target glycans", {
 
   filtered <- .process_enzymes_arg(
     c("C1GALT1", "ST6GAL1"),
-    glycan,
+    glycan = glycan,
     apply_prefilter = TRUE
   )
   unfiltered <- .process_enzymes_arg(
     c("C1GALT1", "ST6GAL1"),
-    glycan,
+    glycan = glycan,
     apply_prefilter = FALSE
   )
 
@@ -81,7 +81,7 @@ test_that("enzyme list processing errors when no enzyme can contribute", {
   glycan <- glyparse::auto_parse("Gal(b1-3)GalNAc(a1-")
 
   expect_error(
-    .process_enzymes_arg("ST6GAL1", glycan, apply_prefilter = TRUE),
+    .process_enzymes_arg("ST6GAL1", glycan = glycan, apply_prefilter = TRUE),
     "No enzymes are predicted to contribute"
   )
 })

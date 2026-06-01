@@ -127,17 +127,19 @@
 #' This function processes various enzyme input formats (NULL, character vector,
 #' enzyme object list) and applies pre-filtering based on target glycan compatibility.
 #'
-#' @param enzymes Raw enzyme input (NULL, character vector, or enzyme object list)
-#' @param glycans Target glycan structures for pre-filtering (optional)
-#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycans
+#' @param enzymes Raw enzyme input (NULL, character vector, or enzyme object list).
+#' @param include_starter_gt Whether to include starter GTs in the enzyme list.
+#' @param glycans Target glycan structures for pre-filtering (optional).
+#' @param apply_prefilter Whether to apply enzyme pre-filtering based on target glycans.
 #' @returns A list of `glyenzy_enzyme` objects.
 #' @noRd
 .process_enzymes_arg <- function(
   enzymes,
+  include_starter_gt = FALSE,
   glycans = NULL,
   apply_prefilter = TRUE
 ) {
-  enzyme_names <- .enzyme_names_from_arg(enzymes)
+  enzyme_names <- .enzyme_names_from_arg(enzymes, include_starter_gt)
   enzyme_names <- .prefilter_enzyme_names(
     enzyme_names,
     glycans,
@@ -151,11 +153,17 @@
 #'
 #' @param enzymes Raw enzyme input (`NULL`, character vector, or enzyme object
 #'   list).
+#' @param include_starter_gt Whether to include starter GTs in the enzyme list.
 #' @returns A character vector of enzyme names.
 #' @noRd
-.enzyme_names_from_arg <- function(enzymes) {
+.enzyme_names_from_arg <- function(enzymes, include_starter_gt) {
   if (is.null(enzymes)) {
-    return(names(glyenzy_enzymes))
+    if (include_starter_gt) {
+      return(names(glyenzy_enzymes))
+    } else {
+      starters <- purrr::map_lgl(glyenzy_enzymes, ~ inherits(.x, "glyenzy_starter_gt_enzyme"))
+      return(names(glyenzy_enzymes)[!starters])
+    }
   }
 
   if (is.character(enzymes)) {
