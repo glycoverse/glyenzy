@@ -84,3 +84,54 @@ test_that("match_enzyme works with starter GTs", {
   glycan <- glyrepr::n_glycan_core()
   expect_equal(match_enzyme(glycan, "DPAGT1"), list(5L))
 })
+
+test_that("match_enzyme works for ALG13/ALG14", {
+  glycan <- glyrepr::n_glycan_core()
+  expect_equal(match_enzyme(glycan, "ALG13"), list(4L))
+  expect_equal(match_enzyme(glycan, "ALG14"), list(4L))
+})
+
+test_that("match_enzyme works for ALG1", {
+  glycan <- glyrepr::n_glycan_core()
+  expect_equal(match_enzyme(glycan, "ALG1"), list(3L))
+})
+
+test_that("match_enzyme works for ALG2", {
+  glycan <- glyrepr::n_glycan_core()
+  expect_equal(match_enzyme(glycan, "ALG2"), list(c(1L, 2L)))
+})
+
+test_that("match_enzyme works for ALG11", {
+  glycan <- glyrepr::as_glycan_structure("Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG11"), list(c(1L, 2L)))
+})
+
+test_that("match_enzyme works for ALG3", {
+  glycan <- glyrepr::as_glycan_structure("GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG3"), list(3L))
+})
+
+test_that("match_enzyme works for ALG12", {
+  glycan <- glyrepr::as_glycan_structure("GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG12"), list(4L))
+})
+
+test_that("match_enzyme works for ALG9", {
+  glycan <- glyrepr::as_glycan_structure("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG9"), list(c(7L, 9L)))
+})
+
+test_that("match_enzyme works for ALG6", {
+  glycan <- glyrepr::as_glycan_structure("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG6"), list(3L))
+})
+
+test_that("match_enzyme works for ALG8", {
+  glycan <- glyrepr::as_glycan_structure("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG8"), list(2L))
+})
+
+test_that("match_enzyme works for ALG10", {
+  glycan <- glyrepr::as_glycan_structure("Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  expect_equal(match_enzyme(glycan, "ALG10"), list(1L))
+})
