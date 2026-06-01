@@ -56,10 +56,37 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'   corresponding glycan in `glycans`.
 #' @noRd
 .apply_enzyme <- function(glycans, enzyme) {
+  UseMethod(".apply_enzyme", enzyme)
+}
+
+.apply_enzyme.glyenzy_starter_gt_enzyme <- function(glycans, enzyme) {
+  rep(list(glyrepr::glycan_structure()), length(glycans))
+}
+
+.apply_enzyme.glyenzy_gt_enzyme <- function(glycans, enzyme) {
+  .apply_enzyme_rules(glycans, enzyme)
+}
+
+.apply_enzyme.glyenzy_gh_enzyme <- function(glycans, enzyme) {
+  .apply_enzyme_rules(glycans, enzyme)
+}
+
+.apply_enzyme.glyenzy_enzyme <- function(glycans, enzyme) {
   if (.is_starter_gt(enzyme)) {
-    return(rep(list(glyrepr::glycan_structure()), length(glycans)))
+    return(.apply_enzyme.glyenzy_starter_gt_enzyme(glycans, enzyme))
   }
-  rule_res <- purrr::map(enzyme$rules, ~ .apply_rule(glycans, .x, enzyme$type))
+  .apply_enzyme_rules(glycans, enzyme)
+}
+
+#' Apply all enzyme rules to a vector of glycan structures
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns A list of `glyrepr_structure` vectors.
+#' @noRd
+.apply_enzyme_rules <- function(glycans, enzyme) {
+  rule_res <- purrr::map(enzyme$rules, ~ .apply_rule(glycans, .x, enzyme))
   res <- purrr::pmap(rule_res, c)
   purrr::map(res, unique)
 }
@@ -68,18 +95,18 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param rule A `glyenzy_enzyme_rule` object.
-#' @param type The type of the enzyme, "GT" or "GH".
+#' @param enzyme A `glyenzy_enzyme` object.
 #'
 #' @returns A list of `glyrepr_structure` vectors, with the same length as `glycans`.
 #'   Each element in the list corresponds to the products of the enzyme on the
 #'   corresponding glycan in `glycans`.
 #' @noRd
-.apply_rule <- function(glycans, rule, type) {
+.apply_rule <- function(glycans, rule, enzyme) {
   rule_matches <- .match_rule(glycans, rule)
   glyrepr::smap2(
     glycans,
     rule_matches,
-    ~ .apply_rule_single(.x, .y, rule, type)
+    ~ .apply_rule_single(.x, .y, rule, enzyme)
   )
 }
 
@@ -88,23 +115,73 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @param graph An igraph object representing the glycan structure.
 #' @param match_res A list of integer vectors, representing the node mapping from the acceptor to the glycan.
 #' @param rule A `glyenzy_enzyme_rule` object.
-#' @param type The type of the enzyme, "GT" or "GH".
+#' @param enzyme A `glyenzy_enzyme` object.
 #'
 #' @returns A list of `glyrepr_structure` vectors, with the same length as `match_res`.
 #' @noRd
-.apply_rule_single <- function(graph, match_res, rule, type) {
+.apply_rule_single <- function(graph, match_res, rule, enzyme) {
   indices_to_act_on <- purrr::map_int(match_res, ~ .x[rule$acceptor_idx])
-  graph_list <- switch(
-    type,
-    GT = purrr::map(
-      indices_to_act_on,
-      ~ .add_residue(graph, .x, rule$new_residue, rule$new_linkage)
-    ),
-    GH = purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x)),
-    cli::cli_abort("Unsupported enzyme type: {type}")
-  )
+  graph_list <- .apply_rule_action(enzyme, graph, indices_to_act_on, rule)
   graph_list <- purrr::compact(graph_list)
   glyrepr::as_glycan_structure(graph_list)
+}
+
+#' Apply an enzyme-specific graph action
+#'
+#' @param enzyme A `glyenzy_enzyme` object.
+#' @param graph An igraph object representing the glycan structure.
+#' @param indices_to_act_on Integer node indices.
+#' @param rule A `glyenzy_enzyme_rule` object.
+#'
+#' @returns A list of igraph objects.
+#' @noRd
+.apply_rule_action <- function(enzyme, graph, indices_to_act_on, rule) {
+  UseMethod(".apply_rule_action", enzyme)
+}
+
+.apply_rule_action.glyenzy_gt_enzyme <- function(
+  enzyme,
+  graph,
+  indices_to_act_on,
+  rule
+) {
+  purrr::map(
+    indices_to_act_on,
+    ~ .add_residue(graph, .x, rule$new_residue, rule$new_linkage)
+  )
+}
+
+.apply_rule_action.glyenzy_gh_enzyme <- function(
+  enzyme,
+  graph,
+  indices_to_act_on,
+  rule
+) {
+  purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x))
+}
+
+.apply_rule_action.glyenzy_enzyme <- function(
+  enzyme,
+  graph,
+  indices_to_act_on,
+  rule
+) {
+  switch(
+    enzyme$type,
+    GT = .apply_rule_action.glyenzy_gt_enzyme(
+      enzyme,
+      graph,
+      indices_to_act_on,
+      rule
+    ),
+    GH = .apply_rule_action.glyenzy_gh_enzyme(
+      enzyme,
+      graph,
+      indices_to_act_on,
+      rule
+    ),
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
 }
 
 #' Match a rule's acceptor on a glycan structure

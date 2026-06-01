@@ -142,24 +142,45 @@ count_enzyme <- function(glycans, enzyme) {
 )
 
 .count_enzyme_default <- function(glycans, enzyme, ...) {
-  fn <- switch(
-    enzyme$type,
-    GH = .count_enzyme_gh,
-    GT = .count_enzyme_gt,
-    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
-  )
-  fn(glycans, enzyme)
+  .count_enzyme_by_type(glycans, enzyme)
 }
 
-.count_enzyme_gh <- function(glycans, enzyme) {
+#' Count enzyme involvement using type-level behavior
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns An integer vector.
+#' @noRd
+.count_enzyme_by_type <- function(glycans, enzyme) {
+  UseMethod(".count_enzyme_by_type", enzyme)
+}
+
+.count_enzyme_by_type.glyenzy_gh_enzyme <- function(glycans, enzyme) {
   cli::cli_abort(
     "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
   )
 }
 
-.count_enzyme_gt <- function(glycans, enzyme) {
+.count_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
-  count_products_mat <- glymotif::count_motifs(glycans, products, alignment = product_alignments)
+  count_products_mat <- glymotif::count_motifs(
+    glycans,
+    products,
+    alignment = product_alignments
+  )
   unname(rowSums(count_products_mat))
 }
+
+.count_enzyme_by_type.glyenzy_enzyme <- function(glycans, enzyme) {
+  switch(
+    enzyme$type,
+    GH = .count_enzyme_by_type.glyenzy_gh_enzyme(glycans, enzyme),
+    GT = .count_enzyme_by_type.glyenzy_gt_enzyme(glycans, enzyme),
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
+}
+
+.count_enzyme_gh <- .count_enzyme_by_type.glyenzy_gh_enzyme
+.count_enzyme_gt <- .count_enzyme_by_type.glyenzy_gt_enzyme

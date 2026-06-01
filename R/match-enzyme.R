@@ -46,23 +46,46 @@ match_enzyme <- function(glycans, enzyme) {
 #' @returns A list of integer vectors with the same length as `glycans`.
 #' @noRd
 .match_enzyme <- function(glycans, enzyme) {
+  UseMethod(".match_enzyme", enzyme)
+}
+
+.match_enzyme.glyenzy_starter_gt_enzyme <- function(glycans, enzyme) {
   if (length(enzyme$rules) == 0L) {
     return(rep(list(integer()), length(glycans)))
   }
 
-  if (.is_starter_gt(enzyme)) {
-    have_product <- .have_enzyme_gt(glycans, enzyme)
-    n_mono <- glyrepr::count_mono(glycans)
-    return(purrr::map2(
-      have_product,
-      n_mono,
-      ~ if (.x) .y else integer()
-    ))
+  have_product <- .have_enzyme_gt(glycans, enzyme)
+  n_mono <- glyrepr::count_mono(glycans)
+  purrr::map2(
+    have_product,
+    n_mono,
+    ~ if (.x) .y else integer()
+  )
+}
+
+.match_enzyme.glyenzy_gt_enzyme <- function(glycans, enzyme) {
+  if (length(enzyme$rules) == 0L) {
+    return(rep(list(integer()), length(glycans)))
   }
 
   rule_res <- purrr::map(enzyme$rules, ~ .match_enzyme_rule(glycans, .x))
   res <- purrr::pmap(rule_res, c)
   purrr::map(res, .unique_match_indices)
+}
+
+.match_enzyme.glyenzy_enzyme <- function(glycans, enzyme) {
+  if (.is_starter_gt(enzyme)) {
+    return(.match_enzyme.glyenzy_starter_gt_enzyme(glycans, enzyme))
+  }
+
+  switch(
+    enzyme$type,
+    GT = .match_enzyme.glyenzy_gt_enzyme(glycans, enzyme),
+    GH = cli::cli_abort(
+      "{.fn match_enzyme} only supports glycosyltransferases."
+    ),
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
 }
 
 #' Normalize matched node indices
@@ -184,7 +207,7 @@ match_enzyme <- function(glycans, enzyme) {
 #'
 #' @noRd
 .validate_match_enzyme_type <- function(enzyme) {
-  if (enzyme$type != "GT") {
+  if (!inherits(enzyme, "glyenzy_gt_enzyme") && enzyme$type != "GT") {
     cli::cli_abort(
       "{.fn match_enzyme} only supports glycosyltransferases."
     )

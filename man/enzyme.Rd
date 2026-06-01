@@ -13,7 +13,9 @@ enzyme(symbol)
 A \code{glyenzy_enzyme} object.
 }
 \description{
-Glycosylation is catalyzed by two types of enzymes: glycosyltransferases (GTs) and glycoside hydrolases (GHs).
+Glycosylation is catalyzed by glycosyltransferases (GTs) and glycoside
+hydrolases (GHs). Starter GTs are represented as a GT subtype because they
+add the first residue to a non-glycan substrate.
 Glycosyltransferases catalyze the transfer of a sugar residue from a donor to an acceptor.
 Glycoside hydrolases catalyze the removal of a sugar residue from a substrate.
 \code{glyenzy} provides a data structure (\code{glyenzy_enzyme}) to represent these enzymes.
@@ -47,7 +49,9 @@ For GHs, this is \code{NULL} (no new residue is added).
 \item \code{new_residue}: the new residue added by the enzyme. For GHs, this is \code{NULL}.
 \item \code{new_linkage}: the linkage of the new residue. For GHs, this is \code{NULL}.
 }
-\item \code{type}: the type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
+\item \code{type}: the broad type of the enzyme, "GT" for glycosyltransferase or
+"GH" for glycoside hydrolase. Starter GTs are encoded as \code{type = "GT"}
+and carry the \code{glyenzy_starter_gt_enzyme} S3 subclass.
 \item \code{species}: the species of the enzyme, e.g. "human" or "mouse".
 }
 

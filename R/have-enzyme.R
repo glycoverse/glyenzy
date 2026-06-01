@@ -219,22 +219,27 @@ have_enzyme <- function(glycans, enzyme) {
 #' @param ... Ignored.
 #' @noRd
 .have_enzyme_default <- function(glycans, enzyme, ...) {
-  fn <- switch(
-    enzyme$type,
-    GH = .have_enzyme_gh,
-    GT = .have_enzyme_gt,
-    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
-  )
-  fn(glycans, enzyme)
+  .have_enzyme_by_type(glycans, enzyme)
 }
 
-.have_enzyme_gh <- function(glycans, enzyme) {
+#' Check enzyme involvement using type-level behavior
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns A logical vector.
+#' @noRd
+.have_enzyme_by_type <- function(glycans, enzyme) {
+  UseMethod(".have_enzyme_by_type", enzyme)
+}
+
+.have_enzyme_by_type.glyenzy_gh_enzyme <- function(glycans, enzyme) {
   cli::cli_abort(
     "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
   )
 }
 
-.have_enzyme_gt <- function(glycans, enzyme) {
+.have_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
   have_products_mat <- glymotif::have_motifs(
@@ -244,3 +249,15 @@ have_enzyme <- function(glycans, enzyme) {
   )
   unname(rowSums(have_products_mat) > 0)
 }
+
+.have_enzyme_by_type.glyenzy_enzyme <- function(glycans, enzyme) {
+  switch(
+    enzyme$type,
+    GH = .have_enzyme_by_type.glyenzy_gh_enzyme(glycans, enzyme),
+    GT = .have_enzyme_by_type.glyenzy_gt_enzyme(glycans, enzyme),
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
+}
+
+.have_enzyme_gh <- .have_enzyme_by_type.glyenzy_gh_enzyme
+.have_enzyme_gt <- .have_enzyme_by_type.glyenzy_gt_enzyme

@@ -3,6 +3,16 @@ test_that("enzyme() returns a glyenzy_enzyme object", {
   expect_s3_class(enzyme("FUT8"), "glyenzy_enzyme")
 })
 
+test_that("enzyme objects carry type-specific S3 classes", {
+  expect_s3_class(enzyme("ST3GAL3"), "glyenzy_gt_enzyme")
+  expect_false(inherits(enzyme("ST3GAL3"), "glyenzy_starter_gt_enzyme"))
+
+  expect_s3_class(enzyme("DPAGT1"), "glyenzy_starter_gt_enzyme")
+  expect_s3_class(enzyme("DPAGT1"), "glyenzy_gt_enzyme")
+
+  expect_s3_class(enzyme("MOGS"), "glyenzy_gh_enzyme")
+})
+
 test_that("enzyme() throws error for unknown enzyme", {
   expect_error(
     enzyme("UNKNOWN_ENZYME"),

@@ -1,7 +1,9 @@
 #' Enzymes
 #'
 #' @description
-#' Glycosylation is catalyzed by two types of enzymes: glycosyltransferases (GTs) and glycoside hydrolases (GHs).
+#' Glycosylation is catalyzed by glycosyltransferases (GTs) and glycoside
+#' hydrolases (GHs). Starter GTs are represented as a GT subtype because they
+#' add the first residue to a non-glycan substrate.
 #' Glycosyltransferases catalyze the transfer of a sugar residue from a donor to an acceptor.
 #' Glycoside hydrolases catalyze the removal of a sugar residue from a substrate.
 #' `glyenzy` provides a data structure (`glyenzy_enzyme`) to represent these enzymes.
@@ -36,7 +38,9 @@
 #'      For GHs, this is `NULL` (no new residue is added).
 #'    - `new_residue`: the new residue added by the enzyme. For GHs, this is `NULL`.
 #'    - `new_linkage`: the linkage of the new residue. For GHs, this is `NULL`.
-#' 3. `type`: the type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
+#' 3. `type`: the broad type of the enzyme, "GT" for glycosyltransferase or
+#'    "GH" for glycoside hydrolase. Starter GTs are encoded as `type = "GT"`
+#'    and carry the `glyenzy_starter_gt_enzyme` S3 subclass.
 #' 4. `species`: the species of the enzyme, e.g. "human" or "mouse".
 #'
 #' You can see all these information by printing the enzyme object.
@@ -106,8 +110,59 @@ new_enzyme <- function(name, rules, type, species) {
 
   structure(
     list(name = name, rules = rules, type = type, species = species),
-    class = "glyenzy_enzyme"
+    class = .enzyme_classes(type, rules)
   )
+}
+
+#' Determine S3 classes for an enzyme
+#'
+#' @param type A character string, either "GT" or "GH".
+#' @param rules A list of `glyenzy_enzyme_rule` objects.
+#'
+#' @returns A character vector of S3 class names.
+#' @noRd
+.enzyme_classes <- function(type, rules) {
+  checkmate::assert_choice(type, c("GT", "GH"))
+  starter_class <- if (type == "GT" && .has_starter_rule(rules)) {
+    "glyenzy_starter_gt_enzyme"
+  } else {
+    character()
+  }
+
+  switch(
+    type,
+    GT = c(starter_class, "glyenzy_gt_enzyme", "glyenzy_enzyme"),
+    GH = c("glyenzy_gh_enzyme", "glyenzy_enzyme")
+  )
+}
+
+#' Create an enzyme-like object for S3 dispatch
+#'
+#' @param x A `glyenzy_enzyme` object or a broad enzyme type string.
+#' @param rules A list of rules used when `x` is a type string.
+#'
+#' @returns An enzyme-like object.
+#' @noRd
+.as_enzyme_context <- function(x, rules = list()) {
+  if (inherits(x, "glyenzy_enzyme")) {
+    return(x)
+  }
+
+  checkmate::assert_choice(x, c("GT", "GH"))
+  structure(
+    list(type = x, rules = rules),
+    class = .enzyme_classes(x, rules)
+  )
+}
+
+#' Check whether a rule list contains a starter GT rule
+#'
+#' @param rules A list of `glyenzy_enzyme_rule` objects.
+#'
+#' @returns A logical scalar.
+#' @noRd
+.has_starter_rule <- function(rules) {
+  purrr::some(rules, ~ .is_starter_acceptor(.x$acceptor))
 }
 
 #' Validate a `glyenzy_enzyme` object
@@ -118,7 +173,7 @@ validate_enzyme <- function(x) {
   checkmate::assert_class(x, "glyenzy_enzyme")
   purrr::walk(
     x$rules,
-    ~ validate_enzyme_rule(.x, type = x$type)
+    ~ validate_enzyme_rule(.x, type = x)
   )
   invisible(x)
 }
@@ -130,7 +185,7 @@ validate_enzyme <- function(x) {
 #' @param x A `glyenzy_enzyme` object.
 #' @noRd
 enhance_enzyme <- function(x) {
-  x$rules <- purrr::map(x$rules, ~ enhance_enzyme_rule(.x, x$type))
+  x$rules <- purrr::map(x$rules, ~ enhance_enzyme_rule(.x, x))
   x
 }
 
@@ -177,6 +232,7 @@ new_enzyme_rule <- function(acceptor, product, acceptor_alignment, rejects) {
 #' @noRd
 validate_enzyme_rule <- function(x, type) {
   checkmate::assert_class(x, "glyenzy_enzyme_rule")
+  enzyme <- .as_enzyme_context(type, list(x))
 
   if (length(x$acceptor) > 1) {
     cli::cli_abort("The {.arg acceptor} must be a single structure.")
@@ -186,7 +242,7 @@ validate_enzyme_rule <- function(x, type) {
   }
 
   if (.is_starter_acceptor(x$acceptor)) {
-    if (type != "GT") {
+    if (!inherits(enzyme, "glyenzy_gt_enzyme")) {
       cli::cli_abort("Only GT enzymes can have an empty {.field acceptor}.")
     }
     if (length(x$rejects) > 0) {
@@ -194,12 +250,7 @@ validate_enzyme_rule <- function(x, type) {
     }
   }
 
-  switch(
-    type,
-    GT = .check_product_acceptor(x$acceptor, x$product, "acceptor", "product"),
-    GH = .check_product_acceptor(x$product, x$acceptor, "product", "acceptor"),
-    cli::cli_abort("Unsupported enzyme type: {type}")
-  )
+  .check_enzyme_rule_product_acceptor(enzyme, x)
 
   if (length(x$rejects) > 0) {
     if (x$acceptor_alignment == "whole") {
@@ -233,6 +284,39 @@ validate_enzyme_rule <- function(x, type) {
   invisible(x)
 }
 
+#' Check product and acceptor structure for an enzyme rule
+#'
+#' @param enzyme A `glyenzy_enzyme` object.
+#' @param rule A `glyenzy_enzyme_rule` object.
+#'
+#' @noRd
+.check_enzyme_rule_product_acceptor <- function(enzyme, rule) {
+  UseMethod(".check_enzyme_rule_product_acceptor", enzyme)
+}
+
+.check_enzyme_rule_product_acceptor.glyenzy_gt_enzyme <- function(
+  enzyme,
+  rule
+) {
+  .check_product_acceptor(rule$acceptor, rule$product, "acceptor", "product")
+}
+
+.check_enzyme_rule_product_acceptor.glyenzy_gh_enzyme <- function(
+  enzyme,
+  rule
+) {
+  .check_product_acceptor(rule$product, rule$acceptor, "product", "acceptor")
+}
+
+.check_enzyme_rule_product_acceptor.glyenzy_enzyme <- function(enzyme, rule) {
+  switch(
+    enzyme$type,
+    GT = .check_enzyme_rule_product_acceptor.glyenzy_gt_enzyme(enzyme, rule),
+    GH = .check_enzyme_rule_product_acceptor.glyenzy_gh_enzyme(enzyme, rule),
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
+}
+
 #' Enhance a `glyenzy_enzyme_rule` object
 #'
 #' Add the following fields to a `glyenzy_enzyme_rule` object:
@@ -249,19 +333,47 @@ validate_enzyme_rule <- function(x, type) {
 #' @param type A character string, representing the type of the enzyme, "GT" or "GH".
 #' @noRd
 enhance_enzyme_rule <- function(x, type) {
-  switch(
-    type,
-    GT = .enhance_gt_enzyme_rule(x),
-    GH = .enhance_gh_enzyme_rule(x)
-  )
+  enzyme <- .as_enzyme_context(type, list(x))
+  .enhance_enzyme_rule_for(enzyme, x)
 }
 
-.enhance_gt_enzyme_rule <- function(x) {
-  if (.is_starter_acceptor(x$acceptor)) {
-    .enhance_gt_enzyme_rule_starter(x)
-  } else {
-    .enhance_gt_enzyme_rule_regular(x)
+#' Enhance an enzyme rule for an enzyme type
+#'
+#' @param enzyme A `glyenzy_enzyme` object.
+#' @param rule A `glyenzy_enzyme_rule` object.
+#'
+#' @returns An enhanced `glyenzy_enzyme_rule` object.
+#' @noRd
+.enhance_enzyme_rule_for <- function(enzyme, rule) {
+  UseMethod(".enhance_enzyme_rule_for", enzyme)
+}
+
+.enhance_enzyme_rule_for.glyenzy_starter_gt_enzyme <- function(enzyme, rule) {
+  if (.is_starter_acceptor(rule$acceptor)) {
+    return(.enhance_gt_enzyme_rule_starter(rule))
   }
+  NextMethod()
+}
+
+.enhance_enzyme_rule_for.glyenzy_gt_enzyme <- function(enzyme, rule) {
+  .enhance_gt_enzyme_rule_regular(rule)
+}
+
+.enhance_enzyme_rule_for.glyenzy_gh_enzyme <- function(enzyme, rule) {
+  .enhance_gh_enzyme_rule(rule)
+}
+
+.enhance_enzyme_rule_for.glyenzy_enzyme <- function(enzyme, rule) {
+  switch(
+    enzyme$type,
+    GT = if (.is_starter_acceptor(rule$acceptor)) {
+      .enhance_enzyme_rule_for.glyenzy_starter_gt_enzyme(enzyme, rule)
+    } else {
+      .enhance_enzyme_rule_for.glyenzy_gt_enzyme(enzyme, rule)
+    },
+    GH = .enhance_enzyme_rule_for.glyenzy_gh_enzyme(enzyme, rule),
+    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
+  )
 }
 
 #' Enhance a starter GT rule
@@ -407,9 +519,10 @@ enhance_enzyme_rule <- function(x, type) {
 #' @returns `TRUE` if `x` is a GT enzyme with at least one empty acceptor rule.
 #' @noRd
 .is_starter_gt <- function(x) {
-  inherits(x, "glyenzy_enzyme") &&
-    identical(x$type, "GT") &&
-    any(purrr::map_lgl(x$rules, ~ .is_starter_acceptor(.x$acceptor)))
+  inherits(x, "glyenzy_starter_gt_enzyme") ||
+    (inherits(x, "glyenzy_enzyme") &&
+      identical(x$type, "GT") &&
+      .has_starter_rule(x$rules))
 }
 
 #' Print method for glyenzy_enzyme objects
@@ -421,12 +534,7 @@ print.glyenzy_enzyme <- function(x, ...) {
   cli::cli_h1("Enzyme: {.field {x$name}}")
 
   # Basic information
-  type_str <- switch(
-    x$type,
-    GT = "Glycosyltransferase",
-    GH = "Glycoside hydrolase",
-    cli::cli_abort("Unsupported enzyme type: {x$type}")
-  )
+  type_str <- .enzyme_type_label(x)
   cli::cli_alert_info("Type: {.val {x$type}} ({.emph {type_str}})")
   cli::cli_alert_info("Species: {.val {x$species}}")
 
@@ -453,4 +561,39 @@ print.glyenzy_enzyme <- function(x, ...) {
   }
 
   invisible(x)
+}
+
+#' Get a printable enzyme type label
+#'
+#' @param x A `glyenzy_enzyme` object.
+#'
+#' @returns A character string.
+#' @noRd
+.enzyme_type_label <- function(x) {
+  UseMethod(".enzyme_type_label", x)
+}
+
+.enzyme_type_label.glyenzy_starter_gt_enzyme <- function(x) {
+  "Starter glycosyltransferase"
+}
+
+.enzyme_type_label.glyenzy_gt_enzyme <- function(x) {
+  "Glycosyltransferase"
+}
+
+.enzyme_type_label.glyenzy_gh_enzyme <- function(x) {
+  "Glycoside hydrolase"
+}
+
+.enzyme_type_label.glyenzy_enzyme <- function(x) {
+  switch(
+    x$type,
+    GT = if (.is_starter_gt(x)) {
+      .enzyme_type_label.glyenzy_starter_gt_enzyme(x)
+    } else {
+      .enzyme_type_label.glyenzy_gt_enzyme(x)
+    },
+    GH = .enzyme_type_label.glyenzy_gh_enzyme(x),
+    cli::cli_abort("Unsupported enzyme type: {x$type}")
+  )
 }
