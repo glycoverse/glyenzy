@@ -97,6 +97,12 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -110,19 +116,6 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-            }
-        ],
-        "type": "GT",
-        "species": "human"
-    },
-    {
-        "name": "ALG9",
-        "rules": [
-            {
-                "acceptor": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "whole",
-                "rejects": [],
-                "product": "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
