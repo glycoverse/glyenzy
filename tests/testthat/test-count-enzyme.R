@@ -129,3 +129,12 @@ test_that("count_enzyme works for POGLUT2", {
   expect_equal(count_enzyme("Xyl(a1-3)Glc(a1-", "POGLUT2"), 1L)
   expect_equal(count_enzyme(glyrepr::o_glycan_core_1(), "POGLUT2"), 0L)
 })
+
+# ===== N-glycan precursor cases =====
+test_that("count_enzyme works for ALG2, ALG11, ALG9, and ALG6", {
+  glycan <- glyrepr::n_glycan_core()
+  expect_equal(count_enzyme(glycan, "ALG2"), 2L)
+  expect_equal(count_enzyme(glycan, "ALG11"), 2L)
+  expect_equal(count_enzyme(glycan, "ALG9"), 2L)
+  expect_equal(count_enzyme(glycan, "ALG6"), 1L)
+})
