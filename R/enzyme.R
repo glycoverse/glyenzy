@@ -115,6 +115,13 @@ new_enzyme <- function(name, rules, type, species) {
 
 #' Determine S3 classes for an enzyme
 #'
+#' Classes:
+#' - "glyenzy_enzyme": the base class for all enzymes.
+#'   - "glyenzy_gt_enzyme": for glycosyltransferases (GTs).
+#'    - "glyenzy_starter_gt_enzyme": for starter GTs.
+#'    - "glyenzy_npre_gt_enzyme": for GTs involved in N-glycan precursor synthesis.
+#'  - "glyenzy_gh_enzyme": for glycoside hydrolases (GHs).
+#'
 #' @param name The name of the enzyme.
 #' @param type The type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
 #'
@@ -134,6 +141,9 @@ new_enzyme <- function(name, rules, type, species) {
   )
   if (name %in% starter_gts) {
     cls <- c("glyenzy_starter_gt_enzyme", cls)
+  }
+  if (stringr::str_starts(name, "ALG")) {
+    cls <- c("glyenzy_npre_gt_enzyme", cls)
   }
   cls
 }
@@ -563,6 +573,10 @@ print.glyenzy_enzyme <- function(x, ...) {
 
 .enzyme_type_label.glyenzy_starter_gt_enzyme <- function(x) {
   "Starter glycosyltransferase"
+}
+
+.enzyme_type_label.glyenzy_npre_gt_enzyme <- function(x) {
+  "Glycosyltransferase for N-glycan precursor synthesis"
 }
 
 .enzyme_type_label.glyenzy_gt_enzyme <- function(x) {
