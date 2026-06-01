@@ -63,18 +63,15 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   rep(list(glyrepr::glycan_structure()), length(glycans))
 }
 
+.apply_enzyme.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  rep(list(glyrepr::glycan_structure()), length(glycans))
+}
+
 .apply_enzyme.glyenzy_gt_enzyme <- function(glycans, enzyme) {
   .apply_enzyme_rules(glycans, enzyme)
 }
 
 .apply_enzyme.glyenzy_gh_enzyme <- function(glycans, enzyme) {
-  .apply_enzyme_rules(glycans, enzyme)
-}
-
-.apply_enzyme.glyenzy_enzyme <- function(glycans, enzyme) {
-  if (.is_starter_gt(enzyme)) {
-    return(.apply_enzyme.glyenzy_starter_gt_enzyme(glycans, enzyme))
-  }
   .apply_enzyme_rules(glycans, enzyme)
 }
 
@@ -137,15 +134,6 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @noRd
 .apply_rule_action <- function(enzyme, graph, indices_to_act_on, rule) {
   UseMethod(".apply_rule_action", enzyme)
-}
-
-.apply_rule_action.glyenzy_starter_gt_enzyme <- function(
-  enzyme,
-  graph,
-  indices_to_act_on,
-  rule
-) {
-  list()
 }
 
 .apply_rule_action.glyenzy_gt_enzyme <- function(
