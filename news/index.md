@@ -1,6 +1,46 @@
 # Changelog
 
-## glyenzy (development version)
+## glyenzy 0.5.0
+
+### Breaking changes
+
+- Rename APIs to use shorter, consistent names (#2):
+  - `all_enzymes()` to
+    [`db_enzymes()`](https://glycoverse.github.io/glyenzy/reference/db_enzymes.md)
+  - `create_enzyme()` to
+    [`make_enzyme()`](https://glycoverse.github.io/glyenzy/reference/make_enzyme.md)
+  - `get_involved_enzymes()` to
+    [`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md)
+  - `is_synthesized_by()` to
+    [`have_enzyme()`](https://glycoverse.github.io/glyenzy/reference/have_enzyme.md)
+  - `count_enzyme_steps()` to
+    [`count_enzyme()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme.md)
+  - `find_synthesis_path()` to
+    [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  - `rebuild_biosynthesis()` to
+    [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  - `spawn_glycans()` to
+    [`grow_glycans()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
+  - `spawn_glycans_step()` to
+    [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
+
+### New features
+
+- Add support for initiating enzymes including DPAGT1, FUT10, FUT11,
+  POFUT1, POFUT2, POGLUT1, POGLUT2, POGLUT3, POMT1, POMT2, TMTC1, TMTC2,
+  TMTC3, TMTC4, and GALNT1 through GALNT19. (#5)
+- Add support for N-glycan precursor synthesis enzymes (ALGs). (#6)
+- Add
+  [`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md)
+  to identify the residues added by a glycosyltransferase. (#3)
+- Add
+  [`view_enzyme()`](https://glycoverse.github.io/glyenzy/reference/view_enzyme.md)
+  to visualize residues added by an enzyme on a glycan cartoon. (#4)
+
+### Minor improvements and fixes
+
+- Fix the bug that find_enzyme didn’t support paucimannose glycans.
+  (1c79a04)
 
 ## glyenzy 0.4.3
 
@@ -38,12 +78,12 @@
 ### New features
 
 - Add
-  [`create_enzyme()`](https://glycoverse.github.io/glyenzy/reference/create_enzyme.md),
+  [`make_enzyme()`](https://glycoverse.github.io/glyenzy/reference/make_enzyme.md),
   enabling programmatic construction of custom enzymes.
 
 ### Minor improvements and fixes
 
-- [`spawn_glycans()`](https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.md)
+- [`grow_glycans()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
   now shows live glycan counts in the progress bar.
 
 ## glyenzy 0.3.2
@@ -53,7 +93,7 @@
 - Fix errors in the rules of some enzymes, including B3GALT1, B3GALT2,
   and FUT8.
 - Fix a bug in progress bar of
-  [`spawn_glycans()`](https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.md).
+  [`grow_glycans()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md).
 
 ## glyenzy 0.3.1
 
@@ -82,15 +122,15 @@
   ST6GALNAC3, ST8SIA2, ST8SIA3, ST8SIA4, B3GALT4, B3GALT5, B4GALT1,
   B4GALT4, B4GALT5, B4GALNT2, MGAT5B, B3GNT8, GCNT2, GCNT3, A4GNT,
   ST3GAL1
-- [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
   now supports many new glycan types, including O-Man, O-GlcNAc, O-Fuc,
   and O-Glc.
 
 ### Minor improvements and fixes
 
-- [`find_synthesis_path()`](https://glycoverse.github.io/glyenzy/reference/find_synthesis_path.md)
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
   and
-  [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
   has been optimized for large glycans.
 - All functions explicitly check if the input glycans are concrete
   (e.g. “Glc”, “GalNAc”) and raise errors with helpful messages if not.
@@ -121,28 +161,28 @@
 ### Breaking changes
 
 - Remove `return` parameter from
-  [`find_synthesis_path()`](https://glycoverse.github.io/glyenzy/reference/find_synthesis_path.md)
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
   and
-  [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md).
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md).
   Now they always return all possible paths.
 
 ### New features
 
-- [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
   now supports multiple target glycans. The resulting graph contains all
   given target glycans and intermediate glycans.
 
 ### Minor improvements and fixes
 
 - Update documentations of
-  [`find_synthesis_path()`](https://glycoverse.github.io/glyenzy/reference/find_synthesis_path.md)
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
   and
-  [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
   to include some important notes.
 - Fix bugs in
-  [`find_synthesis_path()`](https://glycoverse.github.io/glyenzy/reference/find_synthesis_path.md)
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
   and
-  [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
   that glycan structure strings other than IUPAC-condensed format cannot
   be parsed.
 - Add checks in all functions to ensure that the input glycans have

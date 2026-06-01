@@ -1,22 +1,18 @@
 # Get Started with glyenzy
 
-Think of glycan biosynthesis as nature’s most sophisticated assembly
-line 🏭. Glycosyltransferases work like specialized robots, each with a
-very particular job: some love attaching GlcNAc residues, others are
-obsessed with Gal, and each follows strict rules about where and how to
-make connections. It’s like LEGO building!
+Glycan biosynthesis is built from many enzyme-specific reaction steps.
+Glycosyltransferases and glycoside hydrolases each have their own
+substrate preferences, linkage rules, and residue specificities, so a
+glycan structure often carries useful clues about the enzymes that could
+have produced it.
 
-While you might build a LEGO house solo on a weekend, cells need an
-entire crew of enzymatic specialists working in perfect coordination.
-The result? Thousands of unique glycan structures, each crafted with
-precision.
-
-Enter `glyenzy` 🧬 – your computational toolkit for exploring this
-fascinating world. Whether you want to trace how a glycan came to be or
-predict what new structures might emerge from a biochemical reaction,
-glyenzy has you covered.
+`glyenzy` provides tools for working with those enzyme rules in R. You
+can use it to identify candidate enzymes for an existing glycan, trace
+plausible biosynthetic paths, or predict products from enzyme-driven
+reactions.
 
 ``` r
+
 library(glyrepr)
 library(glyenzy)
 library(igraph)
@@ -30,109 +26,119 @@ library(igraph)
 #>     union
 ```
 
-**Quick heads-up:** `glyenzy` stands on the shoulders of giants –
-specifically `glyrepr`, `glyparse`, and `glymotif`. You don’t need to
-master these packages to get started, but they’re worth exploring for
-advanced glycan wizardry ✨. Also, this vignette assumes you’re
-comfortable with IUPAC-condensed notation. New to it? No worries – check
-out [this friendly
-tutorial](https://glycoverse.github.io/glyrepr/articles/iupac.html)
-first!
+**Quick heads-up:** `glyenzy` builds on `glyrepr`, `glyparse`, and
+`glymotif`. You don’t need to master these packages to get started, but
+they are useful when you want more control over glycan representation,
+parsing, or motif matching. Also, this vignette assumes you’re
+comfortable with IUPAC-condensed notation. If that notation is new to
+you, start with [this
+tutorial](https://glycoverse.github.io/glyrepr/articles/iupac.html).
 
-## Your First Taste of Glycan Engineering 🚀
+## Your First Taste of Glycan Engineering
 
-Let’s dive right in with a hands-on example! We’ll start with a charming
-O-glycan that’s perfect for demonstration:
+We’ll start with a small O-glycan example:
 
 ![](resources/H2N2.png)
 
-Notice how each glycosidic bond is labeled with its responsible enzyme?
-That’s the beauty of glycan biosynthesis – every connection has a story!
-(We’ll skip the rightmost peptide bond for now.)
+In the diagram, each glycosidic bond is labeled with its responsible
+enzyme.
 
-Here’s our star glycan in IUPAC-condensed notation:
+Here is the same glycan in IUPAC-condensed notation:
 
 ``` r
+
 glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 ```
 
-Time to meet your new best friend:
-[`get_involved_enzymes()`](https://glycoverse.github.io/glyenzy/reference/get_involved_enzymes.md)
-👋 This clever function reveals all the enzymes that might have had a
-hand in building your glycan:
+[`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md)
+returns the enzymes that may be involved in building a glycan:
 
 ``` r
-get_involved_enzymes(glycan)
+
+find_enzyme(glycan)
 #>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "B4GALT6" "C1GALT1"
-#>  [8] "GCNT1"   "GCNT3"   "GCNT4"
+#>  [8] "GCNT1"   "GCNT3"   "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4" 
+#> [15] "GALNT5"  "GALNT6"  "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11"
+#> [22] "GALNT12" "GALNT13" "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18"
+#> [29] "GALNT19"
 ```
 
-Cool, right? Not only does it spot the enzymes from our diagram, but it
-also whispers about B4GALT1/2/3/4 potentially being involved. (Don’t
-worry, we’ll unpack this mystery soon!)
+This includes the enzymes shown in the diagram, along with B4GALT1/2/3/4
+as additional candidates. We’ll return to why those enzymes appear
+later.
 
-But wait, there’s more! What if we want to see what happens when we add
-a new enzyme to the mix? Let’s give ST3GAL1 a chance to work its magic:
+You can also ask what products are formed when an enzyme acts on a
+glycan. Here is ST3GAL1 applied to the same structure:
 
 ``` r
+
 apply_enzyme(glycan, "ST3GAL1")
 #> <glycan_structure[1]>
 #> [1] Neu5Ac(a2-3)Gal(b1-3)[Gal(b1-4)GlcNAc(b1-6)]GalNAc(a1-
 #> # Unique structures: 1
 ```
 
-Fascinating! 🎯 The function returns a
+The function returns a
 [`glyrepr::glycan_structure()`](https://glycoverse.github.io/glyrepr/reference/glycan_structure.html)
-vector, but the real story is what happened: a shiny new sialic acid got
-attached to the β1-3 Gal, while the β1-4 Gal was completely ignored.
-Why? Because ST3GAL1 is incredibly picky – it only recognizes
+vector. In this case, a sialic acid is attached to the β1-3 Gal, while
+the β1-4 Gal is not modified. That is because ST3GAL1 recognizes
 “Gal(β1-3)GalNAc(α1-” as its substrate.
 
-Getting the hang of it? Great! Let’s explore what else glyenzy can do
-for you.
+The next sections walk through the main workflows in a little more
+detail.
 
-## Detective Work: Tracing Glycan Origins 🔍
+## Tracing Glycan Origins
 
-Ever wondered about a glycan’s backstory? glyenzy is your molecular
-detective, ready to solve three key mysteries:
+For an existing glycan, `glyenzy` can help answer four common questions:
 
-- **Who did it?** Which glycosyltransferases and glycoside hydrolases
+- **Which enzymes?** Which glycosyltransferases and glycoside hydrolases
   were involved?
-- **How many times?** How often did each enzyme swing into action?
-- **What’s the timeline?** In what order did these biochemical events
-  unfold?
+  ([`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md))
+- **How often?** How many times could each enzyme have acted?
+  ([`count_enzyme()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme.md))
+- **In what order?** What biosynthetic sequence could produce the
+  structure?
+  ([`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md))
+- **Specifically?** Which residues were added by which enzymes?
+  ([`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md))
 
-Behind the scenes, glyenzy has catalogued the reaction rules of 105
-enzymes in its molecular database. Want to peek at any enzyme’s profile?
-Just use `enzyme("MGAT3")` and prepare to be amazed by the biochemical
-details!
+Behind the scenes, glyenzy has catalogued the reaction rules of 149
+enzymes in its enzyme database. Use `enzyme("MGAT3")` to inspect a
+specific enzyme rule.
 
 Combined with the sophisticated motif-matching algorithms from
-`glymotif`, we can reconstruct any glycan’s complete biography.
+`glymotif`, these rules can be used to reconstruct plausible
+biosynthetic paths.
 
-You’ve already met
-[`get_involved_enzymes()`](https://glycoverse.github.io/glyenzy/reference/get_involved_enzymes.md)
-– perfect for getting the full cast of characters. But sometimes you
-want more targeted intel:
+You’ve already seen
+[`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md),
+which returns candidate enzymes. For more targeted checks:
 
-- [`is_synthesized_by()`](https://glycoverse.github.io/glyenzy/reference/is_synthesized_by.md)
+- [`have_enzyme()`](https://glycoverse.github.io/glyenzy/reference/have_enzyme.md)
   answers “Was enzyme X involved?” with a simple yes/no
-- [`count_enzyme_steps()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme_steps.md)
-  tells you exactly how many times an enzyme got busy
+- [`count_enzyme()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme.md)
+  returns how many times an enzyme is inferred to act
+- [`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md)
+  identifies the residues added by a specific enzyme
 
-This intel is gold for multiomics analysis – imagine linking glycan
-structures directly to enzyme expression levels! 📊
+You will also find
+[`view_enzyme()`](https://glycoverse.github.io/glyenzy/reference/view_enzyme.md)
+useful for visualizing the residues added by an enzyme on a glycan
+cartoon.
 
-Ready for the grand finale? Meet
-[`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
-– the function that reconstructs a glycan’s complete life story:
+These summaries can be useful in multiomics analysis, where glycan
+structures are compared with enzyme expression levels.
+
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+reconstructs a plausible biosynthetic path:
 
 ``` r
-path <- rebuild_biosynthesis(glycan)
+
+path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH f1bca25 DN-- 4 10 -- 
+#> IGRAPH e9d16e6 DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from f1bca25 (vertex names):
+#> + edges from e9d16e6 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -143,17 +149,17 @@ path
 #> + ... omitted several edges
 ```
 
-What you get back is a directed `igraph` object – think of it as a
-molecular family tree! 🌳 Each vertex represents a glycan structure, and
-each edge represents an enzymatic step. If more than one enzyme is
-involved in an enzymatic step, multiple edges are created between the
-two vertices.
+The result is a directed `igraph` object. Each vertex represents a
+glycan structure, and each edge represents an enzymatic step. If more
+than one enzyme is involved in an enzymatic step, multiple edges are
+created between the two vertices.
 
-Let’s try this with a more complex N-glycan:
+Here is the same workflow with a more complex N-glycan:
 
 ``` r
+
 glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-path <- rebuild_biosynthesis(glycan)
+path <- trace_biosynthesis(glycan)
 plot(
   path,
   layout = layout_as_tree(path),
@@ -166,32 +172,29 @@ plot(
 
 ![](glyenzy_files/figure-html/unnamed-chunk-6-1.png)
 
-**Note:** The plotting could use some TLC – we’re working on prettier
-visualizations! 🎨
+## Predicting Glycan Products
 
-## Crystal Ball Mode: Predicting Glycan Futures 🔮
-
-Now for the really fun part – playing molecular fortune teller! glyenzy
-can predict what new glycans emerge when you mix specific enzymes with
-existing structures. Let’s start simple and work our way up to some
-serious biochemical wizardry.
+`glyenzy` can also predict products from a starting glycan and one or
+more enzymes. We’ll start with a simple O-glycan core and then move to a
+larger example.
 
 ``` r
-# The humble GalNAc core of O-glycan
+
+# The GalNAc core of an O-glycan
 glycan <- "GalNAc(a1-"
 ```
 
-What happens if we introduce C1GALT1 to this lonely GalNAc?
+First, apply C1GALT1:
 
 ``` r
+
 apply_enzyme(glycan, "C1GALT1")
 #> <glycan_structure[1]>
 #> [1] Gal(b1-3)GalNAc(a1-
 #> # Unique structures: 1
 ```
 
-Boom! 💥 We just witnessed the birth of the famous Core 1 O-GalNAc
-glycan!
+This produces the Core 1 O-GalNAc glycan.
 
 Here’s how
 [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/reference/apply_enzyme.md)
@@ -202,7 +205,8 @@ bundled in a
 vector.
 
 ``` r
-# A bi-antennary agalactosylated N-glycan (fancy name for "no galactose yet")
+
+# A bi-antennary agalactosylated N-glycan
 glycan <- "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 apply_enzyme(glycan, "B4GALT1")
 #> <glycan_structure[2]>
@@ -211,24 +215,25 @@ apply_enzyme(glycan, "B4GALT1")
 #> # Unique structures: 2
 ```
 
-Perfect! Both antennae can be galactosylated, giving us two distinct
-products. This is biochemical branching in action! 🌿
+Both antennae can be galactosylated, giving two distinct products. This
+is a simple example of biochemical branching.
 
-### The Primordial Soup Experiment 🧪
+### Multi-Step Product Growth
 
-Ready for some serious fun? Let’s create a molecular primordial soup!
-Toss in some glycan substrates, add a cocktail of enzymes, and watch the
-magic unfold over multiple reaction steps.
+For multi-step reactions, provide one or more starting glycans and a set
+of enzymes. `glyenzy` will expand the products over successive reaction
+steps.
 
 Use
-[`spawn_glycans()`](https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.md)
+[`grow_glycans()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
 for the full experience, or
-[`spawn_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.md)
-if you prefer to watch the drama unfold step by step:
+[`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
+if you want one reaction step at a time:
 
 ``` r
-# Our trusty bi-antennary N-glycan meets three enzyme friends
-spawn_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
+
+# A bi-antennary N-glycan with three enzymes
+grow_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
 #> ⠙ Step 4/5 | ■■■■■■■■■■■■■■■■■■■■■■■■■         80% | current number of glycans:…
 #> ⠙ Step 5/5 | ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■  100% | current number of glycans:…
 #> <glycan_structure[32]>
@@ -246,29 +251,27 @@ spawn_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
 #> # Unique structures: 32
 ```
 
-What a party! 🎉 Here’s what each enzyme brought to the table:
+In this example, each enzyme contributes a different reaction:
 
-- **B4GALT1**: Adds β1-4 Gal to those lonely GlcNAc branches
-- **ST3GAL3**: Decorates with α2-3 sialic acid (the fancy finishing
-  touch)
-- **MGAT3**: Drops in a bisecting GlcNAc right at the core mannose
+- **B4GALT1**: Adds β1-4 Gal to GlcNAc branches
+- **ST3GAL3**: Adds α2-3 sialic acid
+- **MGAT3**: Adds a bisecting GlcNAc to the core mannose
 
-The result? A spectacular collection of 32 different glycans, including
-our original starting structure!
+The result is a collection of 32 different glycans, including the
+original starting structure.
 
-## The Fine Print: What You Need to Know ⚠️
+## The Fine Print
 
-Before you go wild with glyenzy, here are some important caveats to keep
-in mind:
+Here are the main caveats to keep in mind when using `glyenzy`:
 
 ### Species and Scope
 
 glyenzy is currently a human-centric package, focusing specifically on
 N-glycans and O-glycans. If you’re working with GAGs, glycolipids, or
 glycans from mouse, plants or insects, the results might not be
-accurate. We’re basically specialists, not generalists! 🎯
+accurate.
 
-### The “Better Safe Than Sorry” Approach
+### Inclusive Candidate Calls
 
 Our algorithms are intentionally inclusive – they assume that *all*
 possible isoenzymes capable of catalyzing a reaction might be involved.
@@ -277,15 +280,15 @@ This means you should interpret results with a grain of salt.
 For instance, when glyenzy spots the motif “Neu5Ac(α2-3)Gal(β1-”, it’ll
 flag both ST3GAL3 and ST3GAL4 as potential culprits. In reality, tissue
 specificity and other factors might mean only one is actually active.
-Think of it as getting a list of suspects rather than the definitive
-perpetrator! 🕵️
+Treat the output as a list of plausible candidates rather than a
+definitive assignment.
 
 ### Concrete Residues Only
 
-glyenzy is picky about precision – it only works with **concrete**
+glyenzy requires precise residues – it only works with **concrete**
 residues like “Glc” and “GalNAc”, not **generic** ones like “Hex” or
-“HexNAc”. If your data uses generic terms, you’ll need to be more
-specific! 🎯
+“HexNAc”. If your data uses generic terms, you’ll need to resolve them
+before using these functions.
 
 ### Substituents: Not Yet Supported
 
@@ -299,11 +302,11 @@ to get clean, analysis-ready structures.
 
 Incomplete or partially degraded glycan structures can lead glyenzy
 astray. Make sure your input represents the full, intact glycan for
-reliable results! ✅
+reliable results.
 
-### Where We Start the Story
+### Biosynthetic Starting Points
 
-glyenzy has specific starting points for its biosynthetic narratives:
+glyenzy uses specific starting points for biosynthetic reconstruction:
 
 - **N-glycans**: Begin with the Glc₃Man₉GlcNAc₂ precursor (post-OST
   transfer)
@@ -313,22 +316,15 @@ glyenzy has specific starting points for its biosynthetic narratives:
 - **O-Fuc glycans**: Start with Fuc(a1-
 - **O-Glc glycans**: Start with Glc(b1-
 
-This means we don’t track the earlier steps – ALGs building the N-glycan
-precursor, OST transferring it to asparagine, or GALNTs adding the
-initial GalNAc. We pick up the story from there! 📖
+## Technical Notes
 
-## Behind the Scenes: The Technical Magic ⚙️
-
-Curious about what makes glyenzy tick? Here’s the tech stack:
+`glyenzy` relies on a few related glycoverse packages:
 
 - **`glyrepr`**: The foundation for representing glycan structures
-- **`glyparse`**: The linguistic expert that decodes IUPAC-condensed
-  notation
-- **`glymotif`**: The pattern-matching wizard that finds structural
-  motifs
+- **`glyparse`**: The parser for IUPAC-condensed notation
+- **`glymotif`**: The motif-matching engine for structural patterns
 
 All enzymes live as
 [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
-objects (technically `glyenzy_enzyme` S3 class instances). Want to peek
-under the hood of any enzyme? Just call `enzyme("YOUR_FAVORITE_ENZYME")`
-and prepare for a detailed biochemical profile! 🔬
+objects (technically `glyenzy_enzyme` S3 class instances). Call
+`enzyme("YOUR_FAVORITE_ENZYME")` to inspect a specific enzyme rule.

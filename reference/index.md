@@ -2,26 +2,30 @@
 
 ## All functions
 
-- [`all_enzymes()`](https://glycoverse.github.io/glyenzy/reference/all_enzymes.md)
-  : Get all enzymes
 - [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/reference/apply_enzyme.md)
   : Apply an Enzyme to a Glycan
-- [`count_enzyme_steps()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme_steps.md)
-  : Count Enzyme Steps
-- [`create_enzyme()`](https://glycoverse.github.io/glyenzy/reference/create_enzyme.md)
-  : Create A Custom Enzyme
+- [`count_enzyme()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme.md)
+  : Count Enzyme Involvement
+- [`db_enzymes()`](https://glycoverse.github.io/glyenzy/reference/db_enzymes.md)
+  : Get all enzymes
 - [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
   : Enzymes
-- [`find_synthesis_path()`](https://glycoverse.github.io/glyenzy/reference/find_synthesis_path.md)
-  : Find Synthesis Path Between Glycan Structures
-- [`get_involved_enzymes()`](https://glycoverse.github.io/glyenzy/reference/get_involved_enzymes.md)
+- [`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md)
   : Identify Potentially Involved Enzymes
-- [`is_synthesized_by()`](https://glycoverse.github.io/glyenzy/reference/is_synthesized_by.md)
+- [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
+  [`grow_glycans()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
+  : Grow Glycans with Enzymes
+- [`have_enzyme()`](https://glycoverse.github.io/glyenzy/reference/have_enzyme.md)
   : Determine Whether a Glycan Is Synthesized by a Given Enzyme
+- [`make_enzyme()`](https://glycoverse.github.io/glyenzy/reference/make_enzyme.md)
+  : Make a Custom Enzyme
+- [`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md)
+  : Match Residues Added by an Enzyme
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  : Find a Biosynthesis Path Between Glycan Structures
 - [`print(`*`<glyenzy_enzyme>`*`)`](https://glycoverse.github.io/glyenzy/reference/print.glyenzy_enzyme.md)
   : Print method for glyenzy_enzyme objects
-- [`rebuild_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/rebuild_biosynthesis.md)
-  : Rebuild the Biosynthetic Path of Glycans
-- [`spawn_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.md)
-  [`spawn_glycans()`](https://glycoverse.github.io/glyenzy/reference/spawn_glycans_step.md)
-  : Apply Enzymes to Spawn Glycans
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  : Trace the Biosynthetic Path of Glycans
+- [`view_enzyme()`](https://glycoverse.github.io/glyenzy/reference/view_enzyme.md)
+  : View Residues Added by an Enzyme

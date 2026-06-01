@@ -1,11 +1,17 @@
 # Enzymes
 
-Glycosylation is catalyzed by two types of enzymes: glycosyltransferases
-(GTs) and glycoside hydrolases (GHs). Glycosyltransferases catalyze the
-transfer of a sugar residue from a donor to an acceptor. Glycoside
-hydrolases catalyze the removal of a sugar residue from a substrate.
-`glyenzy` provides a data structure (`glyenzy_enzyme`) to represent
-these enzymes.
+Two types of enzymes are involved in glycosylation: glycosyltransferases
+(GTs) and glycoside hydrolases (GHs).
+
+- GTs catalyze the transfer of a sugar residue from a donor to an
+  acceptor, thus building up glycan structures.
+
+- GHs catalyze the removal of a sugar residue from a substrate, thus
+  breaking down glycan structures.
+
+One special subtype of GTs are starter GTs (or initiating GTs), which
+catalyze the addition of the first sugar residue onto a non-glycan
+substrate, thus initiating glycosylation.
 
 Use `enzyme()` with a gene symbol to load a predefined enzyme. For
 example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3.
@@ -51,7 +57,8 @@ An `enzyme()` is a list with the following elements:
 
     - `acceptor_idx`: the node index of the acceptor where the enzyme
       acts on. For GTs, this is the node new residue is attached to. For
-      GHs, this is the node that is removed.
+      GHs, this is the node that is removed. For starter GTs,
+      `acceptor_idx` is 0.
 
     - `product_idx`: the node index of the product residue in the
       product structure. For GTs, this is the index of the newly added
@@ -64,8 +71,9 @@ An `enzyme()` is a list with the following elements:
     - `new_linkage`: the linkage of the new residue. For GHs, this is
       `NULL`.
 
-3.  `type`: the type of the enzyme, "GT" for glycosyltransferase or "GH"
-    for glycoside hydrolase.
+3.  `type`: the broad type of the enzyme, "GT" for glycosyltransferase
+    or "GH" for glycoside hydrolase. Starter GTs are encoded as
+    `type = "GT"`.
 
 4.  `species`: the species of the enzyme, e.g. "human" or "mouse".
 
