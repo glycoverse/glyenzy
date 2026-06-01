@@ -102,7 +102,7 @@ For an existing glycan, `glyenzy` can help answer four common questions:
 - **Specifically?** Which residues were added by which enzymes?
   ([`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md))
 
-Behind the scenes, glyenzy has catalogued the reaction rules of 138
+Behind the scenes, glyenzy has catalogued the reaction rules of 149
 enzymes in its enzyme database. Use `enzyme("MGAT3")` to inspect a
 specific enzyme rule.
 
@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 539a714 DN-- 4 10 -- 
+#> IGRAPH 049f2bd DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from 539a714 (vertex names):
+#> + edges from 049f2bd (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
