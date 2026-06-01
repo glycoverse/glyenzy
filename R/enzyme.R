@@ -109,40 +109,33 @@ new_enzyme <- function(name, rules, type, species) {
 
   structure(
     list(name = name, rules = rules, type = type, species = species),
-    class = .enzyme_classes(type, rules)
+    class = .enzyme_classes(name, type)
   )
 }
 
 #' Determine S3 classes for an enzyme
 #'
-#' @param type A character string, either "GT" or "GH".
-#' @param rules A list of `glyenzy_enzyme_rule` objects.
+#' @param name The name of the enzyme.
+#' @param type The type of the enzyme, "GT" for glycosyltransferase or "GH" for glycoside hydrolase.
 #'
 #' @returns A character vector of S3 class names.
 #' @noRd
-.enzyme_classes <- function(type, rules) {
-  checkmate::assert_choice(type, c("GT", "GH"))
-  starter_class <- if (type == "GT" && .has_starter_rule(rules)) {
-    "glyenzy_starter_gt_enzyme"
-  } else {
-    character()
-  }
-
-  switch(
+.enzyme_classes <- function(name, type) {
+  starter_gts <- c(
+    "DPAGT1", "FUT10", "FUT11", "POFUT1", "POFUT2",
+    "POGLUT1", "POGLUT2", "POGLUT3", "POMT1", "POMT2",
+    "TMTC1", "TMTC2", "TMTC3", "TMTC4",
+    paste0("GALNT", 1:19)
+  )
+  cls <- switch(
     type,
-    GT = c(starter_class, "glyenzy_gt_enzyme", "glyenzy_enzyme"),
+    GT = c("glyenzy_gt_enzyme", "glyenzy_enzyme"),
     GH = c("glyenzy_gh_enzyme", "glyenzy_enzyme")
   )
-}
-
-#' Check whether a rule list contains a starter GT rule
-#'
-#' @param rules A list of `glyenzy_enzyme_rule` objects.
-#'
-#' @returns A logical scalar.
-#' @noRd
-.has_starter_rule <- function(rules) {
-  purrr::some(rules, ~ .is_starter_acceptor(.x$acceptor))
+  if (name %in% starter_gts) {
+    cls <- c("glyenzy_starter_gt_enzyme", cls)
+  }
+  cls
 }
 
 #' Validate a `glyenzy_enzyme` object
@@ -157,7 +150,7 @@ validate_enzyme <- function(x) {
 #' @export
 #' @noRd
 validate_enzyme.glyenzy_starter_gt_enzyme <- function(x) {
-  purrr::walk(x$rules, validate_enzyme_rule_starter_or_gt)
+  purrr::walk(x$rules, validate_enzyme_rule_starter)
   invisible(x)
 }
 
@@ -206,7 +199,7 @@ enhance_enzyme <- function(x) {
 #' @export
 #' @noRd
 enhance_enzyme.glyenzy_starter_gt_enzyme <- function(x) {
-  x$rules <- purrr::map(x$rules, enhance_enzyme_rule_starter_or_gt)
+  x$rules <- purrr::map(x$rules, enhance_enzyme_rule_starter)
   x
 }
 
@@ -335,9 +328,6 @@ validate_enzyme_rule_rejects <- function(x) {
 #' @noRd
 validate_enzyme_rule_gt <- function(x) {
   validate_enzyme_rule_common(x)
-  if (.is_starter_acceptor(x$acceptor)) {
-    return(validate_enzyme_rule_starter(x))
-  }
   .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
   validate_enzyme_rule_rejects(x)
   invisible(x)
@@ -350,27 +340,10 @@ validate_enzyme_rule_gt <- function(x) {
 #' @noRd
 validate_enzyme_rule_starter <- function(x) {
   validate_enzyme_rule_common(x)
-  if (!.is_starter_acceptor(x$acceptor)) {
-    return(validate_enzyme_rule_gt(x))
-  }
   if (length(x$rejects) > 0) {
     cli::cli_abort("{.field rejects} must be empty for starter GTs.")
   }
-  .check_product_acceptor(x$acceptor, x$product, "acceptor", "product")
   invisible(x)
-}
-
-#' Validate a starter GT rule or fall back to regular GT validation
-#'
-#' @param x A `glyenzy_enzyme_rule` object.
-#'
-#' @noRd
-validate_enzyme_rule_starter_or_gt <- function(x) {
-  if (.is_starter_acceptor(x$acceptor)) {
-    validate_enzyme_rule_starter(x)
-  } else {
-    validate_enzyme_rule_gt(x)
-  }
 }
 
 #' Validate a GH enzyme rule
@@ -380,26 +353,9 @@ validate_enzyme_rule_starter_or_gt <- function(x) {
 #' @noRd
 validate_enzyme_rule_gh <- function(x) {
   validate_enzyme_rule_common(x)
-  if (.is_starter_acceptor(x$acceptor)) {
-    cli::cli_abort("Only GT enzymes can have an empty {.field acceptor}.")
-  }
   .check_product_acceptor(x$product, x$acceptor, "product", "acceptor")
   validate_enzyme_rule_rejects(x)
   invisible(x)
-}
-
-#' Enhance a starter GT rule or fall back to regular GT enhancement
-#'
-#' @param x A `glyenzy_enzyme_rule` object.
-#'
-#' @returns An enhanced `glyenzy_enzyme_rule`.
-#' @noRd
-enhance_enzyme_rule_starter_or_gt <- function(x) {
-  if (.is_starter_acceptor(x$acceptor)) {
-    enhance_enzyme_rule_starter(x)
-  } else {
-    enhance_enzyme_rule_gt(x)
-  }
 }
 
 #' Enhance a starter GT rule
@@ -425,10 +381,6 @@ enhance_enzyme_rule_starter <- function(x) {
 #' @returns An enhanced `glyenzy_enzyme_rule`.
 #' @noRd
 enhance_enzyme_rule_gt <- function(x) {
-  if (.is_starter_acceptor(x$acceptor)) {
-    return(enhance_enzyme_rule_starter(x))
-  }
-
   acceptor_graph <- glyrepr::get_structure_graphs(
     x$acceptor,
     return_list = FALSE
@@ -514,18 +466,6 @@ enhance_enzyme_rule_gh <- function(x) {
   smaller_name,
   larger_name
 ) {
-  # Special case for starter GTs
-  if (.is_starter_acceptor(smaller)) {
-    n_mono <- glyrepr::count_mono(larger)
-    if (length(n_mono) != 1L || n_mono != 1L) {
-      cli::cli_abort(
-        "{.arg {larger_name}} must be a monosaccharide for a starter GT."
-      )
-    }
-    return(invisible(NULL))
-  }
-
-  # Regular case
   smaller_graph <- glyrepr::get_structure_graphs(smaller, return_list = FALSE)
   larger_graph <- glyrepr::get_structure_graphs(larger, return_list = FALSE)
   match_res <- glymotif::match_motif(larger, smaller, alignment = "core")[[1]] # only one glycan, so `[[1]]`
@@ -544,14 +484,23 @@ enhance_enzyme_rule_gh <- function(x) {
   }
 }
 
-#' Check whether a rule uses an empty starter acceptor
+#' Check a product-acceptor pair for starter GTs
 #'
-#' @param x A `glyrepr_structure` object.
-#'
-#' @returns `TRUE` if `x` is the empty glycan structure used by starter GTs.
+#' This function checks if a product-acceptor pair is valid for starter GTs.
+#' @param acceptor A `glyrepr_structure` scalar representing the acceptor structure.
+#' @param product A `glyrepr_structure` scalar representing the product structure.
 #' @noRd
-.is_starter_acceptor <- function(x) {
-  glyrepr::is_glycan_structure(x) && length(x) == 0L
+.check_starter_product_acceptor <- function(acceptor, product) {
+  if (length(acceptor) != 0) {
+    cli::cli_abort("The acceptor must be an empty {.cls glyrepr_structure} vector for starter GTs.")
+  }
+  n_mono <- glyrepr::count_mono(product)
+  if (length(n_mono) != 1L || n_mono != 1L) {
+    cli::cli_abort(
+      "{.arg product} must be a monosaccharide for a starter GT."
+    )
+  }
+  invisible(NULL)
 }
 
 #' Check whether an enzyme is a starter GT
@@ -561,10 +510,7 @@ enhance_enzyme_rule_gh <- function(x) {
 #' @returns `TRUE` if `x` is a GT enzyme with at least one empty acceptor rule.
 #' @noRd
 .is_starter_gt <- function(x) {
-  inherits(x, "glyenzy_starter_gt_enzyme") ||
-    (inherits(x, "glyenzy_enzyme") &&
-      identical(x$type, "GT") &&
-      .has_starter_rule(x$rules))
+  inherits(x, "glyenzy_starter_gt_enzyme")
 }
 
 #' Print method for glyenzy_enzyme objects
