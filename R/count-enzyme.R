@@ -163,11 +163,10 @@ count_enzyme <- function(glycans, enzyme) {
 }
 
 .count_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
-  if (enzyme$name %in% c("ALG2", "ALG11", "ALG9")) {
-    2L
-  } else {
-    1L
-  }
+  n_steps <- if (enzyme$name %in% c("ALG2", "ALG11", "ALG9")) 2L else 1L
+  res <- rep(0L, length(glycans))
+  res[.is_n_glycan(glycans)] <- n_steps
+  res
 }
 
 .count_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {

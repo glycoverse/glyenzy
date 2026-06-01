@@ -138,3 +138,10 @@ test_that("count_enzyme works for ALG2, ALG11, ALG9, and ALG6", {
   expect_equal(count_enzyme(glycan, "ALG9"), 2L)
   expect_equal(count_enzyme(glycan, "ALG6"), 1L)
 })
+
+test_that("count_enzyme is vectorized for N-glycan precursor GTs", {
+  glycans <- c(glyrepr::n_glycan_core(), glyrepr::o_glycan_core_1())
+
+  expect_equal(count_enzyme(glycans, "ALG2"), c(2L, 0L))
+  expect_equal(count_enzyme(glycans, "ALG6"), c(1L, 0L))
+})
