@@ -98,7 +98,7 @@ match_enzyme <- function(glycans, enzyme) {
   if (is.null(x)) {
     return(integer())
   }
-  unique(x)
+  sort(unique(x))
 }
 
 #' Match residues added by one enzyme rule
