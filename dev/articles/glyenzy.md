@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 18cc267 DN-- 4 10 -- 
+#> IGRAPH 2137cf4 DN-- 4 10 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from 18cc267 (vertex names):
+#> + edges from 2137cf4 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
