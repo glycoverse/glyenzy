@@ -239,6 +239,10 @@ have_enzyme <- function(glycans, enzyme) {
   )
 }
 
+.have_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme)  {
+  dplyr::if_else(.is_n_glycan(glycans), TRUE, FALSE)
+}
+
 .have_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)

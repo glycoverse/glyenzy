@@ -145,3 +145,9 @@ test_that("have_enzyme works for POGLUT2", {
   expect_true(have_enzyme("Xyl(a1-3)Glc(a1-", "POGLUT2"))
   expect_false(have_enzyme(glyrepr::o_glycan_core_1(), "POGLUT2"))
 })
+
+# ===== N-glycan Precursor Cases =====
+test_that("have_enzyme works for ALG10", {
+  expect_true(have_enzyme(glyrepr::n_glycan_core(), "ALG10"))
+  expect_false(have_enzyme(glyrepr::o_glycan_core_1(), "ALG10"))
+})
