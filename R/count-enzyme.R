@@ -162,6 +162,14 @@ count_enzyme <- function(glycans, enzyme) {
   )
 }
 
+.count_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  if (enzyme$name %in% c("ALG2", "ALG11", "ALG9")) {
+    2L
+  } else {
+    1L
+  }
+}
+
 .count_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
