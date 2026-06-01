@@ -240,7 +240,7 @@ have_enzyme <- function(glycans, enzyme) {
 }
 
 .have_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme)  {
-  dplyr::if_else(.is_n_glycan(glycans), TRUE, FALSE)
+  .is_n_glycan(glycans)
 }
 
 .have_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
