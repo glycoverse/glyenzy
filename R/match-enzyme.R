@@ -54,7 +54,7 @@ match_enzyme <- function(glycans, enzyme) {
     return(rep(list(integer()), length(glycans)))
   }
 
-  have_product <- .have_enzyme_gt(glycans, enzyme)
+  have_product <- .have_enzyme_by_type.glyenzy_gt_enzyme(glycans, enzyme)
   n_mono <- glyrepr::count_mono(glycans)
   purrr::map2(
     have_product,

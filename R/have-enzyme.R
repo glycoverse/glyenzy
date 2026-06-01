@@ -249,15 +249,3 @@ have_enzyme <- function(glycans, enzyme) {
   )
   unname(rowSums(have_products_mat) > 0)
 }
-
-.have_enzyme_by_type.glyenzy_enzyme <- function(glycans, enzyme) {
-  switch(
-    enzyme$type,
-    GH = .have_enzyme_by_type.glyenzy_gh_enzyme(glycans, enzyme),
-    GT = .have_enzyme_by_type.glyenzy_gt_enzyme(glycans, enzyme),
-    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
-  )
-}
-
-.have_enzyme_gh <- .have_enzyme_by_type.glyenzy_gh_enzyme
-.have_enzyme_gt <- .have_enzyme_by_type.glyenzy_gt_enzyme

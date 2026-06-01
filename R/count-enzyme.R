@@ -172,15 +172,3 @@ count_enzyme <- function(glycans, enzyme) {
   )
   unname(rowSums(count_products_mat))
 }
-
-.count_enzyme_by_type.glyenzy_enzyme <- function(glycans, enzyme) {
-  switch(
-    enzyme$type,
-    GH = .count_enzyme_by_type.glyenzy_gh_enzyme(glycans, enzyme),
-    GT = .count_enzyme_by_type.glyenzy_gt_enzyme(glycans, enzyme),
-    cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
-  )
-}
-
-.count_enzyme_gh <- .count_enzyme_by_type.glyenzy_gh_enzyme
-.count_enzyme_gt <- .count_enzyme_by_type.glyenzy_gt_enzyme
