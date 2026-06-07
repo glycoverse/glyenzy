@@ -40,10 +40,10 @@ jobs:
         shell: Rscript {0}
 
       - uses: codecov/codecov-action@v5
-        continue-on-error: true
         with:
-          # Fail if error if not on PR, or if on PR and token is given
-          fail_ci_if_error: ${{ github.event_name != 'pull_request' || secrets.CODECOV_TOKEN }}
+          # Codecov uploads can fail for transient external reasons (e.g. key retrieval/signature validation)
+          # and should not fail coverage tests that already passed.
+          fail_ci_if_error: false
           files: ./cobertura.xml
           plugins: noop
           disable_search: true
