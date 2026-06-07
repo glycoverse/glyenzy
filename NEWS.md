@@ -1,4 +1,8 @@
-# glyenzy (development version)
+# glyenzy 0.5.1
+
+## Minor improvements and fixes
+
+* Fix rules for FUT1, FUT2, and B3GALT5. (50f3d5d)
 
 # glyenzy 0.5.0
 
