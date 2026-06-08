@@ -1,5 +1,11 @@
 # Changelog
 
+## glyenzy 0.5.2
+
+### Minor improvements and fixes
+
+- Fix rules for FUT3, FUT4, FUT5, FUT6, and FUT9. (5e7d657)
+
 ## glyenzy 0.5.1
 
 ### Minor improvements and fixes
