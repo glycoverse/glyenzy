@@ -153,10 +153,6 @@ igraph::as_data_frame(path, what = "edges")
 #> 19  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 20 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 21 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 22 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 23 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 24 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 25 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #>                                                                 to  enzyme step
 #> 1                                              Gal(b1-3)GalNAc(a1- C1GALT1    1
 #> 2                                  GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-  B3GNT3    2
@@ -177,10 +173,6 @@ igraph::as_data_frame(path, what = "edges")
 #> 17 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    5
 #> 18 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    5
 #> 19 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    5
-#> 20 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    5
-#> 21 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT4    5
-#> 22 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    5
-#> 23 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    5
-#> 24 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5
-#> 25 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT9    5
+#> 20 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    5
+#> 21 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5
 ```
