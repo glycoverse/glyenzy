@@ -155,7 +155,10 @@
 #' @noRd
 .enzyme_names_from_arg <- function(enzymes) {
   if (is.null(enzymes)) {
-    to_keep <- !purrr::map_lgl(glyenzy_enzymes, ~ .is_starter_gt(.x) || .is_npre_gt(.x))
+    to_keep <- !purrr::map_lgl(
+      glyenzy_enzymes,
+      ~ .is_starter_gt(.x) || .is_npre_gt(.x)
+    )
     return(names(glyenzy_enzymes)[to_keep])
   }
 

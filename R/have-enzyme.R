@@ -239,7 +239,7 @@ have_enzyme <- function(glycans, enzyme) {
   )
 }
 
-.have_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme)  {
+.have_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
   .is_n_glycan(glycans)
 }
 

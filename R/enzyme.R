@@ -140,14 +140,33 @@ new_enzyme <- function(name, rules, type, species) {
 #' @noRd
 .enzyme_classes <- function(name, type) {
   starter_gts <- c(
-    "DPAGT1", "FUT10", "FUT11", "POFUT1", "POFUT2",
-    "POGLUT1", "POGLUT2", "POGLUT3", "POMT1", "POMT2",
-    "TMTC1", "TMTC2", "TMTC3", "TMTC4",
+    "DPAGT1",
+    "FUT10",
+    "FUT11",
+    "POFUT1",
+    "POFUT2",
+    "POGLUT1",
+    "POGLUT2",
+    "POGLUT3",
+    "POMT1",
+    "POMT2",
+    "TMTC1",
+    "TMTC2",
+    "TMTC3",
+    "TMTC4",
     paste0("GALNT", 1:19)
   )
   npre_gts <- c(
-    "ALG13", "ALG14", "ALG1", "ALG2", "ALG11",
-    "ALG3", "ALG9", "ALG12", "ALG6", "ALG8",
+    "ALG13",
+    "ALG14",
+    "ALG1",
+    "ALG2",
+    "ALG11",
+    "ALG3",
+    "ALG9",
+    "ALG12",
+    "ALG6",
+    "ALG8",
     "ALG10"
   )
   cls <- switch(
@@ -518,7 +537,9 @@ enhance_enzyme_rule_gh <- function(x) {
 #' @noRd
 .check_starter_product_acceptor <- function(acceptor, product) {
   if (length(acceptor) != 0) {
-    cli::cli_abort("The acceptor must be an empty {.cls glyrepr_structure} vector for starter GTs.")
+    cli::cli_abort(
+      "The acceptor must be an empty {.cls glyrepr_structure} vector for starter GTs."
+    )
   }
   n_mono <- glyrepr::count_mono(product)
   if (length(n_mono) != 1L || n_mono != 1L) {

@@ -190,7 +190,10 @@ test_that("fucosylation of A-antigen (Type 1)", {
   glycan <- "Fuc(a1-2)[GalNAc(a1-3)]Gal(b1-3)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Fuc(a1-2)[GalNAc(a1-3)]Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Fuc(a1-2)[GalNAc(a1-3)]Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT4"]]), character(0))
   expect_equal(as.character(res[["FUT5"]]), character(0))
   expect_equal(as.character(res[["FUT6"]]), character(0))
@@ -203,7 +206,10 @@ test_that("fucosylation of H (Type 1)", {
   glycan <- "Fuc(a1-2)Gal(b1-3)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Fuc(a1-2)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Fuc(a1-2)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT4"]]), character(0))
   expect_equal(as.character(res[["FUT5"]]), character(0))
   expect_equal(as.character(res[["FUT6"]]), character(0))
@@ -216,7 +222,10 @@ test_that("fucosylation of B-antigen (Type 1)", {
   glycan <- "Fuc(a1-2)[Gal(a1-3)]Gal(b1-3)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Fuc(a1-2)[Gal(a1-3)]Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Fuc(a1-2)[Gal(a1-3)]Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT4"]]), character(0))
   expect_equal(as.character(res[["FUT5"]]), character(0))
   expect_equal(as.character(res[["FUT6"]]), character(0))
@@ -242,7 +251,10 @@ test_that("fucosylation of sialylated Type 1 chain", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Neu5Ac(a2-3)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Neu5Ac(a2-3)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT4"]]), character(0))
   expect_equal(as.character(res[["FUT5"]]), character(0))
   expect_equal(as.character(res[["FUT6"]]), character(0))
@@ -268,12 +280,27 @@ test_that("fucosylation of H (Type 2)", {
   glycan <- "Fuc(a1-2)Gal(b1-4)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT4"]]), "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT5"]]), "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT6"]]), "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT4"]]),
+    "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT5"]]),
+    "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT6"]]),
+    "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT7"]]), character(0))
-  expect_equal(as.character(res[["FUT9"]]), "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT9"]]),
+    "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
 })
 
 test_that("fucosylation of A antigen (Type 2)", {
@@ -281,7 +308,10 @@ test_that("fucosylation of A antigen (Type 2)", {
   glycan <- "Fuc(a1-2)[GalNAc(a1-3)]Gal(b1-4)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Fuc(a1-2)[GalNAc(a1-3)]Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Fuc(a1-2)[GalNAc(a1-3)]Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT4"]]), character(0))
   expect_equal(as.character(res[["FUT5"]]), character(0))
   expect_equal(as.character(res[["FUT6"]]), character(0))
@@ -294,10 +324,22 @@ test_that("fucosylation of poly-LacNAc", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
   res <- purrr::map(enzymes, ~ apply_enzyme(glycan, .x))
   names(res) <- enzymes
-  expect_equal(as.character(res[["FUT3"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT4"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT5"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT6"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT3"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT4"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT5"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT6"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT7"]]), character(0))
   expect_equal(as.character(res[["FUT9"]]), character(0))
 })
@@ -309,9 +351,18 @@ test_that("fucosylation of sialyl-LacNAc", {
   names(res) <- enzymes
   expect_equal(as.character(res[["FUT3"]]), character(0))
   expect_equal(as.character(res[["FUT4"]]), character(0))
-  expect_equal(as.character(res[["FUT5"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT6"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
-  expect_equal(as.character(res[["FUT7"]]), "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-")
+  expect_equal(
+    as.character(res[["FUT5"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT6"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(res[["FUT7"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT9"]]), character(0))
 })
 
