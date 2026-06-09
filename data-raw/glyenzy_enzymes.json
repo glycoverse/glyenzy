@@ -711,44 +711,6 @@
         "species": "human"
     },
     {
-        "name": "B4GALT5",
-        "rules": [
-            {
-                "acceptor": "GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal(b1-4)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Glc(b1-",
-                "acceptor_alignment": "whole",
-                "rejects": [],
-                "product": "Gal(b1-4)Glc(b1-"
-            }
-        ],
-        "type": "GT",
-        "species": "human"
-    },
-    {
-        "name": "B4GALT6",
-        "rules": [
-            {
-                "acceptor": "GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal(b1-4)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Glc(b1-",
-                "acceptor_alignment": "whole",
-                "rejects": [],
-                "product": "Gal(b1-4)Glc(b1-"
-            }
-        ],
-        "type": "GT",
-        "species": "human"
-    },
-    {
         "name": "B4GALT7",
         "rules": [
             {
