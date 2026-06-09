@@ -1000,13 +1000,13 @@
             {
                 "acceptor": "Gal(b1-3)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": ["Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": ["Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
             }
         ],
@@ -1019,7 +1019,7 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": ["Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
             }
         ],
@@ -1045,7 +1045,7 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": ["Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
             }
         ],
