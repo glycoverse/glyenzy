@@ -13,9 +13,13 @@
       > Rule 1: terminal alignment
       Acceptor: "Gal(b1-3)GlcNAc(b1-"
       Product: "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
+      Rejects:
+      "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
       > Rule 2: terminal alignment
       Acceptor: "Gal(b1-4)GlcNAc(b1-"
       Product: "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
+      Rejects:
+      "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
 
 # print.glyenzy_enzyme works with enzyme with no rules
 
