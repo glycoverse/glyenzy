@@ -146,14 +146,6 @@ match_enzyme <- function(glycans, enzyme) {
     rule$acceptor,
     alignment = product_alignment
   )
-  if (length(rule$rejects) > 0) {
-    rej_match_res <- glymotif::match_motifs(
-      glycans,
-      rule$rejects,
-      product_alignment
-    )
-    res <- .reject_matches(res, rej_match_res)
-  }
   res
 }
 

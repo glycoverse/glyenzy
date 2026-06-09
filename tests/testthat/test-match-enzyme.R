@@ -51,7 +51,7 @@ test_that("match_enzyme uses product alignment derived from enzyme rules", {
   expect_equal(match_enzyme(glycan, enz), list(integer()))
 })
 
-test_that("match_enzyme filters acceptor matches rejected by enzyme rules", {
+test_that("match_enzyme ignores rejects in enzyme rules", {
   enz <- make_enzyme(
     name = "TEST_REJECT_GT",
     type = "GT",
@@ -67,7 +67,7 @@ test_that("match_enzyme filters acceptor matches rejected by enzyme rules", {
     "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
   )
 
-  expect_equal(match_enzyme(glycan, enz), list(integer()))
+  expect_equal(match_enzyme(glycan, enz), list(3L))
 })
 
 test_that("match_enzyme only accepts glycosyltransferases", {
