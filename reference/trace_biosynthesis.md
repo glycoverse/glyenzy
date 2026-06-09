@@ -138,21 +138,17 @@ igraph::as_data_frame(path, what = "edges")
 #> 4                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 5                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 6                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 7                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 8                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 7              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 8              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 9              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 10             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 11             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 12             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 13             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #> 14             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 15             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 16             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 17  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 18  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 19  Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 20 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 21 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 15 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 16 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 17 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
 #>                                                                 to  enzyme step
 #> 1                                              Gal(b1-3)GalNAc(a1- C1GALT1    1
 #> 2                                  GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-  B3GNT3    2
@@ -160,19 +156,15 @@ igraph::as_data_frame(path, what = "edges")
 #> 4                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT2    3
 #> 5                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT3    3
 #> 6                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT4    3
-#> 7                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT5    3
-#> 8                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT6    3
-#> 9              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    4
-#> 10             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT4    4
-#> 11             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    4
-#> 12             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    4
-#> 13             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT9    4
-#> 14            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    4
-#> 15            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    4
-#> 16            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    4
-#> 17 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    5
-#> 18 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    5
-#> 19 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    5
-#> 20 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    5
-#> 21 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5
+#> 7              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    4
+#> 8              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT4    4
+#> 9              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    4
+#> 10             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    4
+#> 11             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT9    4
+#> 12            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL3    4
+#> 13            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    4
+#> 14            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    4
+#> 15 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    5
+#> 16 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    5
+#> 17 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5
 ```

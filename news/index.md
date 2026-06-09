@@ -1,5 +1,14 @@
 # Changelog
 
+## glyenzy 0.5.3
+
+### Minor improvements and fixes
+
+- Update rules for FUT3, FUT4, FUT5, FUT6, FUT7, and FUT9. (2c6b28b)
+- Remove rules for B4GALT5, B4GALT6, and ST3GAL5 because these enzymes
+  are exclusive for glycolipids. (798ea6f, 8dd30c8)
+- Update ST3GAL rules to reject Lewis antigen acceptors. (c969912)
+
 ## glyenzy 0.5.2
 
 ### Minor improvements and fixes
