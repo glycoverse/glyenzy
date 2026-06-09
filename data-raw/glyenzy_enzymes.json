@@ -814,19 +814,19 @@
         "rules": [
             {
                 "acceptor": "Gal(b1-3)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
+                "acceptor_alignment": "substructure",
                 "rejects": [],
                 "product": "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
+                "acceptor_alignment": "substructure",
+                "rejects": ["Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"],
                 "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             },
             {
                 "acceptor": "GalNAc(b1-3)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
+                "acceptor_alignment": "substructure",
                 "rejects": [],
                 "product": "GalNAc(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
             }
@@ -839,21 +839,13 @@
         "rules": [
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
+                "acceptor_alignment": "substructure",
+                "rejects": [
+                    "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
+                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-",
+                    "Gal(a1-?)Gal(b1-4)GlcNAc(b1-"
+                ],
                 "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-3)GlcNAc(b1-?)Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal(b1-3)GlcNAc(b1-?)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-?)Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-?)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -863,16 +855,13 @@
         "name": "FUT5",
         "rules": [
             {
-                "acceptor": "Gal(b1-?)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal(b1-?)[Fuc(a1-3)]GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-?)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal(b1-?)[Fuc(a1-4)]GlcNAc(b1-"
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [
+                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-",
+                    "Gal(a1-?)Gal(b1-4)GlcNAc(b1-"
+                ],
+                "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -883,15 +872,12 @@
         "rules": [
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
+                "acceptor_alignment": "substructure",
+                "rejects": [
+                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-",
+                    "Gal(a1-?)Gal(b1-4)GlcNAc(b1-"
+                ],
                 "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -931,6 +917,15 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Fuc(a1-2)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "GalNAc(a1-?)[Fuc(a1-2)]Gal(b1-4)GlcNAc(b1-",
+                    "Gal(a1-?)[Fuc(a1-2)]Gal(b1-4)GlcNAc(b1-"
+                ],
+                "product": "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
