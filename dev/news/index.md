@@ -2,6 +2,19 @@
 
 ## glyenzy (development version)
 
+## glyenzy 0.5.4
+
+### Minor improvements and fixes
+
+- Fix
+  [`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md)
+  to ignore enzyme reject motifs when reporting matched residues,
+  consistent with
+  [`have_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/have_enzyme.md)
+  and
+  [`count_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme.md).
+  (0f18c74)
+
 ## glyenzy 0.5.3
 
 ### Minor improvements and fixes
