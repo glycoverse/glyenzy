@@ -1,4 +1,8 @@
-# glyenzy (development version)
+# glyenzy 0.5.4
+
+## Minor improvements and fixes
+
+* Fix `match_enzyme()` to ignore enzyme reject motifs when reporting matched residues, consistent with `have_enzyme()` and `count_enzyme()`. (0f18c74)
 
 # glyenzy 0.5.3
 
