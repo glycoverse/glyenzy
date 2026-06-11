@@ -10,8 +10,8 @@
 #'   Glycoside hydrolases are not supported.
 #' @param method Method used to decide whether the enzyme is involved.
 #'   `"motif"` matches product motifs directly in each glycan.
-#'   `"path"` first requires the enzyme to appear in [trace_biosynthesis()]
-#'   results, which is more accurate but slower.
+#'   `"path"` matches substrates and products from [trace_biosynthesis()]
+#'   results back to each glycan, which is more accurate but slower.
 #'
 #' @return A list of integer vectors with the same length as `glycans`.
 #'   Each integer vector contains node indices for residues added by `enzyme`
@@ -65,13 +65,83 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @returns A list of integer vectors with the same length as `glycans`.
 #' @noRd
 .match_enzyme_path <- function(glycans, enzyme) {
-  res <- .match_enzyme_motif(glycans, enzyme)
-  has_enzyme <- .have_enzyme_path(glycans, enzyme)
-  purrr::map2(
-    res,
-    has_enzyme,
-    ~ if (.y) .x else integer()
+  purrr::map(
+    glycans,
+    ~ .match_enzyme_path_single(.x, enzyme$name)
   )
+}
+
+#' Match residues added by traced enzyme edges in one glycan
+#'
+#' @param glycan A length-one `glyrepr_structure` vector.
+#' @param enzyme_name An enzyme name.
+#'
+#' @returns An integer vector of residue indices.
+#' @noRd
+.match_enzyme_path_single <- function(glycan, enzyme_name) {
+  path <- trace_biosynthesis(glycan)
+  edges <- igraph::as_data_frame(path, what = "edges")
+  edges <- edges[edges$enzyme == enzyme_name, , drop = FALSE]
+  if (nrow(edges) == 0L) {
+    return(integer())
+  }
+
+  edge_matches <- purrr::map2(
+    edges$from,
+    edges$to,
+    ~ .match_traced_edge_added_residues(glycan, .x, .y)
+  )
+  .unique_match_indices(unlist(edge_matches, use.names = FALSE))
+}
+
+#' Match residues added between one traced substrate-product pair
+#'
+#' @param glycan A length-one `glyrepr_structure` vector.
+#' @param substrate A traced substrate glycan string.
+#' @param product A traced product glycan string.
+#'
+#' @returns An integer vector of residue indices.
+#' @noRd
+.match_traced_edge_added_residues <- function(glycan, substrate, product) {
+  substrate <- glyparse::auto_parse(substrate)
+  product <- glyparse::auto_parse(product)
+  substrate_matches <- glymotif::match_motif(
+    glycan,
+    substrate,
+    alignment = "substructure"
+  )[[1]]
+  product_matches <- glymotif::match_motif(
+    glycan,
+    product,
+    alignment = "substructure"
+  )[[1]]
+
+  added_residues <- purrr::map(
+    product_matches,
+    .match_traced_product_substrate,
+    substrate_matches = substrate_matches
+  )
+  unlist(added_residues, use.names = FALSE)
+}
+
+#' Match one traced product occurrence to substrate occurrences
+#'
+#' @param product_match A product motif match in the final glycan.
+#' @param substrate_matches Substrate motif matches in the final glycan.
+#'
+#' @returns An integer vector of residue indices.
+#' @noRd
+.match_traced_product_substrate <- function(product_match, substrate_matches) {
+  is_matching_substrate <- purrr::map_lgl(
+    substrate_matches,
+    ~ all(.x %in% product_match)
+  )
+  if (!any(is_matching_substrate)) {
+    return(integer())
+  }
+
+  substrate_match <- substrate_matches[[which(is_matching_substrate)[[1]]]]
+  setdiff(product_match, substrate_match)
 }
 
 #' Match residues added by a glycosyltransferase

@@ -14,8 +14,8 @@ Glycoside hydrolases are not supported.}
 
 \item{method}{Method used to decide whether the enzyme is involved.
 \code{"motif"} matches product motifs directly in each glycan.
-\code{"path"} first requires the enzyme to appear in \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}
-results, which is more accurate but slower.}
+\code{"path"} matches substrates and products from \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}
+results back to each glycan, which is more accurate but slower.}
 }
 \value{
 A list of integer vectors with the same length as \code{glycans}.

@@ -165,3 +165,25 @@ test_that("match_enzyme can use trace-derived path enzymes", {
     list(3L)
   )
 })
+
+test_that("match_enzyme path method uses traced substrates and products", {
+  glycan <- glyrepr::as_glycan_structure(
+    "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-"
+  )
+  fake_fut7 <- make_enzyme(
+    name = "FUT7",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  expect_equal(
+    suppressMessages(match_enzyme(glycan, fake_fut7, method = "path")),
+    list(3L)
+  )
+})
