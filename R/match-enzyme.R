@@ -35,19 +35,43 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   enzyme <- .process_enzyme_arg(enzyme)
   .validate_match_enzyme_type(enzyme)
 
-  res <- .match_enzyme(glycans, enzyme)
-  if (method == "path") {
-    has_enzyme <- .have_enzyme_path(glycans, enzyme)
-    res <- purrr::map2(
-      res,
-      has_enzyme,
-      ~ if (.y) .x else integer()
-    )
-  }
+  res <- switch(
+    method,
+    motif = .match_enzyme_motif(glycans, enzyme),
+    path = .match_enzyme_path(glycans, enzyme)
+  )
   if (!is.null(glycan_names)) {
     names(res) <- glycan_names
   }
   res
+}
+
+#' Match residues using final-glycan motif matching
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns A list of integer vectors with the same length as `glycans`.
+#' @noRd
+.match_enzyme_motif <- function(glycans, enzyme) {
+  .match_enzyme(glycans, enzyme)
+}
+
+#' Match residues only when the enzyme appears in traced paths
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns A list of integer vectors with the same length as `glycans`.
+#' @noRd
+.match_enzyme_path <- function(glycans, enzyme) {
+  res <- .match_enzyme_motif(glycans, enzyme)
+  has_enzyme <- .have_enzyme_path(glycans, enzyme)
+  purrr::map2(
+    res,
+    has_enzyme,
+    ~ if (.y) .x else integer()
+  )
 }
 
 #' Match residues added by a glycosyltransferase

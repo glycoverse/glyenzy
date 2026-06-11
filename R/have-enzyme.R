@@ -107,10 +107,11 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  if (method == "path") {
-    return(.have_enzyme_path(glycans, enzyme))
-  }
-  .have_enzyme(glycans, enzyme)
+  switch(
+    method,
+    motif = .have_enzyme_motif(glycans, enzyme),
+    path = .have_enzyme_path(glycans, enzyme)
+  )
 }
 
 #' Is a Glycan Synthesized by an Enzyme? (Internal)
@@ -122,7 +123,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
 #'   If `NULL`, it will be computed.
 #' @noRd
-.have_enzyme <- function(glycans, enzyme, is_n = NULL) {
+.have_enzyme_motif <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(
     enzyme$name,
     MGAT1 = .have_enzyme_mgat1,
@@ -139,6 +140,17 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   .f(glycans, enzyme, is_n)
 }
 
+#' Determine whether each glycan has an enzyme in its traced path
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns A logical vector.
+#' @noRd
+.have_enzyme_path <- function(glycans, enzyme) {
+  edges <- .trace_enzyme_edges(glycans)
+  unname(purrr::map_lgl(edges, ~ enzyme$name %in% .x))
+}
 
 # Special case for MGAT1
 # After MGAT1 adds the b1-2 GlcNAc, two mannoses are trimmed.

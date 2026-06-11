@@ -50,10 +50,22 @@ find_enzyme <- function(
   method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   return_list <- .validate_return_list(return_list, length(glycans))
-  if (method == "path") {
-    return(.format_result(.find_enzyme_path(glycans), return_list))
-  }
+  res <- switch(
+    method,
+    motif = .find_enzyme_motif(glycans),
+    path = .find_enzyme_path(glycans)
+  )
 
+  .format_result(res, return_list)
+}
+
+#' Identify enzymes using final-glycan motif matching
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#'
+#' @returns A list of character vectors.
+#' @noRd
+.find_enzyme_motif <- function(glycans) {
   # Compute is_n once for all enzymes to avoid repeated computation
   is_n <- .is_n_glycan(glycans)
   masks <- purrr::map(glyenzy_enzymes, ~ .safe_have_enzyme(glycans, .x, is_n))
@@ -62,13 +74,24 @@ find_enzyme <- function(
     seq_along(glycans),
     ~ names(glyenzy_enzymes)[mast_mat[.x, ]]
   )
-  .format_result(res, return_list)
+  res
 }
 
-# Like `.have_enzyme()`, but returns FALSE instead of throwing error.
+#' Identify trace-derived enzymes for each glycan
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#'
+#' @returns A list of character vectors.
+#' @noRd
+.find_enzyme_path <- function(glycans) {
+  edges <- .trace_enzyme_edges(glycans)
+  purrr::map(edges, unique)
+}
+
+# Like `.have_enzyme_motif()`, but returns FALSE instead of throwing error.
 .safe_have_enzyme <- function(glycans, enzyme, is_n) {
   tryCatch(
-    .have_enzyme(glycans, enzyme, is_n),
+    .have_enzyme_motif(glycans, enzyme, is_n),
     error = function(e) rep(FALSE, length(glycans))
   )
 }
