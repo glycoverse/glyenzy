@@ -308,41 +308,6 @@
   purrr::map(glycans, .trace_enzyme_edges_single)
 }
 
-#' Determine whether each glycan has an enzyme in its traced path
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#' @param enzyme A `glyenzy_enzyme` object.
-#'
-#' @returns A logical vector.
-#' @noRd
-.have_enzyme_path <- function(glycans, enzyme) {
-  edges <- .trace_enzyme_edges(glycans)
-  unname(purrr::map_lgl(edges, ~ enzyme$name %in% .x))
-}
-
-#' Count trace-derived enzyme edges for each glycan
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#' @param enzyme A `glyenzy_enzyme` object.
-#'
-#' @returns An integer vector.
-#' @noRd
-.count_enzyme_path <- function(glycans, enzyme) {
-  edges <- .trace_enzyme_edges(glycans)
-  unname(purrr::map_int(edges, ~ sum(.x == enzyme$name)))
-}
-
-#' Identify trace-derived enzymes for each glycan
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#'
-#' @returns A list of character vectors.
-#' @noRd
-.find_enzyme_path <- function(glycans) {
-  edges <- .trace_enzyme_edges(glycans)
-  purrr::map(edges, unique)
-}
-
 #' Perform BFS synthesis search with common input processing
 #'
 #' This is a high-level wrapper that handles input validation, enzyme processing,

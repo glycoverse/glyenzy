@@ -40,10 +40,11 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  if (method == "path") {
-    return(.count_enzyme_path(glycans, enzyme))
-  }
-  .count_enzyme(glycans, enzyme)
+  switch(
+    method,
+    motif = .count_enzyme_motif(glycans, enzyme),
+    path = .count_enzyme_path(glycans, enzyme)
+  )
 }
 
 #' Count Enzyme Steps (Internal)
@@ -55,7 +56,7 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
 #'   If `NULL`, it will be computed.
 #' @noRd
-.count_enzyme <- function(glycans, enzyme, is_n = NULL) {
+.count_enzyme_motif <- function(glycans, enzyme, is_n = NULL) {
   .f <- switch(
     enzyme$name,
     MGAT1 = .count_enzyme_mgat1,
@@ -72,7 +73,19 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   .f(glycans, enzyme, is_n)
 }
 
-# Here we use `.have_enzyme` functions to handle N-glycans.
+#' Count trace-derived enzyme edges for each glycan
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns An integer vector.
+#' @noRd
+.count_enzyme_path <- function(glycans, enzyme) {
+  edges <- .trace_enzyme_edges(glycans)
+  unname(purrr::map_int(edges, ~ sum(.x == enzyme$name)))
+}
+
+# Here we use `.have_enzyme_motif` functions to handle N-glycans.
 # See the corresponding functions in `have_enzyme.R` for details.
 
 .count_enzyme_mgat1 <- function(glycans, enzyme, is_n) {
