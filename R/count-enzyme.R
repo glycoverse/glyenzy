@@ -7,6 +7,10 @@
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
 #' @param enzyme An [enzyme()] or a gene symbol.
+#' @param method Method used to count enzyme involvement.
+#'   `"motif"` counts product motifs directly in each glycan.
+#'   `"path"` counts enzyme-labeled edges in [trace_biosynthesis()] results,
+#'   which is more accurate but slower.
 #'
 #' @return An integer vector of the same length as `glycans`.
 #'
@@ -28,10 +32,17 @@
 #' )
 #' count_enzyme(glycans, "ST6GAL1")
 #'
+#' # Use reconstructed biosynthesis paths
+#' count_enzyme(glycans, "ST6GAL1", method = "path")
+#'
 #' @export
-count_enzyme <- function(glycans, enzyme) {
+count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
+  method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
+  if (method == "path") {
+    return(.count_enzyme_path(glycans, enzyme))
+  }
   .count_enzyme(glycans, enzyme)
 }
 

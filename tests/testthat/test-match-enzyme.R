@@ -149,3 +149,19 @@ test_that("match_enzyme works for ALG10", {
   )
   expect_equal(match_enzyme(glycan, "ALG10"), list(1L))
 })
+
+test_that("match_enzyme can use trace-derived path enzymes", {
+  glycan <- glyrepr::as_glycan_structure(
+    "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-"
+  )
+
+  expect_equal(match_enzyme(glycan, "FUT3"), list(3L))
+  expect_equal(
+    suppressMessages(match_enzyme(glycan, "FUT3", method = "path")),
+    list(integer())
+  )
+  expect_equal(
+    suppressMessages(match_enzyme(glycan, "FUT7", method = "path")),
+    list(3L)
+  )
+})

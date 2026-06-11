@@ -16,6 +16,10 @@
 #'   This can be useful when you are working programmatically with unknown input length.
 #'   Note that when `return_list = FALSE` and `length(glycans) > 1`,
 #'   an error will be thrown.
+#' @param method Method used to infer enzyme involvement.
+#'   `"motif"` checks product motifs directly in each glycan.
+#'   `"path"` extracts enzymes from [trace_biosynthesis()] results, which is
+#'   more accurate but slower.
 #'
 #' @return A character vector or a list of character vectors (see `return_list` parameter),
 #'   each containing the names of enzymes involved in the biosynthesis of the corresponding glycan.
@@ -34,10 +38,21 @@
 #' # Or use characters directly
 #' find_enzyme("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
 #'
+#' # Use reconstructed biosynthesis paths
+#' find_enzyme(glycans, method = "path")
+#'
 #' @export
-find_enzyme <- function(glycans, return_list = NULL) {
+find_enzyme <- function(
+  glycans,
+  return_list = NULL,
+  method = c("motif", "path")
+) {
+  method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   return_list <- .validate_return_list(return_list, length(glycans))
+  if (method == "path") {
+    return(.format_result(.find_enzyme_path(glycans), return_list))
+  }
 
   # Compute is_n once for all enzymes to avoid repeated computation
   is_n <- .is_n_glycan(glycans)

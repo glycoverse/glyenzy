@@ -145,3 +145,20 @@ test_that("count_enzyme is vectorized for N-glycan precursor GTs", {
   expect_equal(count_enzyme(glycans, "ALG2"), c(2L, 0L))
   expect_equal(count_enzyme(glycans, "ALG6"), c(1L, 0L))
 })
+
+test_that("count_enzyme can use trace-derived path enzymes", {
+  glycans <- c(
+    sialyl_lewis_x = "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-",
+    core1 = "Gal(b1-3)GalNAc(a1-"
+  )
+
+  expect_equal(count_enzyme(glycans, "FUT3"), c(1L, 0L))
+  expect_equal(
+    suppressMessages(count_enzyme(glycans, "FUT3", method = "path")),
+    c(0L, 0L)
+  )
+  expect_equal(
+    suppressMessages(count_enzyme(glycans, "FUT7", method = "path")),
+    c(2L, 0L)
+  )
+})

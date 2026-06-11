@@ -8,6 +8,10 @@
 #' @param glycans A [glyrepr::glycan_structure()] vector.
 #' @param enzyme A glycosyltransferase [enzyme()] or a gene symbol for one.
 #'   Glycoside hydrolases are not supported.
+#' @param method Method used to decide whether the enzyme is involved.
+#'   `"motif"` matches product motifs directly in each glycan.
+#'   `"path"` first requires the enzyme to appear in [trace_biosynthesis()]
+#'   results, which is more accurate but slower.
 #'
 #' @return A list of integer vectors with the same length as `glycans`.
 #'   Each integer vector contains node indices for residues added by `enzyme`
@@ -16,9 +20,11 @@
 #' @examples
 #' glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
 #' match_enzyme(glycan, "ST3GAL3")
+#' match_enzyme(glycan, "ST3GAL3", method = "path")
 #'
 #' @export
-match_enzyme <- function(glycans, enzyme) {
+match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
+  method <- match.arg(method)
   glycan_names <- names(glycans)
   if (!glyrepr::is_glycan_structure(glycans)) {
     cli::cli_abort(
@@ -30,6 +36,14 @@ match_enzyme <- function(glycans, enzyme) {
   .validate_match_enzyme_type(enzyme)
 
   res <- .match_enzyme(glycans, enzyme)
+  if (method == "path") {
+    has_enzyme <- .have_enzyme_path(glycans, enzyme)
+    res <- purrr::map2(
+      res,
+      has_enzyme,
+      ~ if (.y) .x else integer()
+    )
+  }
   if (!is.null(glycan_names)) {
     names(res) <- glycan_names
   }

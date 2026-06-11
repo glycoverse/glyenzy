@@ -4,7 +4,7 @@
 \alias{find_enzyme}
 \title{Identify Potentially Involved Enzymes}
 \usage{
-find_enzyme(glycans, return_list = NULL)
+find_enzyme(glycans, return_list = NULL, method = c("motif", "path"))
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
@@ -17,6 +17,11 @@ Set to \code{TRUE} to always return a list.
 This can be useful when you are working programmatically with unknown input length.
 Note that when \code{return_list = FALSE} and \code{length(glycans) > 1},
 an error will be thrown.}
+
+\item{method}{Method used to infer enzyme involvement.
+\code{"motif"} checks product motifs directly in each glycan.
+\code{"path"} extracts enzymes from \code{\link[=trace_biosynthesis]{trace_biosynthesis()}} results, which is
+more accurate but slower.}
 }
 \value{
 A character vector or a list of character vectors (see \code{return_list} parameter),
@@ -97,5 +102,8 @@ find_enzyme(glycans)
 
 # Or use characters directly
 find_enzyme("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+
+# Use reconstructed biosynthesis paths
+find_enzyme(glycans, method = "path")
 
 }
