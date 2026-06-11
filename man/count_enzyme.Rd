@@ -4,13 +4,18 @@
 \alias{count_enzyme}
 \title{Count Enzyme Involvement}
 \usage{
-count_enzyme(glycans, enzyme)
+count_enzyme(glycans, enzyme, method = c("motif", "path"))
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
 glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
 \item{enzyme}{An \code{\link[=enzyme]{enzyme()}} or a gene symbol.}
+
+\item{method}{Method used to count enzyme involvement.
+\code{"motif"} counts product motifs directly in each glycan.
+\code{"path"} counts enzyme-labeled edges in \code{\link[=trace_biosynthesis]{trace_biosynthesis()}} results,
+which is more accurate but slower.}
 }
 \value{
 An integer vector of the same length as \code{glycans}.
@@ -91,5 +96,8 @@ glycans <- c(
   "Gal(b1-4)GlcNAc(b1-"
 )
 count_enzyme(glycans, "ST6GAL1")
+
+# Use reconstructed biosynthesis paths
+count_enzyme(glycans, "ST6GAL1", method = "path")
 
 }

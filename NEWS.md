@@ -1,5 +1,6 @@
 # glyenzy (development version)
 
+* Add `method = "path"` to `have_enzyme()`, `count_enzyme()`, `match_enzyme()`, and `find_enzyme()` for trace-derived enzyme inference. (#17)
 * Fix enzyme printing without requiring users to attach `glyrepr`. (f0e42b2)
 
 # glyenzy 0.5.4

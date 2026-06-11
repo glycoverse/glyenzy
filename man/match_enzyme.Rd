@@ -4,13 +4,18 @@
 \alias{match_enzyme}
 \title{Match Residues Added by an Enzyme}
 \usage{
-match_enzyme(glycans, enzyme)
+match_enzyme(glycans, enzyme, method = c("motif", "path"))
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector.}
 
 \item{enzyme}{A glycosyltransferase \code{\link[=enzyme]{enzyme()}} or a gene symbol for one.
 Glycoside hydrolases are not supported.}
+
+\item{method}{Method used to decide whether the enzyme is involved.
+\code{"motif"} matches product motifs directly in each glycan.
+\code{"path"} first requires the enzyme to appear in \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}
+results, which is more accurate but slower.}
 }
 \value{
 A list of integer vectors with the same length as \code{glycans}.
@@ -80,5 +85,6 @@ the N-glycan precursor transferred to Asn by OST.
 \examples{
 glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
 match_enzyme(glycan, "ST3GAL3")
+match_enzyme(glycan, "ST3GAL3", method = "path")
 
 }

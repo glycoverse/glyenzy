@@ -74,6 +74,10 @@
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
 #' @param enzyme An [enzyme()] or a gene symbol.
+#' @param method Method used to infer enzyme involvement.
+#'   `"motif"` checks product motifs directly in each glycan.
+#'   `"path"` extracts enzymes from [trace_biosynthesis()] results, which is
+#'   more accurate but slower.
 #'
 #' @return A logical vector of the same length as `glycans`.
 #'
@@ -95,10 +99,17 @@
 #' )
 #' have_enzyme(glycans, "ST6GAL1")
 #'
+#' # Use reconstructed biosynthesis paths
+#' have_enzyme(glycans, "ST6GAL1", method = "path")
+#'
 #' @export
-have_enzyme <- function(glycans, enzyme) {
+have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
+  method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
+  if (method == "path") {
+    return(.have_enzyme_path(glycans, enzyme))
+  }
   .have_enzyme(glycans, enzyme)
 }
 

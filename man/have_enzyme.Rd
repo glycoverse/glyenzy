@@ -4,13 +4,18 @@
 \alias{have_enzyme}
 \title{Determine Whether a Glycan Is Synthesized by a Given Enzyme}
 \usage{
-have_enzyme(glycans, enzyme)
+have_enzyme(glycans, enzyme, method = c("motif", "path"))
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
 glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
 \item{enzyme}{An \code{\link[=enzyme]{enzyme()}} or a gene symbol.}
+
+\item{method}{Method used to infer enzyme involvement.
+\code{"motif"} checks product motifs directly in each glycan.
+\code{"path"} extracts enzymes from \code{\link[=trace_biosynthesis]{trace_biosynthesis()}} results, which is
+more accurate but slower.}
 }
 \value{
 A logical vector of the same length as \code{glycans}.
@@ -107,5 +112,8 @@ glycans <- c(
   "Gal(b1-4)GlcNAc(b1-"
 )
 have_enzyme(glycans, "ST6GAL1")
+
+# Use reconstructed biosynthesis paths
+have_enzyme(glycans, "ST6GAL1", method = "path")
 
 }
