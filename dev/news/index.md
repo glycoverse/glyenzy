@@ -2,6 +2,9 @@
 
 ## glyenzy (development version)
 
+- Fix enzyme printing without requiring users to attach `glyrepr`.
+  (f0e42b2)
+
 ## glyenzy 0.5.4
 
 ### Minor improvements and fixes
