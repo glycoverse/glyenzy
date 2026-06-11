@@ -1,4 +1,5 @@
 #' @keywords internal
+#' @import glyrepr
 "_PACKAGE"
 
 ## usethis namespace: start

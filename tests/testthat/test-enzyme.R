@@ -72,6 +72,10 @@ test_that("print.glyenzy_enzyme works correctly", {
   expect_snapshot(print(enzyme_obj))
 })
 
+test_that("glyenzy imports glyrepr for glycan structure formatting", {
+  expect_true("glyrepr" %in% names(getNamespaceImports("glyenzy")))
+})
+
 # Test acceptor_idx field for GT enzymes
 test_that("acceptor_idx is correctly calculated for GT enzymes", {
   # Test a regular GT enzyme (ST3GAL3)
