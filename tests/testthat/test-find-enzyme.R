@@ -47,6 +47,15 @@ test_that("find_enzyme works for paucimannose glycans", {
   expect_true("MAN1B1" %in% find_enzyme(glycan))
 })
 
+test_that("find_enzyme path method includes N-glycan precursor GTs", {
+  path_res <- suppressMessages(find_enzyme(
+    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    method = "path"
+  ))
+
+  expect_true(all(c("ALG2", "ALG6", "ALG10") %in% path_res))
+})
+
 test_that("find_enzyme can use trace-derived path enzymes", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-"
 
