@@ -7,7 +7,7 @@ the residues in glycans that cannot be matched to any enzyme rules.
 ## Usage
 
 ``` r
-find_enzyme(glycans, return_list = NULL)
+find_enzyme(glycans, return_list = NULL, method = c("motif", "path"))
 ```
 
 ## Arguments
@@ -27,6 +27,13 @@ find_enzyme(glycans, return_list = NULL)
   can be useful when you are working programmatically with unknown input
   length. Note that when `return_list = FALSE` and
   `length(glycans) > 1`, an error will be thrown.
+
+- method:
+
+  Method used to infer enzyme involvement. `"motif"` checks product
+  motifs directly in each glycan. `"path"` extracts enzymes from
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  results, which is more accurate but slower.
 
 ## Value
 
@@ -121,4 +128,17 @@ find_enzyme("GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
 #>  [1] "ALG13"  "ALG14"  "ALG1"   "ALG2"   "ALG11"  "ALG3"   "ALG9"   "ALG12" 
 #>  [9] "ALG6"   "ALG8"   "ALG10"  "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2"
 #> [17] "MAN1C1" "MAN2A1" "MAN2A2" "MGAT1"  "DPAGT1"
+
+# Use reconstructed biosynthesis paths
+find_enzyme(glycans, method = "path")
+#> [[1]]
+#>  [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MGAT1"  "MAN2A1"
+#>  [9] "MAN2A2" "ALG13"  "ALG14"  "ALG1"   "ALG2"   "ALG11"  "ALG3"   "ALG9"  
+#> [17] "ALG12"  "ALG6"   "ALG8"   "ALG10" 
+#> 
+#> [[2]]
+#>  [1] "MOGS"   "GANAB"  "MAN1B1" "MAN1A1" "MAN1A2" "MAN1C1" "MGAT1"  "MAN2A1"
+#>  [9] "MAN2A2" "MGAT2"  "ALG13"  "ALG14"  "ALG1"   "ALG2"   "ALG11"  "ALG3"  
+#> [17] "ALG9"   "ALG12"  "ALG6"   "ALG8"   "ALG10" 
+#> 
 ```

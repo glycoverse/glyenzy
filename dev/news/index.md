@@ -2,6 +2,13 @@
 
 ## glyenzy (development version)
 
+- Add `method = "path"` to
+  [`have_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/have_enzyme.md),
+  [`count_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme.md),
+  [`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md),
+  and
+  [`find_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/find_enzyme.md)
+  for trace-derived enzyme inference. (#17)
 - Fix enzyme printing without requiring users to attach `glyrepr`.
   (f0e42b2)
 

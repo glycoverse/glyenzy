@@ -6,7 +6,7 @@ glycan.
 ## Usage
 
 ``` r
-count_enzyme(glycans, enzyme)
+count_enzyme(glycans, enzyme, method = c("motif", "path"))
 ```
 
 ## Arguments
@@ -23,6 +23,14 @@ count_enzyme(glycans, enzyme)
   An
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
   or a gene symbol.
+
+- method:
+
+  Method used to count enzyme involvement. `"motif"` counts product
+  motifs directly in each glycan. `"path"` counts enzyme-labeled edges
+  in
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  results, which is more accurate but slower.
 
 ## Value
 
@@ -108,5 +116,9 @@ glycans <- c(
   "Gal(b1-4)GlcNAc(b1-"
 )
 count_enzyme(glycans, "ST6GAL1")
+#> [1] 1 0
+
+# Use reconstructed biosynthesis paths
+count_enzyme(glycans, "ST6GAL1", method = "path")
 #> [1] 1 0
 ```
