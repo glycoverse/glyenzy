@@ -81,10 +81,14 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @returns An integer vector.
 #' @noRd
 .count_enzyme_path <- function(glycans, enzyme) {
-  if (.is_npre_gt(enzyme)) {
-    return(.count_enzyme_by_type.glyenzy_npre_gt_enzyme(glycans, enzyme))
-  }
+  UseMethod(".count_enzyme_path", enzyme)
+}
 
+.count_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  .count_enzyme_by_type.glyenzy_npre_gt_enzyme(glycans, enzyme)
+}
+
+.count_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
   edges <- .trace_enzyme_edges(glycans)
   unname(purrr::map_int(edges, ~ sum(.x == enzyme$name)))
 }
