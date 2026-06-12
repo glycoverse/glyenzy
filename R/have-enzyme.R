@@ -148,10 +148,14 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @returns A logical vector.
 #' @noRd
 .have_enzyme_path <- function(glycans, enzyme) {
-  if (.is_npre_gt(enzyme)) {
-    return(.have_enzyme_by_type.glyenzy_npre_gt_enzyme(glycans, enzyme))
-  }
+  UseMethod(".have_enzyme_path", enzyme)
+}
 
+.have_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  .have_enzyme_by_type.glyenzy_npre_gt_enzyme(glycans, enzyme)
+}
+
+.have_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
   edges <- .trace_enzyme_edges(glycans)
   unname(purrr::map_lgl(edges, ~ enzyme$name %in% .x))
 }
