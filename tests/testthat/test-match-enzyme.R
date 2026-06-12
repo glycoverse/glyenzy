@@ -187,3 +187,11 @@ test_that("match_enzyme path method uses traced substrates and products", {
     list(3L)
   )
 })
+
+test_that("match_enzyme path method works with ALG enzymes", {
+  glycan <- glyrepr::as_glycan_structure(
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  res <- match_enzyme(glycan, "ALG14", method = "path")
+  expect_equal(res, list(8L))
+})

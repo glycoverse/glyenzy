@@ -46,17 +46,6 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   res
 }
 
-#' Match residues using final-glycan motif matching
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#' @param enzyme A `glyenzy_enzyme` object.
-#'
-#' @returns A list of integer vectors with the same length as `glycans`.
-#' @noRd
-.match_enzyme_motif <- function(glycans, enzyme) {
-  .match_enzyme(glycans, enzyme)
-}
-
 #' Match residues only when the enzyme appears in traced paths
 #'
 #' @param glycans A `glyrepr_structure` vector.
@@ -65,6 +54,14 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @returns A list of integer vectors with the same length as `glycans`.
 #' @noRd
 .match_enzyme_path <- function(glycans, enzyme) {
+  UseMethod(".match_enzyme_path", enzyme)
+}
+
+.match_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  .match_enzyme_motif.glyenzy_enzyme(glycans, enzyme)
+}
+
+.match_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
   purrr::map(
     glycans,
     ~ .match_enzyme_path_single(.x, enzyme$name)
@@ -153,11 +150,11 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #'
 #' @returns A list of integer vectors with the same length as `glycans`.
 #' @noRd
-.match_enzyme <- function(glycans, enzyme) {
-  UseMethod(".match_enzyme", enzyme)
+.match_enzyme_motif <- function(glycans, enzyme) {
+  UseMethod(".match_enzyme_motif", enzyme)
 }
 
-.match_enzyme.glyenzy_starter_gt_enzyme <- function(glycans, enzyme) {
+.match_enzyme_motif.glyenzy_starter_gt_enzyme <- function(glycans, enzyme) {
   if (length(enzyme$rules) == 0L) {
     return(rep(list(integer()), length(glycans)))
   }
@@ -171,7 +168,7 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   )
 }
 
-.match_enzyme.glyenzy_gt_enzyme <- function(glycans, enzyme) {
+.match_enzyme_motif.glyenzy_gt_enzyme <- function(glycans, enzyme) {
   if (length(enzyme$rules) == 0L) {
     return(rep(list(integer()), length(glycans)))
   }
@@ -181,14 +178,14 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   purrr::map(res, .unique_match_indices)
 }
 
-.match_enzyme.glyenzy_enzyme <- function(glycans, enzyme) {
+.match_enzyme_motif.glyenzy_enzyme <- function(glycans, enzyme) {
   if (.is_starter_gt(enzyme)) {
-    return(.match_enzyme.glyenzy_starter_gt_enzyme(glycans, enzyme))
+    return(.match_enzyme_motif.glyenzy_starter_gt_enzyme(glycans, enzyme))
   }
 
   switch(
     enzyme$type,
-    GT = .match_enzyme.glyenzy_gt_enzyme(glycans, enzyme),
+    GT = .match_enzyme_motif.glyenzy_gt_enzyme(glycans, enzyme),
     GH = cli::cli_abort(
       "{.fn match_enzyme} only supports glycosyltransferases."
     ),
