@@ -84,8 +84,34 @@ find_enzyme <- function(
 #' @returns A list of character vectors.
 #' @noRd
 .find_enzyme_path <- function(glycans) {
-  edges <- .trace_enzyme_edges(glycans)
-  purrr::map(edges, unique)
+  purrr::map(glycans, .find_enzyme_path_single)
+}
+
+#' Identify trace-derived enzymes for one glycan
+#'
+#' @param glycan A length-one `glyrepr_structure` vector.
+#'
+#' @returns A character vector of enzyme names.
+#' @noRd
+.find_enzyme_path_single <- function(glycan) {
+  npre_enzymes <- .find_npre_enzymes(glycan)
+  traced_enzymes <- .trace_enzyme_edges_single(glycan)
+  unique(c(traced_enzymes, npre_enzymes))
+}
+
+#' Identify N-glycan precursor enzymes for one glycan
+#'
+#' @param glycan A length-one `glyrepr_structure` vector.
+#'
+#' @returns A character vector of enzyme names.
+#' @noRd
+.find_npre_enzymes <- function(glycan) {
+  npre_enzymes <- purrr::keep(glyenzy_enzymes, .is_npre_gt)
+  masks <- purrr::map_lgl(
+    npre_enzymes,
+    ~ .have_enzyme_by_type.glyenzy_npre_gt_enzyme(glycan, .x)
+  )
+  names(npre_enzymes)[masks]
 }
 
 # Like `.have_enzyme_motif()`, but returns FALSE instead of throwing error.

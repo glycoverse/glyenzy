@@ -152,6 +152,15 @@ test_that("have_enzyme works for ALG10", {
   expect_false(have_enzyme(glyrepr::o_glycan_core_1(), "ALG10"))
 })
 
+test_that("have_enzyme path method treats N-glycan precursor GTs specially", {
+  expect_true(suppressMessages(
+    have_enzyme(glyrepr::n_glycan_core(), "ALG10", method = "path")
+  ))
+  expect_false(suppressMessages(
+    have_enzyme(glyrepr::o_glycan_core_1(), "ALG10", method = "path")
+  ))
+})
+
 test_that("have_enzyme can use trace-derived path enzymes", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-"
 
