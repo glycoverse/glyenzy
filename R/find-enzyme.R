@@ -66,9 +66,7 @@ find_enzyme <- function(
 #' @returns A list of character vectors.
 #' @noRd
 .find_enzyme_motif <- function(glycans) {
-  # Compute is_n once for all enzymes to avoid repeated computation
-  is_n <- .is_n_glycan(glycans)
-  masks <- purrr::map(glyenzy_enzymes, ~ .safe_have_enzyme(glycans, .x, is_n))
+  masks <- purrr::map(glyenzy_enzymes, ~ .safe_have_enzyme(glycans, .x))
   mast_mat <- do.call(cbind, masks)
   res <- purrr::map(
     seq_along(glycans),
@@ -109,15 +107,15 @@ find_enzyme <- function(
   npre_enzymes <- purrr::keep(glyenzy_enzymes, .is_npre_gt)
   masks <- purrr::map_lgl(
     npre_enzymes,
-    ~ .have_enzyme_by_type.glyenzy_npre_gt_enzyme(glycan, .x)
+    ~ .have_enzyme_motif.glyenzy_npre_gt_enzyme(glycan, .x)
   )
   names(npre_enzymes)[masks]
 }
 
 # Like `.have_enzyme_motif()`, but returns FALSE instead of throwing error.
-.safe_have_enzyme <- function(glycans, enzyme, is_n) {
+.safe_have_enzyme <- function(glycans, enzyme) {
   tryCatch(
-    .have_enzyme_motif(glycans, enzyme, is_n),
+    .have_enzyme_motif(glycans, enzyme),
     error = function(e) rep(FALSE, length(glycans))
   )
 }
