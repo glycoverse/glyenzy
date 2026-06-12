@@ -120,13 +120,18 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
-#' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
-#'   If `NULL`, it will be computed.
 #' @noRd
-.have_enzyme_motif <- function(glycans, enzyme, is_n = NULL) {
+.have_enzyme_motif <- function(glycans, enzyme) {
+  UseMethod(".have_enzyme_motif", enzyme)
+}
+
+.have_enzyme_motif.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  .is_n_glycan(glycans)
+}
+
+.have_enzyme_motif.glyenzy_gh_enzyme <- function(glycans, enzyme) {
   .f <- switch(
     enzyme$name,
-    MGAT1 = .have_enzyme_mgat1,
     MOGS = .have_enzyme_mogs,
     MAN1B1 = .have_enzyme_man1b1,
     MAN1A1 = ,
@@ -135,29 +140,34 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     MAN2A1 = ,
     MAN2A2 = .have_enzyme_man2a12,
     GANAB = .have_enzyme_ganab,
-    .have_enzyme_default
+    NULL
   )
-  .f(glycans, enzyme, is_n)
+  if (is.null(.f)) {
+    cli::cli_abort(
+      "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
+    )
+  }
+  .f(glycans, enzyme)
 }
 
-#' Determine whether each glycan has an enzyme in its traced path
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#' @param enzyme A `glyenzy_enzyme` object.
-#'
-#' @returns A logical vector.
-#' @noRd
-.have_enzyme_path <- function(glycans, enzyme) {
-  UseMethod(".have_enzyme_path", enzyme)
+.have_enzyme_motif.glyenzy_gt_enzyme <- function(glycans, enzyme) {
+  .f <- switch(
+    enzyme$name,
+    MGAT1 = .have_enzyme_mgat1,
+    .have_enzyme_motif_gt_default
+  )
+  .f(glycans, enzyme)
 }
 
-.have_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
-  .have_enzyme_by_type.glyenzy_npre_gt_enzyme(glycans, enzyme)
-}
-
-.have_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
-  edges <- .trace_enzyme_edges(glycans)
-  unname(purrr::map_lgl(edges, ~ enzyme$name %in% .x))
+.have_enzyme_motif_gt_default <- function(glycans, enzyme) {
+  products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
+  product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
+  have_products_mat <- glymotif::have_motifs(
+    glycans,
+    products,
+    product_alignments
+  )
+  unname(rowSums(have_products_mat) > 0)
 }
 
 # Special case for MGAT1
@@ -240,47 +250,22 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 }
 .have_enzyme_ganab <- .make_n_glycan_guard(.have_enzyme_ganab)
 
-#' Is a Glycan Synthesized by an Enzyme? (Default Case)
-#'
-#' Check all rules of the `enzyme`.
-#' Returns TRUE if any rule is satisfied.
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#' @param enzyme A `glyenzy_enzyme` object.
-#' @param ... Ignored.
-#' @noRd
-.have_enzyme_default <- function(glycans, enzyme, ...) {
-  .have_enzyme_by_type(glycans, enzyme)
-}
-
-#' Check enzyme involvement using type-level behavior
+#' Determine whether each glycan has an enzyme in its traced path
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
 #'
 #' @returns A logical vector.
 #' @noRd
-.have_enzyme_by_type <- function(glycans, enzyme) {
-  UseMethod(".have_enzyme_by_type", enzyme)
+.have_enzyme_path <- function(glycans, enzyme) {
+  UseMethod(".have_enzyme_path", enzyme)
 }
 
-.have_enzyme_by_type.glyenzy_gh_enzyme <- function(glycans, enzyme) {
-  cli::cli_abort(
-    "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
-  )
+.have_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  .have_enzyme_motif.glyenzy_npre_gt_enzyme(glycans, enzyme)
 }
 
-.have_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
-  .is_n_glycan(glycans)
-}
-
-.have_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
-  products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
-  product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
-  have_products_mat <- glymotif::have_motifs(
-    glycans,
-    products,
-    product_alignments
-  )
-  unname(rowSums(have_products_mat) > 0)
+.have_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
+  edges <- .trace_enzyme_edges(glycans)
+  unname(purrr::map_lgl(edges, ~ enzyme$name %in% .x))
 }

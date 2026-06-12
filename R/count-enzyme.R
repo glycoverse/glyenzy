@@ -53,13 +53,21 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
-#' @param is_n A logical vector indicating which elements of `glycans` are N-glycans.
-#'   If `NULL`, it will be computed.
 #' @noRd
-.count_enzyme_motif <- function(glycans, enzyme, is_n = NULL) {
+.count_enzyme_motif <- function(glycans, enzyme) {
+  UseMethod(".count_enzyme_motif", enzyme)
+}
+
+.count_enzyme_motif.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+  n_steps <- length(enzyme$rules)
+  res <- rep(0L, length(glycans))
+  res[.is_n_glycan(glycans)] <- n_steps
+  res
+}
+
+.count_enzyme_motif.glyenzy_gh_enzyme <- function(glycans, enzyme) {
   .f <- switch(
     enzyme$name,
-    MGAT1 = .count_enzyme_mgat1,
     MOGS = .count_enzyme_mogs,
     MAN1B1 = .count_enzyme_man1b1,
     MAN1A1 = ,
@@ -68,9 +76,23 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     MAN2A1 = ,
     MAN2A2 = .count_enzyme_man2a12,
     GANAB = .count_enzyme_ganab,
-    .count_enzyme_default
+    NULL
   )
-  .f(glycans, enzyme, is_n)
+  if (is.null(.f)) {
+    cli::cli_abort(
+      "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
+    )
+  }
+  .f(glycans, enzyme)
+}
+
+.count_enzyme_motif.glyenzy_gt_enzyme <- function(glycans, enzyme) {
+  .f <- switch(
+    enzyme$name,
+    MGAT1 = .count_enzyme_mgat1,
+    .count_enzyme_motif_gt_default
+  )
+  .f(glycans, enzyme)
 }
 
 #' Count trace-derived enzyme edges for each glycan
@@ -85,7 +107,7 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 }
 
 .count_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
-  .count_enzyme_by_type.glyenzy_npre_gt_enzyme(glycans, enzyme)
+  .count_enzyme_motif.glyenzy_npre_gt_enzyme(glycans, enzyme)
 }
 
 .count_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
@@ -96,16 +118,16 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 # Here we use `.have_enzyme_motif` functions to handle N-glycans.
 # See the corresponding functions in `have_enzyme.R` for details.
 
-.count_enzyme_mgat1 <- function(glycans, enzyme, is_n) {
-  1L * .have_enzyme_mgat1(glycans, enzyme, is_n)
+.count_enzyme_mgat1 <- function(glycans, enzyme) {
+  1L * .have_enzyme_mgat1(glycans, enzyme)
 }
 
-.count_enzyme_mogs <- function(glycans, enzyme, is_n) {
-  1L * .have_enzyme_mogs(glycans, enzyme, is_n)
+.count_enzyme_mogs <- function(glycans, enzyme) {
+  1L * .have_enzyme_mogs(glycans, enzyme)
 }
 
-.count_enzyme_man1b1 <- function(glycans, enzyme, is_n) {
-  1L * .have_enzyme_man1b1(glycans, enzyme, is_n)
+.count_enzyme_man1b1 <- function(glycans, enzyme) {
+  1L * .have_enzyme_man1b1(glycans, enzyme)
 }
 
 # Special case for MAN1A1 and MAN1A2
@@ -173,35 +195,7 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   type = "integer"
 )
 
-.count_enzyme_default <- function(glycans, enzyme, ...) {
-  .count_enzyme_by_type(glycans, enzyme)
-}
-
-#' Count enzyme involvement using type-level behavior
-#'
-#' @param glycans A `glyrepr_structure` vector.
-#' @param enzyme A `glyenzy_enzyme` object.
-#'
-#' @returns An integer vector.
-#' @noRd
-.count_enzyme_by_type <- function(glycans, enzyme) {
-  UseMethod(".count_enzyme_by_type", enzyme)
-}
-
-.count_enzyme_by_type.glyenzy_gh_enzyme <- function(glycans, enzyme) {
-  cli::cli_abort(
-    "Glycoside hydrolases except a few involved in N-glycan biosynthesis are not supported yet."
-  )
-}
-
-.count_enzyme_by_type.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
-  n_steps <- length(enzyme$rules)
-  res <- rep(0L, length(glycans))
-  res[.is_n_glycan(glycans)] <- n_steps
-  res
-}
-
-.count_enzyme_by_type.glyenzy_gt_enzyme <- function(glycans, enzyme) {
+.count_enzyme_motif_gt_default <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
   count_products_mat <- glymotif::count_motifs(
