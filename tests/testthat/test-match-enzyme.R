@@ -166,7 +166,7 @@ test_that("match_enzyme can use trace-derived path enzymes", {
   )
 })
 
-test_that("match_enzyme path method uses traced substrates and products", {
+test_that("match_enzyme path method uses merged enzyme rules", {
   glycan <- glyrepr::as_glycan_structure(
     "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-"
   )
@@ -184,7 +184,29 @@ test_that("match_enzyme path method uses traced substrates and products", {
 
   expect_equal(
     suppressMessages(match_enzyme(glycan, fake_fut7, method = "path")),
-    list(3L)
+    list(5L)
+  )
+})
+
+test_that("match_enzyme path method supports custom enzyme objects", {
+  glycan <- glyrepr::as_glycan_structure(
+    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+  )
+  enz <- make_enzyme(
+    name = "TEST_ST3GAL",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  expect_equal(
+    suppressMessages(match_enzyme(glycan, enz, method = "path")),
+    list(1L)
   )
 })
 
@@ -193,5 +215,5 @@ test_that("match_enzyme path method works with ALG enzymes", {
     "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
   res <- match_enzyme(glycan, "ALG14", method = "path")
-  expect_equal(res, list(8L))
+  expect_equal(res, list(6L))
 })

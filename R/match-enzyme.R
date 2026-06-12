@@ -62,9 +62,10 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 }
 
 .match_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
+  enzymes <- .trace_enzymes_with(enzyme)
   purrr::map(
     glycans,
-    ~ .match_enzyme_path_single(.x, enzyme$name)
+    ~ .match_enzyme_path_single(.x, enzyme$name, enzymes)
   )
 }
 
@@ -72,11 +73,12 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #'
 #' @param glycan A length-one `glyrepr_structure` vector.
 #' @param enzyme_name An enzyme name.
+#' @param enzymes A list of `glyenzy_enzyme` objects.
 #'
 #' @returns An integer vector of residue indices.
 #' @noRd
-.match_enzyme_path_single <- function(glycan, enzyme_name) {
-  path <- trace_biosynthesis(glycan)
+.match_enzyme_path_single <- function(glycan, enzyme_name, enzymes) {
+  path <- trace_biosynthesis(glycan, enzymes = enzymes)
   edges <- igraph::as_data_frame(path, what = "edges")
   edges <- edges[edges$enzyme == enzyme_name, , drop = FALSE]
   if (nrow(edges) == 0L) {

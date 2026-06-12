@@ -60,6 +60,28 @@ test_that("trace_biosynthesis works for an O-GalNAc glycan", {
   expect_gt(igraph::ecount(path), igraph::vcount(path) - 1)
 })
 
+test_that("trace_biosynthesis supports custom enzyme objects", {
+  enz <- make_enzyme(
+    name = "TEST_ST3GAL",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  path <- trace_biosynthesis(
+    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-",
+    enzymes = list(enzyme("C1GALT1"), enz),
+    max_steps = 3
+  )
+
+  expect_true("TEST_ST3GAL" %in% igraph::E(path)$enzyme)
+})
+
 test_that("trace_biosynthesis works with O-Man glycans", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-"
   path <- trace_biosynthesis(glycan)

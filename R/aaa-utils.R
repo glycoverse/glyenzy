@@ -137,37 +137,37 @@
   glycans = NULL,
   apply_prefilter = TRUE
 ) {
-  enzyme_names <- .enzyme_names_from_arg(enzymes)
-  enzyme_names <- .prefilter_enzyme_names(
-    enzyme_names,
+  enzymes <- .enzymes_from_arg(enzymes)
+  enzymes <- .prefilter_enzymes(
+    enzymes,
     glycans,
     apply_prefilter
   )
 
-  unname(glyenzy_enzymes[enzyme_names])
+  unname(enzymes)
 }
 
-#' Get enzyme names from supported enzyme input forms
+#' Get enzymes from supported input forms
 #'
 #' @param enzymes Raw enzyme input (`NULL`, character vector, or enzyme object
 #'   list).
-#' @returns A character vector of enzyme names.
+#' @returns A named list of `glyenzy_enzyme` objects.
 #' @noRd
-.enzyme_names_from_arg <- function(enzymes) {
+.enzymes_from_arg <- function(enzymes) {
   if (is.null(enzymes)) {
     to_keep <- !purrr::map_lgl(
       glyenzy_enzymes,
       ~ .is_starter_gt(.x) || .is_npre_gt(.x)
     )
-    return(names(glyenzy_enzymes)[to_keep])
+    return(glyenzy_enzymes[to_keep])
   }
 
   if (is.character(enzymes)) {
     .check_known_enzyme_names(enzymes)
-    return(enzymes)
+    return(glyenzy_enzymes[enzymes])
   }
 
-  .enzyme_names_from_list(enzymes)
+  .enzymes_from_list(enzymes)
 }
 
 #' Validate enzyme names against the built-in enzyme table
@@ -184,62 +184,63 @@
   invisible(enzyme_names)
 }
 
-#' Extract names from a list of enzyme objects
+#' Normalize a list of enzyme objects
 #'
 #' @param enzymes A list of `glyenzy_enzyme` objects.
-#' @returns A character vector of enzyme names.
+#' @returns A named list of `glyenzy_enzyme` objects.
 #' @noRd
-.enzyme_names_from_list <- function(enzymes) {
+.enzymes_from_list <- function(enzymes) {
   checkmate::assert_list(enzymes, types = "glyenzy_enzyme")
-  purrr::map_chr(enzymes, "name")
+  names(enzymes) <- purrr::map_chr(enzymes, "name")
+  enzymes
 }
 
-#' Optionally prefilter enzyme names against target glycans
+#' Optionally prefilter enzymes against target glycans
 #'
-#' @param enzyme_names A character vector of enzyme names.
+#' @param enzymes A named list of `glyenzy_enzyme` objects.
 #' @param glycans Target glycan structures for pre-filtering.
 #' @param apply_prefilter Whether to apply enzyme pre-filtering based on target
 #'   glycans.
-#' @returns A character vector of enzyme names.
+#' @returns A named list of `glyenzy_enzyme` objects.
 #' @noRd
-.prefilter_enzyme_names <- function(
-  enzyme_names,
+.prefilter_enzymes <- function(
+  enzymes,
   glycans,
   apply_prefilter
 ) {
   if (!apply_prefilter || is.null(glycans)) {
-    return(enzyme_names)
+    return(enzymes)
   }
 
-  can_contribute <- .can_enzymes_contribute(enzyme_names, glycans)
-  enzyme_names <- enzyme_names[can_contribute]
-  if (length(enzyme_names) == 0L) {
+  can_contribute <- .can_enzymes_contribute(enzymes, glycans)
+  enzymes <- enzymes[can_contribute]
+  if (length(enzymes) == 0L) {
     cli::cli_abort(
       "No enzymes are predicted to contribute to any target glycan."
     )
   }
 
-  enzyme_names
+  enzymes
 }
 
 #' Check whether enzymes can contribute to any target glycan
 #'
-#' @param enzyme_names A character vector of enzyme names.
+#' @param enzymes A named list of `glyenzy_enzyme` objects.
 #' @param glycans Target glycan structures.
-#' @returns A logical vector with one value per enzyme name.
+#' @returns A logical vector with one value per enzyme.
 #' @noRd
-.can_enzymes_contribute <- function(enzyme_names, glycans) {
+.can_enzymes_contribute <- function(enzymes, glycans) {
   tryCatch(
     purrr::map_lgl(
-      enzyme_names,
+      enzymes,
       ~ any(purrr::map_lgl(
         glycans,
         .enzyme_contributes_to_target,
-        enzyme_name = .x
+        enzyme = .x
       ))
     ),
     error = function(e) {
-      rep(TRUE, length(enzyme_names))
+      rep(TRUE, length(enzymes))
     }
   )
 }
@@ -247,12 +248,12 @@
 #' Check whether one enzyme can contribute to one target glycan
 #'
 #' @param target A target glycan structure.
-#' @param enzyme_name A single enzyme name.
+#' @param enzyme A `glyenzy_enzyme` object.
 #' @returns `TRUE` when the enzyme can synthesize `target`; otherwise `FALSE`.
 #' @noRd
-.enzyme_contributes_to_target <- function(target, enzyme_name) {
+.enzyme_contributes_to_target <- function(target, enzyme) {
   tryCatch(
-    glyenzy::have_enzyme(target, enzyme_name),
+    glyenzy::have_enzyme(target, enzyme),
     error = function(e) FALSE
   )
 }
@@ -291,10 +292,12 @@
 #'
 #' @param glycan A length-one `glyrepr_structure` vector.
 #'
+#' @param enzymes A list of `glyenzy_enzyme` objects, or `NULL` to use defaults.
+#'
 #' @returns A character vector of enzyme names from graph edges.
 #' @noRd
-.trace_enzyme_edges_single <- function(glycan) {
-  path <- trace_biosynthesis(glycan)
+.trace_enzyme_edges_single <- function(glycan, enzymes = NULL) {
+  path <- trace_biosynthesis(glycan, enzymes = enzymes)
   igraph::E(path)$enzyme
 }
 
@@ -302,10 +305,28 @@
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #'
+#' @param enzymes A list of `glyenzy_enzyme` objects, or `NULL` to use defaults.
+#'
 #' @returns A list of character vectors.
 #' @noRd
-.trace_enzyme_edges <- function(glycans) {
-  purrr::map(glycans, .trace_enzyme_edges_single)
+.trace_enzyme_edges <- function(glycans, enzymes = NULL) {
+  purrr::map(glycans, .trace_enzyme_edges_single, enzymes = enzymes)
+}
+
+#' Merge one enzyme into the default trace enzyme set
+#'
+#' @param enzyme A `glyenzy_enzyme` object.
+#'
+#' @returns A list of `glyenzy_enzyme` objects.
+#' @noRd
+.trace_enzymes_with <- function(enzyme) {
+  to_keep <- !purrr::map_lgl(
+    glyenzy_enzymes,
+    ~ .is_starter_gt(.x) || .is_npre_gt(.x)
+  )
+  enzymes <- glyenzy_enzymes[to_keep]
+  enzymes[[enzyme$name]] <- enzyme
+  unname(enzymes)
 }
 
 #' Perform BFS synthesis search with common input processing
