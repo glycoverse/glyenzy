@@ -67,10 +67,10 @@ find_enzyme <- function(
 #' @noRd
 .find_enzyme_motif <- function(glycans) {
   masks <- purrr::map(glyenzy_enzymes, ~ .safe_have_enzyme(glycans, .x))
-  mast_mat <- do.call(cbind, masks)
+  mask_mat <- do.call(cbind, masks)
   res <- purrr::map(
     seq_along(glycans),
-    ~ names(glyenzy_enzymes)[mast_mat[.x, ]]
+    ~ names(glyenzy_enzymes)[mask_mat[.x, ]]
   )
   res
 }

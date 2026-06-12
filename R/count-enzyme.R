@@ -111,7 +111,7 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 }
 
 .count_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
-  edges <- .trace_enzyme_edges(glycans)
+  edges <- .trace_enzyme_edges(glycans, enzymes = .trace_enzymes_with(enzyme))
   unname(purrr::map_int(edges, ~ sum(.x == enzyme$name)))
 }
 

@@ -266,6 +266,6 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 }
 
 .have_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
-  edges <- .trace_enzyme_edges(glycans)
+  edges <- .trace_enzyme_edges(glycans, enzymes = .trace_enzymes_with(enzyme))
   unname(purrr::map_lgl(edges, ~ enzyme$name %in% .x))
 }

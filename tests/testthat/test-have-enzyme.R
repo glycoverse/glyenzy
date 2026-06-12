@@ -161,6 +161,24 @@ test_that("have_enzyme path method treats N-glycan precursor GTs specially", {
   ))
 })
 
+test_that("have_enzyme path method supports custom enzyme objects", {
+  enz <- make_enzyme(
+    name = "TEST_ST3GAL",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  expect_true(suppressMessages(
+    have_enzyme("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enz, method = "path")
+  ))
+})
+
 test_that("have_enzyme can use trace-derived path enzymes", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-3)[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]GalNAc(a1-"
 
