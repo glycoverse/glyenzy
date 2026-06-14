@@ -1,5 +1,22 @@
 # Changelog
 
+## glyenzy 0.6.0
+
+### New features
+
+- Add `method = "path"` to
+  [`have_enzyme()`](https://glycoverse.github.io/glyenzy/reference/have_enzyme.md),
+  [`count_enzyme()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme.md),
+  [`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md),
+  and
+  [`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md)
+  for biosynthesis-derived enzyme inference. (#19)
+
+### Minor improvements and fixes
+
+- Fix enzyme printing without requiring users to attach `glyrepr`.
+  (f0e42b2)
+
 ## glyenzy 0.5.4
 
 ### Minor improvements and fixes

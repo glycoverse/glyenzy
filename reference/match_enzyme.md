@@ -6,7 +6,7 @@ a glycosyltransferase and returns their node indices.
 ## Usage
 
 ``` r
-match_enzyme(glycans, enzyme)
+match_enzyme(glycans, enzyme, method = c("motif", "path"))
 ```
 
 ## Arguments
@@ -22,6 +22,14 @@ match_enzyme(glycans, enzyme)
   A glycosyltransferase
   [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
   or a gene symbol for one. Glycoside hydrolases are not supported.
+
+- method:
+
+  Method used to decide whether the enzyme is involved. `"motif"`
+  matches product motifs directly in each glycan. `"path"` matches
+  substrates and products from
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  results back to each glycan, which is more accurate but slower.
 
 ## Value
 
@@ -93,6 +101,10 @@ may be misleading.
 ``` r
 glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
 match_enzyme(glycan, "ST3GAL3")
+#> [[1]]
+#> [1] 1
+#> 
+match_enzyme(glycan, "ST3GAL3", method = "path")
 #> [[1]]
 #> [1] 1
 #> 

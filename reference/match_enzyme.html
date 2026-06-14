@@ -9,7 +9,7 @@ glycosyltransferase and returns their node indices."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ glycosyltransferase and returns their node indices.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">match_enzyme</span><span class="op">(</span><span class="va">glycans</span>, <span class="va">enzyme</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">match_enzyme</span><span class="op">(</span><span class="va">glycans</span>, <span class="va">enzyme</span>, method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"motif"</span>, <span class="st">"path"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,6 +55,13 @@ glycosyltransferase and returns their node indices.</p>
 <dt id="arg-enzyme">enzyme<a class="anchor" aria-label="anchor" href="#arg-enzyme"></a></dt>
 <dd><p>A glycosyltransferase <code><a href="enzyme.html">enzyme()</a></code> or a gene symbol for one.
 Glycoside hydrolases are not supported.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>Method used to decide whether the enzyme is involved.
+<code>"motif"</code> matches product motifs directly in each glycan.
+<code>"path"</code> matches substrates and products from <code><a href="trace_biosynthesis.html">trace_biosynthesis()</a></code>
+results back to each glycan, which is more accurate but slower.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -133,6 +140,10 @@ the N-glycan precursor transferred to Asn by OST.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">glycan</span> <span class="op">&lt;-</span> <span class="fu">glyrepr</span><span class="fu">::</span><span class="fu"><a href="https://glycoverse.github.io/glyrepr/reference/as_glycan_structure.html" class="external-link">as_glycan_structure</a></span><span class="op">(</span><span class="st">"Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">match_enzyme</span><span class="op">(</span><span class="va">glycan</span>, <span class="st">"ST3GAL3"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu">match_enzyme</span><span class="op">(</span><span class="va">glycan</span>, <span class="st">"ST3GAL3"</span>, method <span class="op">=</span> <span class="st">"path"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

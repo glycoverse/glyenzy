@@ -7,7 +7,7 @@ biosynthesis of a given glycan (or glycans).
 ## Usage
 
 ``` r
-have_enzyme(glycans, enzyme)
+have_enzyme(glycans, enzyme, method = c("motif", "path"))
 ```
 
 ## Arguments
@@ -24,6 +24,13 @@ have_enzyme(glycans, enzyme)
   An
   [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
   or a gene symbol.
+
+- method:
+
+  Method used to infer enzyme involvement. `"motif"` checks product
+  motifs directly in each glycan. `"path"` extracts enzymes from
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  results, which is more accurate but slower.
 
 ## Value
 
@@ -122,5 +129,9 @@ glycans <- c(
   "Gal(b1-4)GlcNAc(b1-"
 )
 have_enzyme(glycans, "ST6GAL1")
+#> [1]  TRUE FALSE
+
+# Use reconstructed biosynthesis paths
+have_enzyme(glycans, "ST6GAL1", method = "path")
 #> [1]  TRUE FALSE
 ```
