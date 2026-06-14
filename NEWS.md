@@ -1,4 +1,4 @@
-# glyenzy (development version)
+# glyenzy 0.6.0
 
 ## New features
 
