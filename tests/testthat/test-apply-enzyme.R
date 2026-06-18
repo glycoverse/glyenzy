@@ -366,6 +366,169 @@ test_that("fucosylation of sialyl-LacNAc", {
   expect_equal(as.character(res[["FUT9"]]), character(0))
 })
 
+# ===== N-Glycan Trimming =====
+test_that("Trimming on Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1B1_result <- apply_enzyme(glycan, "MAN1B1")
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  MAN1B1_expected <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1B1_result), MAN1B1_expected)
+
+  MAN1A1_expected <- c(
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(sort(as.character(MAN1A1_result)), sort(MAN1A1_expected))
+  expect_equal(sort(as.character(MAN1A2_result)), sort(MAN1A1_expected))
+  expect_equal(sort(as.character(MAN1C1_result)), sort(MAN1A1_expected))
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  MAN1A1_expected <- "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), MAN1A1_expected)
+  expect_equal(as.character(MAN1A2_result), MAN1A1_expected)
+
+  MAN1C1_expected <- c(
+    "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(sort(as.character(MAN1C1_result)), sort(MAN1C1_expected))
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), expected)
+  expect_equal(as.character(MAN1A2_result), expected)
+  expect_equal(as.character(MAN1C1_result), expected)
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- c(
+    "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(sort(as.character(MAN1A1_result)), sort(expected))
+  expect_equal(sort(as.character(MAN1A2_result)), sort(expected))
+  expect_equal(sort(as.character(MAN1C1_result)), sort(expected))
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expect_equal(MAN1A1_result, glyrepr::glycan_structure())
+  expect_equal(MAN1A2_result, glyrepr::glycan_structure())
+
+  MAN1C1_expected <- "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1C1_result), MAN1C1_expected)
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), expected)
+  expect_equal(as.character(MAN1A2_result), expected)
+  expect_equal(as.character(MAN1C1_result), expected)
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), expected)
+  expect_equal(as.character(MAN1A2_result), expected)
+  expect_equal(as.character(MAN1C1_result), expected)
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)[Man(a1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- c(
+    "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(sort(as.character(MAN1A1_result)), sort(expected))
+  expect_equal(sort(as.character(MAN1A2_result)), sort(expected))
+  expect_equal(sort(as.character(MAN1C1_result)), sort(expected))
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- "Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), expected)
+  expect_equal(as.character(MAN1A2_result), expected)
+  expect_equal(as.character(MAN1C1_result), expected)
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- "Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), expected)
+  expect_equal(as.character(MAN1A2_result), expected)
+  expect_equal(as.character(MAN1C1_result), expected)
+})
+
+test_that("Trimming on Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", {
+  glycan <- "Man(a1-2)Man(a1-6)[Man(a1-3)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  MAN1A1_result <- apply_enzyme(glycan, "MAN1A1")
+  MAN1A2_result <- apply_enzyme(glycan, "MAN1A2")
+  MAN1C1_result <- apply_enzyme(glycan, "MAN1C1")
+
+  expected <- "Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  expect_equal(as.character(MAN1A1_result), expected)
+  expect_equal(as.character(MAN1A2_result), expected)
+  expect_equal(as.character(MAN1C1_result), expected)
+})
+
 # ===== Regression Tests =====
 test_that("apply_enzyme regression: GH enzymes do not create invalid out-tree structures", {
   # Test that GH enzymes only remove terminal residues and do not break tree structure
