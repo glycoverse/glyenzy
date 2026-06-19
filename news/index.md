@@ -1,5 +1,11 @@
 # Changelog
 
+## glyenzy 0.6.1
+
+### Minor improvements and fixes
+
+- Fix rules for MAN1A1, MAN1A2, and MAN1C1.
+
 ## glyenzy 0.6.0
 
 ### New features
