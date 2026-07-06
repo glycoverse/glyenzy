@@ -31,7 +31,7 @@ Imports:
     cli,
     glydraw (>= 0.4.0),
     glymotif (>= 0.12.1),
-    glyrepr (>= 0.10.0),
+    glyrepr (>= 0.13.0),
     glyparse (>= 0.5.3),
     igraph,
     purrr,
