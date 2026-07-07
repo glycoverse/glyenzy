@@ -2,6 +2,13 @@
 
 ## glyenzy (development version)
 
+## glyenzy 0.6.2
+
+### Minor improvements and fixes
+
+- Update built-in enzyme data and require `glyrepr` 0.13.0 or later for
+  compatibility with refreshed glycan structure data (#24).
+
 ## glyenzy 0.6.1
 
 ### Minor improvements and fixes
