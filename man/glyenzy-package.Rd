@@ -20,10 +20,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Bin Fu \email{23110220018@m.fudan.edu.cn} (\href{https://orcid.org/0000-0001-8567-2997}{ORCID})
 
-Authors:
-\itemize{
-  \item Bin Fu \email{23110220018@m.fudan.edu.cn} (\href{https://orcid.org/0000-0001-8567-2997}{ORCID})
-}
-
 }
 \keyword{internal}

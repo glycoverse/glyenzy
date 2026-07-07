@@ -25,7 +25,7 @@ a logical vector of the same length.
 It will be applied to all the generated glycans at each BFS step for pruning.}
 }
 \value{
-An \code{\link[igraph:igraph]{igraph::igraph()}} object representing the synthesis path(s).
+An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
 Vertices represent glycan structures with \code{name} attribute containing
 IUPAC-condensed strings. Edges represent enzymatic reactions with
 \code{enzyme} attribute containing gene symbols and \code{step} attribute
