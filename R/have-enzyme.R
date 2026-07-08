@@ -165,7 +165,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   have_products_mat <- glymotif::have_motifs(
     glycans,
     products,
-    product_alignments
+    alignments = product_alignments
   )
   unname(rowSums(have_products_mat) > 0)
 }
@@ -211,7 +211,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  have_motifs_mat <- glymotif::have_motifs(glycans, motifs, alignment = "core")
+  have_motifs_mat <- glymotif::have_motifs(glycans, motifs, alignments = "core")
   n_man <- glyrepr::count_mono(glycans, "Man")
   dplyr::case_when(
     rowSums(have_motifs_mat) == 0L ~ TRUE,

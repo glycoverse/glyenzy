@@ -342,7 +342,11 @@ mgat2_ready <- function(glycans) {
 #' @returns A logical vector of the same length as `products`.
 #' @noRd
 is_promising_intermediate <- function(products, target_glycans) {
-  res_mat <- glymotif::have_motifs(target_glycans, products, alignment = "core")
+  res_mat <- glymotif::have_motifs(
+    target_glycans,
+    products,
+    alignments = "core"
+  )
   res <- colSums(res_mat) > 0L
   res[.is_n_glycan(products) & !mgat2_ready(products)] <- TRUE
   res

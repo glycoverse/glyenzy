@@ -88,8 +88,8 @@ test_that("grow_glycans works with function filter", {
   )
   enzymes <- c("B4GALT1", "ST3GAL3")
 
-  # Filter to keep only N-glycans
-  filter_func <- function(x) glymotif::have_motif(x, "N-Glycan core basic")
+  # Filter to keep only structures with an N-glycan core motif.
+  filter_func <- function(x) glymotif::have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
   result <- suppressMessages(grow_glycans(
     glycans,
     enzymes,
@@ -108,8 +108,8 @@ test_that("grow_glycans works with formula filter", {
   )
   enzymes <- c("B4GALT1", "ST3GAL3")
 
-  # Filter to keep only N-glycans using formula syntax
-  filter_fn <- function(x) glymotif::have_motif(x, "N-Glycan core basic")
+  # Filter to keep only structures with an N-glycan core motif using formula syntax.
+  filter_fn <- function(x) glymotif::have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
   result <- suppressMessages(grow_glycans(
     glycans,
     enzymes,

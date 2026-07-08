@@ -191,12 +191,16 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'   of the rule on the corresponding glycan.
 #' @noRd
 .match_rule <- function(glycans, rule) {
-  res <- glymotif::match_motif(glycans, rule$acceptor, rule$acceptor_alignment)
+  res <- glymotif::match_motif(
+    glycans,
+    rule$acceptor,
+    alignment = rule$acceptor_alignment
+  )
   if (length(rule$rejects) > 0) {
     rej_match_res <- glymotif::match_motifs(
       glycans,
       rule$rejects,
-      rule$acceptor_alignment
+      alignments = rule$acceptor_alignment
     )
     res <- .reject_matches(res, rej_match_res)
   }
