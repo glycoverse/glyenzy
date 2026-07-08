@@ -2,6 +2,16 @@
 
 ## glyenzy (development version)
 
+## glyenzy 0.6.3
+
+### Minor improvements and fixes
+
+- [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/apply_enzyme.md),
+  [`have_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/have_enzyme.md),
+  [`count_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme.md),
+  and biosynthesis-path helpers now work with `glymotif` 0.17.0 and
+  later.
+
 ## glyenzy 0.6.2
 
 ### Minor improvements and fixes
