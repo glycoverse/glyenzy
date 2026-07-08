@@ -1,4 +1,8 @@
-# glyenzy (development version)
+# glyenzy 0.6.3
+
+## Minor improvements and fixes
+
+* `apply_enzyme()`, `have_enzyme()`, `count_enzyme()`, and biosynthesis-path helpers now work with `glymotif` 0.17.0 and later.
 
 # glyenzy 0.6.2
 
