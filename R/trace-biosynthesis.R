@@ -52,7 +52,7 @@ trace_biosynthesis <- function(
   filter = NULL
 ) {
   # Parse and validate basic inputs first
-  glycans <- .process_glycans_arg(glycans)
+  glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
   enzymes <- .process_enzymes_arg(
     enzymes,
     glycans = glycans,
@@ -69,7 +69,7 @@ trace_biosynthesis <- function(
 }
 
 .decide_starting_glycan <- function(glycan) {
-  if (.is_n_glycan(glycan)) {
+  if (.can_reliably_detect_n_glycan(glycan) && .is_n_glycan(glycan)) {
     start <- glyparse::parse_iupac_condensed(
       "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
     )
@@ -90,4 +90,8 @@ trace_biosynthesis <- function(
     ))
   }
   start
+}
+
+.can_reliably_detect_n_glycan <- function(glycan) {
+  !identical(.glycan_structure_level(glycan), "basic")
 }

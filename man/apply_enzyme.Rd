@@ -4,7 +4,7 @@
 \alias{apply_enzyme}
 \title{Apply an Enzyme to a Glycan}
 \usage{
-apply_enzyme(glycans, enzyme, return_list = NULL)
+apply_enzyme(glycans, enzyme, return_list = NULL, structure_level = "intact")
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
@@ -19,6 +19,11 @@ Set to \code{TRUE} to always return a list.
 This can be useful when you are working programmatically with unknown input length.
 Note that when \code{return_list = FALSE} and \code{length(glycans) > 1},
 an error will be thrown.}
+
+\item{structure_level}{Output structure level.
+\code{"intact"} keeps the current behavior and returns products with exact
+linkages. \code{"topological"} removes linkages from products.
+\code{"basic"} removes linkages and converts products to generic residues.}
 }
 \value{
 A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a list of such vectors.
@@ -49,11 +54,14 @@ both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depe
 on factors such as tissue specificity.
 }
 
-\subsection{Only "concrete" glycans}{
+\subsection{Concrete glycans by default}{
 
-The function only works for glycans containing \strong{concrete} residues
+Most functions only work for glycans containing \strong{concrete} residues
 (e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
+Reduced-level inputs with generic residues are supported where explicitly
+documented, such as \code{apply_enzyme(structure_level = "basic")},
+\code{trace_biosynthesis()}, and \code{path_biosynthesis()}.
 }
 
 \subsection{Substituents}{

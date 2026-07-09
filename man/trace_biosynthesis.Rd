@@ -58,11 +58,14 @@ both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depe
 on factors such as tissue specificity.
 }
 
-\subsection{Only "concrete" glycans}{
+\subsection{Concrete glycans by default}{
 
-The function only works for glycans containing \strong{concrete} residues
+Most functions only work for glycans containing \strong{concrete} residues
 (e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
+Reduced-level inputs with generic residues are supported where explicitly
+documented, such as \code{apply_enzyme(structure_level = "basic")},
+\code{trace_biosynthesis()}, and \code{path_biosynthesis()}.
 }
 
 \subsection{Substituents}{

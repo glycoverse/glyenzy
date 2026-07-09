@@ -15,6 +15,10 @@
 #'   This can be useful when you are working programmatically with unknown input length.
 #'   Note that when `return_list = FALSE` and `length(glycans) > 1`,
 #'   an error will be thrown.
+#' @param structure_level Output structure level.
+#'   `"intact"` keeps the current behavior and returns products with exact
+#'   linkages. `"topological"` removes linkages from products.
+#'   `"basic"` removes linkages and converts products to generic residues.
 #'
 #' @return A [glyrepr::glycan_structure()] vector, or a list of such vectors.
 #'
@@ -37,12 +41,21 @@
 #' apply_enzyme(glycans, "MGAT3")
 #'
 #' @export
-apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
-  glycans <- .process_glycans_arg(glycans)
+apply_enzyme <- function(
+  glycans,
+  enzyme,
+  return_list = NULL,
+  structure_level = "intact"
+) {
+  structure_level <- .validate_structure_level(structure_level)
+  glycans <- .process_glycans_arg(
+    glycans,
+    allow_generic = identical(structure_level, "basic")
+  )
   enzyme <- .process_enzyme_arg(enzyme)
   return_list <- .validate_return_list(return_list, length(glycans))
 
-  res <- .apply_enzyme(glycans, enzyme)
+  res <- .apply_enzyme(glycans, enzyme, structure_level = structure_level)
   .format_result(res, return_list)
 }
 
@@ -50,40 +63,61 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
+#' @param structure_level Output structure level.
 #'
 #' @returns A list of `glyrepr_structure` vectors, with the same length as `glycans`.
 #'   Each element in the list corresponds to the products of the enzyme on the
 #'   corresponding glycan in `glycans`.
 #' @noRd
-.apply_enzyme <- function(glycans, enzyme) {
+.apply_enzyme <- function(glycans, enzyme, structure_level = "intact") {
   UseMethod(".apply_enzyme", enzyme)
 }
 
-.apply_enzyme.glyenzy_starter_gt_enzyme <- function(glycans, enzyme) {
+.apply_enzyme.glyenzy_starter_gt_enzyme <- function(
+  glycans,
+  enzyme,
+  structure_level = "intact"
+) {
   rep(list(glyrepr::glycan_structure()), length(glycans))
 }
 
-.apply_enzyme.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
+.apply_enzyme.glyenzy_npre_gt_enzyme <- function(
+  glycans,
+  enzyme,
+  structure_level = "intact"
+) {
   rep(list(glyrepr::glycan_structure()), length(glycans))
 }
 
-.apply_enzyme.glyenzy_gt_enzyme <- function(glycans, enzyme) {
-  .apply_enzyme_rules(glycans, enzyme)
+.apply_enzyme.glyenzy_gt_enzyme <- function(
+  glycans,
+  enzyme,
+  structure_level = "intact"
+) {
+  .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
 }
 
-.apply_enzyme.glyenzy_gh_enzyme <- function(glycans, enzyme) {
-  .apply_enzyme_rules(glycans, enzyme)
+.apply_enzyme.glyenzy_gh_enzyme <- function(
+  glycans,
+  enzyme,
+  structure_level = "intact"
+) {
+  .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
 }
 
 #' Apply all enzyme rules to a vector of glycan structures
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param enzyme A `glyenzy_enzyme` object.
+#' @param structure_level Output structure level.
 #'
 #' @returns A list of `glyrepr_structure` vectors.
 #' @noRd
-.apply_enzyme_rules <- function(glycans, enzyme) {
-  rule_res <- purrr::map(enzyme$rules, ~ .apply_rule(glycans, .x, enzyme))
+.apply_enzyme_rules <- function(glycans, enzyme, structure_level = "intact") {
+  rule_res <- purrr::map(
+    enzyme$rules,
+    ~ .apply_rule(glycans, .x, enzyme, structure_level = structure_level)
+  )
   res <- purrr::pmap(rule_res, c)
   purrr::map(res, unique)
 }
@@ -93,17 +127,29 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @param glycans A `glyrepr_structure` vector.
 #' @param rule A `glyenzy_enzyme_rule` object.
 #' @param enzyme A `glyenzy_enzyme` object.
+#' @param structure_level Output structure level.
 #'
 #' @returns A list of `glyrepr_structure` vectors, with the same length as `glycans`.
 #'   Each element in the list corresponds to the products of the enzyme on the
 #'   corresponding glycan in `glycans`.
 #' @noRd
-.apply_rule <- function(glycans, rule, enzyme) {
+.apply_rule <- function(
+  glycans,
+  rule,
+  enzyme,
+  structure_level = "intact"
+) {
   rule_matches <- .match_rule(glycans, rule)
   glyrepr::smap2(
     glycans,
     rule_matches,
-    ~ .apply_rule_single(.x, .y, rule, enzyme)
+    ~ .apply_rule_single(
+      .x,
+      .y,
+      rule,
+      enzyme,
+      structure_level = structure_level
+    )
   )
 }
 
@@ -113,14 +159,30 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @param match_res A list of integer vectors, representing the node mapping from the acceptor to the glycan.
 #' @param rule A `glyenzy_enzyme_rule` object.
 #' @param enzyme A `glyenzy_enzyme` object.
+#' @param structure_level Output structure level.
 #'
 #' @returns A list of `glyrepr_structure` vectors, with the same length as `match_res`.
 #' @noRd
-.apply_rule_single <- function(graph, match_res, rule, enzyme) {
+.apply_rule_single <- function(
+  graph,
+  match_res,
+  rule,
+  enzyme,
+  structure_level = "intact"
+) {
   indices_to_act_on <- purrr::map_int(match_res, ~ .x[rule$acceptor_idx])
-  graph_list <- .apply_rule_action(enzyme, graph, indices_to_act_on, rule)
+  graph_list <- .apply_rule_action(
+    enzyme,
+    graph,
+    indices_to_act_on,
+    rule,
+    structure_level = structure_level
+  )
   graph_list <- purrr::compact(graph_list)
-  glyrepr::as_glycan_structure(graph_list)
+  .reduce_structure_level(
+    glyrepr::as_glycan_structure(graph_list),
+    structure_level
+  )
 }
 
 #' Apply an enzyme-specific graph action
@@ -129,10 +191,17 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
 #' @param graph An igraph object representing the glycan structure.
 #' @param indices_to_act_on Integer node indices.
 #' @param rule A `glyenzy_enzyme_rule` object.
+#' @param structure_level Output structure level.
 #'
 #' @returns A list of igraph objects.
 #' @noRd
-.apply_rule_action <- function(enzyme, graph, indices_to_act_on, rule) {
+.apply_rule_action <- function(
+  enzyme,
+  graph,
+  indices_to_act_on,
+  rule,
+  structure_level = "intact"
+) {
   UseMethod(".apply_rule_action", enzyme)
 }
 
@@ -140,11 +209,16 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   enzyme,
   graph,
   indices_to_act_on,
-  rule
+  rule,
+  structure_level = "intact"
 ) {
+  use_basic_graph_edit <- (identical(structure_level, "basic") &&
+    .graph_has_generic_monosaccharides(graph))
+  residue <- .new_residue_for_graph_edit(rule$new_residue, use_basic_graph_edit)
+  linkage <- .new_linkage_for_graph_edit(rule$new_linkage, use_basic_graph_edit)
   purrr::map(
     indices_to_act_on,
-    ~ .add_residue(graph, .x, rule$new_residue, rule$new_linkage)
+    ~ .add_residue(graph, .x, residue, linkage)
   )
 }
 
@@ -152,7 +226,8 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   enzyme,
   graph,
   indices_to_act_on,
-  rule
+  rule,
+  structure_level = "intact"
 ) {
   purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x))
 }
@@ -161,7 +236,8 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
   enzyme,
   graph,
   indices_to_act_on,
-  rule
+  rule,
+  structure_level = "intact"
 ) {
   switch(
     enzyme$type,
@@ -169,16 +245,53 @@ apply_enzyme <- function(glycans, enzyme, return_list = NULL) {
       enzyme,
       graph,
       indices_to_act_on,
-      rule
+      rule,
+      structure_level = structure_level
     ),
     GH = .apply_rule_action.glyenzy_gh_enzyme(
       enzyme,
       graph,
       indices_to_act_on,
-      rule
+      rule,
+      structure_level = structure_level
     ),
     cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
   )
+}
+
+#' Check whether a graph already uses generic monosaccharides
+#'
+#' @param graph An igraph object representing a glycan structure.
+#' @returns A logical scalar.
+#' @noRd
+.graph_has_generic_monosaccharides <- function(graph) {
+  all(glyrepr::get_mono_type(igraph::V(graph)$mono) == "generic")
+}
+
+#' Convert a newly added residue for reduced-level graph editing
+#'
+#' @param residue Concrete monosaccharide name.
+#' @param use_basic_graph_edit Whether the target graph is already basic.
+#' @returns A monosaccharide name.
+#' @noRd
+.new_residue_for_graph_edit <- function(residue, use_basic_graph_edit) {
+  if (use_basic_graph_edit) {
+    return(glyrepr::convert_to_generic(residue))
+  }
+  residue
+}
+
+#' Convert a newly added linkage for reduced-level graph editing
+#'
+#' @param linkage Concrete linkage string.
+#' @param use_basic_graph_edit Whether the target graph is already basic.
+#' @returns A linkage string.
+#' @noRd
+.new_linkage_for_graph_edit <- function(linkage, use_basic_graph_edit) {
+  if (use_basic_graph_edit) {
+    return("??-?")
+  }
+  linkage
 }
 
 #' Match a rule's acceptor on a glycan structure

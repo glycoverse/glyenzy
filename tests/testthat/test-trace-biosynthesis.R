@@ -60,6 +60,58 @@ test_that("trace_biosynthesis works for an O-GalNAc glycan", {
   expect_gt(igraph::ecount(path), igraph::vcount(path) - 1)
 })
 
+test_that("trace_biosynthesis reaches topological target glycans", {
+  glycan <- glyrepr::remove_linkages(glyrepr::o_glycan_core_2())
+  expect_warning(
+    path <- trace_biosynthesis(
+      glycan,
+      enzymes = c("C1GALT1", "GCNT1"),
+      max_steps = 2
+    ),
+    "non-intact glycan structures"
+  )
+
+  vertices <- igraph::as_data_frame(path, what = "vertices")
+  expect_true(as.character(glycan) %in% vertices$name)
+  expect_true(all(
+    glyrepr::get_structure_level(glyparse::auto_parse(vertices$name)) ==
+      "topological"
+  ))
+})
+
+test_that("trace_biosynthesis reaches basic target glycans", {
+  glycan <- glyrepr::reduce_structure_level(glyrepr::o_glycan_core_2(), "basic")
+  path <- suppressWarnings(trace_biosynthesis(
+    glycan,
+    enzymes = c("C1GALT1", "GCNT1"),
+    max_steps = 2
+  ))
+
+  vertices <- igraph::as_data_frame(path, what = "vertices")
+  expect_true(as.character(glycan) %in% vertices$name)
+  expect_true(all(
+    glyrepr::get_structure_level(glyparse::auto_parse(vertices$name)) == "basic"
+  ))
+})
+
+test_that("trace_biosynthesis matches partial targets with whole alignment", {
+  glycan <- glyparse::auto_parse("Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-")
+  path <- suppressWarnings(trace_biosynthesis(
+    glycan,
+    enzymes = c("C1GALT1", "GCNT1"),
+    max_steps = 2
+  ))
+
+  end_node <- igraph::V(path)[igraph::degree(path, mode = "out") == 0]
+  end_glycans <- glyparse::auto_parse(end_node$name)
+  expect_true(any(glymotif::have_motif(
+    end_glycans,
+    glycan,
+    alignment = "whole",
+    mode = "lenient"
+  )))
+})
+
 test_that("trace_biosynthesis supports custom enzyme objects", {
   enz <- make_enzyme(
     name = "TEST_ST3GAL",

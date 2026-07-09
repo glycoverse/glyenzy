@@ -46,8 +46,8 @@ path_biosynthesis <- function(
   filter = NULL
 ) {
   # Parse and validate basic inputs first
-  from <- .process_glycan_arg(from)
-  to <- .process_glycan_arg(to)
+  from <- .process_glycan_arg(from, allow_generic = TRUE)
+  to <- .process_glycan_arg(to, allow_generic = TRUE)
   enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
   checkmate::assert_int(max_steps, lower = 1)
   if (!is.null(filter)) {
