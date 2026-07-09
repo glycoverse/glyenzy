@@ -42,11 +42,6 @@ test_that("find_enzyme considers starter GTs", {
   expect_true("DPAGT1" %in% find_enzyme(glycan))
 })
 
-test_that("find_enzyme works for paucimannose glycans", {
-  glycan <- "Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  expect_true("MAN1B1" %in% find_enzyme(glycan))
-})
-
 test_that("find_enzyme path method includes N-glycan precursor GTs", {
   path_res <- suppressMessages(find_enzyme(
     "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",

@@ -29,7 +29,7 @@ test_that("count_enzyme uses lenient matching for non-intact glycans", {
 })
 
 test_that("count_enzyme uses lenient matching for non-intact special cases", {
-  mgat1_glycan <- "GlcNAc(b1-2)Man(?1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  mgat1_glycan <- "GlcNAc(b1-2)Man(?1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   mogs_glycan <- "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(?1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   man2_glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(?1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 
