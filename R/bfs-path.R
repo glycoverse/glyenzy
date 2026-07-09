@@ -139,7 +139,10 @@ BfsSynthesisSearch <- R6::R6Class(
     run = function() {
       initial_targets <- private$matched_target_keys(self$from_g, self$from_key)
       if (length(initial_targets) > 0L) {
-        private$record_found_targets(self$from_key, initial_targets)
+        private$record_found_targets(
+          rep(self$from_key, length(initial_targets)),
+          initial_targets
+        )
       }
 
       if (self$remaining_targets_map$size() == 0L) {

@@ -112,6 +112,28 @@ test_that("trace_biosynthesis matches partial targets with whole alignment", {
   )))
 })
 
+test_that("trace_biosynthesis records repeated initial endpoints", {
+  glycans <- glyparse::auto_parse(c(
+    "GalNAc(?1-",
+    "GalNAc(a?-",
+    "Gal(b1-3)GalNAc(?1-"
+  ))
+
+  path <- suppressWarnings(trace_biosynthesis(
+    glycans,
+    enzymes = "C1GALT1",
+    max_steps = 1
+  ))
+
+  vertices <- igraph::as_data_frame(path, what = "vertices")
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_false(anyNA(vertices$name))
+  expect_true("GalNAc(a1-" %in% vertices$name)
+  expect_true("Gal(b1-3)GalNAc(a1-" %in% vertices$name)
+  expect_equal(edges$enzyme, "C1GALT1")
+})
+
 test_that("trace_biosynthesis supports custom enzyme objects", {
   enz <- make_enzyme(
     name = "TEST_ST3GAL",
