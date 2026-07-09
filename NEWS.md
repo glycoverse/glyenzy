@@ -1,7 +1,7 @@
 # glyenzy (development version)
 
 * Add support for non-intact glycan structures by using lenient motif matching
-  with a warning about reduced reliability.
+  with a warning about reduced reliability. (#25)
 
 # glyenzy 0.6.3
 
