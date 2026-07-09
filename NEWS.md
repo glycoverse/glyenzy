@@ -1,7 +1,12 @@
 # glyenzy (development version)
 
-* Add support for non-intact glycan structures by using lenient motif matching
-  with a warning about reduced reliability. (#25)
+## New features
+
+* Add support for non-intact glycan structures by using lenient motif matching with a warning about reduced reliability. (#25)
+
+## Minor improvements and fixes
+
+* To ensure robust biosynthesis network inference, paucimannose N-glycans are not supported anymore. (#25)
 
 # glyenzy 0.6.3
 
@@ -62,15 +67,15 @@
 ## Breaking changes
 
 * Rename APIs to use shorter, consistent names (#2):
-    * `all_enzymes()` to `db_enzymes()`
-    * `create_enzyme()` to `make_enzyme()`
-    * `get_involved_enzymes()` to `find_enzyme()`
-    * `is_synthesized_by()` to `have_enzyme()`
-    * `count_enzyme_steps()` to `count_enzyme()`
-    * `find_synthesis_path()` to `path_biosynthesis()`
-    * `rebuild_biosynthesis()` to `trace_biosynthesis()`
-    * `spawn_glycans()` to `grow_glycans()`
-    * `spawn_glycans_step()` to `grow_glycans_step()`
+  * `all_enzymes()` to `db_enzymes()`
+  * `create_enzyme()` to `make_enzyme()`
+  * `get_involved_enzymes()` to `find_enzyme()`
+  * `is_synthesized_by()` to `have_enzyme()`
+  * `count_enzyme_steps()` to `count_enzyme()`
+  * `find_synthesis_path()` to `path_biosynthesis()`
+  * `rebuild_biosynthesis()` to `trace_biosynthesis()`
+  * `spawn_glycans()` to `grow_glycans()`
+  * `spawn_glycans_step()` to `grow_glycans_step()`
 
 ## New features
 
