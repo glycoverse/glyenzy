@@ -26,7 +26,7 @@
 }
 
 .is_n_glycan <- function(x) {
-  .have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
+  .have_motif(x, "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
 }
 
 .process_glycan_arg <- function(x, allow_generic = FALSE) {
