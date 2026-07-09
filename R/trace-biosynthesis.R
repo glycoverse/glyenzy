@@ -73,15 +73,15 @@ trace_biosynthesis <- function(
     start <- glyparse::parse_iupac_condensed(
       "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
     )
-  } else if (glymotif::have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
+  } else if (.have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
-  } else if (glymotif::have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {
+  } else if (.have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
-  } else if (glymotif::have_motif(glycan, "Man(a1-", alignment = "core")) {
+  } else if (.have_motif(glycan, "Man(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("Man(a1-")
-  } else if (glymotif::have_motif(glycan, "Fuc(a1-", alignment = "core")) {
+  } else if (.have_motif(glycan, "Fuc(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("Fuc(a1-")
-  } else if (glymotif::have_motif(glycan, "Glc(b1-", alignment = "core")) {
+  } else if (.have_motif(glycan, "Glc(b1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("Glc(b1-")
   } else {
     cli::cli_abort(c(

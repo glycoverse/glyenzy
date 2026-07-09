@@ -19,6 +19,15 @@ test_that("have_enzyme works vectorizedly", {
   expect_equal(have_enzyme(glycans, "ST3GAL3"), c(TRUE, FALSE))
 })
 
+test_that("have_enzyme uses lenient matching for non-intact glycans", {
+  glycan <- "Gal(b1-?)GalNAc(a1-"
+
+  expect_warning(
+    expect_true(have_enzyme(glycan, "C1GALT1")),
+    "non-intact glycan structures"
+  )
+})
+
 test_that("have_enzyme rejects invalid inputs", {
   expect_error(have_enzyme(123, "ST3GAL3"), "`glycans` must be")
   expect_error(

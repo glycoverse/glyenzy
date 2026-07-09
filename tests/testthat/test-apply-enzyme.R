@@ -32,6 +32,18 @@ test_that("apply_enzyme works vectorizedly", {
   expect_type(apply_enzyme(glycans, "MGAT3"), "list")
 })
 
+test_that("apply_enzyme uses lenient matching for non-intact glycans", {
+  glycan <- "GalNAc(?1-"
+
+  expect_warning(
+    expect_equal(
+      as.character(apply_enzyme(glycan, "C1GALT1")),
+      "Gal(b1-3)GalNAc(?1-"
+    ),
+    "non-intact glycan structures"
+  )
+})
+
 # ===== Normal Cases for GT Enzymes =====
 test_that("apply_enzyme works for MGAT3", {
   glycans <- c(

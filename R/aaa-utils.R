@@ -26,7 +26,7 @@
 }
 
 .is_n_glycan <- function(x) {
-  glymotif::have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
+  .have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
 }
 
 .process_glycan_arg <- function(x) {
@@ -58,14 +58,6 @@
     ))
   }
 
-  has_intact_linkages <- .has_intact_linkages(x)
-  if (!all(has_intact_linkages)) {
-    cli::cli_abort(c(
-      "All linkages must be intact (no `?`).",
-      "x" = "These glycans have unknown linkages: {.val {unique(x[!has_intact_linkages])}}."
-    ))
-  }
-
   has_substituents <- .has_substituents(x)
   if (any(has_substituents)) {
     cli::cli_abort(c(
@@ -75,6 +67,7 @@
     ))
   }
 
+  .warn_non_intact_glycans(x)
   x
 }
 
@@ -82,19 +75,210 @@
   glyrepr::get_mono_type(x) == "concrete"
 }
 
-.has_intact_linkages <- function(x) {
-  all_linkages_intact <- function(graph) {
-    (all(!stringr::str_detect(igraph::E(graph)$linkage, stringr::fixed("?"))) &&
-      !stringr::str_detect(graph$anomer, stringr::fixed("?")))
-  }
-  glyrepr::smap_lgl(x, all_linkages_intact)
-}
-
 .has_substituents <- function(x) {
   has_sub_single <- function(graph) {
     purrr::some(igraph::V(graph)$sub, ~ .x != "")
   }
   glyrepr::smap_lgl(x, has_sub_single)
+}
+
+#' Warn when glycan structures require lenient motif matching
+#'
+#' @param x A `glyrepr_structure` vector.
+#' @returns `x`, invisibly.
+#' @noRd
+.warn_non_intact_glycans <- function(x) {
+  structure_level <- .glycan_structure_level(x)
+  if (.is_intact_structure_level(structure_level)) {
+    return(invisible(x))
+  }
+
+  cli::cli_warn(c(
+    "Using lenient motif matching for non-intact glycan structures.",
+    "i" = "Detected structure level: {.val {structure_level}}.",
+    "i" = "Results may be less reliable when exact linkages are missing or ambiguous."
+  ))
+  invisible(x)
+}
+
+#' Get the structure level of a glycan vector
+#'
+#' @param x A `glyrepr_structure` vector.
+#' @returns A scalar character structure level, or `NA_character_`.
+#' @noRd
+.glycan_structure_level <- function(x) {
+  suppressWarnings(glyrepr::get_structure_level(x))
+}
+
+#' Check whether a structure level is intact
+#'
+#' @param x A scalar character structure level.
+#' @returns A logical scalar.
+#' @noRd
+.is_intact_structure_level <- function(x) {
+  is.na(x) || identical(x, "intact")
+}
+
+#' Select the motif matching mode for a glycan vector
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @returns `"strict"` for intact structures and `"lenient"` otherwise.
+#' @noRd
+.glymotif_mode <- function(glycans) {
+  if (.is_intact_structure_level(.glycan_structure_level(glycans))) {
+    return("strict")
+  }
+  "lenient"
+}
+
+#' Match a motif using the glycan-appropriate glymotif mode
+#'
+#' @inheritParams glymotif::match_motif
+#' @noRd
+.match_motif <- function(
+  glycans,
+  motif,
+  ...,
+  alignment = NULL,
+  ignore_linkages = FALSE,
+  strict_sub = TRUE,
+  match_degree = NULL
+) {
+  glymotif::match_motif(
+    glycans,
+    motif,
+    ...,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    strict_sub = strict_sub,
+    match_degree = match_degree,
+    mode = .glymotif_mode(glycans)
+  )
+}
+
+#' Match motifs using the glycan-appropriate glymotif mode
+#'
+#' @inheritParams glymotif::match_motifs
+#' @noRd
+.match_motifs <- function(
+  glycans,
+  motifs,
+  ...,
+  alignments = NULL,
+  ignore_linkages = FALSE,
+  strict_sub = TRUE,
+  match_degree = NULL
+) {
+  glymotif::match_motifs(
+    glycans,
+    motifs,
+    ...,
+    alignments = alignments,
+    ignore_linkages = ignore_linkages,
+    strict_sub = strict_sub,
+    match_degree = match_degree,
+    mode = .glymotif_mode(glycans)
+  )
+}
+
+#' Check for a motif using the glycan-appropriate glymotif mode
+#'
+#' @inheritParams glymotif::have_motif
+#' @noRd
+.have_motif <- function(
+  glycans,
+  motif,
+  ...,
+  alignment = NULL,
+  ignore_linkages = FALSE,
+  strict_sub = TRUE,
+  match_degree = NULL
+) {
+  glymotif::have_motif(
+    glycans,
+    motif,
+    ...,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    strict_sub = strict_sub,
+    match_degree = match_degree,
+    mode = .glymotif_mode(glycans)
+  )
+}
+
+#' Check for motifs using the glycan-appropriate glymotif mode
+#'
+#' @inheritParams glymotif::have_motifs
+#' @noRd
+.have_motifs <- function(
+  glycans,
+  motifs,
+  ...,
+  alignments = NULL,
+  ignore_linkages = FALSE,
+  strict_sub = TRUE,
+  match_degree = NULL
+) {
+  glymotif::have_motifs(
+    glycans,
+    motifs,
+    ...,
+    alignments = alignments,
+    ignore_linkages = ignore_linkages,
+    strict_sub = strict_sub,
+    match_degree = match_degree,
+    mode = .glymotif_mode(glycans)
+  )
+}
+
+#' Count motif matches using the glycan-appropriate glymotif mode
+#'
+#' @inheritParams glymotif::count_motif
+#' @noRd
+.count_motif <- function(
+  glycans,
+  motif,
+  ...,
+  alignment = NULL,
+  ignore_linkages = FALSE,
+  strict_sub = TRUE,
+  match_degree = NULL
+) {
+  glymotif::count_motif(
+    glycans,
+    motif,
+    ...,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    strict_sub = strict_sub,
+    match_degree = match_degree,
+    mode = .glymotif_mode(glycans)
+  )
+}
+
+#' Count motif matches using the glycan-appropriate glymotif mode
+#'
+#' @inheritParams glymotif::count_motifs
+#' @noRd
+.count_motifs <- function(
+  glycans,
+  motifs,
+  ...,
+  alignments = NULL,
+  ignore_linkages = FALSE,
+  strict_sub = TRUE,
+  match_degree = NULL
+) {
+  glymotif::count_motifs(
+    glycans,
+    motifs,
+    ...,
+    alignments = alignments,
+    ignore_linkages = ignore_linkages,
+    strict_sub = strict_sub,
+    match_degree = match_degree,
+    mode = .glymotif_mode(glycans)
+  )
 }
 
 .process_enzyme_arg <- function(x) {
@@ -253,7 +437,7 @@
 #' @noRd
 .enzyme_contributes_to_target <- function(target, enzyme) {
   tryCatch(
-    glyenzy::have_enzyme(target, enzyme),
+    .have_enzyme_motif(target, enzyme),
     error = function(e) FALSE
   )
 }

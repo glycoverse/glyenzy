@@ -85,6 +85,9 @@ use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to
 
 If the glycan structure is incomplete or partially degraded,
 the result may be misleading.
+Glycans with a \code{\link[glyrepr:get_structure_level]{glyrepr::get_structure_level()}} other than \code{"intact"}
+are matched with the lenient motif matching mode in glymotif,
+and a warning is raised because enzyme predictions may be less reliable.
 }
 
 \subsection{Starting points}{

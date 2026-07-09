@@ -24,6 +24,15 @@ test_that("match_enzyme works vectorizedly and preserves names", {
   )
 })
 
+test_that("match_enzyme uses lenient matching for non-intact glycans", {
+  glycan <- glyparse::auto_parse("Gal(b1-?)GalNAc(a1-")
+
+  expect_warning(
+    expect_equal(match_enzyme(glycan, "C1GALT1"), list(1L)),
+    "non-intact glycan structures"
+  )
+})
+
 test_that("match_enzyme pairs product and acceptor matches in the same glycan", {
   glycan <- glyrepr::as_glycan_structure(
     "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
