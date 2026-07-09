@@ -2,6 +2,16 @@
 
 ## glyenzy (development version)
 
+### New features
+
+- Add support for non-intact glycan structures by using lenient motif
+  matching with a warning about reduced reliability. (#25)
+
+### Minor improvements and fixes
+
+- To ensure robust biosynthesis network inference, paucimannose
+  N-glycans are not supported anymore. (#25)
+
 ## glyenzy 0.6.3
 
 ### Minor improvements and fixes

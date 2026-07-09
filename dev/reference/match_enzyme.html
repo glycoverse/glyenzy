@@ -96,12 +96,15 @@ on factors such as tissue specificity.</p>
 </div>
 
 <div class="section">
-<h3 id="only-concrete-glycans">Only "concrete" glycans<a class="anchor" aria-label="anchor" href="#only-concrete-glycans"></a></h3>
+<h3 id="concrete-glycans-by-default">Concrete glycans by default<a class="anchor" aria-label="anchor" href="#concrete-glycans-by-default"></a></h3>
 
 
-<p>The function only works for glycans containing <strong>concrete</strong> residues
+<p>Most functions only work for glycans containing <strong>concrete</strong> residues
 (e.g., <code>"Glc"</code>, <code>"GalNAc"</code>), and not for glycans with <strong>generic</strong>
-residues (e.g., <code>"Hex"</code>, <code>"HexNAc"</code>).</p>
+residues (e.g., <code>"Hex"</code>, <code>"HexNAc"</code>).
+Reduced-level inputs with generic residues are supported where explicitly
+documented, such as <code>apply_enzyme(structure_level = "basic")</code>,
+<code><a href="trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="path_biosynthesis.html">path_biosynthesis()</a></code>.</p>
 </div>
 
 <div class="section">
@@ -119,7 +122,10 @@ use <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_substit
 
 
 <p>If the glycan structure is incomplete or partially degraded,
-the result may be misleading.</p>
+the result may be misleading.
+Glycans with a <code><a href="https://glycoverse.github.io/glyrepr/reference/get_structure_level.html" class="external-link">glyrepr::get_structure_level()</a></code> other than <code>"intact"</code>
+are matched with the lenient motif matching mode in glymotif,
+and a warning is raised because enzyme predictions may be less reliable.</p>
 </div>
 
 <div class="section">
@@ -159,7 +165,7 @@ the N-glycan precursor transferred to Asn by OST.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

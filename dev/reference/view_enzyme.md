@@ -59,11 +59,16 @@ For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-"
 will return both "ST3GAL3" and "ST3GAL4". In reality, only one of them
 might be active, depending on factors such as tissue specificity.
 
-### Only "concrete" glycans
+### Concrete glycans by default
 
-The function only works for glycans containing **concrete** residues
+Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`).
+residues (e.g., `"Hex"`, `"HexNAc"`). Reduced-level inputs with generic
+residues are supported where explicitly documented, such as
+`apply_enzyme(structure_level = "basic")`,
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+and
+[`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md).
 
 ### Substituents
 
@@ -76,7 +81,11 @@ to get clean glycans.
 ### Incomplete glycan structures
 
 If the glycan structure is incomplete or partially degraded, the result
-may be misleading.
+may be misleading. Glycans with a
+[`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
+other than `"intact"` are matched with the lenient motif matching mode
+in glymotif, and a warning is raised because enzyme predictions may be
+less reliable.
 
 ### Starting points
 
