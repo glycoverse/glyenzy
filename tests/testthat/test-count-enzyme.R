@@ -28,6 +28,25 @@ test_that("count_enzyme uses lenient matching for non-intact glycans", {
   )
 })
 
+test_that("count_enzyme uses lenient matching for non-intact special cases", {
+  mgat1_glycan <- "GlcNAc(b1-2)Man(?1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  mogs_glycan <- "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(?1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  man2_glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(?1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  expect_warning(
+    expect_equal(count_enzyme(mgat1_glycan, "MGAT1"), 1L),
+    "non-intact glycan structures"
+  )
+  expect_warning(
+    expect_equal(count_enzyme(mogs_glycan, "MOGS"), 1L),
+    "non-intact glycan structures"
+  )
+  expect_warning(
+    expect_equal(count_enzyme(man2_glycan, "MAN2A1"), 2L),
+    "non-intact glycan structures"
+  )
+})
+
 # ===== Normal Cases =====
 test_that("count_enzyme works for FUT8", {
   glycans <- c(
