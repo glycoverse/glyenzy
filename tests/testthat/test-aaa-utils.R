@@ -6,17 +6,17 @@ test_that("functions check glycan monosaccharides", {
   )
 })
 
-test_that("functions check glycan linkages", {
+test_that("functions warn on non-intact glycan structures", {
   glycan <- "Gal(b1-?)GalNAc(a1-"
-  expect_error(
-    have_enzyme(glycan, "B3GNT6"),
-    "All linkages must be intact"
+  expect_warning(
+    expect_true(have_enzyme(glycan, "C1GALT1")),
+    "non-intact glycan structures"
   )
 
   glycan <- "Gal(b1-3)GalNAc(?1-"
-  expect_error(
-    have_enzyme(glycan, "B3GNT6"),
-    "All linkages must be intact"
+  expect_warning(
+    expect_true(have_enzyme(glycan, "C1GALT1")),
+    "non-intact glycan structures"
   )
 })
 

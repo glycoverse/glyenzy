@@ -317,7 +317,7 @@ BfsSynthesisSearch <- R6::R6Class(
 #' @returns A logical vector of the same length as `glycans`.
 #' @noRd
 mgat2_ready <- function(glycans) {
-  !glymotif::have_motif(
+  !.have_motif(
     glycans,
     "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
@@ -342,7 +342,7 @@ mgat2_ready <- function(glycans) {
 #' @returns A logical vector of the same length as `products`.
 #' @noRd
 is_promising_intermediate <- function(products, target_glycans) {
-  res_mat <- glymotif::have_motifs(
+  res_mat <- .have_motifs(
     target_glycans,
     products,
     alignments = "core"

@@ -30,7 +30,7 @@ Imports:
     checkmate,
     cli,
     glydraw (>= 0.4.0),
-    glymotif (>= 0.12.1),
+    glymotif (>= 0.17.0),
     glyrepr (>= 0.13.0),
     glyparse (>= 0.5.3),
     igraph,
@@ -39,7 +39,6 @@ Imports:
     dplyr,
     rlang,
     tibble,
-    stringr,
     R6
 Depends: 
     R (>= 4.1)

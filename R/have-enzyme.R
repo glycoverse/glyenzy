@@ -46,6 +46,9 @@
 #'
 #' If the glycan structure is incomplete or partially degraded,
 #' the result may be misleading.
+#' Glycans with a [glyrepr::get_structure_level()] other than `"intact"`
+#' are matched with the lenient motif matching mode in glymotif,
+#' and a warning is raised because enzyme predictions may be less reliable.
 #'
 #' ## Starting points
 #'
@@ -162,7 +165,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 .have_enzyme_motif_gt_default <- function(glycans, enzyme) {
   products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
   product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
-  have_products_mat <- glymotif::have_motifs(
+  have_products_mat <- .have_motifs(
     glycans,
     products,
     alignments = product_alignments
@@ -174,7 +177,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 # After MGAT1 adds the b1-2 GlcNAc, two mannoses are trimmed.
 # Therefore, checking the product doesn't reflect its involvement.
 .have_enzyme_mgat1 <- function(glycans, enzyme) {
-  glymotif::have_motif(
+  .have_motif(
     glycans,
     "GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
@@ -185,7 +188,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 # This glycoside hydrolase catalyzes only one trimming step.
 # If the acceptor motif is not found, it is synthesized by the enzyme.
 .have_enzyme_mogs <- function(glycans, enzyme) {
-  !glymotif::have_motif(glycans, enzyme$rules[[1]]$acceptor)
+  !.have_motif(glycans, enzyme$rules[[1]]$acceptor)
 }
 .have_enzyme_mogs <- .make_n_glycan_guard(.have_enzyme_mogs)
 
@@ -195,7 +198,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 # We just assume it is synthesized by MAN1B1, as this is the major route.
 # Please check Fig. 115.2 of Handbook of Glycosyltransferases and Related Genes for details.
 .have_enzyme_man1b1 <- function(glycans, enzyme) {
-  !glymotif::have_motif(
+  !.have_motif(
     glycans,
     "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     alignment = "core"
@@ -211,14 +214,14 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  have_motifs_mat <- glymotif::have_motifs(glycans, motifs, alignments = "core")
+  have_motifs_mat <- .have_motifs(glycans, motifs, alignments = "core")
   n_man <- glyrepr::count_mono(glycans, "Man")
   dplyr::case_when(
     rowSums(have_motifs_mat) == 0L ~ TRUE,
     n_man == 9 ~ FALSE,
     n_man <= 7 ~ TRUE,
     # 8 mannoses
-    TRUE ~ glymotif::have_motif(
+    TRUE ~ .have_motif(
       glycans,
       "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
       alignment = "core"
@@ -231,7 +234,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 # These glycoside hydrolases catalyze Man(a1-3) and Man(a1-6) trimming
 # after MGAT1 adds the b1-2 GlcNAc.
 .have_enzyme_man2a12 <- function(glycans, enzyme) {
-  !glymotif::have_motif(
+  !.have_motif(
     glycans,
     "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     alignment = "core"
@@ -242,7 +245,7 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 # Special case for GANAB
 # This enzyme removes two Glcs.
 .have_enzyme_ganab <- function(glycans, enzyme) {
-  !glymotif::have_motif(
+  !.have_motif(
     glycans,
     "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     alignment = "core"

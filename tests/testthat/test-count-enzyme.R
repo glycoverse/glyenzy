@@ -19,6 +19,15 @@ test_that("count_enzyme works vectorizedly", {
   expect_equal(count_enzyme(glycans, "ST3GAL3"), c(1L, 0L))
 })
 
+test_that("count_enzyme uses lenient matching for non-intact glycans", {
+  glycan <- "Gal(b1-?)GalNAc(a1-"
+
+  expect_warning(
+    expect_equal(count_enzyme(glycan, "C1GALT1"), 1L),
+    "non-intact glycan structures"
+  )
+})
+
 # ===== Normal Cases =====
 test_that("count_enzyme works for FUT8", {
   glycans <- c(

@@ -104,12 +104,12 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 .match_traced_edge_added_residues <- function(glycan, substrate, product) {
   substrate <- glyparse::auto_parse(substrate)
   product <- glyparse::auto_parse(product)
-  substrate_matches <- glymotif::match_motif(
+  substrate_matches <- .match_motif(
     glycan,
     substrate,
     alignment = "substructure"
   )[[1]]
-  product_matches <- glymotif::match_motif(
+  product_matches <- .match_motif(
     glycan,
     product,
     alignment = "substructure"
@@ -217,7 +217,7 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @noRd
 .match_enzyme_rule <- function(glycans, rule) {
   product_alignment <- .product_alignment(rule)
-  product_matches <- glymotif::match_motif(
+  product_matches <- .match_motif(
     glycans,
     rule$product,
     alignment = product_alignment
@@ -248,7 +248,7 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   rule,
   product_alignment
 ) {
-  res <- glymotif::match_motif(
+  res <- .match_motif(
     glycans,
     rule$acceptor,
     alignment = product_alignment
