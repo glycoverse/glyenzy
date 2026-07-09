@@ -141,6 +141,46 @@
   structure_level
 }
 
+#' Validate that output structure level does not reduce input resolution
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param structure_level Requested structure level.
+#' @returns `structure_level`, invisibly.
+#' @noRd
+.validate_output_structure_level <- function(glycans, structure_level) {
+  input_structure_level <- .glycan_structure_level(glycans)
+  if (is.na(input_structure_level)) {
+    return(invisible(structure_level))
+  }
+
+  if (
+    .structure_level_rank(structure_level) <
+      .structure_level_rank(input_structure_level)
+  ) {
+    cli::cli_abort(c(
+      "{.arg structure_level} cannot be lower than the input glycan structure level.",
+      "x" = "Input level is {.val {input_structure_level}}, but requested {.val {structure_level}}."
+    ))
+  }
+
+  invisible(structure_level)
+}
+
+#' Rank glycan structure levels by information resolution
+#'
+#' @param structure_level A scalar structure level.
+#' @returns An integer rank where larger values preserve more information.
+#' @noRd
+.structure_level_rank <- function(structure_level) {
+  ranks <- c(
+    basic = 1L,
+    topological = 2L,
+    partial = 3L,
+    intact = 4L
+  )
+  unname(ranks[[structure_level]])
+}
+
 #' Reduce glycan structures to a requested output level
 #'
 #' @param glycans A `glyrepr_structure` vector.

@@ -44,35 +44,44 @@ test_that("apply_enzyme uses lenient matching for non-intact glycans", {
   )
 })
 
-test_that("apply_enzyme can return lower-resolution structures", {
-  glycan <- "GalNAc(a1-"
-
-  topological_res <- apply_enzyme(
-    glycan,
+test_that("apply_enzyme can return reduced-level structures", {
+  topological_res <- suppressWarnings(apply_enzyme(
+    "GalNAc(??-",
     "C1GALT1",
     structure_level = "topological"
-  )
-  basic_res <- apply_enzyme(
-    glycan,
+  ))
+  basic_res <- suppressWarnings(apply_enzyme(
+    "HexNAc(??-",
     "C1GALT1",
     structure_level = "basic"
-  )
+  ))
 
   expect_equal(glyrepr::get_structure_level(topological_res), "topological")
-  expect_equal(
-    as.character(topological_res),
-    as.character(glyrepr::reduce_structure_level(
-      glyparse::auto_parse("Gal(b1-3)GalNAc(a1-"),
-      "topological"
-    ))
-  )
+  expect_equal(as.character(topological_res), "Gal(??-?)GalNAc(??-")
   expect_equal(glyrepr::get_structure_level(basic_res), "basic")
-  expect_equal(
-    as.character(basic_res),
-    as.character(glyrepr::reduce_structure_level(
-      glyparse::auto_parse("Gal(b1-3)GalNAc(a1-"),
-      "basic"
-    ))
+  expect_equal(as.character(basic_res), "Hex(??-?)HexNAc(??-")
+})
+
+test_that("apply_enzyme rejects structure_level lower than input structures", {
+  expect_error(
+    apply_enzyme("GalNAc(a1-", "C1GALT1", structure_level = "topological"),
+    "lower than"
+  )
+  expect_error(
+    apply_enzyme("GalNAc(a1-", "C1GALT1", structure_level = "basic"),
+    "lower than"
+  )
+  expect_error(
+    suppressWarnings(
+      apply_enzyme("GalNAc(?1-", "C1GALT1", structure_level = "topological")
+    ),
+    "lower than"
+  )
+  expect_error(
+    suppressWarnings(
+      apply_enzyme("GalNAc(??-", "C1GALT1", structure_level = "basic")
+    ),
+    "lower than"
   )
 })
 

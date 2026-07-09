@@ -19,6 +19,7 @@
 #'   `"intact"` keeps the current behavior and returns products with exact
 #'   linkages. `"topological"` removes linkages from products.
 #'   `"basic"` removes linkages and converts products to generic residues.
+#'   The requested level cannot be lower-resolution than the input glycans.
 #'
 #' @return A [glyrepr::glycan_structure()] vector, or a list of such vectors.
 #'
@@ -52,6 +53,7 @@ apply_enzyme <- function(
     glycans,
     allow_generic = identical(structure_level, "basic")
   )
+  .validate_output_structure_level(glycans, structure_level)
   enzyme <- .process_enzyme_arg(enzyme)
   return_list <- .validate_return_list(return_list, length(glycans))
 

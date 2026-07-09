@@ -28,6 +28,25 @@ test_that("have_enzyme uses lenient matching for non-intact glycans", {
   )
 })
 
+test_that("have_enzyme uses lenient matching for non-intact special cases", {
+  mgat1_glycan <- "GlcNAc(b1-2)Man(?1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  mogs_glycan <- "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(?1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  man2_glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(?1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+
+  expect_warning(
+    expect_true(have_enzyme(mgat1_glycan, "MGAT1")),
+    "non-intact glycan structures"
+  )
+  expect_warning(
+    expect_true(have_enzyme(mogs_glycan, "MOGS")),
+    "non-intact glycan structures"
+  )
+  expect_warning(
+    expect_true(have_enzyme(man2_glycan, "MAN2A1")),
+    "non-intact glycan structures"
+  )
+})
+
 test_that("have_enzyme rejects invalid inputs", {
   expect_error(have_enzyme(123, "ST3GAL3"), "`glycans` must be")
   expect_error(

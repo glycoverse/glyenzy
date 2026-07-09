@@ -23,7 +23,8 @@ an error will be thrown.}
 \item{structure_level}{Output structure level.
 \code{"intact"} keeps the current behavior and returns products with exact
 linkages. \code{"topological"} removes linkages from products.
-\code{"basic"} removes linkages and converts products to generic residues.}
+\code{"basic"} removes linkages and converts products to generic residues.
+The requested level cannot be lower-resolution than the input glycans.}
 }
 \value{
 A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a list of such vectors.
