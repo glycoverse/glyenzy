@@ -29,9 +29,9 @@
   .have_motif(x, "GlcNAc(b1-4)GlcNAc(b1-")
 }
 
-.process_glycan_arg <- function(x) {
+.process_glycan_arg <- function(x, allow_generic = FALSE) {
   if (length(x) == 1L) {
-    .process_glycans_arg(x)
+    .process_glycans_arg(x, allow_generic = allow_generic)
   } else {
     cli::cli_abort(c(
       "{.arg x} must have length 1.",
@@ -40,7 +40,7 @@
   }
 }
 
-.process_glycans_arg <- function(x) {
+.process_glycans_arg <- function(x, allow_generic = FALSE) {
   if (is.character(x)) {
     x <- glyparse::auto_parse(x)
   } else if (!glyrepr::is_glycan_structure(x)) {
@@ -51,7 +51,7 @@
   }
 
   is_concrete <- .is_concrete_glycan(x)
-  if (!all(is_concrete)) {
+  if (!allow_generic && !all(is_concrete)) {
     cli::cli_abort(c(
       "All glycans must have concrete monosaccharides (e.g. Gal, GlcNAc, etc.).",
       "x" = "These glycans are not concrete: {.val {unique(x[!is_concrete])}}."
@@ -129,6 +129,31 @@
     return("strict")
   }
   "lenient"
+}
+
+#' Validate a requested output structure level
+#'
+#' @param structure_level Requested structure level.
+#' @returns A scalar character structure level.
+#' @noRd
+.validate_structure_level <- function(structure_level) {
+  checkmate::assert_choice(structure_level, c("intact", "topological", "basic"))
+  structure_level
+}
+
+#' Reduce glycan structures to a requested output level
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param structure_level Requested structure level.
+#' @returns A `glyrepr_structure` vector.
+#' @noRd
+.reduce_structure_level <- function(glycans, structure_level) {
+  structure_level <- .validate_structure_level(structure_level)
+  if (identical(structure_level, "intact")) {
+    return(glycans)
+  }
+
+  suppressWarnings(glyrepr::reduce_structure_level(glycans, structure_level))
 }
 
 #' Match a motif using the glycan-appropriate glymotif mode
@@ -532,6 +557,13 @@
   max_steps,
   filter = NULL
 ) {
+  target_structure_level <- .glycan_structure_level(to_gs)
+  search_structure_level <- .bfs_search_structure_level(target_structure_level)
+  target_match <- .bfs_target_match(target_structure_level)
+
+  from_g <- .reduce_structure_level(from_g, search_structure_level)
+  to_gs <- .reduce_structure_level(to_gs, search_structure_level)
+
   # Parse glycan structures and compute keys
   from_key <- as.character(from_g)[1]
   to_keys <- as.character(to_gs)
@@ -544,14 +576,43 @@
     max_steps = max_steps,
     filter = filter,
     from_key = from_key,
-    to_keys = to_keys
+    to_keys = to_keys,
+    structure_level = search_structure_level,
+    target_match = target_match
   )
 
   # Build and return result graph
   build_synthesis_result_graph(
     search_result,
     from_key,
-    to_keys,
+    unique(search_result$found_keys),
     max_steps
   )
+}
+
+#' Choose the BFS product structure level from target structures
+#'
+#' @param target_structure_level Target glycan structure level.
+#' @returns A structure level accepted by `apply_enzyme()`.
+#' @noRd
+.bfs_search_structure_level <- function(target_structure_level) {
+  if (identical(target_structure_level, "topological")) {
+    return("topological")
+  }
+  if (identical(target_structure_level, "basic")) {
+    return("basic")
+  }
+  "intact"
+}
+
+#' Choose the BFS target matching strategy from target structures
+#'
+#' @param target_structure_level Target glycan structure level.
+#' @returns A target matching strategy.
+#' @noRd
+.bfs_target_match <- function(target_structure_level) {
+  if (identical(target_structure_level, "partial")) {
+    return("whole")
+  }
+  "key"
 }

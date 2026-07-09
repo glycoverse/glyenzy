@@ -44,6 +44,45 @@ test_that("apply_enzyme uses lenient matching for non-intact glycans", {
   )
 })
 
+test_that("apply_enzyme can return lower-resolution structures", {
+  glycan <- "GalNAc(a1-"
+
+  topological_res <- apply_enzyme(
+    glycan,
+    "C1GALT1",
+    structure_level = "topological"
+  )
+  basic_res <- apply_enzyme(
+    glycan,
+    "C1GALT1",
+    structure_level = "basic"
+  )
+
+  expect_equal(glyrepr::get_structure_level(topological_res), "topological")
+  expect_equal(
+    as.character(topological_res),
+    as.character(glyrepr::reduce_structure_level(
+      glyparse::auto_parse("Gal(b1-3)GalNAc(a1-"),
+      "topological"
+    ))
+  )
+  expect_equal(glyrepr::get_structure_level(basic_res), "basic")
+  expect_equal(
+    as.character(basic_res),
+    as.character(glyrepr::reduce_structure_level(
+      glyparse::auto_parse("Gal(b1-3)GalNAc(a1-"),
+      "basic"
+    ))
+  )
+})
+
+test_that("apply_enzyme validates structure_level", {
+  expect_error(
+    apply_enzyme("GalNAc(a1-", "C1GALT1", structure_level = "partial"),
+    "structure_level"
+  )
+})
+
 # ===== Normal Cases for GT Enzymes =====
 test_that("apply_enzyme works for MGAT3", {
   glycans <- c(

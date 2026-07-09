@@ -29,11 +29,14 @@
 #' both "ST3GAL3" and "ST3GAL4". In reality, only one of them might be active, depending
 #' on factors such as tissue specificity.
 #'
-#' ## Only "concrete" glycans
+#' ## Concrete glycans by default
 #'
-#' The function only works for glycans containing **concrete** residues
+#' Most functions only work for glycans containing **concrete** residues
 #' (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
 #' residues (e.g., `"Hex"`, `"HexNAc"`).
+#' Reduced-level inputs with generic residues are supported where explicitly
+#' documented, such as `apply_enzyme(structure_level = "basic")`,
+#' `trace_biosynthesis()`, and `path_biosynthesis()`.
 #'
 #' ## Substituents
 #'

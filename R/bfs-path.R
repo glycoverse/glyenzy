@@ -15,6 +15,8 @@
 #' @param filter Optional function to filter glycan structures at each step
 #' @param from_key Optional pre-computed string key for starting glycan
 #' @param to_keys Optional pre-computed string keys for target glycans
+#' @param structure_level Structure level used for generated products
+#' @param target_match Target matching strategy
 #'
 #' @returns List with search results including found paths and exploration data
 #'
@@ -36,8 +38,11 @@ bfs_synthesis_search <- function(
   max_steps,
   filter = NULL,
   from_key = NULL,
-  to_keys = NULL
+  to_keys = NULL,
+  structure_level = "intact",
+  target_match = c("key", "whole")
 ) {
+  target_match <- match.arg(target_match)
   engine <- BfsSynthesisSearch$new(
     from_g = from_g,
     to_gs = to_gs,
@@ -45,7 +50,9 @@ bfs_synthesis_search <- function(
     max_steps = max_steps,
     filter = filter,
     from_key = from_key,
-    to_keys = to_keys
+    to_keys = to_keys,
+    structure_level = structure_level,
+    target_match = target_match
   )
 
   engine$run()
@@ -71,7 +78,8 @@ BfsSynthesisSearch <- R6::R6Class(
     filter = NULL,
     from_key = NULL,
     to_keys = NULL,
-    target_key_map = NULL,
+    structure_level = NULL,
+    target_match = NULL,
     remaining_targets_map = NULL,
     queue = NULL,
     queue_keys = NULL,
@@ -91,13 +99,17 @@ BfsSynthesisSearch <- R6::R6Class(
       max_steps,
       filter = NULL,
       from_key = NULL,
-      to_keys = NULL
+      to_keys = NULL,
+      structure_level = "intact",
+      target_match = "key"
     ) {
       self$from_g <- from_g
       self$to_gs <- to_gs
       self$enzymes <- enzymes
       self$max_steps <- max_steps
       self$filter <- filter
+      self$structure_level <- .validate_structure_level(structure_level)
+      self$target_match <- match.arg(target_match, c("key", "whole"))
       self$from_key <- if (is.null(from_key)) {
         as.character(from_g)[1]
       } else {
@@ -105,10 +117,8 @@ BfsSynthesisSearch <- R6::R6Class(
       }
       self$to_keys <- if (is.null(to_keys)) as.character(to_gs) else to_keys
 
-      self$target_key_map <- fastmap::fastmap()
       self$remaining_targets_map <- fastmap::fastmap()
       for (target_key in self$to_keys) {
-        self$target_key_map$set(target_key, TRUE)
         self$remaining_targets_map$set(target_key, TRUE)
       }
 
@@ -127,10 +137,14 @@ BfsSynthesisSearch <- R6::R6Class(
     },
 
     run = function() {
-      trivial_targets <- self$to_keys[self$to_keys == self$from_key]
-      if (length(trivial_targets) > 0L) {
+      initial_targets <- private$matched_target_keys(self$from_g, self$from_key)
+      if (length(initial_targets) > 0L) {
+        private$record_found_targets(self$from_key, initial_targets)
+      }
+
+      if (self$remaining_targets_map$size() == 0L) {
         return(list(
-          found_keys = trivial_targets,
+          found_keys = self$found_keys_storage[seq_len(self$found_tail)],
           all_edges = list(),
           parent = rlang::env(),
           parent_enzyme = rlang::env(),
@@ -146,8 +160,11 @@ BfsSynthesisSearch <- R6::R6Class(
         self$step <- self$step + 1L
 
         found_keys <- private$expand_frontier()
-        if (length(found_keys) > 0L) {
-          private$record_found_keys(found_keys)
+        if (length(found_keys$endpoint_keys) > 0L) {
+          private$record_found_targets(
+            found_keys$endpoint_keys,
+            found_keys$target_keys
+          )
         }
       }
 
@@ -182,7 +199,8 @@ BfsSynthesisSearch <- R6::R6Class(
 
       new_queue <- list()
       new_queue_keys <- character(0)
-      found_keys <- character(0)
+      found_endpoint_keys <- character(0)
+      found_target_keys <- character(0)
 
       for (i in seq_along(frontier)) {
         curr_g <- frontier[[i]]
@@ -199,8 +217,15 @@ BfsSynthesisSearch <- R6::R6Class(
             }
           }
 
-          if (length(expansion_result$found_keys) > 0L) {
-            found_keys <- c(found_keys, expansion_result$found_keys)
+          if (length(expansion_result$found_endpoint_keys) > 0L) {
+            found_endpoint_keys <- c(
+              found_endpoint_keys,
+              expansion_result$found_endpoint_keys
+            )
+            found_target_keys <- c(
+              found_target_keys,
+              expansion_result$found_target_keys
+            )
           }
         }
       }
@@ -208,7 +233,7 @@ BfsSynthesisSearch <- R6::R6Class(
       self$queue <- new_queue
       self$queue_keys <- new_queue_keys
 
-      found_keys
+      list(endpoint_keys = found_endpoint_keys, target_keys = found_target_keys)
     },
 
     # Expand one glycan by applying a single enzyme.
@@ -219,11 +244,16 @@ BfsSynthesisSearch <- R6::R6Class(
         list(
           new_structures = list(),
           new_keys = character(0),
-          found_keys = character(0)
+          found_endpoint_keys = character(0),
+          found_target_keys = character(0)
         )
       }
 
-      products <- suppressMessages(glyenzy::apply_enzyme(curr_g, ez))
+      products <- .apply_enzyme(
+        curr_g,
+        ez,
+        structure_level = self$structure_level
+      )[[1]]
       if (length(products) == 0L) {
         return(zero_products())
       }
@@ -248,7 +278,8 @@ BfsSynthesisSearch <- R6::R6Class(
       prod_keys <- as.character(products)
       new_structures <- list()
       new_keys <- character(0)
-      found_keys <- character(0)
+      found_endpoint_keys <- character(0)
+      found_target_keys <- character(0)
 
       for (j in seq_along(products)) {
         pk <- prod_keys[[j]]
@@ -270,36 +301,81 @@ BfsSynthesisSearch <- R6::R6Class(
           new_keys[length(new_keys) + 1L] <- pk
         }
 
-        if (self$target_key_map$has(pk)) {
-          found_keys <- c(found_keys, pk)
+        matched_targets <- private$matched_target_keys(products[j], pk)
+        if (length(matched_targets) > 0L) {
+          found_endpoint_keys <- c(
+            found_endpoint_keys,
+            rep(pk, length(matched_targets))
+          )
+          found_target_keys <- c(found_target_keys, matched_targets)
         }
       }
 
       list(
         new_structures = new_structures,
         new_keys = new_keys,
-        found_keys = found_keys
+        found_endpoint_keys = found_endpoint_keys,
+        found_target_keys = found_target_keys
       )
     },
 
     # Integrate newly discovered targets into tracking buffers and remaining set.
     # Resizes storage if needed and removes matched targets from the active goal set.
-    record_found_keys = function(keys) {
-      required <- self$found_tail + length(keys)
+    record_found_targets = function(endpoint_keys, target_keys) {
+      if (length(endpoint_keys) == 0L || length(target_keys) == 0L) {
+        return(invisible(NULL))
+      }
+
+      endpoint_keys <- endpoint_keys[
+        target_keys %in% self$remaining_targets_map$keys()
+      ]
+      target_keys <- target_keys[
+        target_keys %in% self$remaining_targets_map$keys()
+      ]
+      if (length(endpoint_keys) == 0L) {
+        return(invisible(NULL))
+      }
+
+      required <- self$found_tail + length(endpoint_keys)
       if (required > length(self$found_keys_storage)) {
         new_len <- max(required, max(1L, length(self$found_keys_storage) * 2L))
         length(self$found_keys_storage) <- new_len
       }
 
       idx <- seq.int(self$found_tail + 1L, required)
-      self$found_keys_storage[idx] <- keys
+      self$found_keys_storage[idx] <- endpoint_keys
       self$found_tail <- required
 
-      for (found_key in keys) {
-        if (self$remaining_targets_map$has(found_key)) {
-          self$remaining_targets_map$remove(found_key)
+      for (target_key in target_keys) {
+        if (self$remaining_targets_map$has(target_key)) {
+          self$remaining_targets_map$remove(target_key)
         }
       }
+      invisible(NULL)
+    },
+
+    matched_target_keys = function(glycan, key) {
+      remaining_target_keys <- self$remaining_targets_map$keys()
+      if (length(remaining_target_keys) == 0L) {
+        return(character())
+      }
+
+      if (identical(self$target_match, "key")) {
+        if (key %in% remaining_target_keys) {
+          return(key)
+        }
+        return(character())
+      }
+
+      target_idx <- match(remaining_target_keys, self$to_keys)
+      target_glycans <- self$to_gs[target_idx]
+      target_matches <- glymotif::have_motifs(
+        glycan,
+        target_glycans,
+        alignments = "whole",
+        mode = "lenient"
+      )
+      remaining_target_keys[as.logical(target_matches[1, ])]
     }
   )
 )
