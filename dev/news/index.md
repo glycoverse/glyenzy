@@ -9,6 +9,10 @@
 
 ### Minor improvements and fixes
 
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  now reuses prepared glycan graphs, shares equivalent enzyme-rule work,
+  batches breadth-first expansion, and rejects products that would reuse
+  an occupied acceptor carbon. (#26)
 - To ensure robust biosynthesis network inference, paucimannose
   N-glycans are not supported anymore. (#25)
 

@@ -39,7 +39,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-and-fixes-development-version">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-development-version"></a></h3>
-<ul><li>To ensure robust biosynthesis network inference, paucimannose N-glycans are not supported anymore. (#25)</li>
+<ul><li>
+<code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> now reuses prepared glycan graphs, shares equivalent enzyme-rule work, batches breadth-first expansion, and rejects products that would reuse an occupied acceptor carbon. (#26)</li>
+<li>To ensure robust biosynthesis network inference, paucimannose N-glycans are not supported anymore. (#25)</li>
 </ul></div>
 </div>
     <div class="section level2">
