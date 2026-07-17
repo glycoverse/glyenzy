@@ -43,10 +43,10 @@ package.
 
 ### Applicability
 
-All algorithms and enzyme information in glyenzy are applicable only to
-humans, and specifically to N-glycans and O-GalNAc glycans. Results may
-be inaccurate for other types of glycans (e.g., GAGs, glycolipids) or
-for glycans in other species (e.g., plants, insects).
+Known-enzyme algorithms and enzyme information in glyenzy are applicable
+only to humans, and specifically to N-glycans and O-GalNAc glycans.
+Results may be inaccurate for other types of glycans (e.g., GAGs,
+glycolipids) or for glycans in other species (e.g., plants, insects).
 
 ### Inclusiveness
 
@@ -87,6 +87,8 @@ in glymotif, and a warning is raised because enzyme predictions may be
 less reliable.
 
 ### Starting points
+
+For known-enzyme path inference:
 
 - For N-glycans, the starting structure is assumed to be
   "Glc(3)Man(9)GlcNAc(2)", the N-glycan precursor transferred to Asn by

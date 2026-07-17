@@ -115,8 +115,8 @@ The function will be called on the results after each round.</p></dd>
 <h3 id="applicability">Applicability<a class="anchor" aria-label="anchor" href="#applicability"></a></h3>
 
 
-<p>All algorithms and enzyme information in glyenzy are applicable only to humans,
-and specifically to N-glycans and O-GalNAc glycans.
+<p>Known-enzyme algorithms and enzyme information in glyenzy are applicable only
+to humans, and specifically to N-glycans and O-GalNAc glycans.
 Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
 or for glycans in other species (e.g., plants, insects).</p>
 </div>
@@ -170,7 +170,8 @@ and a warning is raised because enzyme predictions may be less reliable.</p>
 <div class="section">
 <h3 id="starting-points">Starting points<a class="anchor" aria-label="anchor" href="#starting-points"></a></h3>
 
-<ul><li><p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
+
+<p>For known-enzyme path inference:</p><ul><li><p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
 the N-glycan precursor transferred to Asn by OST.</p></li>
 <li><p>For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".</p></li>
 <li><p>For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".</p></li>
