@@ -208,6 +208,184 @@ apply_enzyme <- function(
   unique(do.call(c, rule_results))
 }
 
+# Prepare shared rule jobs and the ordered enzyme plans that consume them.
+.prepare_bfs_rule_plan <- function(enzymes) {
+  prepared_rules <- purrr::map(
+    enzymes,
+    function(enzyme) purrr::map(enzyme$rules, .prepare_rule_graphs)
+  )
+  rule_signatures <- list()
+  rule_jobs <- list()
+  enzyme_rule_ids <- vector("list", length(enzymes))
+
+  for (enzyme_idx in seq_along(enzymes)) {
+    enzyme <- enzymes[[enzyme_idx]]
+    if (
+      inherits(enzyme, "glyenzy_starter_gt_enzyme") ||
+        inherits(enzyme, "glyenzy_npre_gt_enzyme")
+    ) {
+      enzyme_rule_ids[[enzyme_idx]] <- integer()
+      next
+    }
+
+    rule_ids <- integer(length(enzyme$rules))
+    for (rule_idx in seq_along(enzyme$rules)) {
+      rule <- enzyme$rules[[rule_idx]]
+      signature <- .bfs_rule_signature(
+        rule,
+        enzyme,
+        nonce = c(enzyme_idx, rule_idx)
+      )
+      rule_id <- .find_identical(rule_signatures, signature)
+      if (is.na(rule_id)) {
+        rule_id <- length(rule_jobs) + 1L
+        rule_signatures[[rule_id]] <- signature
+        rule_jobs[[rule_id]] <- list(
+          rule = rule,
+          prepared_rule = prepared_rules[[enzyme_idx]][[rule_idx]],
+          enzyme = enzyme
+        )
+      }
+      rule_ids[[rule_idx]] <- rule_id
+    }
+    enzyme_rule_ids[[enzyme_idx]] <- rule_ids
+  }
+
+  enzyme_plans <- list()
+  enzyme_plan_ids <- integer(length(enzymes))
+  for (enzyme_idx in seq_along(enzymes)) {
+    rule_ids <- enzyme_rule_ids[[enzyme_idx]]
+    plan_id <- .find_identical(enzyme_plans, rule_ids)
+    if (is.na(plan_id)) {
+      plan_id <- length(enzyme_plans) + 1L
+      enzyme_plans[[plan_id]] <- rule_ids
+    }
+    enzyme_plan_ids[[enzyme_idx]] <- plan_id
+  }
+
+  list(
+    rules = rule_jobs,
+    prepared_rules = prepared_rules,
+    enzyme_rule_ids = enzyme_rule_ids,
+    enzyme_plans = enzyme_plans,
+    enzyme_plan_ids = enzyme_plan_ids
+  )
+}
+
+# Stateful custom S3 actions must retain scalar frontier execution order.
+.can_batch_bfs_enzyme <- function(enzyme) {
+  enzyme_class <- class(enzyme)
+  identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
+    identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme")) ||
+    inherits(enzyme, "glyenzy_starter_gt_enzyme") ||
+    inherits(enzyme, "glyenzy_npre_gt_enzyme")
+}
+
+# Build a graph-independent signature for one prepared enzyme action.
+.bfs_rule_signature <- function(rule, enzyme, nonce) {
+  enzyme_class <- class(enzyme)
+  dispatch <- if (
+    identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme"))
+  ) {
+    "standard_gt"
+  } else if (
+    identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme"))
+  ) {
+    "standard_gh"
+  } else {
+    return(list(dispatch = "private", nonce = nonce))
+  }
+
+  list(
+    dispatch = dispatch,
+    acceptor = unname(as.character(rule$acceptor)),
+    alignment = rule$acceptor_alignment,
+    rejects = unname(as.character(rule$rejects)),
+    product = unname(as.character(rule$product)),
+    acceptor_idx = unname(rule$acceptor_idx),
+    product_idx = unname(rule$product_idx),
+    new_residue = unname(rule$new_residue),
+    new_linkage = unname(rule$new_linkage)
+  )
+}
+
+# Find the first list element that is exactly identical to a value.
+.find_identical <- function(x, value) {
+  if (length(x) == 0L) {
+    return(NA_integer_)
+  }
+  matches <- which(vapply(x, identical, logical(1), value))
+  if (length(matches) == 0L) {
+    return(NA_integer_)
+  }
+  matches[[1]]
+}
+
+# Evaluate each shared rule job once for every glycan in a BFS frontier.
+.apply_bfs_rule_frontier <- function(
+  glycan_graphs,
+  match_modes,
+  rule_plan,
+  structure_level
+) {
+  purrr::map(
+    rule_plan$rules,
+    function(job) {
+      raw_products <- purrr::map2(
+        glycan_graphs,
+        match_modes,
+        function(glycan_graph, match_mode) {
+          matches <- .match_rule_graph(
+            glycan_graph,
+            job$rule,
+            job$prepared_rule,
+            match_mode
+          )
+          .apply_rule_graphs(
+            glycan_graph,
+            matches,
+            job$rule,
+            job$enzyme,
+            structure_level = structure_level
+          )
+        }
+      )
+      sizes <- lengths(raw_products)
+      flat_products <- unlist(raw_products, recursive = FALSE)
+      products <- .reduce_structure_level(
+        glyrepr::as_glycan_structure(flat_products),
+        structure_level
+      )
+
+      results <- vector("list", length(raw_products))
+      cursor <- 0L
+      for (frontier_idx in seq_along(raw_products)) {
+        size <- sizes[[frontier_idx]]
+        if (size == 0L) {
+          results[[frontier_idx]] <- glyrepr::glycan_structure()
+        } else {
+          idx <- seq.int(cursor + 1L, cursor + size)
+          results[[frontier_idx]] <- products[idx]
+          cursor <- cursor + size
+        }
+      }
+      results
+    }
+  )
+}
+
+# Rebuild one enzyme plan's products in its original rule order.
+.collect_bfs_rule_products <- function(rule_results, rule_ids, frontier_idx) {
+  if (length(rule_ids) == 0L) {
+    return(glyrepr::glycan_structure())
+  }
+  products <- lapply(
+    rule_ids,
+    function(rule_id) rule_results[[rule_id]][[frontier_idx]]
+  )
+  unique(do.call(c, products))
+}
+
 #' Apply an enzyme rule to a vector of glycan structures
 #'
 #' @param glycans A `glyrepr_structure` vector.
@@ -256,6 +434,27 @@ apply_enzyme <- function(
   enzyme,
   structure_level = "intact"
 ) {
+  graph_list <- .apply_rule_graphs(
+    graph,
+    match_res,
+    rule,
+    enzyme,
+    structure_level = structure_level
+  )
+  .reduce_structure_level(
+    glyrepr::as_glycan_structure(graph_list),
+    structure_level
+  )
+}
+
+# Apply one matched rule and return its valid, unmaterialized product graphs.
+.apply_rule_graphs <- function(
+  graph,
+  match_res,
+  rule,
+  enzyme,
+  structure_level = "intact"
+) {
   indices_to_act_on <- purrr::map_int(match_res, ~ .x[rule$acceptor_idx])
   graph_list <- .apply_rule_action(
     enzyme,
@@ -264,11 +463,7 @@ apply_enzyme <- function(
     rule,
     structure_level = structure_level
   )
-  graph_list <- purrr::compact(graph_list)
-  .reduce_structure_level(
-    glyrepr::as_glycan_structure(graph_list),
-    structure_level
-  )
+  purrr::compact(graph_list)
 }
 
 #' Apply an enzyme-specific graph action

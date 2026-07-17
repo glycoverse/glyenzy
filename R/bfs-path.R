@@ -141,10 +141,7 @@ BfsSynthesisSearch <- R6::R6Class(
         return_list = TRUE
       )
       private$target_match_mode <- .glymotif_mode(self$to_gs)
-      private$enzyme_rule_graphs <- purrr::map(
-        self$enzymes,
-        function(enzyme) purrr::map(enzyme$rules, .prepare_rule_graphs)
-      )
+      private$rule_plan <- .prepare_bfs_rule_plan(self$enzymes)
       private$n_core_graph <- glyrepr::get_structure_graphs(
         glyrepr::as_glycan_structure(
           "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
@@ -220,7 +217,7 @@ BfsSynthesisSearch <- R6::R6Class(
     source_graph = NULL,
     target_graphs = NULL,
     target_match_mode = NULL,
-    enzyme_rule_graphs = NULL,
+    rule_plan = NULL,
     n_core_graph = NULL,
     pre_mgat2_graph = NULL,
 
@@ -228,6 +225,96 @@ BfsSynthesisSearch <- R6::R6Class(
     # Applies every enzyme to all glycans in the queue, collects successors,
     # and accumulates any target hits produced during this level.
     expand_frontier = function() {
+      can_batch <- is.null(self$filter) &&
+        all(vapply(
+          self$enzymes,
+          .can_batch_bfs_enzyme,
+          logical(1)
+        ))
+      if (can_batch) {
+        return(private$expand_frontier_batched())
+      }
+      private$expand_frontier_scalar()
+    },
+
+    # Generate a whole frontier from shared rule jobs, then replay each
+    # glycan-enzyme cell in the original order.
+    expand_frontier_batched = function() {
+      frontier <- self$queue
+      frontier_keys <- self$queue_keys
+      new_queue <- list()
+      new_queue_keys <- character(0)
+      found_endpoint_keys <- character(0)
+      found_target_keys <- character(0)
+
+      chunk_size <- 32L
+      chunk_starts <- seq.int(1L, length(frontier), by = chunk_size)
+      for (chunk_start in chunk_starts) {
+        chunk_idx <- seq.int(
+          chunk_start,
+          min(chunk_start + chunk_size - 1L, length(frontier))
+        )
+        chunk <- frontier[chunk_idx]
+        chunk_keys <- frontier_keys[chunk_idx]
+        frontier_graphs <- purrr::map(
+          chunk,
+          glyrepr::get_structure_graphs
+        )
+        match_modes <- purrr::map_chr(chunk, .glymotif_mode)
+        rule_results <- .apply_bfs_rule_frontier(
+          frontier_graphs,
+          match_modes,
+          private$rule_plan,
+          structure_level = self$structure_level
+        )
+        plan_products <- private$prepare_plan_products(
+          rule_results,
+          length(chunk)
+        )
+
+        for (i in seq_along(chunk)) {
+          curr_key <- chunk_keys[[i]]
+          for (enzyme_idx in seq_along(self$enzymes)) {
+            ez <- self$enzymes[[enzyme_idx]]
+            plan_id <- private$rule_plan$enzyme_plan_ids[[enzyme_idx]]
+            expansion_result <- private$integrate_products(
+              curr_key,
+              ez,
+              plan_products[[plan_id]][[i]]
+            )
+
+            if (length(expansion_result$new_structures) > 0L) {
+              start_idx <- length(new_queue)
+              for (j in seq_along(expansion_result$new_structures)) {
+                new_queue[[start_idx + j]] <- expansion_result$new_structures[[
+                  j
+                ]]
+                new_queue_keys[start_idx + j] <- expansion_result$new_keys[[j]]
+              }
+            }
+
+            if (length(expansion_result$found_endpoint_keys) > 0L) {
+              found_endpoint_keys <- c(
+                found_endpoint_keys,
+                expansion_result$found_endpoint_keys
+              )
+              found_target_keys <- c(
+                found_target_keys,
+                expansion_result$found_target_keys
+              )
+            }
+          }
+        }
+      }
+
+      self$queue <- new_queue
+      self$queue_keys <- new_queue_keys
+
+      list(endpoint_keys = found_endpoint_keys, target_keys = found_target_keys)
+    },
+
+    # Retain scalar expansion when a user filter can have observable state.
+    expand_frontier_scalar = function() {
       frontier <- self$queue
       frontier_keys <- self$queue_keys
 
@@ -248,7 +335,7 @@ BfsSynthesisSearch <- R6::R6Class(
             curr_graph,
             curr_key,
             ez,
-            private$enzyme_rule_graphs[[enzyme_idx]],
+            private$rule_plan$prepared_rules[[enzyme_idx]],
             rule_match_mode
           )
 
@@ -289,15 +376,6 @@ BfsSynthesisSearch <- R6::R6Class(
       prepared_rules,
       rule_match_mode
     ) {
-      zero_products <- function() {
-        list(
-          new_structures = list(),
-          new_keys = character(0),
-          found_endpoint_keys = character(0),
-          found_target_keys = character(0)
-        )
-      }
-
       products <- .apply_enzyme_prepared(
         curr_graph,
         ez,
@@ -305,28 +383,104 @@ BfsSynthesisSearch <- R6::R6Class(
         structure_level = self$structure_level,
         mode = rule_match_mode
       )
+      prepared_products <- private$prepare_products(products)
+      private$integrate_products(curr_key, ez, prepared_products)
+    },
+
+    # Reconstruct and prune every unique enzyme plan for a generated frontier.
+    prepare_plan_products = function(rule_results, frontier_size) {
+      pruning_cache <- fastmap::fastmap()
+      purrr::map(
+        private$rule_plan$enzyme_plans,
+        function(rule_ids) {
+          lapply(
+            seq_len(frontier_size),
+            function(frontier_idx) {
+              products <- .collect_bfs_rule_products(
+                rule_results,
+                rule_ids,
+                frontier_idx
+              )
+              private$prepare_products(products, pruning_cache)
+            }
+          )
+        }
+      )
+    },
+
+    # Canonicalize product graphs and apply biological pruning. A per-frontier
+    # cache avoids repeating this work for products shared across enzyme plans.
+    prepare_products = function(products, pruning_cache = NULL) {
       if (length(products) == 0L) {
-        return(zero_products())
+        return(list(products = products, graphs = list()))
       }
 
-      product_graphs <- glyrepr::get_structure_graphs(
-        products,
-        return_list = TRUE
-      )
       product_match_mode <- .glymotif_mode(products)
-      keep <- purrr::map_lgl(
-        product_graphs,
-        .is_promising_intermediate_graph,
+      if (is.null(pruning_cache)) {
+        product_graphs <- glyrepr::get_structure_graphs(
+          products,
+          return_list = TRUE
+        )
+        keep <- purrr::map_lgl(
+          product_graphs,
+          private$is_promising_product,
+          product_mode = product_match_mode
+        )
+        return(list(
+          products = products[keep],
+          graphs = product_graphs[keep]
+        ))
+      }
+
+      product_keys <- as.character(products)
+      product_graphs <- vector("list", length(products))
+      keep <- logical(length(products))
+      for (product_idx in seq_along(products)) {
+        cache_key <- paste(
+          product_match_mode,
+          product_keys[[product_idx]],
+          sep = "\n"
+        )
+        if (pruning_cache$has(cache_key)) {
+          cached <- pruning_cache$get(cache_key)
+        } else {
+          graph <- glyrepr::get_structure_graphs(products[product_idx])
+          cached <- list(
+            graph = graph,
+            keep = private$is_promising_product(
+              graph,
+              product_match_mode
+            )
+          )
+          pruning_cache$set(cache_key, cached)
+        }
+        product_graphs[[product_idx]] <- cached$graph
+        keep[[product_idx]] <- cached$keep
+      }
+
+      list(
+        products = products[keep],
+        graphs = product_graphs[keep]
+      )
+    },
+
+    is_promising_product = function(product_graph, product_mode) {
+      .is_promising_intermediate_graph(
+        product_graph,
         target_graphs = private$target_graphs,
-        product_mode = product_match_mode,
+        product_mode = product_mode,
         target_mode = private$target_match_mode,
         n_core_graph = private$n_core_graph,
         pre_mgat2_graph = private$pre_mgat2_graph
       )
-      products <- products[keep]
-      product_graphs <- product_graphs[keep]
+    },
+
+    # Apply the user filter and replay BFS bookkeeping in scalar order.
+    integrate_products = function(curr_key, ez, prepared_products) {
+      products <- prepared_products$products
+      product_graphs <- prepared_products$graphs
       if (length(products) == 0L) {
-        return(zero_products())
+        return(private$empty_expansion())
       }
 
       if (!is.null(self$filter)) {
@@ -338,7 +492,9 @@ BfsSynthesisSearch <- R6::R6Class(
         )
         products <- products[keep]
         product_graphs <- product_graphs[keep]
-        if (length(products) == 0L) return(zero_products())
+        if (length(products) == 0L) {
+          return(private$empty_expansion())
+        }
       }
 
       prod_keys <- as.character(products)
@@ -385,6 +541,15 @@ BfsSynthesisSearch <- R6::R6Class(
         new_keys = new_keys,
         found_endpoint_keys = found_endpoint_keys,
         found_target_keys = found_target_keys
+      )
+    },
+
+    empty_expansion = function() {
+      list(
+        new_structures = list(),
+        new_keys = character(0),
+        found_endpoint_keys = character(0),
+        found_target_keys = character(0)
       )
     },
 
