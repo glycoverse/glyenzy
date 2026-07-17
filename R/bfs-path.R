@@ -332,6 +332,7 @@ BfsSynthesisSearch <- R6::R6Class(
         for (enzyme_idx in seq_along(self$enzymes)) {
           ez <- self$enzymes[[enzyme_idx]]
           expansion_result <- private$expand_single(
+            curr_g,
             curr_graph,
             curr_key,
             ez,
@@ -370,19 +371,28 @@ BfsSynthesisSearch <- R6::R6Class(
     # Generates candidate products, filters them, registers edges, updates
     # parent bookkeeping, and returns the new frontier entries plus targets hit.
     expand_single = function(
+      curr_g,
       curr_graph,
       curr_key,
       ez,
       prepared_rules,
       rule_match_mode
     ) {
-      products <- .apply_enzyme_prepared(
-        curr_graph,
-        ez,
-        prepared_rules,
-        structure_level = self$structure_level,
-        mode = rule_match_mode
-      )
+      if (.can_batch_bfs_enzyme(ez)) {
+        products <- .apply_enzyme_prepared(
+          curr_graph,
+          ez,
+          prepared_rules,
+          structure_level = self$structure_level,
+          mode = rule_match_mode
+        )
+      } else {
+        products <- .apply_enzyme(
+          curr_g,
+          ez,
+          structure_level = self$structure_level
+        )[[1]]
+      }
       prepared_products <- private$prepare_products(products)
       private$integrate_products(curr_key, ez, prepared_products)
     },
