@@ -134,10 +134,34 @@ BfsSynthesisSearch <- R6::R6Class(
       self$found_keys_storage <- character(max(1L, length(self$to_keys)))
       self$found_tail <- 0L
       self$step <- 0L
+
+      private$source_graph <- glyrepr::get_structure_graphs(self$from_g)
+      private$target_graphs <- glyrepr::get_structure_graphs(
+        self$to_gs,
+        return_list = TRUE
+      )
+      private$target_match_mode <- .glymotif_mode(self$to_gs)
+      private$enzyme_rule_graphs <- purrr::map(
+        self$enzymes,
+        function(enzyme) purrr::map(enzyme$rules, .prepare_rule_graphs)
+      )
+      private$n_core_graph <- glyrepr::get_structure_graphs(
+        glyrepr::as_glycan_structure(
+          "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+        )
+      )
+      private$pre_mgat2_graph <- glyrepr::get_structure_graphs(
+        glyrepr::as_glycan_structure(
+          "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+        )
+      )
     },
 
     run = function() {
-      initial_targets <- private$matched_target_keys(self$from_g, self$from_key)
+      initial_targets <- private$matched_target_keys(
+        self$from_key,
+        private$source_graph
+      )
       if (length(initial_targets) > 0L) {
         private$record_found_targets(
           rep(self$from_key, length(initial_targets)),
@@ -193,6 +217,13 @@ BfsSynthesisSearch <- R6::R6Class(
   ),
 
   private = list(
+    source_graph = NULL,
+    target_graphs = NULL,
+    target_match_mode = NULL,
+    enzyme_rule_graphs = NULL,
+    n_core_graph = NULL,
+    pre_mgat2_graph = NULL,
+
     # Expand entire BFS frontier for current step.
     # Applies every enzyme to all glycans in the queue, collects successors,
     # and accumulates any target hits produced during this level.
@@ -208,9 +239,18 @@ BfsSynthesisSearch <- R6::R6Class(
       for (i in seq_along(frontier)) {
         curr_g <- frontier[[i]]
         curr_key <- frontier_keys[[i]]
+        curr_graph <- glyrepr::get_structure_graphs(curr_g)
+        rule_match_mode <- .glymotif_mode(curr_g)
 
-        for (ez in self$enzymes) {
-          expansion_result <- private$expand_single(curr_g, curr_key, ez)
+        for (enzyme_idx in seq_along(self$enzymes)) {
+          ez <- self$enzymes[[enzyme_idx]]
+          expansion_result <- private$expand_single(
+            curr_graph,
+            curr_key,
+            ez,
+            private$enzyme_rule_graphs[[enzyme_idx]],
+            rule_match_mode
+          )
 
           if (length(expansion_result$new_structures) > 0L) {
             start_idx <- length(new_queue)
@@ -242,7 +282,13 @@ BfsSynthesisSearch <- R6::R6Class(
     # Expand one glycan by applying a single enzyme.
     # Generates candidate products, filters them, registers edges, updates
     # parent bookkeeping, and returns the new frontier entries plus targets hit.
-    expand_single = function(curr_g, curr_key, ez) {
+    expand_single = function(
+      curr_graph,
+      curr_key,
+      ez,
+      prepared_rules,
+      rule_match_mode
+    ) {
       zero_products <- function() {
         list(
           new_structures = list(),
@@ -252,17 +298,33 @@ BfsSynthesisSearch <- R6::R6Class(
         )
       }
 
-      products <- .apply_enzyme(
-        curr_g,
+      products <- .apply_enzyme_prepared(
+        curr_graph,
         ez,
-        structure_level = self$structure_level
-      )[[1]]
+        prepared_rules,
+        structure_level = self$structure_level,
+        mode = rule_match_mode
+      )
       if (length(products) == 0L) {
         return(zero_products())
       }
 
-      keep <- is_promising_intermediate(products, self$to_gs)
+      product_graphs <- glyrepr::get_structure_graphs(
+        products,
+        return_list = TRUE
+      )
+      product_match_mode <- .glymotif_mode(products)
+      keep <- purrr::map_lgl(
+        product_graphs,
+        .is_promising_intermediate_graph,
+        target_graphs = private$target_graphs,
+        product_mode = product_match_mode,
+        target_mode = private$target_match_mode,
+        n_core_graph = private$n_core_graph,
+        pre_mgat2_graph = private$pre_mgat2_graph
+      )
       products <- products[keep]
+      product_graphs <- product_graphs[keep]
       if (length(products) == 0L) {
         return(zero_products())
       }
@@ -275,6 +337,7 @@ BfsSynthesisSearch <- R6::R6Class(
           any.missing = FALSE
         )
         products <- products[keep]
+        product_graphs <- product_graphs[keep]
         if (length(products) == 0L) return(zero_products())
       }
 
@@ -304,7 +367,10 @@ BfsSynthesisSearch <- R6::R6Class(
           new_keys[length(new_keys) + 1L] <- pk
         }
 
-        matched_targets <- private$matched_target_keys(products[j], pk)
+        matched_targets <- private$matched_target_keys(
+          pk,
+          product_graphs[[j]]
+        )
         if (length(matched_targets) > 0L) {
           found_endpoint_keys <- c(
             found_endpoint_keys,
@@ -357,7 +423,7 @@ BfsSynthesisSearch <- R6::R6Class(
       invisible(NULL)
     },
 
-    matched_target_keys = function(glycan, key) {
+    matched_target_keys = function(key, glycan_graph) {
       remaining_target_keys <- self$remaining_targets_map$keys()
       if (length(remaining_target_keys) == 0L) {
         return(character())
@@ -371,14 +437,19 @@ BfsSynthesisSearch <- R6::R6Class(
       }
 
       target_idx <- match(remaining_target_keys, self$to_keys)
-      target_glycans <- self$to_gs[target_idx]
-      target_matches <- glymotif::have_motifs(
-        glycan,
-        target_glycans,
-        alignments = "whole",
-        mode = "lenient"
+      target_graphs <- private$target_graphs[target_idx]
+      target_matches <- purrr::map_lgl(
+        target_graphs,
+        function(target_graph) {
+          glymotif::.g_have_motif(
+            glycan_graph,
+            target_graph,
+            alignment = "whole",
+            mode = "lenient"
+          )
+        }
       )
-      remaining_target_keys[as.logical(target_matches[1, ])]
+      remaining_target_keys[target_matches]
     }
   )
 )
@@ -429,6 +500,46 @@ is_promising_intermediate <- function(products, target_glycans) {
   res <- colSums(res_mat) > 0L
   res[.is_n_glycan(products) & !mgat2_ready(products)] <- TRUE
   res
+}
+
+# Check one canonical product graph using graphs prepared for a BFS search.
+.is_promising_intermediate_graph <- function(
+  product_graph,
+  target_graphs,
+  product_mode,
+  target_mode,
+  n_core_graph,
+  pre_mgat2_graph
+) {
+  target_contains_product <- purrr::some(
+    target_graphs,
+    function(target_graph) {
+      glymotif::.g_have_motif(
+        target_graph,
+        product_graph,
+        alignment = "core",
+        mode = target_mode
+      )
+    }
+  )
+  if (target_contains_product) {
+    return(TRUE)
+  }
+
+  is_n_glycan <- glymotif::.g_have_motif(
+    product_graph,
+    n_core_graph,
+    mode = product_mode
+  )
+  if (!is_n_glycan) {
+    return(FALSE)
+  }
+
+  glymotif::.g_have_motif(
+    product_graph,
+    pre_mgat2_graph,
+    mode = product_mode
+  )
 }
 
 #' Build result graph from BFS search results
