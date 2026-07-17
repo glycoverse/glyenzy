@@ -4,7 +4,13 @@
 \alias{trace_biosynthesis}
 \title{Trace the Biosynthetic Path of Glycans}
 \usage{
-trace_biosynthesis(glycans, enzymes = NULL, max_steps = 20, filter = NULL)
+trace_biosynthesis(
+  glycans,
+  enzymes = NULL,
+  max_steps = 20,
+  filter = NULL,
+  method = c("enzymatic", "virtual")
+)
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a character vector
@@ -13,7 +19,8 @@ If multiple glycans are provided, the starting structure will be decided by the 
 Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}} objects.
-If \code{NULL} (default), all available enzymes will be used.}
+If \code{NULL} (default), all available enzymes will be used.
+Must be \code{NULL} when \code{method = "virtual"}.}
 
 \item{max_steps}{Integer, maximum number of enzymatic steps to search.
 Default is 20.}
@@ -21,27 +28,55 @@ Default is 20.}
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
 a logical vector of the same length.
-It will be applied to all the generated glycans at each BFS step for pruning.}
+For \code{method = "enzymatic"}, it filters generated products. For
+\code{method = "virtual"}, it filters generated precursors during backward
+trimming.}
+
+\item{method}{Biosynthesis inference method. \code{"enzymatic"} (default) uses
+known enzyme rules in a forward search. \code{"virtual"} uses virtual enzymes
+in a backward search that removes terminal residues from the targets.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
 Vertices represent glycan structures with \code{name} attribute containing
 IUPAC-condensed strings. Edges represent enzymatic reactions with
-\code{enzyme} attribute containing gene symbols and \code{step} attribute
-indicating the step number. For multiple targets, the graph includes
-all synthesis paths needed to reach every target glycan.
+\code{enzyme} attribute containing gene symbols or virtual-enzyme names and
+\code{step} attribute indicating the forward synthesis step. For multiple
+targets, the graph includes all synthesis paths needed to reach every
+target glycan.
 }
 \description{
-Reconstruct the biosynthetic pathway for one or more glycans using enzymatic reactions.
-This function uses a multi-target breadth-first search to find all feasible pathways
-that can synthesize all the target glycans.
+Reconstruct biosynthetic pathways for one or more glycans. The default
+method uses known enzyme rules in a forward, multi-target breadth-first
+search. The virtual-enzyme method instead trims targets backward to infer
+every possible residue-addition order without substrate-specific rules.
 }
+\section{Virtual enzymes}{
+
+With \code{method = "virtual"}, each edge is named for the residue added by that
+step. Intact glycans include the linkage anomer and acceptor position, so a
+beta-1,4-linked GlcNAc is labeled \code{"b4GlcNAcT"}. Partial and topological
+glycans omit linkage information and use \code{"GlcNAcT"}; basic glycans use the
+generic residue name, such as \code{"HexNAcT"}.
+
+Virtual tracing starts N-glycans at the N-glycan core and all other glycans
+at their reducing-end root residue. In \code{\link[=path_biosynthesis]{path_biosynthesis()}}, the explicit
+\code{from} glycan is always the virtual starting structure. These networks do not
+apply organism-specific substrate rules and represent structural
+possibilities rather than biological feasibility.
+
+Basic structures do not retain glycan-class metadata. A basic structure
+matching the generic N-glycan-core topology is therefore assumed to be an
+N-glycan; use \code{\link[=path_biosynthesis]{path_biosynthesis()}} with an explicit \code{from} when that
+topology belongs to another glycan class.
+}
+
 \section{Important notes}{
 Here are some important notes for all functions in the \code{glyenzy} package.
 \subsection{Applicability}{
 
-All algorithms and enzyme information in glyenzy are applicable only to humans,
-and specifically to N-glycans and O-GalNAc glycans.
+Known-enzyme algorithms and enzyme information in glyenzy are applicable only
+to humans, and specifically to N-glycans and O-GalNAc glycans.
 Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
 or for glycans in other species (e.g., plants, insects).
 }
@@ -86,6 +121,8 @@ and a warning is raised because enzyme predictions may be less reliable.
 }
 
 \subsection{Starting points}{
+
+For known-enzyme path inference:
 \itemize{
 \item For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
 the N-glycan precursor transferred to Asn by OST.
@@ -112,6 +149,12 @@ glycans <- c(
   "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 )
 path <- trace_biosynthesis(glycans, max_steps = 20)
+
+# Build an enzyme-agnostic network using virtual enzymes
+virtual_path <- trace_biosynthesis(
+  "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
+  method = "virtual"
+)
 
 # View the path
 igraph::as_data_frame(path, what = "edges")

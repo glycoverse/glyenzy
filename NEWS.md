@@ -2,6 +2,7 @@
 
 ## New features
 
+* `trace_biosynthesis()` and `path_biosynthesis()` gain `method = "virtual"` to build enzyme-agnostic networks by trimming targets backward to the N-glycan core or reducing-end root. (#22)
 * Add support for non-intact glycan structures by using lenient motif matching with a warning about reduced reliability. (#25)
 
 ## Minor improvements and fixes
