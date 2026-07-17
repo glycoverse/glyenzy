@@ -134,6 +134,10 @@ test_that("BFS rule plans share only equivalent standard rules", {
   expect_length(private_plan$rules, 2L)
   expect_false(.can_batch_bfs_enzyme(custom))
   expect_equal(private_plan$enzyme_plan_ids, c(1L, 2L))
+
+  custom_starter <- enzyme("DPAGT1")
+  class(custom_starter) <- c("custom_starter", class(custom_starter))
+  expect_false(.can_batch_bfs_enzyme(custom_starter))
 })
 
 test_that("batched rule jobs preserve scalar products for every cell", {
@@ -348,6 +352,43 @@ test_that("custom enzyme actions retain scalar frontier order", {
 
   expect_equal(action_order, c("E1", "E2", "E1", "E2"))
   expect_length(result$all_edges, 4L)
+})
+
+test_that("custom enzyme-level actions retain S3 dispatch", {
+  calls <- 0L
+  action_method <- function(glycans, enzyme, structure_level = "intact") {
+    calls <<- calls + 1L
+    rep(
+      list(glyrepr::as_glycan_structure("Gal(b1-3)GalNAc(a1-")),
+      length(glycans)
+    )
+  }
+  rlang::local_bindings(
+    .apply_enzyme.test_custom_enzyme = action_method,
+    .env = globalenv()
+  )
+  custom <- make_enzyme(
+    name = "CUSTOM",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Gal(b1-3)GalNAc(a1-"
+    ))
+  )
+  class(custom) <- c("test_custom_enzyme", class(custom))
+
+  path <- trace_biosynthesis(
+    "Gal(b1-3)GalNAc(a1-",
+    enzymes = list(custom),
+    max_steps = 1
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(calls, 1L)
+  expect_equal(edges$to, "Gal(b1-3)GalNAc(a1-")
 })
 
 test_that("BFS batching does not group enzymes by name", {

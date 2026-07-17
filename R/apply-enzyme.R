@@ -277,8 +277,22 @@ apply_enzyme <- function(
   enzyme_class <- class(enzyme)
   identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
     identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme")) ||
-    inherits(enzyme, "glyenzy_starter_gt_enzyme") ||
-    inherits(enzyme, "glyenzy_npre_gt_enzyme")
+    identical(
+      enzyme_class,
+      c(
+        "glyenzy_starter_gt_enzyme",
+        "glyenzy_gt_enzyme",
+        "glyenzy_enzyme"
+      )
+    ) ||
+    identical(
+      enzyme_class,
+      c(
+        "glyenzy_npre_gt_enzyme",
+        "glyenzy_gt_enzyme",
+        "glyenzy_enzyme"
+      )
+    )
 }
 
 # Build a graph-independent signature for one prepared enzyme action.
