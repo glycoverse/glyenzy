@@ -168,6 +168,24 @@ test_that("apply_enzyme works with special reject rules", {
   )
 })
 
+test_that("apply_enzyme does not reuse an occupied acceptor carbon", {
+  enzyme <- make_enzyme(
+    name = "TEST_C3",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "GlcNAc(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  result <- apply_enzyme("Gal(b1-3)GalNAc(a1-", enzyme)
+
+  expect_equal(result, glyrepr::glycan_structure())
+})
+
 # ===== Normal Cases for GH Enzymes =====
 test_that("apply_enzyme works for MAN2A1", {
   glycans <- c(

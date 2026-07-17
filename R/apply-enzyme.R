@@ -124,6 +124,90 @@ apply_enzyme <- function(
   purrr::map(res, unique)
 }
 
+# Prepare the canonical rule graphs reused by the BFS graph-matching path.
+.prepare_rule_graphs <- function(rule) {
+  reject_keys <- as.character(rule$rejects)
+  duplicate_rejects <- unique(reject_keys[duplicated(reject_keys)])
+  if (length(duplicate_rejects) > 0L) {
+    cli::cli_abort(c(
+      "{.arg motifs} cannot have duplications.",
+      "x" = "Duplicate motifs: {.val {duplicate_rejects}}.",
+      "i" = "Consider using {.fn unique}."
+    ))
+  }
+
+  list(
+    acceptor = glyrepr::get_structure_graphs(rule$acceptor),
+    rejects = glyrepr::get_structure_graphs(rule$rejects, return_list = TRUE)
+  )
+}
+
+# Match one prepared rule against one canonical glycan graph.
+.match_rule_graph <- function(glycan_graph, rule, prepared_rule, mode) {
+  acceptor_matches <- glymotif::.g_match_motif(
+    glycan_graph,
+    prepared_rule$acceptor,
+    alignment = rule$acceptor_alignment,
+    mode = mode
+  )
+  if (length(prepared_rule$rejects) == 0L) {
+    return(acceptor_matches)
+  }
+
+  reject_matches <- purrr::map(
+    prepared_rule$rejects,
+    function(reject_graph) {
+      list(glymotif::.g_match_motif(
+        glycan_graph,
+        reject_graph,
+        alignment = rule$acceptor_alignment,
+        mode = mode
+      ))
+    }
+  )
+  .reject_matches(list(acceptor_matches), reject_matches)[[1]]
+}
+
+# Apply an enzyme using graphs prepared once for a BFS search.
+.apply_enzyme_prepared <- function(
+  glycan_graph,
+  enzyme,
+  prepared_rules,
+  structure_level,
+  mode
+) {
+  if (
+    inherits(enzyme, "glyenzy_starter_gt_enzyme") ||
+      inherits(enzyme, "glyenzy_npre_gt_enzyme")
+  ) {
+    return(glyrepr::glycan_structure())
+  }
+
+  rule_results <- purrr::map2(
+    enzyme$rules,
+    prepared_rules,
+    function(rule, prepared_rule) {
+      matches <- .match_rule_graph(
+        glycan_graph,
+        rule,
+        prepared_rule,
+        mode
+      )
+      .apply_rule_single(
+        glycan_graph,
+        matches,
+        rule,
+        enzyme,
+        structure_level = structure_level
+      )
+    }
+  )
+  if (length(rule_results) == 0L) {
+    return(glyrepr::glycan_structure())
+  }
+  unique(do.call(c, rule_results))
+}
+
 #' Apply an enzyme rule to a vector of glycan structures
 #'
 #' @param glycans A `glyrepr_structure` vector.
@@ -385,6 +469,10 @@ apply_enzyme <- function(
 #'   or NULL if the new residue cannot be added.
 #' @noRd
 .add_residue <- function(graph, idx_to_add_on, new_residue, new_linkage) {
+  if (!.acceptor_position_available(graph, idx_to_add_on, new_linkage)) {
+    return(NULL)
+  }
+
   idx_to_add <- igraph::vcount(graph) + 1
   new_graph <- graph
   new_graph <- igraph::add_vertices(
@@ -397,12 +485,29 @@ apply_enzyme <- function(
     c(idx_to_add_on, idx_to_add),
     attr = list(linkage = new_linkage)
   )
-  tryCatch(
-    {
-      glyrepr:::validate_single_glycan_structure(new_graph)
-    },
-    error = function(e) return(NULL)
+  new_graph
+}
+
+# Check that a known acceptor carbon is not already occupied. Unknown or
+# ambiguous acceptor positions cannot establish a collision and remain allowed.
+.acceptor_position_available <- function(graph, vertex, linkage) {
+  position <- sub(".*-", "", linkage)
+  if (identical(position, "?") || grepl("/", position, fixed = TRUE)) {
+    return(TRUE)
+  }
+
+  outgoing_edges <- igraph::incident(graph, vertex, mode = "out")
+  existing_linkages <- igraph::edge_attr(
+    graph,
+    "linkage",
+    index = outgoing_edges
   )
+  existing_positions <- sub(".*-", "", existing_linkages)
+  existing_positions <- existing_positions[
+    existing_positions != "?" &
+      !grepl("/", existing_positions, fixed = TRUE)
+  ]
+  !position %in% existing_positions
 }
 
 #' Remove a residue from a glycan graph
