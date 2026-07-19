@@ -57,9 +57,9 @@ package.
 ### Applicability
 
 Known-enzyme algorithms and enzyme information in glyenzy are applicable
-only to humans, and specifically to N-glycans and O-GalNAc glycans.
-Results may be inaccurate for other types of glycans (e.g., GAGs,
-glycolipids) or for glycans in other species (e.g., plants, insects).
+only to humans, and specifically to N-glycans and O-glycans. Results may
+be inaccurate for other types of glycans (e.g., GAGs, glycolipids) or
+for glycans in other species (e.g., plants, insects).
 
 ### Inclusiveness
 
