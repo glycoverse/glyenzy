@@ -76,7 +76,7 @@ Here are some important notes for all functions in the \code{glyenzy} package.
 \subsection{Applicability}{
 
 Known-enzyme algorithms and enzyme information in glyenzy are applicable only
-to humans, and specifically to N-glycans and O-GalNAc glycans.
+to humans, and specifically to N-glycans and O-glycans.
 Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
 or for glycans in other species (e.g., plants, insects).
 }
