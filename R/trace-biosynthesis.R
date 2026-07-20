@@ -2,8 +2,9 @@
 #'
 #' Reconstruct biosynthetic pathways for one or more glycans. The default
 #' method uses known enzyme rules in a forward, multi-target breadth-first
-#' search. The virtual-enzyme method instead trims targets backward to infer
-#' every possible residue-addition order without substrate-specific rules.
+#' search. The virtual and hybrid methods instead trim targets backward to infer
+#' every possible residue-addition order. Hybrid tracing additionally annotates
+#' each virtual transition with concrete enzymes whose rules can perform it.
 #'
 #' @inheritSection have_enzyme Important notes
 #'
@@ -20,6 +21,12 @@
 #' apply organism-specific substrate rules and represent structural
 #' possibilities rather than biological feasibility.
 #'
+#' With `method = "hybrid"`, the same virtual network is returned and every edge
+#' gains a list-valued `concrete_enzymes` attribute. It contains all candidate
+#' enzymes whose rules can transform that edge's substrate into its product.
+#' The vector is empty when no candidate rule supports the transition. The
+#' scalar `enzyme` attribute continues to contain the virtual-enzyme name.
+#'
 #' Basic structures do not retain glycan-class metadata. A basic structure
 #' matching the generic N-glycan-core topology is therefore assumed to be an
 #' N-glycan; use [path_biosynthesis()] with an explicit `from` when that
@@ -29,28 +36,43 @@
 #'   of strings supported by [glyparse::auto_parse()]. Can also be a single glycan.
 #'   If multiple glycans are provided, the starting structure will be decided by the first glycan.
 #'   Therefore, please make sure `glycans` are not of mixed glycan types.
-#' @param enzymes A character vector of gene symbols, or a list of [enzyme()] objects.
-#'   If `NULL` (default), all available enzymes will be used.
-#'   Must be `NULL` when `method = "virtual"`.
+#' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
+#'   objects. If `NULL` (default), all available enzymes will be used. With
+#'   `method = "hybrid"`, this selects the candidate enzymes used to annotate
+#'   virtual transitions. Must be `NULL` when `method = "virtual"`.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
 #'   Default is 20.
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length.
 #'   For `method = "enzymatic"`, it filters generated products. For
-#'   `method = "virtual"`, it filters generated precursors during backward
-#'   trimming.
+#'   `method = "virtual"` or `method = "hybrid"`, it filters generated
+#'   precursors during backward trimming.
 #' @param method Biosynthesis inference method. `"enzymatic"` (default) uses
 #'   known enzyme rules in a forward search. `"virtual"` uses virtual enzymes
 #'   in a backward search that removes terminal residues from the targets.
+#'   `"hybrid"` builds the same virtual network and annotates each transition
+#'   with concrete enzyme candidates.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
-#'   Vertices represent glycan structures with `name` attribute containing
-#'   IUPAC-condensed strings. Edges represent enzymatic reactions with
-#'   `enzyme` attribute containing gene symbols or virtual-enzyme names and
-#'   `step` attribute indicating the forward synthesis step. For multiple
-#'   targets, the graph includes all synthesis paths needed to reach every
-#'   target glycan.
+#'   Vertices represent glycan structures, with IUPAC-condensed strings in the
+#'   `name` attribute. Every edge has a `step` attribute indicating the forward
+#'   synthesis step. Other edge attributes depend on `method`:
+#'
+#'   - `method = "enzymatic"`: returns a multi-edge graph. Each edge represents
+#'     one concrete enzyme, whose gene symbol is stored in `enzyme`. When
+#'     multiple enzymes catalyze the same substrate-to-product transition, they
+#'     are represented by parallel edges.
+#'   - `method = "virtual"`: has one edge per unique substrate-to-product
+#'     transition. `enzyme` contains the virtual-enzyme name inferred from the
+#'     residue and linkage added in that transition.
+#'   - `method = "hybrid"`: has the same single-edge topology as `"virtual"`.
+#'     `enzyme` contains the virtual-enzyme name, and `concrete_enzymes` is a
+#'     list of character vectors containing every candidate concrete enzyme.
+#'     The vector is empty when no candidate rule supports that transition.
+#'
+#'   For multiple targets, the graph includes all synthesis paths needed to
+#'   reach every target glycan.
 #'
 #' @examples
 #' library(glyrepr)
@@ -73,6 +95,12 @@
 #'   method = "virtual"
 #' )
 #'
+#' # Annotate virtual transitions with exact rule-matched enzyme candidates
+#' hybrid_path <- trace_biosynthesis(
+#'   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
+#'   method = "hybrid"
+#' )
+#'
 #' # View the path
 #' igraph::as_data_frame(path, what = "edges")
 #'
@@ -82,7 +110,7 @@ trace_biosynthesis <- function(
   enzymes = NULL,
   max_steps = 20,
   filter = NULL,
-  method = c("enzymatic", "virtual")
+  method = c("enzymatic", "virtual", "hybrid")
 ) {
   # Parse and validate basic inputs first
   method <- match.arg(method)
@@ -92,15 +120,27 @@ trace_biosynthesis <- function(
     filter <- rlang::as_function(filter)
   }
 
-  if (identical(method, "virtual")) {
-    .validate_virtual_enzymes(enzymes)
-    starting_glycan <- .decide_virtual_starting_glycan(glycans[1])
-    return(.perform_virtual_synthesis(
+  if (method %in% c("virtual", "hybrid")) {
+    concrete_enzymes <- NULL
+    if (identical(method, "virtual")) {
+      .validate_virtual_enzymes(enzymes)
+    } else {
+      concrete_enzymes <- .process_enzymes_arg(
+        enzymes,
+        apply_prefilter = FALSE
+      )
+    }
+    starting_glycan <- .decide_starting_glycan(glycans[1], method)
+    path <- .perform_virtual_synthesis(
       starting_glycan,
       glycans,
       max_steps,
       filter
-    ))
+    )
+    if (identical(method, "hybrid")) {
+      path <- .amplify_virtual_edges(path, concrete_enzymes)
+    }
+    return(path)
   }
 
   enzymes <- .process_enzymes_arg(
@@ -110,15 +150,21 @@ trace_biosynthesis <- function(
   )
 
   # Find all possible paths using unified BFS logic
-  starting_glycan <- .decide_starting_glycan(glycans[1]) # Use first glycan to decide starting point
+  starting_glycan <- .decide_starting_glycan(glycans[1], method)
   .perform_bfs_synthesis(starting_glycan, glycans, enzymes, max_steps, filter)
 }
 
-.decide_starting_glycan <- function(glycan) {
+.decide_starting_glycan <- function(
+  glycan,
+  method = c("enzymatic", "virtual", "hybrid")
+) {
+  method <- match.arg(method)
+  if (method %in% c("virtual", "hybrid")) {
+    return(.decide_virtual_starting_glycan(glycan))
+  }
+
   if (.can_reliably_detect_n_glycan(glycan) && .is_n_glycan(glycan)) {
-    start <- glyparse::parse_iupac_condensed(
-      "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-    )
+    start <- .n_glycan_starting_glycan(method)
   } else if (.have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
   } else if (.have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {
@@ -136,6 +182,71 @@ trace_biosynthesis <- function(
     ))
   }
   start
+}
+
+.decide_virtual_starting_glycan <- function(glycan) {
+  graph <- glyrepr::get_structure_graphs(glycan)
+  core <- .n_glycan_starting_glycan(
+    "virtual",
+    .glycan_structure_level(glycan)
+  )
+  core_matches <- .virtual_core_matches(glycan, core)
+
+  if (length(core_matches) > 0L) {
+    start_graph <- igraph::induced_subgraph(graph, core_matches[[1]])
+  } else {
+    root <- which(igraph::degree(graph, mode = "in") == 0L)
+    start_graph <- igraph::induced_subgraph(graph, root)
+  }
+
+  glyrepr::as_glycan_structure(start_graph)
+}
+
+.n_glycan_starting_glycan <- function(
+  method = c("enzymatic", "virtual"),
+  structure_level = "intact"
+) {
+  method <- match.arg(method)
+  checkmate::assert_choice(
+    structure_level,
+    c("intact", "partial", "topological", "basic")
+  )
+
+  if (identical(method, "enzymatic")) {
+    return(glyparse::parse_iupac_condensed(
+      "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    ))
+  }
+
+  if (identical(structure_level, "basic")) {
+    return(glyrepr::n_glycan_core(
+      linkage = FALSE,
+      mono_type = "generic"
+    ))
+  }
+  if (identical(structure_level, "topological")) {
+    return(glyrepr::n_glycan_core(linkage = FALSE))
+  }
+  glyrepr::n_glycan_core()
+}
+
+.virtual_core_matches <- function(glycan, core) {
+  structure_level <- .glycan_structure_level(glycan)
+  mode <- if (identical(structure_level, "partial")) {
+    "lenient"
+  } else {
+    "strict"
+  }
+
+  tryCatch(
+    glymotif::match_motif(
+      glycan,
+      core,
+      alignment = "core",
+      mode = mode
+    )[[1]],
+    error = function(e) list()
+  )
 }
 
 .can_reliably_detect_n_glycan <- function(glycan) {

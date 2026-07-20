@@ -143,9 +143,7 @@ BfsSynthesisSearch <- R6::R6Class(
       private$target_match_mode <- .glymotif_mode(self$to_gs)
       private$rule_plan <- .prepare_bfs_rule_plan(self$enzymes)
       private$n_core_graph <- glyrepr::get_structure_graphs(
-        glyrepr::as_glycan_structure(
-          "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-        )
+        .n_glycan_starting_glycan("virtual")
       )
       private$pre_mgat2_graph <- glyrepr::get_structure_graphs(
         glyrepr::as_glycan_structure(

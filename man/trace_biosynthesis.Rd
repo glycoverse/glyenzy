@@ -9,7 +9,7 @@ trace_biosynthesis(
   enzymes = NULL,
   max_steps = 20,
   filter = NULL,
-  method = c("enzymatic", "virtual")
+  method = c("enzymatic", "virtual", "hybrid")
 )
 }
 \arguments{
@@ -18,9 +18,10 @@ of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}
 If multiple glycans are provided, the starting structure will be decided by the first glycan.
 Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 
-\item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}} objects.
-If \code{NULL} (default), all available enzymes will be used.
-Must be \code{NULL} when \code{method = "virtual"}.}
+\item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
+objects. If \code{NULL} (default), all available enzymes will be used. With
+\code{method = "hybrid"}, this selects the candidate enzymes used to annotate
+virtual transitions. Must be \code{NULL} when \code{method = "virtual"}.}
 
 \item{max_steps}{Integer, maximum number of enzymatic steps to search.
 Default is 20.}
@@ -29,27 +30,43 @@ Default is 20.}
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
 a logical vector of the same length.
 For \code{method = "enzymatic"}, it filters generated products. For
-\code{method = "virtual"}, it filters generated precursors during backward
-trimming.}
+\code{method = "virtual"} or \code{method = "hybrid"}, it filters generated
+precursors during backward trimming.}
 
 \item{method}{Biosynthesis inference method. \code{"enzymatic"} (default) uses
 known enzyme rules in a forward search. \code{"virtual"} uses virtual enzymes
-in a backward search that removes terminal residues from the targets.}
+in a backward search that removes terminal residues from the targets.
+\code{"hybrid"} builds the same virtual network and annotates each transition
+with concrete enzyme candidates.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
-Vertices represent glycan structures with \code{name} attribute containing
-IUPAC-condensed strings. Edges represent enzymatic reactions with
-\code{enzyme} attribute containing gene symbols or virtual-enzyme names and
-\code{step} attribute indicating the forward synthesis step. For multiple
-targets, the graph includes all synthesis paths needed to reach every
-target glycan.
+Vertices represent glycan structures, with IUPAC-condensed strings in the
+\code{name} attribute. Every edge has a \code{step} attribute indicating the forward
+synthesis step. Other edge attributes depend on \code{method}:
+\itemize{
+\item \code{method = "enzymatic"}: returns a multi-edge graph. Each edge represents
+one concrete enzyme, whose gene symbol is stored in \code{enzyme}. When
+multiple enzymes catalyze the same substrate-to-product transition, they
+are represented by parallel edges.
+\item \code{method = "virtual"}: has one edge per unique substrate-to-product
+transition. \code{enzyme} contains the virtual-enzyme name inferred from the
+residue and linkage added in that transition.
+\item \code{method = "hybrid"}: has the same single-edge topology as \code{"virtual"}.
+\code{enzyme} contains the virtual-enzyme name, and \code{concrete_enzymes} is a
+list of character vectors containing every candidate concrete enzyme.
+The vector is empty when no candidate rule supports that transition.
+}
+
+For multiple targets, the graph includes all synthesis paths needed to
+reach every target glycan.
 }
 \description{
 Reconstruct biosynthetic pathways for one or more glycans. The default
 method uses known enzyme rules in a forward, multi-target breadth-first
-search. The virtual-enzyme method instead trims targets backward to infer
-every possible residue-addition order without substrate-specific rules.
+search. The virtual and hybrid methods instead trim targets backward to infer
+every possible residue-addition order. Hybrid tracing additionally annotates
+each virtual transition with concrete enzymes whose rules can perform it.
 }
 \section{Virtual enzymes}{
 
@@ -64,6 +81,12 @@ at their reducing-end root residue. In \code{\link[=path_biosynthesis]{path_bios
 \code{from} glycan is always the virtual starting structure. These networks do not
 apply organism-specific substrate rules and represent structural
 possibilities rather than biological feasibility.
+
+With \code{method = "hybrid"}, the same virtual network is returned and every edge
+gains a list-valued \code{concrete_enzymes} attribute. It contains all candidate
+enzymes whose rules can transform that edge's substrate into its product.
+The vector is empty when no candidate rule supports the transition. The
+scalar \code{enzyme} attribute continues to contain the virtual-enzyme name.
 
 Basic structures do not retain glycan-class metadata. A basic structure
 matching the generic N-glycan-core topology is therefore assumed to be an
@@ -154,6 +177,12 @@ path <- trace_biosynthesis(glycans, max_steps = 20)
 virtual_path <- trace_biosynthesis(
   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
   method = "virtual"
+)
+
+# Annotate virtual transitions with exact rule-matched enzyme candidates
+hybrid_path <- trace_biosynthesis(
+  "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
+  method = "hybrid"
 )
 
 # View the path
