@@ -7,6 +7,12 @@
 - [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
   and
   [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  gain `method = "hybrid"` to annotate virtual biosynthesis transitions
+  with exact rule-matched concrete enzyme candidates in the list-valued
+  `concrete_enzymes` edge attribute. (#28)
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  and
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
   gain `method = "virtual"` to build enzyme-agnostic networks by
   trimming targets backward to the N-glycan core or reducing-end root.
   (#22)

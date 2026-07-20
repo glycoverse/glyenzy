@@ -2,9 +2,10 @@
 
 Reconstruct biosynthetic pathways for one or more glycans. The default
 method uses known enzyme rules in a forward, multi-target breadth-first
-search. The virtual-enzyme method instead trims targets backward to
-infer every possible residue-addition order without substrate-specific
-rules.
+search. The virtual and hybrid methods instead trim targets backward to
+infer every possible residue-addition order. Hybrid tracing additionally
+annotates each virtual transition with concrete enzymes whose rules can
+perform it.
 
 ## Usage
 
@@ -14,7 +15,7 @@ trace_biosynthesis(
   enzymes = NULL,
   max_steps = 20,
   filter = NULL,
-  method = c("enzymatic", "virtual")
+  method = c("enzymatic", "virtual", "hybrid")
 )
 ```
 
@@ -34,8 +35,10 @@ trace_biosynthesis(
 
   A character vector of gene symbols, or a list of
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  objects. If `NULL` (default), all available enzymes will be used. Must
-  be `NULL` when `method = "virtual"`.
+  objects. If `NULL` (default), all available enzymes will be used. With
+  `method = "hybrid"`, this selects the candidate enzymes used to
+  annotate virtual transitions. Must be `NULL` when
+  `method = "virtual"`.
 
 - max_steps:
 
@@ -48,25 +51,42 @@ trace_biosynthesis(
   [`glyrepr::glycan_structure()`](https://glycoverse.github.io/glyrepr/reference/glycan_structure.html)
   vector as input and return a logical vector of the same length. For
   `method = "enzymatic"`, it filters generated products. For
-  `method = "virtual"`, it filters generated precursors during backward
-  trimming.
+  `method = "virtual"` or `method = "hybrid"`, it filters generated
+  precursors during backward trimming.
 
 - method:
 
   Biosynthesis inference method. `"enzymatic"` (default) uses known
   enzyme rules in a forward search. `"virtual"` uses virtual enzymes in
   a backward search that removes terminal residues from the targets.
+  `"hybrid"` builds the same virtual network and annotates each
+  transition with concrete enzyme candidates.
 
 ## Value
 
 An
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html)
 object representing the synthesis path(s). Vertices represent glycan
-structures with `name` attribute containing IUPAC-condensed strings.
-Edges represent enzymatic reactions with `enzyme` attribute containing
-gene symbols or virtual-enzyme names and `step` attribute indicating the
-forward synthesis step. For multiple targets, the graph includes all
-synthesis paths needed to reach every target glycan.
+structures, with IUPAC-condensed strings in the `name` attribute. Every
+edge has a `step` attribute indicating the forward synthesis step. Other
+edge attributes depend on `method`:
+
+- `method = "enzymatic"`: returns a multi-edge graph. Each edge
+  represents one concrete enzyme, whose gene symbol is stored in
+  `enzyme`. When multiple enzymes catalyze the same substrate-to-product
+  transition, they are represented by parallel edges.
+
+- `method = "virtual"`: has one edge per unique substrate-to-product
+  transition. `enzyme` contains the virtual-enzyme name inferred from
+  the residue and linkage added in that transition.
+
+- `method = "hybrid"`: has the same single-edge topology as `"virtual"`.
+  `enzyme` contains the virtual-enzyme name, and `concrete_enzymes` is a
+  list of character vectors containing every candidate concrete enzyme.
+  The vector is empty when no candidate rule supports that transition.
+
+For multiple targets, the graph includes all synthesis paths needed to
+reach every target glycan.
 
 ## Virtual enzymes
 
@@ -82,6 +102,13 @@ glycans at their reducing-end root residue. In
 the explicit `from` glycan is always the virtual starting structure.
 These networks do not apply organism-specific substrate rules and
 represent structural possibilities rather than biological feasibility.
+
+With `method = "hybrid"`, the same virtual network is returned and every
+edge gains a list-valued `concrete_enzymes` attribute. It contains all
+candidate enzymes whose rules can transform that edge's substrate into
+its product. The vector is empty when no candidate rule supports the
+transition. The scalar `enzyme` attribute continues to contain the
+virtual-enzyme name.
 
 Basic structures do not retain glycan-class metadata. A basic structure
 matching the generic N-glycan-core topology is therefore assumed to be
@@ -179,6 +206,12 @@ path <- trace_biosynthesis(glycans, max_steps = 20)
 virtual_path <- trace_biosynthesis(
   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
   method = "virtual"
+)
+
+# Annotate virtual transitions with exact rule-matched enzyme candidates
+hybrid_path <- trace_biosynthesis(
+  "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
+  method = "hybrid"
 )
 
 # View the path

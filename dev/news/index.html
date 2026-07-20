@@ -36,6 +36,8 @@
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
+<code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> and <code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> gain <code>method = "hybrid"</code> to annotate virtual biosynthesis transitions with exact rule-matched concrete enzyme candidates in the list-valued <code>concrete_enzymes</code> edge attribute. (#28)</li>
+<li>
 <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> and <code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> gain <code>method = "virtual"</code> to build enzyme-agnostic networks by trimming targets backward to the N-glycan core or reducing-end root. (#22)</li>
 <li>Add support for non-intact glycan structures by using lenient motif matching with a warning about reduced reliability. (#25)</li>
 </ul></div>
