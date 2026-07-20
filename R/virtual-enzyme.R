@@ -1,53 +1,5 @@
 # Backward biosynthesis search for virtual enzymes -------------------------
 
-.decide_virtual_starting_glycan <- function(glycan) {
-  graph <- glyrepr::get_structure_graphs(glycan)
-  core <- .virtual_n_glycan_core(glycan)
-  core_matches <- .virtual_core_matches(glycan, core)
-
-  if (length(core_matches) > 0L) {
-    start_graph <- igraph::induced_subgraph(graph, core_matches[[1]])
-  } else {
-    root <- which(igraph::degree(graph, mode = "in") == 0L)
-    start_graph <- igraph::induced_subgraph(graph, root)
-  }
-
-  glyrepr::as_glycan_structure(start_graph)
-}
-
-.virtual_n_glycan_core <- function(glycan) {
-  structure_level <- .glycan_structure_level(glycan)
-  if (identical(structure_level, "basic")) {
-    return(glyrepr::n_glycan_core(
-      linkage = FALSE,
-      mono_type = "generic"
-    ))
-  }
-  if (identical(structure_level, "topological")) {
-    return(glyrepr::n_glycan_core(linkage = FALSE))
-  }
-  glyrepr::n_glycan_core()
-}
-
-.virtual_core_matches <- function(glycan, core) {
-  structure_level <- .glycan_structure_level(glycan)
-  mode <- if (identical(structure_level, "partial")) {
-    "lenient"
-  } else {
-    "strict"
-  }
-
-  tryCatch(
-    glymotif::match_motif(
-      glycan,
-      core,
-      alignment = "core",
-      mode = mode
-    )[[1]],
-    error = function(e) list()
-  )
-}
-
 .prepare_virtual_start <- function(from, to) {
   from_level <- .glycan_structure_level(from)
   to_level <- .glycan_structure_level(to)

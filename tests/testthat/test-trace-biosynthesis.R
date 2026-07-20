@@ -2,6 +2,25 @@
 # The concrete results of this function is difficult to test,
 # so we only validate some properties of the resulting igraph.
 
+test_that("N-glycan starting structures depend on the tracing method", {
+  target <- glyparse::auto_parse(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+
+  expect_equal(
+    as.character(.decide_starting_glycan(target, "enzymatic")),
+    "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_equal(
+    as.character(.decide_starting_glycan(target, "virtual")),
+    as.character(glyrepr::n_glycan_core())
+  )
+  expect_equal(
+    as.character(.decide_starting_glycan(target, "hybrid")),
+    as.character(glyrepr::n_glycan_core())
+  )
+})
+
 test_that("trace_biosynthesis works for a high-mannose N-glycan", {
   glycan <- "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   path <- trace_biosynthesis(glycan)

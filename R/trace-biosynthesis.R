@@ -130,7 +130,7 @@ trace_biosynthesis <- function(
         apply_prefilter = FALSE
       )
     }
-    starting_glycan <- .decide_virtual_starting_glycan(glycans[1])
+    starting_glycan <- .decide_starting_glycan(glycans[1], method)
     path <- .perform_virtual_synthesis(
       starting_glycan,
       glycans,
@@ -150,15 +150,21 @@ trace_biosynthesis <- function(
   )
 
   # Find all possible paths using unified BFS logic
-  starting_glycan <- .decide_starting_glycan(glycans[1]) # Use first glycan to decide starting point
+  starting_glycan <- .decide_starting_glycan(glycans[1], method)
   .perform_bfs_synthesis(starting_glycan, glycans, enzymes, max_steps, filter)
 }
 
-.decide_starting_glycan <- function(glycan) {
+.decide_starting_glycan <- function(
+  glycan,
+  method = c("enzymatic", "virtual", "hybrid")
+) {
+  method <- match.arg(method)
+  if (method %in% c("virtual", "hybrid")) {
+    return(.decide_virtual_starting_glycan(glycan))
+  }
+
   if (.can_reliably_detect_n_glycan(glycan) && .is_n_glycan(glycan)) {
-    start <- glyparse::parse_iupac_condensed(
-      "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-    )
+    start <- .n_glycan_starting_glycan(method)
   } else if (.have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
   } else if (.have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {
@@ -176,6 +182,71 @@ trace_biosynthesis <- function(
     ))
   }
   start
+}
+
+.decide_virtual_starting_glycan <- function(glycan) {
+  graph <- glyrepr::get_structure_graphs(glycan)
+  core <- .n_glycan_starting_glycan(
+    "virtual",
+    .glycan_structure_level(glycan)
+  )
+  core_matches <- .virtual_core_matches(glycan, core)
+
+  if (length(core_matches) > 0L) {
+    start_graph <- igraph::induced_subgraph(graph, core_matches[[1]])
+  } else {
+    root <- which(igraph::degree(graph, mode = "in") == 0L)
+    start_graph <- igraph::induced_subgraph(graph, root)
+  }
+
+  glyrepr::as_glycan_structure(start_graph)
+}
+
+.n_glycan_starting_glycan <- function(
+  method = c("enzymatic", "virtual"),
+  structure_level = "intact"
+) {
+  method <- match.arg(method)
+  checkmate::assert_choice(
+    structure_level,
+    c("intact", "partial", "topological", "basic")
+  )
+
+  if (identical(method, "enzymatic")) {
+    return(glyparse::parse_iupac_condensed(
+      "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    ))
+  }
+
+  if (identical(structure_level, "basic")) {
+    return(glyrepr::n_glycan_core(
+      linkage = FALSE,
+      mono_type = "generic"
+    ))
+  }
+  if (identical(structure_level, "topological")) {
+    return(glyrepr::n_glycan_core(linkage = FALSE))
+  }
+  glyrepr::n_glycan_core()
+}
+
+.virtual_core_matches <- function(glycan, core) {
+  structure_level <- .glycan_structure_level(glycan)
+  mode <- if (identical(structure_level, "partial")) {
+    "lenient"
+  } else {
+    "strict"
+  }
+
+  tryCatch(
+    glymotif::match_motif(
+      glycan,
+      core,
+      alignment = "core",
+      mode = mode
+    )[[1]],
+    error = function(e) list()
+  )
 }
 
 .can_reliably_detect_n_glycan <- function(glycan) {
