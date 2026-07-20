@@ -41,12 +41,25 @@ with concrete enzyme candidates.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
-Vertices represent glycan structures with \code{name} attribute containing
-IUPAC-condensed strings. Edges represent enzymatic reactions with
-\code{enzyme} attribute containing gene symbols or virtual-enzyme names and
-\code{step} attribute indicating the forward synthesis step. Hybrid graphs also
-have a list-valued \code{concrete_enzymes} edge attribute. For multiple targets,
-the graph includes all synthesis paths needed to reach every target glycan.
+Vertices represent glycan structures, with IUPAC-condensed strings in the
+\code{name} attribute. Every edge has a \code{step} attribute indicating the forward
+synthesis step. Other edge attributes depend on \code{method}:
+\itemize{
+\item \code{method = "enzymatic"}: returns a multi-edge graph. Each edge represents
+one concrete enzyme, whose gene symbol is stored in \code{enzyme}. When
+multiple enzymes catalyze the same substrate-to-product transition, they
+are represented by parallel edges.
+\item \code{method = "virtual"}: has one edge per unique substrate-to-product
+transition. \code{enzyme} contains the virtual-enzyme name inferred from the
+residue and linkage added in that transition.
+\item \code{method = "hybrid"}: has the same single-edge topology as \code{"virtual"}.
+\code{enzyme} contains the virtual-enzyme name, and \code{concrete_enzymes} is a
+list of character vectors containing every candidate concrete enzyme.
+The vector is empty when no candidate rule supports that transition.
+}
+
+For multiple targets, the graph includes all synthesis paths needed to
+reach every target glycan.
 }
 \description{
 Reconstruct biosynthetic pathways for one or more glycans. The default

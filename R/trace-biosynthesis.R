@@ -55,12 +55,24 @@
 #'   with concrete enzyme candidates.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
-#'   Vertices represent glycan structures with `name` attribute containing
-#'   IUPAC-condensed strings. Edges represent enzymatic reactions with
-#'   `enzyme` attribute containing gene symbols or virtual-enzyme names and
-#'   `step` attribute indicating the forward synthesis step. Hybrid graphs also
-#'   have a list-valued `concrete_enzymes` edge attribute. For multiple targets,
-#'   the graph includes all synthesis paths needed to reach every target glycan.
+#'   Vertices represent glycan structures, with IUPAC-condensed strings in the
+#'   `name` attribute. Every edge has a `step` attribute indicating the forward
+#'   synthesis step. Other edge attributes depend on `method`:
+#'
+#'   - `method = "enzymatic"`: returns a multi-edge graph. Each edge represents
+#'     one concrete enzyme, whose gene symbol is stored in `enzyme`. When
+#'     multiple enzymes catalyze the same substrate-to-product transition, they
+#'     are represented by parallel edges.
+#'   - `method = "virtual"`: has one edge per unique substrate-to-product
+#'     transition. `enzyme` contains the virtual-enzyme name inferred from the
+#'     residue and linkage added in that transition.
+#'   - `method = "hybrid"`: has the same single-edge topology as `"virtual"`.
+#'     `enzyme` contains the virtual-enzyme name, and `concrete_enzymes` is a
+#'     list of character vectors containing every candidate concrete enzyme.
+#'     The vector is empty when no candidate rule supports that transition.
+#'
+#'   For multiple targets, the graph includes all synthesis paths needed to
+#'   reach every target glycan.
 #'
 #' @examples
 #' library(glyrepr)
