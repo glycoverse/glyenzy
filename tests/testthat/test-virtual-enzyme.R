@@ -274,3 +274,162 @@ test_that("virtual tracing reports unreachable paths", {
     )
   )
 })
+
+test_that("hybrid tracing annotates exact transitions in candidate order", {
+  target <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
+  candidates <- c("ST6GAL2", "B4GALT2", "ST6GAL1", "B4GALT1")
+
+  path <- trace_biosynthesis(
+    target,
+    enzymes = candidates,
+    method = "hybrid"
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+  edges <- edges[order(edges$step), ]
+
+  expect_equal(edges$enzyme, c("b4GalT", "a6Neu5AcT"))
+  expect_equal(
+    edges$concrete_enzymes,
+    list(c("B4GALT2", "B4GALT1"), c("ST6GAL2", "ST6GAL1"))
+  )
+
+  default_path <- path_biosynthesis(
+    "Gal(b1-4)GlcNAc(b1-",
+    target,
+    method = "hybrid"
+  )
+  expect_equal(
+    igraph::E(default_path)$concrete_enzymes,
+    list(c("ST6GAL1", "ST6GAL2"))
+  )
+})
+
+test_that("hybrid tracing retains unsupported virtual transitions", {
+  target <- "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+
+  path <- trace_biosynthesis(
+    target,
+    enzymes = "C1GALT1",
+    method = "hybrid"
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+  before_branch <- edges$from == "GalNAc(a1-" & edges$enzyme == "b3GalT"
+  after_branch <- edges$from == "GlcNAc(b1-6)GalNAc(a1-" &
+    edges$enzyme == "b3GalT"
+
+  expect_equal(edges$concrete_enzymes[before_branch], list("C1GALT1"))
+  expect_equal(edges$concrete_enzymes[after_branch], list(character()))
+})
+
+test_that("hybrid tracing matches reduced-level transitions", {
+  intact_from <- glyrepr::o_glycan_core_1()
+  intact_to <- glyrepr::o_glycan_core_2()
+  topological_from <- glyrepr::reduce_structure_level(
+    intact_from,
+    "topological"
+  )
+  topological_to <- glyrepr::reduce_structure_level(
+    intact_to,
+    "topological"
+  )
+  basic_from <- glyrepr::reduce_structure_level(intact_from, "basic")
+  basic_to <- glyrepr::reduce_structure_level(intact_to, "basic")
+  partial_to <- glyparse::auto_parse(
+    "Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-"
+  )
+
+  paths <- list(
+    partial = suppressWarnings(path_biosynthesis(
+      intact_from,
+      partial_to,
+      enzymes = "GCNT1",
+      method = "hybrid"
+    )),
+    topological = suppressWarnings(path_biosynthesis(
+      topological_from,
+      topological_to,
+      enzymes = "GCNT1",
+      method = "hybrid"
+    )),
+    basic = suppressWarnings(path_biosynthesis(
+      basic_from,
+      basic_to,
+      enzymes = "GCNT1",
+      method = "hybrid"
+    ))
+  )
+
+  expect_equal(
+    unname(purrr::map(paths, ~ igraph::E(.x)$concrete_enzymes)),
+    rep(list(list("GCNT1")), 3L)
+  )
+})
+
+test_that("hybrid tracing retains custom enzyme S3 dispatch", {
+  calls <- 0L
+  action_method <- function(glycans, enzyme, structure_level = "intact") {
+    calls <<- calls + 1L
+    expect_length(glycans, 1L)
+    rep(
+      list(glyrepr::as_glycan_structure("Gal(b1-3)GalNAc(a1-")),
+      length(glycans)
+    )
+  }
+  rlang::local_bindings(
+    .apply_enzyme.test_hybrid_enzyme = action_method,
+    .env = globalenv()
+  )
+  custom <- make_enzyme(
+    name = "CUSTOM",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Gal(b1-3)GalNAc(a1-"
+    ))
+  )
+  class(custom) <- c("test_hybrid_enzyme", class(custom))
+
+  path <- trace_biosynthesis(
+    "Gal(b1-3)GalNAc(a1-",
+    enzymes = list(custom),
+    method = "hybrid"
+  )
+
+  expect_equal(calls, 1L)
+  expect_equal(igraph::E(path)$concrete_enzymes, list("CUSTOM"))
+})
+
+test_that("hybrid tracing preserves virtual topology and trivial paths", {
+  targets <- c(
+    "Gal(b1-3)GalNAc(a1-",
+    "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+  )
+  virtual <- trace_biosynthesis(targets, method = "virtual")
+  hybrid <- trace_biosynthesis(
+    targets,
+    enzymes = c("C1GALT1", "GCNT1"),
+    method = "hybrid"
+  )
+  virtual_edges <- igraph::as_data_frame(virtual, what = "edges")
+  hybrid_edges <- igraph::as_data_frame(hybrid, what = "edges")
+
+  expect_equal(
+    hybrid_edges[c("from", "to", "enzyme", "step")],
+    virtual_edges
+  )
+  expect_length(hybrid_edges$concrete_enzymes, nrow(virtual_edges))
+
+  glycan <- "Gal(b1-3)GalNAc(a1-"
+  trivial <- path_biosynthesis(
+    glycan,
+    glycan,
+    enzymes = "C1GALT1",
+    method = "hybrid"
+  )
+
+  expect_equal(igraph::ecount(trivial), 0L)
+  expect_equal(igraph::edge_attr(trivial, "concrete_enzymes"), list())
+})

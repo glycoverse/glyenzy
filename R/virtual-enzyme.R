@@ -121,6 +121,123 @@
   path
 }
 
+.amplify_virtual_edges <- function(path, enzymes) {
+  edge_count <- igraph::ecount(path)
+  concrete_enzymes <- rep(list(character()), edge_count)
+  if (edge_count == 0L || length(enzymes) == 0L) {
+    return(igraph::set_edge_attr(
+      path,
+      "concrete_enzymes",
+      value = concrete_enzymes
+    ))
+  }
+
+  edges <- igraph::as_data_frame(path, what = "edges")
+  substrates <- glyparse::auto_parse(edges$from)
+  products <- glyparse::auto_parse(edges$to)
+  product_levels <- vapply(
+    seq_along(products),
+    \(i) .glycan_structure_level(products[i]),
+    character(1)
+  )
+  output_levels <- vapply(
+    product_levels,
+    .bfs_search_structure_level,
+    character(1)
+  )
+
+  cache_keys <- paste(edges$from, output_levels, sep = "\r")
+  unique_cache_keys <- unique(cache_keys)
+  cache_ids <- match(cache_keys, unique_cache_keys)
+  first_edges <- match(unique_cache_keys, cache_keys)
+  cached_substrates <- lapply(first_edges, \(i) substrates[i])
+  cached_source_levels <- vapply(
+    cached_substrates,
+    .glycan_structure_level,
+    character(1)
+  )
+  cached_output_levels <- output_levels[first_edges]
+
+  for (enzyme in enzymes) {
+    cached_products <- .hybrid_cached_products(
+      cached_substrates,
+      cached_source_levels,
+      cached_output_levels,
+      enzyme
+    )
+    matches <- vapply(
+      seq_len(edge_count),
+      function(i) {
+        .hybrid_products_match(
+          cached_products[[cache_ids[[i]]]],
+          products[i],
+          product_levels[[i]]
+        )
+      },
+      logical(1)
+    )
+    for (edge_idx in which(matches)) {
+      concrete_enzymes[[edge_idx]] <- unique(c(
+        concrete_enzymes[[edge_idx]],
+        enzyme$name
+      ))
+    }
+  }
+
+  igraph::set_edge_attr(
+    path,
+    "concrete_enzymes",
+    value = concrete_enzymes
+  )
+}
+
+.hybrid_cached_products <- function(
+  substrates,
+  source_levels,
+  output_levels,
+  enzyme
+) {
+  products <- vector("list", length(substrates))
+  if (!.can_batch_bfs_enzyme(enzyme)) {
+    for (i in seq_along(substrates)) {
+      products[[i]] <- .apply_enzyme(
+        substrates[[i]],
+        enzyme,
+        structure_level = output_levels[[i]]
+      )[[1]]
+    }
+    return(products)
+  }
+
+  batch_keys <- paste(source_levels, output_levels, sep = "\r")
+  for (batch_key in unique(batch_keys)) {
+    batch_idx <- which(batch_keys == batch_key)
+    batch_substrates <- do.call(c, substrates[batch_idx])
+    batch_products <- .apply_enzyme(
+      batch_substrates,
+      enzyme,
+      structure_level = output_levels[[batch_idx[[1]]]]
+    )
+    products[batch_idx] <- batch_products
+  }
+  products
+}
+
+.hybrid_products_match <- function(products, target, target_level) {
+  if (length(products) == 0L) {
+    return(FALSE)
+  }
+  if (identical(target_level, "partial")) {
+    return(any(glymotif::have_motif(
+      products,
+      target,
+      alignment = "whole",
+      mode = "lenient"
+    )))
+  }
+  as.character(target)[[1]] %in% as.character(products)
+}
+
 .virtual_trim_target <- function(from_g, to_g, max_steps, filter) {
   from_key <- as.character(from_g)[[1]]
   to_key <- as.character(to_g)[[1]]
