@@ -8,7 +8,7 @@
 
 ## Minor improvements and fixes
 
-* Biosynthesis searches now keep intermediate products as graphs through pruning and only generate canonical structure keys for candidates that enter the network, using the low-level graph APIs in `glyrepr` 0.14.0.
+* Biosynthesis searches now keep intermediate products as graphs through pruning and only generate canonical structure keys for candidates that enter the network, using the low-level graph APIs in `glyrepr` 0.14.0. (#29)
 * `trace_biosynthesis()` now reuses prepared glycan graphs, shares equivalent enzyme-rule work, batches breadth-first expansion, and rejects products that would reuse an occupied acceptor carbon. (#26)
 * To ensure robust biosynthesis network inference, paucimannose N-glycans are not supported anymore. (#25)
 
