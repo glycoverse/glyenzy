@@ -297,7 +297,9 @@
         structure_level = network_level
       )
       precursor_graph <- igraph::delete_vertices(graph, leaf)
-      precursor <- glyrepr::as_glycan_structure(precursor_graph)
+      precursor <- .new_glycan_structure_from_valid_graphs(list(
+        precursor_graph
+      ))
       precursor_size <- .virtual_glycan_size(precursor)
 
       if (

@@ -196,6 +196,77 @@
   suppressWarnings(glyrepr::reduce_structure_level(glycans, structure_level))
 }
 
+# Reduce trusted product graphs before constructing a glycan structure vector.
+.reduce_valid_glycan_graphs <- function(graphs, structure_level) {
+  structure_level <- .validate_structure_level(structure_level)
+  if (identical(structure_level, "intact")) {
+    return(graphs)
+  }
+
+  purrr::map(graphs, function(graph) {
+    graph <- igraph::set_edge_attr(graph, "linkage", value = "??-?")
+    graph <- igraph::set_graph_attr(graph, "anomer", value = "??")
+    if (identical(structure_level, "basic")) {
+      graph <- igraph::set_vertex_attr(
+        graph,
+        "mono",
+        value = glyrepr::convert_to_generic(
+          igraph::vertex_attr(graph, "mono")
+        )
+      )
+    }
+    graph
+  })
+}
+
+# Put the reducing-end root in the position expected by glymotif's core
+# matcher without paying for full IUPAC branch ordering. The graph is trusted
+# to be a valid out-tree, so it has exactly one in-degree-zero vertex.
+.move_glycan_root_last <- function(graph) {
+  n_vertices <- igraph::vcount(graph)
+  roots <- which(igraph::degree(graph, mode = "in") == 0L)
+  if (length(roots) != 1L) {
+    glyrepr::validate_glycan_graph(graph)
+    cli::cli_abort("Internal error: a glycan graph must have exactly one root.")
+  }
+  root <- roots[[1]]
+  if (root == n_vertices) {
+    return(graph)
+  }
+
+  other_vertices <- setdiff(seq_len(n_vertices), root)
+  permutation <- integer(n_vertices)
+  permutation[other_vertices] <- seq_along(other_vertices)
+  permutation[root] <- n_vertices
+  igraph::permute(graph, permutation)
+}
+
+# Canonicalize trusted graphs and generate their authoritative IUPAC keys.
+.canonicalize_valid_glycan_graphs <- function(graphs) {
+  input_names <- names(graphs)
+  graphs <- unname(graphs)
+  graphs <- purrr::map(graphs, glyrepr::canonicalize_glycan_graph)
+  keys <- purrr::map_chr(graphs, glyrepr::graph_to_iupac)
+  names(keys) <- input_names
+  list(keys = keys, graphs = graphs)
+}
+
+# Assemble valid, mutually compatible graphs without repeating semantic
+# validation. Graph canonicalization, key generation, and lookup deduplication
+# remain required representation steps.
+.new_glycan_structure_from_valid_graphs <- function(graphs) {
+  if (length(graphs) == 0L) {
+    return(glyrepr::new_glycan_structure())
+  }
+
+  keyed <- .canonicalize_valid_glycan_graphs(graphs)
+  unique_graphs <- !duplicated(unname(keyed$keys))
+  graph_lookup <- keyed$graphs[unique_graphs]
+  names(graph_lookup) <- unname(keyed$keys[unique_graphs])
+
+  glyrepr::new_glycan_structure(keyed$keys, graph_lookup)
+}
+
 #' Match a motif using the glycan-appropriate glymotif mode
 #'
 #' @inheritParams glymotif::match_motif

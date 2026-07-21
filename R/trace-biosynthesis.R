@@ -199,7 +199,7 @@ trace_biosynthesis <- function(
     start_graph <- igraph::induced_subgraph(graph, root)
   }
 
-  glyrepr::as_glycan_structure(start_graph)
+  .new_glycan_structure_from_valid_graphs(list(start_graph))
 }
 
 .n_glycan_starting_glycan <- function(
