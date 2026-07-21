@@ -82,6 +82,7 @@ BfsSynthesisSearch <- R6::R6Class(
     target_match = NULL,
     remaining_targets_map = NULL,
     queue = NULL,
+    queue_graphs = NULL,
     queue_keys = NULL,
     visited = NULL,
     parent = NULL,
@@ -136,11 +137,13 @@ BfsSynthesisSearch <- R6::R6Class(
       self$step <- 0L
 
       private$source_graph <- glyrepr::get_structure_graphs(self$from_g)
+      self$queue_graphs <- list(private$source_graph)
       private$target_graphs <- glyrepr::get_structure_graphs(
         self$to_gs,
         return_list = TRUE
       )
       private$target_match_mode <- .glymotif_mode(self$to_gs)
+      private$product_match_mode <- .glymotif_mode(self$from_g)
       private$rule_plan <- .prepare_bfs_rule_plan(self$enzymes)
       private$n_core_graph <- glyrepr::get_structure_graphs(
         .n_glycan_starting_glycan("virtual")
@@ -175,7 +178,7 @@ BfsSynthesisSearch <- R6::R6Class(
       }
 
       while (
-        length(self$queue) > 0L &&
+        length(self$queue_keys) > 0L &&
           self$step < self$max_steps &&
           self$remaining_targets_map$size() > 0L
       ) {
@@ -215,6 +218,7 @@ BfsSynthesisSearch <- R6::R6Class(
     source_graph = NULL,
     target_graphs = NULL,
     target_match_mode = NULL,
+    product_match_mode = NULL,
     rule_plan = NULL,
     n_core_graph = NULL,
     pre_mgat2_graph = NULL,
@@ -238,39 +242,40 @@ BfsSynthesisSearch <- R6::R6Class(
     # Generate a whole frontier from shared rule jobs, then replay each
     # glycan-enzyme cell in the original order.
     expand_frontier_batched = function() {
-      frontier <- self$queue
       frontier_keys <- self$queue_keys
-      new_queue <- list()
+      frontier_graphs <- self$queue_graphs
+      if (length(frontier_graphs) != length(frontier_keys)) {
+        frontier_graphs <- purrr::map(
+          self$queue,
+          glyrepr::get_structure_graphs
+        )
+      }
+      new_queue_graphs <- list()
       new_queue_keys <- character(0)
       found_endpoint_keys <- character(0)
       found_target_keys <- character(0)
 
       chunk_size <- 32L
-      chunk_starts <- seq.int(1L, length(frontier), by = chunk_size)
+      chunk_starts <- seq.int(1L, length(frontier_graphs), by = chunk_size)
       for (chunk_start in chunk_starts) {
         chunk_idx <- seq.int(
           chunk_start,
-          min(chunk_start + chunk_size - 1L, length(frontier))
+          min(chunk_start + chunk_size - 1L, length(frontier_graphs))
         )
-        chunk <- frontier[chunk_idx]
+        chunk_graphs <- frontier_graphs[chunk_idx]
         chunk_keys <- frontier_keys[chunk_idx]
-        frontier_graphs <- purrr::map(
-          chunk,
-          glyrepr::get_structure_graphs
-        )
-        match_modes <- purrr::map_chr(chunk, .glymotif_mode)
         rule_results <- .apply_bfs_rule_frontier(
-          frontier_graphs,
-          match_modes,
+          chunk_graphs,
+          rep(private$product_match_mode, length(chunk_graphs)),
           private$rule_plan,
           structure_level = self$structure_level
         )
         plan_products <- private$prepare_plan_products(
           rule_results,
-          length(chunk)
+          length(chunk_graphs)
         )
 
-        for (i in seq_along(chunk)) {
+        for (i in seq_along(chunk_graphs)) {
           curr_key <- chunk_keys[[i]]
           for (enzyme_idx in seq_along(self$enzymes)) {
             ez <- self$enzymes[[enzyme_idx]]
@@ -281,10 +286,12 @@ BfsSynthesisSearch <- R6::R6Class(
               plan_products[[plan_id]][[i]]
             )
 
-            if (length(expansion_result$new_structures) > 0L) {
-              start_idx <- length(new_queue)
-              for (j in seq_along(expansion_result$new_structures)) {
-                new_queue[[start_idx + j]] <- expansion_result$new_structures[[
+            if (length(expansion_result$new_graphs) > 0L) {
+              start_idx <- length(new_queue_graphs)
+              for (j in seq_along(expansion_result$new_graphs)) {
+                new_queue_graphs[[
+                  start_idx + j
+                ]] <- expansion_result$new_graphs[[
                   j
                 ]]
                 new_queue_keys[start_idx + j] <- expansion_result$new_keys[[j]]
@@ -305,7 +312,8 @@ BfsSynthesisSearch <- R6::R6Class(
         }
       }
 
-      self$queue <- new_queue
+      self$queue <- list()
+      self$queue_graphs <- new_queue_graphs
       self$queue_keys <- new_queue_keys
 
       list(endpoint_keys = found_endpoint_keys, target_keys = found_target_keys)
@@ -315,8 +323,16 @@ BfsSynthesisSearch <- R6::R6Class(
     expand_frontier_scalar = function() {
       frontier <- self$queue
       frontier_keys <- self$queue_keys
+      frontier_graphs <- self$queue_graphs
+      if (length(frontier_graphs) != length(frontier_keys)) {
+        frontier_graphs <- purrr::map(
+          frontier,
+          glyrepr::get_structure_graphs
+        )
+      }
 
       new_queue <- list()
+      new_queue_graphs <- list()
       new_queue_keys <- character(0)
       found_endpoint_keys <- character(0)
       found_target_keys <- character(0)
@@ -324,8 +340,7 @@ BfsSynthesisSearch <- R6::R6Class(
       for (i in seq_along(frontier)) {
         curr_g <- frontier[[i]]
         curr_key <- frontier_keys[[i]]
-        curr_graph <- glyrepr::get_structure_graphs(curr_g)
-        rule_match_mode <- .glymotif_mode(curr_g)
+        curr_graph <- frontier_graphs[[i]]
 
         for (enzyme_idx in seq_along(self$enzymes)) {
           ez <- self$enzymes[[enzyme_idx]]
@@ -335,13 +350,29 @@ BfsSynthesisSearch <- R6::R6Class(
             curr_key,
             ez,
             private$rule_plan$prepared_rules[[enzyme_idx]],
-            rule_match_mode
+            .glymotif_mode(curr_g)
           )
 
-          if (length(expansion_result$new_structures) > 0L) {
+          if (length(expansion_result$new_graphs) > 0L) {
+            new_structures <- expansion_result$new_structures
+            if (length(new_structures) == 0L) {
+              graph_lookup <- expansion_result$new_graphs
+              names(graph_lookup) <- expansion_result$new_keys
+              products <- glyrepr::new_glycan_structure(
+                expansion_result$new_keys,
+                graph_lookup
+              )
+              new_structures <- lapply(
+                seq_along(products),
+                function(j) products[j]
+              )
+            }
             start_idx <- length(new_queue)
-            for (j in seq_along(expansion_result$new_structures)) {
-              new_queue[[start_idx + j]] <- expansion_result$new_structures[[j]]
+            for (j in seq_along(new_structures)) {
+              new_queue[[start_idx + j]] <- new_structures[[j]]
+              new_queue_graphs[[start_idx + j]] <- expansion_result$new_graphs[[
+                j
+              ]]
               new_queue_keys[start_idx + j] <- expansion_result$new_keys[[j]]
             }
           }
@@ -360,6 +391,7 @@ BfsSynthesisSearch <- R6::R6Class(
       }
 
       self$queue <- new_queue
+      self$queue_graphs <- new_queue_graphs
       self$queue_keys <- new_queue_keys
 
       list(endpoint_keys = found_endpoint_keys, target_keys = found_target_keys)
@@ -376,13 +408,17 @@ BfsSynthesisSearch <- R6::R6Class(
       prepared_rules,
       rule_match_mode
     ) {
-      if (.can_batch_bfs_enzyme(ez)) {
-        products <- .apply_enzyme_prepared(
+      if (.uses_standard_graph_action(ez)) {
+        product_graphs <- .apply_enzyme_prepared_graphs(
           curr_graph,
           ez,
           prepared_rules,
           structure_level = self$structure_level,
           mode = rule_match_mode
+        )
+        prepared_products <- private$prepare_graph_products(
+          product_graphs,
+          product_mode = rule_match_mode
         )
       } else {
         products <- .apply_enzyme(
@@ -390,85 +426,129 @@ BfsSynthesisSearch <- R6::R6Class(
           ez,
           structure_level = self$structure_level
         )[[1]]
+        prepared_products <- private$prepare_products(products)
       }
-      prepared_products <- private$prepare_products(products)
       private$integrate_products(curr_key, ez, prepared_products)
     },
 
-    # Reconstruct and prune every unique enzyme plan for a generated frontier.
+    # Prepare each shared rule result once, then replay unique enzyme plans.
     prepare_plan_products = function(rule_results, frontier_size) {
-      pruning_cache <- fastmap::fastmap()
+      prepared_rule_results <- purrr::map(
+        rule_results,
+        function(rule_result) {
+          purrr::map(rule_result, private$prepare_graph_products)
+        }
+      )
+
       purrr::map(
         private$rule_plan$enzyme_plans,
         function(rule_ids) {
           lapply(
             seq_len(frontier_size),
             function(frontier_idx) {
-              products <- .collect_bfs_rule_products(
-                rule_results,
+              prepared_products <- lapply(
                 rule_ids,
-                frontier_idx
+                function(rule_id) {
+                  prepared_rule_results[[rule_id]][[frontier_idx]]
+                }
               )
-              private$prepare_products(products, pruning_cache)
+              private$combine_prepared_graph_products(prepared_products)
             }
           )
         }
       )
     },
 
-    # Canonicalize product graphs and apply biological pruning. A per-frontier
-    # cache avoids repeating this work for products shared across enzyme plans.
-    prepare_products = function(products, pruning_cache = NULL) {
-      if (length(products) == 0L) {
-        return(list(products = products, graphs = list()))
-      }
-
-      product_match_mode <- .glymotif_mode(products)
-      if (is.null(pruning_cache)) {
-        product_graphs <- glyrepr::get_structure_graphs(
-          products,
-          return_list = TRUE
-        )
-        keep <- purrr::map_lgl(
-          product_graphs,
-          private$is_promising_product,
-          product_mode = product_match_mode
-        )
+    # Combine prepared rule cells in rule order and retain the first graph for
+    # every canonical product key, matching glycan-vector unique() semantics.
+    combine_prepared_graph_products = function(prepared_products) {
+      if (length(prepared_products) == 0L) {
         return(list(
-          products = products[keep],
-          graphs = product_graphs[keep]
+          products = NULL,
+          graphs = list(),
+          keys = character()
         ))
       }
 
-      product_keys <- as.character(products)
-      product_graphs <- vector("list", length(products))
-      keep <- logical(length(products))
-      for (product_idx in seq_along(products)) {
-        cache_key <- paste(
-          product_match_mode,
-          product_keys[[product_idx]],
-          sep = "\n"
-        )
-        if (pruning_cache$has(cache_key)) {
-          cached <- pruning_cache$get(cache_key)
-        } else {
-          graph <- glyrepr::get_structure_graphs(products[product_idx])
-          cached <- list(
-            graph = graph,
-            keep = private$is_promising_product(
-              graph,
-              product_match_mode
-            )
-          )
-          pruning_cache$set(cache_key, cached)
-        }
-        product_graphs[[product_idx]] <- cached$graph
-        keep[[product_idx]] <- cached$keep
+      product_graphs <- unlist(
+        lapply(prepared_products, `[[`, "graphs"),
+        recursive = FALSE
+      )
+      product_keys <- unlist(
+        lapply(prepared_products, `[[`, "keys"),
+        use.names = FALSE
+      )
+      unique_products <- !duplicated(product_keys)
+      list(
+        products = NULL,
+        graphs = product_graphs[unique_products],
+        keys = product_keys[unique_products]
+      )
+    },
+
+    # Prune graphs after only the root-position normalization required by
+    # glymotif, before paying for canonical branch ordering and IUPAC keys.
+    prepare_graph_products = function(
+      product_graphs,
+      product_mode = private$product_match_mode
+    ) {
+      if (length(product_graphs) == 0L) {
+        return(list(
+          products = NULL,
+          graphs = list(),
+          keys = character()
+        ))
       }
+
+      product_graphs <- purrr::map(product_graphs, .move_glycan_root_last)
+      keep <- purrr::map_lgl(
+        product_graphs,
+        private$is_promising_product,
+        product_mode = product_mode
+      )
+      product_graphs <- product_graphs[keep]
+      if (length(product_graphs) == 0L) {
+        return(list(
+          products = NULL,
+          graphs = list(),
+          keys = character()
+        ))
+      }
+
+      keyed <- .canonicalize_valid_glycan_graphs(product_graphs)
+      unique_products <- !duplicated(unname(keyed$keys))
+      list(
+        products = NULL,
+        graphs = keyed$graphs[unique_products],
+        keys = unname(keyed$keys[unique_products])
+      )
+    },
+
+    # Preserve structure materialization for filters and custom S3 enzymes.
+    prepare_products = function(products) {
+      if (length(products) == 0L) {
+        return(list(
+          products = products,
+          graphs = list(),
+          keys = character()
+        ))
+      }
+
+      product_match_mode <- .glymotif_mode(products)
+      product_graphs <- glyrepr::get_structure_graphs(
+        products,
+        return_list = TRUE
+      )
+      keep <- purrr::map_lgl(
+        product_graphs,
+        private$is_promising_product,
+        product_mode = product_match_mode
+      )
 
       list(
         products = products[keep],
-        graphs = product_graphs[keep]
+        graphs = product_graphs[keep],
+        keys = unname(as.character(products[keep]))
       )
     },
 
@@ -487,11 +567,20 @@ BfsSynthesisSearch <- R6::R6Class(
     integrate_products = function(curr_key, ez, prepared_products) {
       products <- prepared_products$products
       product_graphs <- prepared_products$graphs
-      if (length(products) == 0L) {
+      prod_keys <- prepared_products$keys
+      if (length(prod_keys) == 0L) {
         return(private$empty_expansion())
       }
 
       if (!is.null(self$filter)) {
+        if (is.null(products)) {
+          graph_lookup <- product_graphs
+          names(graph_lookup) <- prod_keys
+          products <- glyrepr::new_glycan_structure(
+            prod_keys,
+            graph_lookup
+          )
+        }
         keep <- self$filter(products)
         checkmate::assert_logical(
           keep,
@@ -500,18 +589,19 @@ BfsSynthesisSearch <- R6::R6Class(
         )
         products <- products[keep]
         product_graphs <- product_graphs[keep]
+        prod_keys <- prod_keys[keep]
         if (length(products) == 0L) {
           return(private$empty_expansion())
         }
       }
 
-      prod_keys <- as.character(products)
       new_structures <- list()
+      new_graphs <- list()
       new_keys <- character(0)
       found_endpoint_keys <- character(0)
       found_target_keys <- character(0)
 
-      for (j in seq_along(products)) {
+      for (j in seq_along(prod_keys)) {
         pk <- prod_keys[[j]]
 
         self$all_edges[[length(self$all_edges) + 1L]] <- list(
@@ -527,7 +617,10 @@ BfsSynthesisSearch <- R6::R6Class(
           rlang::env_poke(self$parent_enzyme, pk, ez$name)
           rlang::env_poke(self$parent_step, pk, self$step)
 
-          new_structures[[length(new_structures) + 1L]] <- products[j]
+          new_graphs[[length(new_graphs) + 1L]] <- product_graphs[[j]]
+          if (!is.null(products)) {
+            new_structures[[length(new_structures) + 1L]] <- products[j]
+          }
           new_keys[length(new_keys) + 1L] <- pk
         }
 
@@ -546,6 +639,7 @@ BfsSynthesisSearch <- R6::R6Class(
 
       list(
         new_structures = new_structures,
+        new_graphs = new_graphs,
         new_keys = new_keys,
         found_endpoint_keys = found_endpoint_keys,
         found_target_keys = found_target_keys
@@ -555,6 +649,7 @@ BfsSynthesisSearch <- R6::R6Class(
     empty_expansion = function() {
       list(
         new_structures = list(),
+        new_graphs = list(),
         new_keys = character(0),
         found_endpoint_keys = character(0),
         found_target_keys = character(0)

@@ -148,6 +148,26 @@ test_that("apply_enzyme works for B4GALT1", {
   )
 })
 
+test_that("trusted graph construction deduplicates symmetric basic products", {
+  glycan <- glyrepr::reduce_structure_level(
+    glyrepr::as_glycan_structure(
+      "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    ),
+    "basic"
+  )
+
+  products <- suppressWarnings(apply_enzyme(
+    glycan,
+    "B4GALT1",
+    structure_level = "basic"
+  ))
+
+  expect_length(products, 1L)
+  expect_silent(
+    glyrepr::validate_glycan_graph(glyrepr::get_structure_graphs(products))
+  )
+})
+
 test_that("apply_enzyme works with special reject rules", {
   # The N-glycan has two galactosylated antennas, one of which has a a1-3 fucose
   glycan <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"

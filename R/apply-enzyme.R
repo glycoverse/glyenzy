@@ -208,6 +208,41 @@ apply_enzyme <- function(
   unique(do.call(c, rule_results))
 }
 
+# Apply a standard enzyme while keeping products as trusted graphs for BFS.
+.apply_enzyme_prepared_graphs <- function(
+  glycan_graph,
+  enzyme,
+  prepared_rules,
+  structure_level,
+  mode
+) {
+  if (!.uses_standard_graph_action(enzyme)) {
+    return(list())
+  }
+
+  rule_results <- purrr::map2(
+    enzyme$rules,
+    prepared_rules,
+    function(rule, prepared_rule) {
+      matches <- .match_rule_graph(
+        glycan_graph,
+        rule,
+        prepared_rule,
+        mode
+      )
+      .apply_rule_graphs(
+        glycan_graph,
+        matches,
+        rule,
+        enzyme,
+        structure_level = structure_level
+      )
+    }
+  )
+  products <- unlist(rule_results, recursive = FALSE)
+  .reduce_valid_glycan_graphs(products, structure_level)
+}
+
 # Prepare shared rule jobs and the ordered enzyme plans that consume them.
 .prepare_bfs_rule_plan <- function(enzymes) {
   prepared_rules <- purrr::map(
@@ -272,11 +307,18 @@ apply_enzyme <- function(
   )
 }
 
+# Standard graph actions inherit validity and mono-type compatibility from the
+# validated input structure and enzyme rule.
+.uses_standard_graph_action <- function(enzyme) {
+  enzyme_class <- class(enzyme)
+  identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
+    identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme"))
+}
+
 # Stateful custom S3 actions must retain scalar frontier execution order.
 .can_batch_bfs_enzyme <- function(enzyme) {
   enzyme_class <- class(enzyme)
-  identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
-    identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme")) ||
+  .uses_standard_graph_action(enzyme) ||
     identical(
       enzyme_class,
       c(
@@ -293,6 +335,15 @@ apply_enzyme <- function(
         "glyenzy_enzyme"
       )
     )
+}
+
+# Custom S3 graph actions retain glyrepr's fully validated construction path.
+.materialize_product_graphs <- function(graphs, enzyme) {
+  if (!.uses_standard_graph_action(enzyme)) {
+    return(glyrepr::as_glycan_structure(graphs))
+  }
+
+  .new_glycan_structure_from_valid_graphs(graphs)
 }
 
 # Build a graph-independent signature for one prepared enzyme action.
@@ -335,7 +386,7 @@ apply_enzyme <- function(
   matches[[1]]
 }
 
-# Evaluate each shared rule job once for every glycan in a BFS frontier.
+# Evaluate each shared rule job as raw graphs for every glycan in a frontier.
 .apply_bfs_rule_frontier <- function(
   glycan_graphs,
   match_modes,
@@ -345,7 +396,7 @@ apply_enzyme <- function(
   purrr::map(
     rule_plan$rules,
     function(job) {
-      raw_products <- purrr::map2(
+      purrr::map2(
         glycan_graphs,
         match_modes,
         function(glycan_graph, match_mode) {
@@ -355,49 +406,30 @@ apply_enzyme <- function(
             job$prepared_rule,
             match_mode
           )
-          .apply_rule_graphs(
+          products <- .apply_rule_graphs(
             glycan_graph,
             matches,
             job$rule,
             job$enzyme,
             structure_level = structure_level
           )
+          .reduce_valid_glycan_graphs(products, structure_level)
         }
       )
-      sizes <- lengths(raw_products)
-      flat_products <- unlist(raw_products, recursive = FALSE)
-      products <- .reduce_structure_level(
-        glyrepr::as_glycan_structure(flat_products),
-        structure_level
-      )
-
-      results <- vector("list", length(raw_products))
-      cursor <- 0L
-      for (frontier_idx in seq_along(raw_products)) {
-        size <- sizes[[frontier_idx]]
-        if (size == 0L) {
-          results[[frontier_idx]] <- glyrepr::glycan_structure()
-        } else {
-          idx <- seq.int(cursor + 1L, cursor + size)
-          results[[frontier_idx]] <- products[idx]
-          cursor <- cursor + size
-        }
-      }
-      results
     }
   )
 }
 
-# Rebuild one enzyme plan's products in its original rule order.
+# Collect one enzyme plan's raw graphs in its original rule order.
 .collect_bfs_rule_products <- function(rule_results, rule_ids, frontier_idx) {
   if (length(rule_ids) == 0L) {
-    return(glyrepr::glycan_structure())
+    return(list())
   }
   products <- lapply(
     rule_ids,
     function(rule_id) rule_results[[rule_id]][[frontier_idx]]
   )
-  unique(do.call(c, products))
+  unlist(products, recursive = FALSE)
 }
 
 #' Apply an enzyme rule to a vector of glycan structures
@@ -455,10 +487,15 @@ apply_enzyme <- function(
     enzyme,
     structure_level = structure_level
   )
-  .reduce_structure_level(
-    glyrepr::as_glycan_structure(graph_list),
-    structure_level
-  )
+  if (!.uses_standard_graph_action(enzyme)) {
+    return(.reduce_structure_level(
+      .materialize_product_graphs(graph_list, enzyme),
+      structure_level
+    ))
+  }
+
+  graph_list <- .reduce_valid_glycan_graphs(graph_list, structure_level)
+  .materialize_product_graphs(graph_list, enzyme)
 }
 
 # Apply one matched rule and return its valid, unmaterialized product graphs.
@@ -737,16 +774,13 @@ apply_enzyme <- function(
   if (igraph::degree(graph, v = idx_to_remove, mode = "out") > 0) {
     return(NULL)
   }
+  if (igraph::vcount(graph) <= 1L) {
+    return(NULL)
+  }
   edges <- igraph::incident(graph, idx_to_remove, mode = "all")
   new_graph <- igraph::delete_edges(graph, edges)
   new_graph <- igraph::delete_vertices(new_graph, idx_to_remove)
   # Reset vertex names to maintain consistency with indices after deletion
   igraph::V(new_graph)$name <- as.character(seq_len(igraph::vcount(new_graph)))
-  # Validate; if invalid for any reason, signal caller to drop it
-  tryCatch(
-    {
-      glyrepr:::validate_single_glycan_structure(new_graph)
-    },
-    error = function(e) return(NULL)
-  )
+  new_graph
 }

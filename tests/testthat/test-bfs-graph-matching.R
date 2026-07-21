@@ -112,6 +112,143 @@ test_that("prepared graph pruning matches glycan-level pruning", {
   expect_equal(actual, expected)
 })
 
+test_that("root-only normalization preserves graph pruning semantics", {
+  intact_from <- glyrepr::as_glycan_structure("GalNAc(a1-")
+  intact_target <- glyrepr::as_glycan_structure(
+    "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+  )
+  partial_target <- glyrepr::as_glycan_structure(
+    "Gal(b1-?)[GlcNAc(b1-6)]GalNAc(a1-"
+  )
+  cases <- list(
+    list(
+      from = intact_from,
+      target = intact_target,
+      structure_level = "intact"
+    ),
+    list(
+      from = glyrepr::reduce_structure_level(intact_from, "topological"),
+      target = glyrepr::reduce_structure_level(intact_target, "topological"),
+      structure_level = "topological"
+    ),
+    list(
+      from = glyrepr::reduce_structure_level(intact_from, "basic"),
+      target = glyrepr::reduce_structure_level(intact_target, "basic"),
+      structure_level = "basic"
+    ),
+    list(
+      from = intact_from,
+      target = partial_target,
+      structure_level = "intact"
+    )
+  )
+  enzyme <- enzyme("C1GALT1")
+  prepared_rules <- purrr::map(enzyme$rules, .prepare_rule_graphs)
+  n_core_graph <- glyrepr::get_structure_graphs(
+    .n_glycan_starting_glycan("virtual")
+  )
+  pre_mgat2_graph <- glyrepr::get_structure_graphs(
+    glyrepr::as_glycan_structure(
+      "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    )
+  )
+
+  for (case in cases) {
+    from_graph <- glyrepr::get_structure_graphs(case$from)
+    products <- .apply_enzyme_prepared_graphs(
+      from_graph,
+      enzyme,
+      prepared_rules,
+      structure_level = case$structure_level,
+      mode = .glymotif_mode(case$from)
+    )
+    expect_length(products, 1L)
+    expect_false(
+      which(igraph::degree(products[[1]], mode = "in") == 0L) ==
+        igraph::vcount(products[[1]])
+    )
+
+    root_last <- .move_glycan_root_last(products[[1]])
+    canonical <- glyrepr::canonicalize_glycan_graph(products[[1]])
+    pruning_args <- list(
+      target_graphs = glyrepr::get_structure_graphs(
+        case$target,
+        return_list = TRUE
+      ),
+      product_mode = .glymotif_mode(case$from),
+      target_mode = .glymotif_mode(case$target),
+      n_core_graph = n_core_graph,
+      pre_mgat2_graph = pre_mgat2_graph
+    )
+
+    expect_equal(
+      do.call(
+        .is_promising_intermediate_graph,
+        c(list(root_last), pruning_args)
+      ),
+      do.call(
+        .is_promising_intermediate_graph,
+        c(list(canonical), pruning_args)
+      )
+    )
+    expect_equal(
+      unname(which(igraph::degree(root_last, mode = "in") == 0L)),
+      igraph::vcount(root_last)
+    )
+  }
+})
+
+test_that("BFS keys only promising shared graph products", {
+  make_core1_enzyme <- function(name) {
+    make_enzyme(
+      name = name,
+      type = "GT",
+      species = "human",
+      rules = list(list(
+        acceptor = "GalNAc(a1-",
+        acceptor_alignment = "core",
+        rejects = NULL,
+        product = "Gal(b1-3)GalNAc(a1-"
+      ))
+    )
+  }
+  unpromising <- make_enzyme(
+    name = "UNPROMISING",
+    type = "GT",
+    species = "human",
+    rules = list(list(
+      acceptor = "GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "GlcNAc(b1-6)GalNAc(a1-"
+    ))
+  )
+  original <- .canonicalize_valid_glycan_graphs
+  canonicalized <- 0L
+  testthat::local_mocked_bindings(
+    .canonicalize_valid_glycan_graphs = function(graphs) {
+      canonicalized <<- canonicalized + length(graphs)
+      original(graphs)
+    },
+    .package = "glyenzy"
+  )
+
+  path <- path_biosynthesis(
+    "GalNAc(a1-",
+    "Gal(b1-3)GalNAc(a1-",
+    enzymes = list(
+      make_core1_enzyme("E1"),
+      make_core1_enzyme("E2"),
+      unpromising
+    ),
+    max_steps = 1
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(canonicalized, 1L)
+  expect_equal(edges$enzyme, c("E1", "E2"))
+})
+
 test_that("BFS rule plans share only equivalent standard rules", {
   enzymes <- list(
     enzyme("MAN2A1"),
@@ -176,11 +313,12 @@ test_that("batched rule jobs preserve scalar products for every cell", {
         structure_level = "intact",
         mode = modes[[frontier_idx]]
       )
-      actual <- .collect_bfs_rule_products(
+      actual_graphs <- .collect_bfs_rule_products(
         batched,
         plan$enzyme_rule_ids[[enzyme_idx]],
         frontier_idx
       )
+      actual <- .new_glycan_structure_from_valid_graphs(actual_graphs)
 
       expect_equal(unname(as.character(actual)), unname(as.character(expected)))
     }
@@ -205,11 +343,12 @@ test_that("batched rule jobs preserve reduced-level products", {
       plan,
       structure_level = structure_level
     )
-    actual <- .collect_bfs_rule_products(
+    actual_graphs <- .collect_bfs_rule_products(
       batched,
       plan$enzyme_rule_ids[[1]],
       1L
     )
+    actual <- .new_glycan_structure_from_valid_graphs(actual_graphs)
     expected <- .apply_enzyme_prepared(
       graph,
       enzymes[[1]],
