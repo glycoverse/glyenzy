@@ -8,13 +8,7 @@ this does not require known enzyme rules.
 ## Usage
 
 ``` r
-trace_biosynthesis_virtual(
-  glycans,
-  enzymes = NULL,
-  max_steps = 20,
-  filter = NULL,
-  annotate_enzymes = FALSE
-)
+trace_biosynthesis_virtual(glycans, enzymes = NULL, annotate_enzymes = FALSE)
 ```
 
 ## Arguments
@@ -35,17 +29,6 @@ trace_biosynthesis_virtual(
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
   objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
   available enzymes are considered.
-
-- max_steps:
-
-  Integer, maximum number of enzymatic steps to search. Default is 20.
-
-- filter:
-
-  Optional function to filter generated precursors at each step. It must
-  take a
-  [`glyrepr::glycan_structure()`](https://glycoverse.github.io/glyrepr/reference/glycan_structure.html)
-  vector and return a logical vector of the same length.
 
 - annotate_enzymes:
 
