@@ -1,52 +1,30 @@
 #' Find a Biosynthesis Path Between Glycan Structures
 #'
 #' Find biosynthetic paths from one glycan structure to another. The default
-#' method uses known enzyme rules in a forward breadth-first search. The
-#' virtual and hybrid methods trim `to` backward to `from` and return every
-#' possible residue-addition order. Hybrid tracing additionally annotates each
-#' transition with concrete enzymes whose rules can perform it.
+#' method uses known enzyme rules in a forward breadth-first search. To infer
+#' structure-driven paths without enzyme specificity, use
+#' [path_biosynthesis_virtual()].
 #'
 #' @inheritSection trace_biosynthesis Important notes
-#' @inheritSection trace_biosynthesis Virtual enzymes
 #'
 #' @param from A [glyrepr::glycan_structure()] scalar, or a character string
 #'   supported by [glyparse::auto_parse()]. The starting glycan structure.
 #' @param to A [glyrepr::glycan_structure()] scalar, or a character string
 #'   supported by [glyparse::auto_parse()]. The target glycan structure.
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
-#'   objects. If `NULL` (default), all available enzymes will be used. With
-#'   `method = "hybrid"`, this selects the candidate enzymes used to annotate
-#'   virtual transitions. Must be `NULL` when `method = "virtual"`.
+#'   objects. If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
 #'   Default is 10.
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
-#'   a logical vector of the same length.
-#'   For `method = "enzymatic"`, it filters generated products. For
-#'   `method = "virtual"` or `method = "hybrid"`, it filters generated
-#'   precursors during backward trimming.
-#' @param method Biosynthesis inference method. `"enzymatic"` (default) uses
-#'   known enzyme rules in a forward search. `"virtual"` uses virtual enzymes
-#'   in a backward search that removes terminal residues from `to` until `from`
-#'   is reached. `"hybrid"` builds the same virtual network and annotates each
-#'   transition with concrete enzyme candidates.
+#'   a logical vector of the same length. It filters generated products.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
 #'   Vertices represent glycan structures, with IUPAC-condensed strings in the
 #'   `name` attribute. Every edge has a `step` attribute indicating the forward
-#'   synthesis step. Other edge attributes depend on `method`:
-#'
-#'   - `method = "enzymatic"`: returns a multi-edge graph. Each edge represents
-#'     one concrete enzyme, whose gene symbol is stored in `enzyme`. When
-#'     multiple enzymes catalyze the same substrate-to-product transition, they
-#'     are represented by parallel edges.
-#'   - `method = "virtual"`: has one edge per unique substrate-to-product
-#'     transition. `enzyme` contains the virtual-enzyme name inferred from the
-#'     residue and linkage added in that transition.
-#'   - `method = "hybrid"`: has the same single-edge topology as `"virtual"`.
-#'     `enzyme` contains the virtual-enzyme name, and `concrete_enzymes` is a
-#'     list of character vectors containing every candidate concrete enzyme.
-#'     The vector is empty when no candidate rule supports that transition.
+#'   synthesis step and an `enzyme` attribute containing its gene symbol.
+#'   Multiple enzymes catalysing the same substrate-to-product transition are
+#'   represented by parallel edges.
 #'
 #' @examples
 #' library(glyrepr)
@@ -57,20 +35,6 @@
 #' to <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
 #' path <- path_biosynthesis(from, to, enzymes = "ST6GAL1", max_steps = 3)
 #'
-#' # Ignore known enzyme specificity and infer additions by trimming backward
-#' virtual_path <- path_biosynthesis(
-#'   "Gal(b1-3)GalNAc(a1-",
-#'   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
-#'   method = "virtual"
-#' )
-#'
-#' # Annotate the virtual transition with exact rule-matched enzyme candidates
-#' hybrid_path <- path_biosynthesis(
-#'   "Gal(b1-3)GalNAc(a1-",
-#'   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-",
-#'   method = "hybrid"
-#' )
-#'
 #' # View the path
 #' igraph::as_data_frame(path, what = "edges")
 #'
@@ -80,34 +44,14 @@ path_biosynthesis <- function(
   to,
   enzymes = NULL,
   max_steps = 10,
-  filter = NULL,
-  method = c("enzymatic", "virtual", "hybrid")
+  filter = NULL
 ) {
   # Parse and validate basic inputs first
-  method <- match.arg(method)
   from <- .process_glycan_arg(from, allow_generic = TRUE)
   to <- .process_glycan_arg(to, allow_generic = TRUE)
   checkmate::assert_int(max_steps, lower = 1)
   if (!is.null(filter)) {
     filter <- rlang::as_function(filter)
-  }
-
-  if (method %in% c("virtual", "hybrid")) {
-    concrete_enzymes <- NULL
-    if (identical(method, "virtual")) {
-      .validate_virtual_enzymes(enzymes)
-    } else {
-      concrete_enzymes <- .process_enzymes_arg(
-        enzymes,
-        apply_prefilter = FALSE
-      )
-    }
-    from <- .prepare_virtual_start(from, to)
-    path <- .perform_virtual_synthesis(from, to, max_steps, filter)
-    if (identical(method, "hybrid")) {
-      path <- .amplify_virtual_edges(path, concrete_enzymes)
-    }
-    return(path)
   }
 
   enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)

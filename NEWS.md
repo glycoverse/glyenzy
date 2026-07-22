@@ -2,8 +2,7 @@
 
 ## New features
 
-* `trace_biosynthesis()` and `path_biosynthesis()` gain `method = "hybrid"` to annotate virtual biosynthesis transitions with exact rule-matched concrete enzyme candidates in the list-valued `concrete_enzymes` edge attribute. (#28)
-* `trace_biosynthesis()` and `path_biosynthesis()` gain `method = "virtual"` to build enzyme-agnostic networks by trimming targets backward to the N-glycan core or reducing-end root. (#22)
+* New `trace_biosynthesis_virtual()` and `path_biosynthesis_virtual()` build enzyme-agnostic networks by trimming targets backward; `annotate_enzymes = TRUE` adds exact rule-matched candidates in `concrete_enzymes`. (#22, #28, #30)
 * Add support for non-intact glycan structures by using lenient motif matching with a warning about reduced reliability. (#25)
 
 ## Minor improvements and fixes

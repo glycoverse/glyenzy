@@ -1,7 +1,7 @@
 test_that("virtual enzymes trace an intact glycan backward", {
   target <- "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-"
 
-  path <- trace_biosynthesis(target, method = "virtual")
+  path <- trace_biosynthesis_virtual(target)
   edges <- igraph::as_data_frame(path, what = "edges")
   edges <- edges[order(edges$step), ]
 
@@ -9,12 +9,13 @@ test_that("virtual enzymes trace an intact glycan backward", {
   expect_equal(edges$step, 1:2)
   expect_equal(edges$from[[1]], "GalNAc(a1-")
   expect_equal(edges$to[[2]], target)
+  expect_null(igraph::edge_attr(path, "concrete_enzymes"))
 })
 
 test_that("virtual enzymes include every order for independent branches", {
   target <- "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
 
-  path <- trace_biosynthesis(target, method = "virtual")
+  path <- trace_biosynthesis_virtual(target)
   vertices <- igraph::as_data_frame(path, what = "vertices")
   edges <- igraph::as_data_frame(path, what = "edges")
 
@@ -46,7 +47,7 @@ test_that("virtual enzymes include every order for independent branches", {
 test_that("virtual tracing protects the N-glycan core", {
   target <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 
-  path <- trace_biosynthesis(target, method = "virtual")
+  path <- trace_biosynthesis_virtual(target)
   edges <- igraph::as_data_frame(path, what = "edges")
 
   expect_equal(nrow(edges), 1L)
@@ -78,13 +79,13 @@ test_that("virtual enzyme names follow the target structure level", {
   )
 
   topological_path <- suppressWarnings(
-    trace_biosynthesis(topological, method = "virtual")
+    trace_biosynthesis_virtual(topological)
   )
   partial_path <- suppressWarnings(
-    trace_biosynthesis(partial, method = "virtual")
+    trace_biosynthesis_virtual(partial)
   )
   basic_path <- suppressWarnings(
-    trace_biosynthesis(basic, method = "virtual")
+    trace_biosynthesis_virtual(basic)
   )
 
   expect_setequal(
@@ -104,7 +105,7 @@ test_that("virtual enzyme names follow the target structure level", {
 test_that("virtual tracing uses the root for non-N-glycans", {
   target <- "Gal(b1-4)Xyl(b1-"
 
-  path <- trace_biosynthesis(target, method = "virtual")
+  path <- trace_biosynthesis_virtual(target)
   edges <- igraph::as_data_frame(path, what = "edges")
 
   expect_equal(edges$from, "Xyl(b1-")
@@ -118,7 +119,7 @@ test_that("virtual tracing combines multiple targets from one root", {
     "Fuc(a1-2)Gal(b1-"
   )
 
-  path <- trace_biosynthesis(targets, method = "virtual")
+  path <- trace_biosynthesis_virtual(targets)
   edges <- igraph::as_data_frame(path, what = "edges")
 
   expect_equal(igraph::vcount(path), 3L)
@@ -139,15 +140,15 @@ test_that("virtual N-glycan labels follow reduced structure levels", {
   basic <- glyrepr::reduce_structure_level(intact, "basic")
 
   paths <- list(
-    intact = trace_biosynthesis(intact, method = "virtual"),
+    intact = trace_biosynthesis_virtual(intact),
     partial = suppressWarnings(
-      trace_biosynthesis(partial, method = "virtual")
+      trace_biosynthesis_virtual(partial)
     ),
     topological = suppressWarnings(
-      trace_biosynthesis(topological, method = "virtual")
+      trace_biosynthesis_virtual(topological)
     ),
     basic = suppressWarnings(
-      trace_biosynthesis(basic, method = "virtual")
+      trace_biosynthesis_virtual(basic)
     )
   )
 
@@ -161,7 +162,7 @@ test_that("virtual path tracing trims to the requested starting glycan", {
   from <- "Gal(b1-3)GalNAc(a1-"
   to <- "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-"
 
-  path <- path_biosynthesis(from, to, method = "virtual")
+  path <- path_biosynthesis_virtual(from, to)
   edges <- igraph::as_data_frame(path, what = "edges")
 
   expect_equal(nrow(edges), 1L)
@@ -175,11 +176,10 @@ test_that("virtual paths map partial precursors to the requested start", {
   from <- "Gal(b1-3)GalNAc(a1-"
   to <- "Gal(b1-?)[GlcNAc(b1-6)]GalNAc(a1-"
 
-  path <- suppressWarnings(path_biosynthesis(
+  path <- suppressWarnings(path_biosynthesis_virtual(
     from,
     to,
-    max_steps = 1,
-    method = "virtual"
+    max_steps = 1
   ))
   edges <- igraph::as_data_frame(path, what = "edges")
 
@@ -195,9 +195,8 @@ test_that("virtual tracing shares a root across partial targets", {
     "Gal(b1-3)GalNAc(?1-"
   ))
 
-  path <- suppressWarnings(trace_biosynthesis(
-    targets,
-    method = "virtual"
+  path <- suppressWarnings(trace_biosynthesis_virtual(
+    targets
   ))
   edges <- igraph::as_data_frame(path, what = "edges")
 
@@ -210,14 +209,14 @@ test_that("virtual tracing shares a root across partial targets", {
 test_that("virtual paths handle a trivial starting target", {
   glycan <- "Gal(b1-3)GalNAc(a1-"
 
-  path <- path_biosynthesis(glycan, glycan, method = "virtual")
+  path <- path_biosynthesis_virtual(glycan, glycan)
 
   expect_equal(igraph::vcount(path), 1L)
   expect_equal(igraph::ecount(path), 0L)
   expect_equal(igraph::V(path)$name, glycan)
 })
 
-test_that("virtual tracing preserves the enzymatic default", {
+test_that("enzymatic tracing has no method argument", {
   target <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
   enzymes <- "ST6GAL1"
 
@@ -226,26 +225,15 @@ test_that("virtual tracing preserves the enzymatic default", {
     target,
     enzymes = enzymes
   )
-  explicit <- path_biosynthesis(
-    "Gal(b1-4)GlcNAc(b1-",
-    target,
-    enzymes = enzymes,
-    method = "enzymatic"
-  )
-
-  expect_equal(
-    igraph::as_data_frame(default, what = "edges"),
-    igraph::as_data_frame(explicit, what = "edges")
-  )
+  expect_equal(igraph::E(default)$enzyme, "ST6GAL1")
 })
 
-test_that("virtual tracing validates incompatible options", {
+test_that("virtual tracing only accepts enzymes when annotating", {
   expect_snapshot(
     error = TRUE,
-    trace_biosynthesis(
+    trace_biosynthesis_virtual(
       "Gal(b1-3)GalNAc(a1-",
-      enzymes = "C1GALT1",
-      method = "virtual"
+      enzymes = "C1GALT1"
     )
   )
 })
@@ -255,34 +243,32 @@ test_that("virtual tracing reports unreachable paths", {
 
   expect_snapshot(
     error = TRUE,
-    trace_biosynthesis(target, method = "virtual", max_steps = 1)
+    trace_biosynthesis_virtual(target, max_steps = 1)
   )
   expect_snapshot(
     error = TRUE,
-    trace_biosynthesis(
+    trace_biosynthesis_virtual(
       target,
-      method = "virtual",
       filter = function(glycans) length(glycans) == 0L
     )
   )
   expect_snapshot(
     error = TRUE,
-    path_biosynthesis(
+    path_biosynthesis_virtual(
       "Man(a1-3)GlcNAc(b1-",
-      target,
-      method = "virtual"
+      target
     )
   )
 })
 
-test_that("hybrid tracing annotates exact transitions in candidate order", {
+test_that("virtual tracing annotates exact transitions in candidate order", {
   target <- "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
   candidates <- c("ST6GAL2", "B4GALT2", "ST6GAL1", "B4GALT1")
 
-  path <- trace_biosynthesis(
+  path <- trace_biosynthesis_virtual(
     target,
     enzymes = candidates,
-    method = "hybrid"
+    annotate_enzymes = TRUE
   )
   edges <- igraph::as_data_frame(path, what = "edges")
   edges <- edges[order(edges$step), ]
@@ -293,10 +279,10 @@ test_that("hybrid tracing annotates exact transitions in candidate order", {
     list(c("B4GALT2", "B4GALT1"), c("ST6GAL2", "ST6GAL1"))
   )
 
-  default_path <- path_biosynthesis(
+  default_path <- path_biosynthesis_virtual(
     "Gal(b1-4)GlcNAc(b1-",
     target,
-    method = "hybrid"
+    annotate_enzymes = TRUE
   )
   expect_equal(
     igraph::E(default_path)$concrete_enzymes,
@@ -304,13 +290,13 @@ test_that("hybrid tracing annotates exact transitions in candidate order", {
   )
 })
 
-test_that("hybrid tracing retains unsupported virtual transitions", {
+test_that("virtual tracing retains unsupported annotated transitions", {
   target <- "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
 
-  path <- trace_biosynthesis(
+  path <- trace_biosynthesis_virtual(
     target,
     enzymes = "C1GALT1",
-    method = "hybrid"
+    annotate_enzymes = TRUE
   )
   edges <- igraph::as_data_frame(path, what = "edges")
   before_branch <- edges$from == "GalNAc(a1-" & edges$enzyme == "b3GalT"
@@ -321,7 +307,7 @@ test_that("hybrid tracing retains unsupported virtual transitions", {
   expect_equal(edges$concrete_enzymes[after_branch], list(character()))
 })
 
-test_that("hybrid tracing matches reduced-level transitions", {
+test_that("virtual tracing annotates reduced-level transitions", {
   intact_from <- glyrepr::o_glycan_core_1()
   intact_to <- glyrepr::o_glycan_core_2()
   topological_from <- glyrepr::reduce_structure_level(
@@ -339,23 +325,23 @@ test_that("hybrid tracing matches reduced-level transitions", {
   )
 
   paths <- list(
-    partial = suppressWarnings(path_biosynthesis(
+    partial = suppressWarnings(path_biosynthesis_virtual(
       intact_from,
       partial_to,
       enzymes = "GCNT1",
-      method = "hybrid"
+      annotate_enzymes = TRUE
     )),
-    topological = suppressWarnings(path_biosynthesis(
+    topological = suppressWarnings(path_biosynthesis_virtual(
       topological_from,
       topological_to,
       enzymes = "GCNT1",
-      method = "hybrid"
+      annotate_enzymes = TRUE
     )),
-    basic = suppressWarnings(path_biosynthesis(
+    basic = suppressWarnings(path_biosynthesis_virtual(
       basic_from,
       basic_to,
       enzymes = "GCNT1",
-      method = "hybrid"
+      annotate_enzymes = TRUE
     ))
   )
 
@@ -365,7 +351,7 @@ test_that("hybrid tracing matches reduced-level transitions", {
   )
 })
 
-test_that("hybrid tracing retains custom enzyme S3 dispatch", {
+test_that("virtual tracing annotation retains custom enzyme S3 dispatch", {
   calls <- 0L
   action_method <- function(glycans, enzyme, structure_level = "intact") {
     calls <<- calls + 1L
@@ -392,26 +378,26 @@ test_that("hybrid tracing retains custom enzyme S3 dispatch", {
   )
   class(custom) <- c("test_hybrid_enzyme", class(custom))
 
-  path <- trace_biosynthesis(
+  path <- trace_biosynthesis_virtual(
     "Gal(b1-3)GalNAc(a1-",
     enzymes = list(custom),
-    method = "hybrid"
+    annotate_enzymes = TRUE
   )
 
   expect_equal(calls, 1L)
   expect_equal(igraph::E(path)$concrete_enzymes, list("CUSTOM"))
 })
 
-test_that("hybrid tracing preserves virtual topology and trivial paths", {
+test_that("virtual annotation preserves topology and trivial paths", {
   targets <- c(
     "Gal(b1-3)GalNAc(a1-",
     "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
   )
-  virtual <- trace_biosynthesis(targets, method = "virtual")
-  hybrid <- trace_biosynthesis(
+  virtual <- trace_biosynthesis_virtual(targets)
+  hybrid <- trace_biosynthesis_virtual(
     targets,
     enzymes = c("C1GALT1", "GCNT1"),
-    method = "hybrid"
+    annotate_enzymes = TRUE
   )
   virtual_edges <- igraph::as_data_frame(virtual, what = "edges")
   hybrid_edges <- igraph::as_data_frame(hybrid, what = "edges")
@@ -423,11 +409,11 @@ test_that("hybrid tracing preserves virtual topology and trivial paths", {
   expect_length(hybrid_edges$concrete_enzymes, nrow(virtual_edges))
 
   glycan <- "Gal(b1-3)GalNAc(a1-"
-  trivial <- path_biosynthesis(
+  trivial <- path_biosynthesis_virtual(
     glycan,
     glycan,
     enzymes = "C1GALT1",
-    method = "hybrid"
+    annotate_enzymes = TRUE
   )
 
   expect_equal(igraph::ecount(trivial), 0L)

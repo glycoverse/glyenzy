@@ -383,8 +383,8 @@
 .validate_virtual_enzymes <- function(enzymes) {
   if (!is.null(enzymes)) {
     cli::cli_abort(c(
-      "{.arg enzymes} must be {.code NULL} when {.code method = \"virtual\"}.",
-      "i" = "Virtual-enzyme tracing does not use known enzyme rules."
+      "{.arg enzymes} must be {.code NULL} unless {.arg annotate_enzymes} is {.code TRUE}.",
+      "i" = "Set {.code annotate_enzymes = TRUE} to match known enzyme rules."
     ))
   }
   invisible(NULL)
