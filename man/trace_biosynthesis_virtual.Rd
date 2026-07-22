@@ -4,13 +4,7 @@
 \alias{trace_biosynthesis_virtual}
 \title{Trace a Virtual Biosynthetic Path of Glycans}
 \usage{
-trace_biosynthesis_virtual(
-  glycans,
-  enzymes = NULL,
-  max_steps = 20,
-  filter = NULL,
-  annotate_enzymes = FALSE
-)
+trace_biosynthesis_virtual(glycans, enzymes = NULL, annotate_enzymes = FALSE)
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a character vector
@@ -21,13 +15,6 @@ Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
 objects. Used only when \code{annotate_enzymes} is \code{TRUE}; if \code{NULL}, all
 available enzymes are considered.}
-
-\item{max_steps}{Integer, maximum number of enzymatic steps to search.
-Default is 20.}
-
-\item{filter}{Optional function to filter generated precursors at each step.
-It must take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector and return a logical
-vector of the same length.}
 
 \item{annotate_enzymes}{Whether to annotate each virtual transition with
 concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}

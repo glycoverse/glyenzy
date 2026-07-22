@@ -4,14 +4,7 @@
 \alias{path_biosynthesis_virtual}
 \title{Find a Virtual Biosynthesis Path Between Glycan Structures}
 \usage{
-path_biosynthesis_virtual(
-  from,
-  to,
-  enzymes = NULL,
-  max_steps = 10,
-  filter = NULL,
-  annotate_enzymes = FALSE
-)
+path_biosynthesis_virtual(from, to, enzymes = NULL, annotate_enzymes = FALSE)
 }
 \arguments{
 \item{from}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} scalar, or a character string
@@ -23,13 +16,6 @@ supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. The targ
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
 objects. Used only when \code{annotate_enzymes} is \code{TRUE}; if \code{NULL}, all
 available enzymes are considered.}
-
-\item{max_steps}{Integer, maximum number of enzymatic steps to search.
-Default is 10.}
-
-\item{filter}{Optional function to filter generated precursors at each step.
-It must take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector and return a logical
-vector of the same length.}
 
 \item{annotate_enzymes}{Whether to annotate each virtual transition with
 concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}

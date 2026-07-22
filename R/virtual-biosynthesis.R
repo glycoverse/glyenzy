@@ -28,9 +28,6 @@
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
 #'   objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
 #'   available enzymes are considered.
-#' @param filter Optional function to filter generated precursors at each step.
-#'   It must take a [glyrepr::glycan_structure()] vector and return a logical
-#'   vector of the same length.
 #' @param annotate_enzymes Whether to annotate each virtual transition with
 #'   concrete enzymes whose rules can perform it. Defaults to `FALSE`.
 #'
@@ -57,16 +54,10 @@
 trace_biosynthesis_virtual <- function(
   glycans,
   enzymes = NULL,
-  max_steps = 20,
-  filter = NULL,
   annotate_enzymes = FALSE
 ) {
   glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
-  checkmate::assert_int(max_steps, lower = 1)
   checkmate::assert_flag(annotate_enzymes)
-  if (!is.null(filter)) {
-    filter <- rlang::as_function(filter)
-  }
 
   if (annotate_enzymes) {
     enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
@@ -76,9 +67,7 @@ trace_biosynthesis_virtual <- function(
 
   path <- .perform_virtual_synthesis(
     .decide_virtual_starting_glycan(glycans[1]),
-    glycans,
-    max_steps,
-    filter
+    glycans
   )
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)
@@ -98,9 +87,6 @@ trace_biosynthesis_virtual <- function(
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
 #'   objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
 #'   available enzymes are considered.
-#' @param filter Optional function to filter generated precursors at each step.
-#'   It must take a [glyrepr::glycan_structure()] vector and return a logical
-#'   vector of the same length.
 #' @param annotate_enzymes Whether to annotate each virtual transition with
 #'   concrete enzymes whose rules can perform it. Defaults to `FALSE`.
 #'
@@ -127,17 +113,11 @@ path_biosynthesis_virtual <- function(
   from,
   to,
   enzymes = NULL,
-  max_steps = 10,
-  filter = NULL,
   annotate_enzymes = FALSE
 ) {
   from <- .process_glycan_arg(from, allow_generic = TRUE)
   to <- .process_glycan_arg(to, allow_generic = TRUE)
-  checkmate::assert_int(max_steps, lower = 1)
   checkmate::assert_flag(annotate_enzymes)
-  if (!is.null(filter)) {
-    filter <- rlang::as_function(filter)
-  }
 
   if (annotate_enzymes) {
     enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
@@ -147,9 +127,7 @@ path_biosynthesis_virtual <- function(
 
   path <- .perform_virtual_synthesis(
     .prepare_virtual_start(from, to),
-    to,
-    max_steps,
-    filter
+    to
   )
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)

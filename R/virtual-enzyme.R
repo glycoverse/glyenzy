@@ -15,11 +15,14 @@
 
 .perform_virtual_synthesis <- function(
   from_g,
-  to_gs,
-  max_steps,
-  filter = NULL
+  to_gs
 ) {
   from_key <- as.character(from_g)[[1]]
+  max_steps <- max(vapply(
+    seq_along(to_gs),
+    \(i) .virtual_glycan_size(to_gs[i]) - .virtual_glycan_size(from_g),
+    numeric(1)
+  ))
   endpoint_keys <- character(length(to_gs))
   all_edges <- list()
   found <- logical(length(to_gs))
@@ -27,9 +30,7 @@
   for (i in seq_along(to_gs)) {
     result <- .virtual_trim_target(
       from_g,
-      to_gs[i],
-      max_steps,
-      filter
+      to_gs[i]
     )
     found[[i]] <- result$found
     endpoint_keys[[i]] <- result$endpoint_key
@@ -190,7 +191,7 @@
   as.character(target)[[1]] %in% as.character(products)
 }
 
-.virtual_trim_target <- function(from_g, to_g, max_steps, filter) {
+.virtual_trim_target <- function(from_g, to_g) {
   from_key <- as.character(from_g)[[1]]
   to_key <- as.character(to_g)[[1]]
   from_size <- .virtual_glycan_size(from_g)
@@ -199,7 +200,6 @@
 
   if (
     steps_needed < 0L ||
-      steps_needed > max_steps ||
       !.virtual_contains_start(to_g, from_g)
   ) {
     return(list(
@@ -232,11 +232,6 @@
       from_size,
       network_level
     )
-    if (length(candidates) == 0L) {
-      break
-    }
-
-    candidates <- .filter_virtual_candidates(candidates, filter)
     if (length(candidates) == 0L) {
       break
     }
@@ -326,21 +321,6 @@
   }
 
   candidates
-}
-
-.filter_virtual_candidates <- function(candidates, filter) {
-  if (is.null(filter) || length(candidates) == 0L) {
-    return(candidates)
-  }
-
-  glycans <- do.call(c, purrr::map(candidates, "glycan"))
-  keep <- filter(glycans)
-  checkmate::assert_logical(
-    keep,
-    len = length(candidates),
-    any.missing = FALSE
-  )
-  candidates[keep]
 }
 
 .virtual_contains_start <- function(glycan, from) {

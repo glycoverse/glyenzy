@@ -178,8 +178,7 @@ test_that("virtual paths map partial precursors to the requested start", {
 
   path <- suppressWarnings(path_biosynthesis_virtual(
     from,
-    to,
-    max_steps = 1
+    to
   ))
   edges <- igraph::as_data_frame(path, what = "edges")
 
@@ -238,19 +237,16 @@ test_that("virtual tracing only accepts enzymes when annotating", {
   )
 })
 
-test_that("virtual tracing reports unreachable paths", {
+test_that("virtual tracing reports unreachable paths and has no search controls", {
   target <- "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-"
 
-  expect_snapshot(
-    error = TRUE,
-    trace_biosynthesis_virtual(target, max_steps = 1)
+  expect_identical(
+    names(formals(trace_biosynthesis_virtual)),
+    c("glycans", "enzymes", "annotate_enzymes")
   )
-  expect_snapshot(
-    error = TRUE,
-    trace_biosynthesis_virtual(
-      target,
-      filter = function(glycans) length(glycans) == 0L
-    )
+  expect_identical(
+    names(formals(path_biosynthesis_virtual)),
+    c("from", "to", "enzymes", "annotate_enzymes")
   )
   expect_snapshot(
     error = TRUE,
