@@ -4,7 +4,14 @@
 \alias{path_biosynthesis}
 \title{Find a Biosynthesis Path Between Glycan Structures}
 \usage{
-path_biosynthesis(from, to, enzymes = NULL, max_steps = 10, filter = NULL)
+path_biosynthesis(
+  from,
+  to,
+  enzymes = NULL,
+  max_steps = 10,
+  filter = NULL,
+  max_virtual_steps = 0L
+)
 }
 \arguments{
 \item{from}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} scalar, or a character string
@@ -22,6 +29,11 @@ Default is 10.}
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
 a logical vector of the same length. It filters generated products.}
+
+\item{max_virtual_steps}{Integer, maximum number of target-directed virtual
+enzyme steps allowed when no fully enzymatic path exists. Virtual products
+re-enter the enzymatic search, so concrete steps can follow a virtual step.
+Default is \code{0L}, which disables virtual fallback.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
@@ -30,6 +42,9 @@ Vertices represent glycan structures, with IUPAC-condensed strings in the
 synthesis step and an \code{enzyme} attribute containing its gene symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
 represented by parallel edges.
+When virtual fallback is required, every edge also has an \code{is_virtual}
+attribute; virtual edges use the structural virtual-enzyme name in
+\code{enzyme}.
 }
 \description{
 Find biosynthetic paths from one glycan structure to another. The default
@@ -99,6 +114,15 @@ the N-glycan precursor transferred to Asn by OST.
 \item For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
 }
 }
+}
+
+\section{Virtual fallback}{
+
+With \code{max_virtual_steps > 0L}, a fully enzymatic path is still preferred.
+If none exists, the search may add a target-directed, single-residue virtual
+transition only when no supplied enzyme performs that exact transition. Its
+product then re-enters the ordinary enzymatic search. Returned paths minimize
+the number of virtual transitions first and total steps second.
 }
 
 \examples{

@@ -659,6 +659,7 @@
 #' @param enzymes List of `glyenzy_enzyme` objects to use
 #' @param max_steps Maximum search steps
 #' @param filter Optional filter function
+#' @param max_virtual_steps Maximum number of target-directed virtual steps.
 #' @returns igraph object representing synthesis path(s)
 #' @noRd
 .perform_bfs_synthesis <- function(
@@ -666,7 +667,8 @@
   to_gs,
   enzymes,
   max_steps,
-  filter = NULL
+  filter = NULL,
+  max_virtual_steps = 0L
 ) {
   target_structure_level <- .glycan_structure_level(to_gs)
   search_structure_level <- .bfs_search_structure_level(target_structure_level)
@@ -689,8 +691,23 @@
     from_key = from_key,
     to_keys = to_keys,
     structure_level = search_structure_level,
-    target_match = target_match
+    target_match = target_match,
+    allow_partial = max_virtual_steps > 0L
   )
+
+  if (length(search_result$missing_target_keys) > 0L) {
+    return(.perform_virtual_fallback_synthesis(
+      from_g = from_g,
+      to_gs = to_gs,
+      enzymes = enzymes,
+      max_steps = max_steps,
+      filter = filter,
+      max_virtual_steps = max_virtual_steps,
+      structure_level = search_structure_level,
+      target_match = target_match,
+      strict_result = search_result
+    ))
+  }
 
   # Build and return result graph
   build_synthesis_result_graph(
