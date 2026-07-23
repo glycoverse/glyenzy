@@ -167,18 +167,7 @@ apply_enzyme <- function(
     alignment = rule$acceptor_alignment,
     mode = mode
   )
-  if (
-    length(prepared_rule$requires) > 0L &&
-      !purrr::some(prepared_rule$requires, function(requirement) {
-        length(.g_match_motif_substituent_subset(
-          glycan_graph,
-          requirement$motif,
-          alignment = requirement$alignment,
-          mode = mode
-        )) >
-          0L
-      })
-  ) {
+  if (!.rule_graph_requirements_met(glycan_graph, prepared_rule, mode)) {
     return(list())
   }
   if (length(prepared_rule$rejects) == 0L) {
@@ -188,14 +177,48 @@ apply_enzyme <- function(
   reject_matches <- purrr::map(
     prepared_rule$rejects,
     function(reject_graph) {
-      list(glymotif::.g_match_motif(
+      glymotif::.g_match_motif(
         glycan_graph,
         reject_graph,
         alignment = rule$acceptor_alignment,
         mode = mode
-      ))
+      )
     }
   )
+  .filter_rule_reject_matches(acceptor_matches, reject_matches)
+}
+
+.match_rule_graph_precomputed <- function(
+  glycan_graph,
+  prepared_rule,
+  mode,
+  acceptor_matches,
+  reject_matches
+) {
+  if (!.rule_graph_requirements_met(glycan_graph, prepared_rule, mode)) {
+    return(list())
+  }
+  .filter_rule_reject_matches(acceptor_matches, reject_matches)
+}
+
+.rule_graph_requirements_met <- function(glycan_graph, prepared_rule, mode) {
+  length(prepared_rule$requires) == 0L ||
+    purrr::some(prepared_rule$requires, function(requirement) {
+      length(.g_match_motif_substituent_subset(
+        glycan_graph,
+        requirement$motif,
+        alignment = requirement$alignment,
+        mode = mode
+      )) >
+        0L
+    })
+}
+
+.filter_rule_reject_matches <- function(acceptor_matches, reject_matches) {
+  if (length(reject_matches) == 0L) {
+    return(acceptor_matches)
+  }
+  reject_matches <- lapply(reject_matches, list)
   .reject_matches(list(acceptor_matches), reject_matches)[[1]]
 }
 
@@ -334,7 +357,66 @@ apply_enzyme <- function(
     prepared_rules = prepared_rules,
     enzyme_rule_ids = enzyme_rule_ids,
     enzyme_plans = enzyme_plans,
-    enzyme_plan_ids = enzyme_plan_ids
+    enzyme_plan_ids = enzyme_plan_ids,
+    strict_match_plan = .prepare_bfs_strict_match_plan(rule_jobs)
+  )
+}
+
+# Group acceptors and rejects so glymotif can prepare a whole frontier once.
+.prepare_bfs_strict_match_plan <- function(rule_jobs) {
+  groups <- list()
+  acceptor_refs <- vector("list", length(rule_jobs))
+  reject_refs <- vector("list", length(rule_jobs))
+
+  add_motif <- function(motif, alignment) {
+    group_alignments <- vapply(groups, `[[`, character(1), "alignment")
+    group_id <- match(alignment, group_alignments)
+    if (is.na(group_id)) {
+      group_id <- length(groups) + 1L
+      groups[[group_id]] <<- list(
+        alignment = alignment,
+        motifs = glyrepr::glycan_structure(),
+        keys = character()
+      )
+    }
+
+    motif_key <- unname(as.character(motif))[[1]]
+    motif_id <- match(motif_key, groups[[group_id]]$keys)
+    if (is.na(motif_id)) {
+      motif_id <- length(groups[[group_id]]$keys) + 1L
+      groups[[group_id]]$motifs <<- c(
+        groups[[group_id]]$motifs,
+        motif
+      )
+      groups[[group_id]]$keys <<- c(
+        groups[[group_id]]$keys,
+        motif_key
+      )
+    }
+    c(group = group_id, motif = motif_id)
+  }
+
+  for (rule_id in seq_along(rule_jobs)) {
+    rule <- rule_jobs[[rule_id]]$rule
+    acceptor_refs[[rule_id]] <- add_motif(
+      rule$acceptor,
+      rule$acceptor_alignment
+    )
+    reject_refs[[rule_id]] <- lapply(
+      seq_along(rule$rejects),
+      function(reject_id) {
+        add_motif(
+          rule$rejects[reject_id],
+          rule$acceptor_alignment
+        )
+      }
+    )
+  }
+
+  list(
+    groups = groups,
+    acceptor_refs = acceptor_refs,
+    reject_refs = reject_refs
   )
 }
 
@@ -435,20 +517,53 @@ apply_enzyme <- function(
   glycan_graphs,
   match_modes,
   rule_plan,
-  structure_level
+  structure_level,
+  glycan_keys = NULL
 ) {
-  purrr::map(
+  if (is.null(glycan_keys)) {
+    glycan_keys <- purrr::map_chr(
+      glycan_graphs,
+      glyrepr::graph_to_iupac
+    )
+  }
+  graph_lookup <- glycan_graphs
+  names(graph_lookup) <- glycan_keys
+  glycans <- glyrepr::new_glycan_structure(glycan_keys, graph_lookup)
+  strict_matches <- .match_bfs_strict_frontier(
+    glycans,
+    match_modes,
+    rule_plan$strict_match_plan
+  )
+
+  purrr::map2(
     rule_plan$rules,
-    function(job) {
+    seq_along(rule_plan$rules),
+    function(job, rule_id) {
       purrr::map2(
         glycan_graphs,
-        match_modes,
-        function(glycan_graph, match_mode) {
-          matches <- .match_rule_graph(
+        seq_along(glycan_graphs),
+        function(glycan_graph, frontier_id) {
+          acceptor_matches <- .bfs_strict_match_result(
+            strict_matches,
+            rule_plan$strict_match_plan$acceptor_refs[[rule_id]],
+            frontier_id
+          )
+          reject_matches <- lapply(
+            rule_plan$strict_match_plan$reject_refs[[rule_id]],
+            function(ref) {
+              .bfs_strict_match_result(
+                strict_matches,
+                ref,
+                frontier_id
+              )
+            }
+          )
+          matches <- .match_rule_graph_precomputed(
             glycan_graph,
-            job$rule,
             job$prepared_rule,
-            match_mode
+            match_modes[[frontier_id]],
+            acceptor_matches,
+            reject_matches
           )
           products <- .apply_rule_graphs(
             glycan_graph,
@@ -462,6 +577,33 @@ apply_enzyme <- function(
       )
     }
   )
+}
+
+.match_bfs_strict_frontier <- function(glycans, match_modes, match_plan) {
+  lapply(match_plan$groups, function(group) {
+    group_results <- lapply(
+      seq_along(group$motifs),
+      function(i) vector("list", length(glycans))
+    )
+    for (match_mode in unique(match_modes)) {
+      frontier_ids <- which(match_modes == match_mode)
+      mode_results <- glymotif::match_motifs(
+        glycans[frontier_ids],
+        group$motifs,
+        alignments = rep(group$alignment, length(group$motifs)),
+        mode = match_mode
+      )
+      for (motif_id in seq_along(group$motifs)) {
+        group_results[[motif_id]][frontier_ids] <-
+          unname(mode_results[[motif_id]])
+      }
+    }
+    group_results
+  })
+}
+
+.bfs_strict_match_result <- function(match_results, ref, frontier_id) {
+  match_results[[ref[["group"]]]][[ref[["motif"]]]][[frontier_id]]
 }
 
 # Collect one enzyme plan's raw graphs in its original rule order.

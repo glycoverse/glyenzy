@@ -277,6 +277,38 @@ test_that("BFS rule plans share only equivalent standard rules", {
   expect_false(.can_batch_bfs_enzyme(custom_starter))
 })
 
+test_that("BFS rule plans share strict motif preparation across rules", {
+  make_test_enzyme <- function(name, product) {
+    make_enzyme(
+      name = name,
+      type = "GT",
+      species = "human",
+      rules = list(list(
+        acceptor = "GalNAc(a1-",
+        acceptor_alignment = "core",
+        rejects = "Fuc(a1-2)GalNAc(a1-",
+        product = product
+      ))
+    )
+  }
+  plan <- .prepare_bfs_rule_plan(list(
+    make_test_enzyme("E1", "Gal(b1-3)GalNAc(a1-"),
+    make_test_enzyme("E2", "GlcNAc(b1-3)GalNAc(a1-")
+  ))
+
+  expect_length(plan$rules, 2L)
+  expect_length(plan$strict_match_plan$groups, 1L)
+  expect_length(plan$strict_match_plan$groups[[1]]$motifs, 2L)
+  expect_equal(
+    plan$strict_match_plan$acceptor_refs[[1]],
+    plan$strict_match_plan$acceptor_refs[[2]]
+  )
+  expect_equal(
+    plan$strict_match_plan$reject_refs[[1]],
+    plan$strict_match_plan$reject_refs[[2]]
+  )
+})
+
 test_that("batched rule jobs preserve scalar products for every cell", {
   frontier <- glyrepr::as_glycan_structure(c(
     "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
