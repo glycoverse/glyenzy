@@ -15,9 +15,10 @@ knitr::opts_chunk$set(
 ```
 
 Glycan biosynthesis is built from many enzyme-specific reaction steps.
-Glycosyltransferases and glycoside hydrolases each have their own substrate
-preferences, linkage rules, and residue specificities, so a glycan structure
-often carries useful clues about the enzymes that could have produced it.
+Glycosyltransferases, glycoside hydrolases, and sulfotransferases each have
+their own substrate preferences, linkage rules, and residue specificities, so
+a glycan structure often carries useful clues about the enzymes that could have
+produced it.
 
 `glyenzy` provides tools for working with those enzyme rules in R.
 You can use it to identify candidate enzymes for an existing glycan,
@@ -79,10 +80,10 @@ The next sections walk through the main workflows in a little more detail.
 
 For an existing glycan, `glyenzy` can help answer four common questions:
 
-- **Which enzymes?** Which glycosyltransferases and glycoside hydrolases were involved? (`find_enzyme()`)
+- **Which enzymes?** Which glycosyltransferases, glycoside hydrolases, and sulfotransferases were involved? (`find_enzyme()`)
 - **How often?** How many times could each enzyme have acted? (`count_enzyme()`)
 - **In what order?** What biosynthetic sequence could produce the structure? (`trace_biosynthesis()`)
-- **Specifically?** Which residues were added by which enzymes? (`match_enzyme()`)
+- **Specifically?** Which residues were added or modified by which enzymes? (`match_enzyme()`)
 
 Behind the scenes, glyenzy has catalogued the reaction rules of `r length(db_enzymes(return_str = TRUE))` enzymes
 in its enzyme database. Use `enzyme("MGAT3")` to inspect a specific enzyme rule.
@@ -95,9 +96,10 @@ For more targeted checks:
 
 - `have_enzyme()` answers "Was enzyme X involved?" with a simple yes/no
 - `count_enzyme()` returns how many times an enzyme is inferred to act
-- `match_enzyme()` identifies the residues added by a specific enzyme
+- `match_enzyme()` identifies the residues added or modified by a specific enzyme
 
-You will also find `view_enzyme()` useful for visualizing the residues added by an enzyme on a glycan cartoon.
+You will also find `view_enzyme()` useful for visualizing the residues added or
+modified by an enzyme on a glycan cartoon.
 
 These summaries can be useful in multiomics analysis,
 where glycan structures are compared with enzyme expression levels.
@@ -160,6 +162,14 @@ apply_enzyme(glycan, "B4GALT1")
 Both antennae can be galactosylated, giving two distinct products.
 This is a simple example of biochemical branching.
 
+Sulfotransferases modify an existing residue rather than adding a new
+monosaccharide. For example, GAL3ST4 adds a 3-O-sulfate to the terminal Gal of
+an O-GalNAc core:
+
+```{r}
+apply_enzyme("Gal(b1-3)GalNAc(a1-", "GAL3ST4")
+```
+
 ### Multi-Step Product Growth
 
 For multi-step reactions, provide one or more starting glycans and a set of enzymes.
@@ -188,9 +198,11 @@ Here are the main caveats to keep in mind when using `glyenzy`:
 
 ### Species and Scope
 
-glyenzy is currently a human-centric package, focusing specifically on N-glycans and O-glycans.
-If you're working with GAGs, glycolipids, or glycans from mouse, plants or insects,
-the results might not be accurate.
+glyenzy is currently a human-centric package, focusing specifically on
+N-glycans and O-glycans. Its sulfotransferase rules likewise cover canonical
+N- and O-glycan contexts, not glycosaminoglycans, O-Xyl glycans, glycolipids,
+or protein sulfation. If you're working with these contexts, or with glycans
+from mouse, plants, or insects, the results might not be accurate.
 
 ### Inclusive Candidate Calls
 
@@ -209,12 +221,12 @@ glyenzy requires precise residues – it only works with **concrete** residues
 like "Glc" and "GalNAc", not **generic** ones like "Hex" or "HexNAc".
 If your data uses generic terms, you'll need to resolve them before using these functions.
 
-### Substituents: Not Yet Supported
+### Sulfate Is the Supported Substituent
 
-Modifications like sulfation and phosphorylation aren't supported yet,
-and they might actually break the algorithms.
-If your glycans are decorated with these extras,
-use `glyrepr::remove_substituents()` to get clean, analysis-ready structures.
+Sulfate substituents are supported in enzyme application, inference, and
+biosynthesis workflows. Other substituents, including phosphorylation,
+methylation, and acetylation, are not supported and are rejected rather than
+silently ignored.
 
 ### Complete Structures Required
 
@@ -240,5 +252,7 @@ glyenzy uses specific starting points for biosynthetic reconstruction:
 - **`glyparse`**: The parser for IUPAC-condensed notation
 - **`glymotif`**: The motif-matching engine for structural patterns
 
-All enzymes live as `enzyme()` objects (technically `glyenzy_enzyme` S3 class instances).
+All enzymes live as `enzyme()` objects (technically `glyenzy_enzyme` S3 class
+instances). Sulfotransferases additionally inherit from
+`glyenzy_st_enzyme`.
 Call `enzyme("YOUR_FAVORITE_ENZYME")` to inspect a specific enzyme rule.
