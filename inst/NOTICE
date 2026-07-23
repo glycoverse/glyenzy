@@ -1,0 +1,25 @@
+Sulfotransferase rule attribution
+=================================
+
+The human N- and O-glycan sulfotransferase rules distributed with glyenzy were
+selected and translated from GlycoEnzOnto:
+
+https://github.com/neel-lab/GlycoEnzOnto
+
+GlycoEnzOnto is described in:
+
+Huang et al. (2022), "GlycoEnzOnto: a glycan-domain ontology for modeling
+knowledge of glycan biosynthesis", Bioinformatics.
+https://doi.org/10.1093/bioinformatics/btac704
+
+The source material is licensed under the Creative Commons Attribution 4.0
+International license (CC BY 4.0):
+
+https://creativecommons.org/licenses/by/4.0/
+
+For glyenzy, the source reactions were selected to retain canonical human
+N- and O-glycan contexts, translated into glyenzy's IUPAC-condensed enzyme-rule
+format, expanded from compact alternatives into explicit rules, and supplied
+with explicit context requirements where needed. Reactions limited to
+glycosaminoglycans or O-Xyl glycans, glycolipids, protein sulfation, sulfate
+removal, donor synthesis, or transport were excluded.

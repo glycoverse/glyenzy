@@ -2489,5 +2489,307 @@
         ],
         "type": "GT",
         "species": "human"
+    },
+    {
+        "name": "CHST1",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-3)Gal(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal6S(b1-4)GlcNAc(b1-3)Gal(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc6S(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "Gal6S(b1-4)GlcNAc6S(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc6S(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal6S(b1-4)GlcNAc6S(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal6S(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST2",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)[GlcNAc6S(b1-6)]GalNAc(a1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-2)Man(a1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-6)Man(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-6)Man(a1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST3",
+        "rules": [
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal6S(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc6S(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "Gal6S(b1-4)GlcNAc6S(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST4",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)[GlcNAc6S(b1-6)]GalNAc(a1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-4)GlcNAc6S(b1-6)[Gal(b1-3)]GalNAc(a1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST5",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)[GlcNAc6S(b1-6)]GalNAc(a1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-6)Man(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-6)Man(a1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST6",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)[GlcNAc6S(b1-6)]GalNAc(a1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-6)Man(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc6S(b1-6)Man(a1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST8",
+        "rules": [
+            {
+                "acceptor": "GalNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "requires": [
+                    {
+                        "motif": "GalNAc(a1-",
+                        "alignment": "core"
+                    },
+                    {
+                        "motif": "GlcNAc(b1-4)GlcNAc(b1-",
+                        "alignment": "core"
+                    }
+                ],
+                "product": "GalNAc4S(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST9",
+        "rules": [
+            {
+                "acceptor": "GalNAc(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "requires": [
+                    {
+                        "motif": "GalNAc(a1-",
+                        "alignment": "core"
+                    },
+                    {
+                        "motif": "GlcNAc(b1-4)GlcNAc(b1-",
+                        "alignment": "core"
+                    }
+                ],
+                "product": "GalNAc4S(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "CHST10",
+        "rules": [
+            {
+                "acceptor": "GlcA(b1-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcA3S(b1-3)Gal(b1-4)GlcNAc(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "GAL3ST2",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal6S(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S6S(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "GAL3ST3",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal6S(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S6S(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal3S6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
+    },
+    {
+        "name": "GAL3ST4",
+        "rules": [
+            {
+                "acceptor": "Gal(b1-3)GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal3S(b1-3)GalNAc(a1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal3S(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+            }
+        ],
+        "type": "ST",
+        "species": "human"
     }
 ]
