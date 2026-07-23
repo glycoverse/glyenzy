@@ -47,7 +47,14 @@ structure-driven paths without enzyme specificity, use
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_biosynthesis</span><span class="op">(</span><span class="va">from</span>, <span class="va">to</span>, enzymes <span class="op">=</span> <span class="cn">NULL</span>, max_steps <span class="op">=</span> <span class="fl">10</span>, filter <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_biosynthesis</span><span class="op">(</span></span>
+<span>  <span class="va">from</span>,</span>
+<span>  <span class="va">to</span>,</span>
+<span>  enzymes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_steps <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  filter <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_virtual_steps <span class="op">=</span> <span class="fl">0L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,6 +86,13 @@ Default is 10.</p></dd>
 Should take a <code><a href="https://glycoverse.github.io/glyrepr/reference/glycan_structure.html" class="external-link">glyrepr::glycan_structure()</a></code> vector as input and return
 a logical vector of the same length. It filters generated products.</p></dd>
 
+
+<dt id="arg-max-virtual-steps">max_virtual_steps<a class="anchor" aria-label="anchor" href="#arg-max-virtual-steps"></a></dt>
+<dd><p>Integer, maximum number of target-directed virtual
+enzyme steps allowed when no fully enzymatic path exists.
+Default is <code>0L</code>, which disables virtual fallback.
+See the "Virtual fallback" section for more details.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -87,7 +101,10 @@ Vertices represent glycan structures, with IUPAC-condensed strings in the
 <code>name</code> attribute. Every edge has a <code>step</code> attribute indicating the forward
 synthesis step and an <code>enzyme</code> attribute containing its gene symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
-represented by parallel edges.</p>
+represented by parallel edges.
+When virtual fallback is required, every edge also has an <code>is_virtual</code>
+attribute; virtual edges use the structural virtual-enzyme name in
+<code>enzyme</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="important-notes">Important notes<a class="anchor" aria-label="anchor" href="#important-notes"></a></h2>
@@ -160,6 +177,23 @@ the N-glycan precursor transferred to Asn by OST.</p></li>
 <li><p>For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".</p></li>
 </ul></div>
 
+    </div>
+    <div class="section level2">
+    <h2 id="virtual-fallback">Virtual fallback<a class="anchor" aria-label="anchor" href="#virtual-fallback"></a></h2>
+
+
+<p>Sometimes the biosynthesis network of a glycan cannot be fully resolved;
+i.e., some enzymatic steps are not inferred to be catalyzed by any known
+enzyme ("bad" steps). By default, an error is raised for these glycans.</p>
+<p><code>max_virtual_steps</code> provides a fallback for these glycans.
+For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
+continue. For example, for the O-GalNAc core 5
+"GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
+the a3 GalNAc.</p>
+<p>Therefore, <code>max_virtual_steps</code> can also be interpreted as
+"the maximum number of glycosidic bonds that cannot be assigned by a known
+enzyme."
+Increasing this number loosens the criteria.</p>
     </div>
 
     <div class="section level2">

@@ -4,6 +4,12 @@
 
 ### New features
 
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  gain `max_virtual_steps` to bridge a bounded number of unsupported,
+  target-directed transitions before resuming concrete enzyme tracing;
+  fallback edges are marked by `is_virtual`. (#32)
 - New
   [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
   and

@@ -35,7 +35,9 @@
 <h2 class="pkg-version" data-toc-text="development version" id="glyenzy-development-version">glyenzy (development version)<a class="anchor" aria-label="anchor" href="#glyenzy-development-version"></a></h2>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>New <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> and <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code> build enzyme-agnostic networks by trimming targets backward; <code>annotate_enzymes = TRUE</code> adds exact rule-matched candidates in <code>concrete_enzymes</code>. (#22, #28, #30)</li>
+<ul><li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> and <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> gain <code>max_virtual_steps</code> to bridge a bounded number of unsupported, target-directed transitions before resuming concrete enzyme tracing; fallback edges are marked by <code>is_virtual</code>. (#32)</li>
+<li>New <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> and <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code> build enzyme-agnostic networks by trimming targets backward; <code>annotate_enzymes = TRUE</code> adds exact rule-matched candidates in <code>concrete_enzymes</code>. (#22, #28, #30)</li>
 <li>Add support for non-intact glycan structures by using lenient motif matching with a warning about reduced reliability. (#25)</li>
 </ul></div>
 <div class="section level3">
