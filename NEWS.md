@@ -2,7 +2,7 @@
 
 ## New features
 
-* Add first-class sulfotransferases (`ST`) with 12 human N- and O-glycan enzymes, sulfate-aware inference and biosynthesis, and virtual sulfation steps. (#20)
+* Add first-class sulfotransferases (`ST`) with 12 human N- and O-glycan enzymes, sulfate-aware inference and biosynthesis, and virtual sulfation steps. (#20, #33)
 * `path_biosynthesis()` and `trace_biosynthesis()` gain `max_virtual_steps` to bridge a bounded number of unsupported, target-directed transitions before resuming concrete enzyme tracing; fallback edges are marked by `is_virtual`. (#32)
 * New `trace_biosynthesis_virtual()` and `path_biosynthesis_virtual()` build enzyme-agnostic networks by trimming targets backward; `annotate_enzymes = TRUE` adds exact rule-matched candidates in `concrete_enzymes`. (#22, #28, #30)
 * Add support for non-intact glycan structures by using lenient motif matching with a warning about reduced reliability. (#25)
