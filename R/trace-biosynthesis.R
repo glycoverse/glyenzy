@@ -15,9 +15,29 @@
 #'   objects. If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
 #'   Default is 20.
+#' @param max_virtual_steps Integer, maximum number of target-directed virtual
+#'   enzyme steps allowed when no fully enzymatic path exists.
+#'   Default is `0L`, which disables virtual fallback.
+#'   See the "Virtual fallback" section for more details.
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length. It filters generated products.
+#'
+#' @section Virtual fallback:
+#' Sometimes the biosynthesis network of a glycan cannot be fully resolved;
+#' i.e., some enzymatic steps are not inferred to be catalyzed by any known
+#' enzyme ("bad" steps). By default, an error is raised for these glycans.
+#'
+#' `max_virtual_steps` provides a fallback for these glycans.
+#' For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
+#' continue. For example, for the O-GalNAc core 5
+#' "GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
+#' the a3 GalNAc.
+#'
+#' Therefore, `max_virtual_steps` can also be interpreted as
+#' "the maximum number of glycosidic bonds that cannot be assigned by a known
+#' enzyme."
+#' Increasing this number loosens the criteria.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
 #'   Vertices represent glycan structures, with IUPAC-condensed strings in the
@@ -25,6 +45,9 @@
 #'   synthesis step and an `enzyme` attribute containing its gene symbol.
 #'   Multiple enzymes catalysing the same substrate-to-product transition are
 #'   represented by parallel edges.
+#'   When virtual fallback is required, every edge also has an `is_virtual`
+#'   attribute; virtual edges use the structural virtual-enzyme name in
+#'   `enzyme`.
 #'
 #'   For multiple targets, the graph includes all synthesis paths needed to
 #'   reach every target glycan.
@@ -52,11 +75,13 @@ trace_biosynthesis <- function(
   glycans,
   enzymes = NULL,
   max_steps = 20,
-  filter = NULL
+  filter = NULL,
+  max_virtual_steps = 0L
 ) {
   # Parse and validate basic inputs first
   glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
   checkmate::assert_int(max_steps, lower = 1)
+  checkmate::assert_int(max_virtual_steps, lower = 0)
   if (!is.null(filter)) {
     filter <- rlang::as_function(filter)
   }
@@ -69,7 +94,14 @@ trace_biosynthesis <- function(
 
   # Find all possible paths using unified BFS logic
   starting_glycan <- .decide_starting_glycan(glycans[1])
-  .perform_bfs_synthesis(starting_glycan, glycans, enzymes, max_steps, filter)
+  .perform_bfs_synthesis(
+    starting_glycan,
+    glycans,
+    enzymes,
+    max_steps,
+    filter,
+    max_virtual_steps
+  )
 }
 
 .decide_starting_glycan <- function(glycan) {

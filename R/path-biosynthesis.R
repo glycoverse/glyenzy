@@ -6,6 +6,7 @@
 #' [path_biosynthesis_virtual()].
 #'
 #' @inheritSection trace_biosynthesis Important notes
+#' @inheritSection trace_biosynthesis Virtual fallback
 #'
 #' @param from A [glyrepr::glycan_structure()] scalar, or a character string
 #'   supported by [glyparse::auto_parse()]. The starting glycan structure.
@@ -15,6 +16,10 @@
 #'   objects. If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
 #'   Default is 10.
+#' @param max_virtual_steps Integer, maximum number of target-directed virtual
+#'   enzyme steps allowed when no fully enzymatic path exists.
+#'   Default is `0L`, which disables virtual fallback.
+#'   See the "Virtual fallback" section for more details.
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length. It filters generated products.
@@ -25,6 +30,9 @@
 #'   synthesis step and an `enzyme` attribute containing its gene symbol.
 #'   Multiple enzymes catalysing the same substrate-to-product transition are
 #'   represented by parallel edges.
+#'   When virtual fallback is required, every edge also has an `is_virtual`
+#'   attribute; virtual edges use the structural virtual-enzyme name in
+#'   `enzyme`.
 #'
 #' @examples
 #' library(glyrepr)
@@ -44,17 +52,26 @@ path_biosynthesis <- function(
   to,
   enzymes = NULL,
   max_steps = 10,
-  filter = NULL
+  filter = NULL,
+  max_virtual_steps = 0L
 ) {
   # Parse and validate basic inputs first
   from <- .process_glycan_arg(from, allow_generic = TRUE)
   to <- .process_glycan_arg(to, allow_generic = TRUE)
   checkmate::assert_int(max_steps, lower = 1)
+  checkmate::assert_int(max_virtual_steps, lower = 0)
   if (!is.null(filter)) {
     filter <- rlang::as_function(filter)
   }
 
   enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
   # Perform BFS search using unified logic
-  .perform_bfs_synthesis(from, to, enzymes, max_steps, filter)
+  .perform_bfs_synthesis(
+    from,
+    to,
+    enzymes,
+    max_steps,
+    filter,
+    max_virtual_steps
+  )
 }

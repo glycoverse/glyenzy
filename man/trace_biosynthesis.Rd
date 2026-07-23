@@ -4,7 +4,13 @@
 \alias{trace_biosynthesis}
 \title{Trace the Biosynthetic Path of Glycans}
 \usage{
-trace_biosynthesis(glycans, enzymes = NULL, max_steps = 20, filter = NULL)
+trace_biosynthesis(
+  glycans,
+  enzymes = NULL,
+  max_steps = 20,
+  filter = NULL,
+  max_virtual_steps = 0L
+)
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector, or a character vector
@@ -21,6 +27,11 @@ Default is 20.}
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
 a logical vector of the same length. It filters generated products.}
+
+\item{max_virtual_steps}{Integer, maximum number of target-directed virtual
+enzyme steps allowed when no fully enzymatic path exists.
+Default is \code{0L}, which disables virtual fallback.
+See the "Virtual fallback" section for more details.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
@@ -29,6 +40,9 @@ Vertices represent glycan structures, with IUPAC-condensed strings in the
 synthesis step and an \code{enzyme} attribute containing its gene symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
 represented by parallel edges.
+When virtual fallback is required, every edge also has an \code{is_virtual}
+attribute; virtual edges use the structural virtual-enzyme name in
+\code{enzyme}.
 
 For multiple targets, the graph includes all synthesis paths needed to
 reach every target glycan.
@@ -39,6 +53,24 @@ method uses known enzyme rules in a forward, multi-target breadth-first
 search. To infer structure-driven paths without enzyme specificity, use
 \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}}.
 }
+\section{Virtual fallback}{
+
+Sometimes the biosynthesis network of a glycan cannot be fully resolved;
+i.e., some enzymatic steps are not inferred to be catalyzed by any known
+enzyme ("bad" steps). By default, an error is raised for these glycans.
+
+\code{max_virtual_steps} provides a fallback for these glycans.
+For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
+continue. For example, for the O-GalNAc core 5
+"GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
+the a3 GalNAc.
+
+Therefore, \code{max_virtual_steps} can also be interpreted as
+"the maximum number of glycosidic bonds that cannot be assigned by a known
+enzyme."
+Increasing this number loosens the criteria.
+}
+
 \section{Important notes}{
 Here are some important notes for all functions in the \code{glyenzy} package.
 \subsection{Applicability}{

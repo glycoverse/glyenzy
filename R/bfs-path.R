@@ -17,6 +17,8 @@
 #' @param to_keys Optional pre-computed string keys for target glycans
 #' @param structure_level Structure level used for generated products
 #' @param target_match Target matching strategy
+#' @param allow_partial Whether to return the explored search state when one or
+#'   more targets are not reached.
 #'
 #' @returns List with search results including found paths and exploration data
 #'
@@ -40,9 +42,11 @@ bfs_synthesis_search <- function(
   from_key = NULL,
   to_keys = NULL,
   structure_level = "intact",
-  target_match = c("key", "whole")
+  target_match = c("key", "whole"),
+  allow_partial = FALSE
 ) {
   target_match <- match.arg(target_match)
+  checkmate::assert_flag(allow_partial)
   engine <- BfsSynthesisSearch$new(
     from_g = from_g,
     to_gs = to_gs,
@@ -52,7 +56,8 @@ bfs_synthesis_search <- function(
     from_key = from_key,
     to_keys = to_keys,
     structure_level = structure_level,
-    target_match = target_match
+    target_match = target_match,
+    allow_partial = allow_partial
   )
 
   engine$run()
@@ -80,6 +85,7 @@ BfsSynthesisSearch <- R6::R6Class(
     to_keys = NULL,
     structure_level = NULL,
     target_match = NULL,
+    allow_partial = NULL,
     remaining_targets_map = NULL,
     queue = NULL,
     queue_graphs = NULL,
@@ -102,7 +108,8 @@ BfsSynthesisSearch <- R6::R6Class(
       from_key = NULL,
       to_keys = NULL,
       structure_level = "intact",
-      target_match = "key"
+      target_match = "key",
+      allow_partial = FALSE
     ) {
       self$from_g <- from_g
       self$to_gs <- to_gs
@@ -111,6 +118,7 @@ BfsSynthesisSearch <- R6::R6Class(
       self$filter <- filter
       self$structure_level <- .validate_structure_level(structure_level)
       self$target_match <- match.arg(target_match, c("key", "whole"))
+      self$allow_partial <- allow_partial
       self$from_key <- if (is.null(from_key)) {
         as.character(from_g)[1]
       } else {
@@ -173,7 +181,8 @@ BfsSynthesisSearch <- R6::R6Class(
           all_edges = list(),
           parent = rlang::env(),
           parent_enzyme = rlang::env(),
-          parent_step = rlang::env()
+          parent_step = rlang::env(),
+          missing_target_keys = character()
         ))
       }
 
@@ -193,7 +202,10 @@ BfsSynthesisSearch <- R6::R6Class(
         }
       }
 
-      if (self$remaining_targets_map$size() > 0L) {
+      if (
+        self$remaining_targets_map$size() > 0L &&
+          !self$allow_partial
+      ) {
         missing_targets <- self$remaining_targets_map$keys()
         cli::cli_abort(
           "No synthesis path found for {length(missing_targets)} target(s) within {.val {self$max_steps}} steps."
@@ -209,7 +221,8 @@ BfsSynthesisSearch <- R6::R6Class(
         all_edges = self$all_edges,
         parent = self$parent,
         parent_enzyme = self$parent_enzyme,
-        parent_step = self$parent_step
+        parent_step = self$parent_step,
+        missing_target_keys = self$remaining_targets_map$keys()
       )
     }
   ),
