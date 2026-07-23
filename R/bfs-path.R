@@ -63,6 +63,43 @@ bfs_synthesis_search <- function(
   engine$run()
 }
 
+# Encode the ordered graph state used by standard glycan actions. Vertex names
+# are intentionally excluded because they are igraph identifiers rather than
+# glycan semantics.
+.bfs_graph_signature <- function(graph) {
+  edges <- igraph::as_edgelist(graph, names = FALSE)
+  edge_indices <- if (length(edges) == 0L) {
+    ""
+  } else {
+    paste(as.integer(t(edges)), collapse = ",")
+  }
+
+  paste0(
+    as.integer(igraph::is_directed(graph)),
+    ";",
+    igraph::vcount(graph),
+    ";",
+    igraph::ecount(graph),
+    ";",
+    edge_indices,
+    ";",
+    .bfs_signature_strings(igraph::vertex_attr(graph, "mono")),
+    ";",
+    .bfs_signature_strings(igraph::vertex_attr(graph, "sub")),
+    ";",
+    .bfs_signature_strings(igraph::edge_attr(graph, "linkage"))
+  )
+}
+
+.bfs_signature_strings <- function(values) {
+  values <- enc2utf8(as.character(values))
+  missing <- is.na(values)
+  values[missing] <- ""
+  lengths <- nchar(values, type = "bytes")
+  prefixes <- ifelse(missing, "N:", paste0(lengths, ":"))
+  paste0(prefixes, values, collapse = "")
+}
+
 #' BFS synthesis search as an R6 engine
 #'
 #' Encapsulates breadth-first search state for synthesizing glycans into an R6
@@ -153,6 +190,7 @@ BfsSynthesisSearch <- R6::R6Class(
       private$target_match_mode <- .glymotif_mode(self$to_gs)
       private$product_match_mode <- .glymotif_mode(self$from_g)
       private$rule_plan <- .prepare_bfs_rule_plan(self$enzymes)
+      private$product_cache <- fastmap::fastmap()
       private$n_core_graph <- glyrepr::get_structure_graphs(
         .n_glycan_starting_glycan("virtual")
       )
@@ -233,6 +271,7 @@ BfsSynthesisSearch <- R6::R6Class(
     target_match_mode = NULL,
     product_match_mode = NULL,
     rule_plan = NULL,
+    product_cache = NULL,
     n_core_graph = NULL,
     pre_mgat2_graph = NULL,
 
@@ -514,14 +553,14 @@ BfsSynthesisSearch <- R6::R6Class(
         ))
       }
 
-      product_graphs <- purrr::map(product_graphs, .move_glycan_root_last)
-      keep <- purrr::map_lgl(
+      prepared_products <- purrr::map(
         product_graphs,
-        private$is_promising_product,
+        private$prepare_graph_product,
         product_mode = product_mode
       )
-      product_graphs <- product_graphs[keep]
-      if (length(product_graphs) == 0L) {
+      keep <- vapply(prepared_products, `[[`, logical(1), "keep")
+      prepared_products <- prepared_products[keep]
+      if (length(prepared_products) == 0L) {
         return(list(
           products = NULL,
           graphs = list(),
@@ -529,13 +568,55 @@ BfsSynthesisSearch <- R6::R6Class(
         ))
       }
 
-      keyed <- .canonicalize_valid_glycan_graphs(product_graphs)
-      unique_products <- !duplicated(unname(keyed$keys))
+      product_graphs <- lapply(prepared_products, `[[`, "graph")
+      product_keys <- vapply(
+        prepared_products,
+        `[[`,
+        character(1),
+        "key"
+      )
+      unique_products <- !duplicated(product_keys)
       list(
         products = NULL,
-        graphs = keyed$graphs[unique_products],
-        keys = unname(keyed$keys[unique_products])
+        graphs = product_graphs[unique_products],
+        keys = unname(product_keys[unique_products])
       )
+    },
+
+    # Cache standard graph products before target pruning and canonicalization.
+    prepare_graph_product = function(product_graph, product_mode) {
+      signature <- paste0(
+        product_mode,
+        "|",
+        .bfs_graph_signature(product_graph)
+      )
+      if (
+        !is.null(private$product_cache) &&
+          private$product_cache$has(signature)
+      ) {
+        return(private$product_cache$get(signature))
+      }
+
+      product_graph <- .move_glycan_root_last(product_graph)
+      keep <- private$is_promising_product(
+        product_graph,
+        product_mode = product_mode
+      )
+      if (keep) {
+        keyed <- .canonicalize_valid_glycan_graphs(list(product_graph))
+        prepared_product <- list(
+          keep = TRUE,
+          graph = keyed$graphs[[1]],
+          key = unname(keyed$keys[[1]])
+        )
+      } else {
+        prepared_product <- list(keep = FALSE)
+      }
+
+      if (!is.null(private$product_cache)) {
+        private$product_cache$set(signature, prepared_product)
+      }
+      prepared_product
     },
 
     # Preserve structure materialization for filters and custom S3 enzymes.

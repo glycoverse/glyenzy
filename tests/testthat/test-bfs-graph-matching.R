@@ -249,6 +249,58 @@ test_that("BFS keys only promising shared graph products", {
   expect_equal(edges$enzyme, c("E1", "E2"))
 })
 
+test_that("BFS caches identical products from distinct rule jobs", {
+  make_core1_enzyme <- function(name, alignment) {
+    make_enzyme(
+      name = name,
+      type = "GT",
+      species = "human",
+      rules = list(list(
+        acceptor = "GalNAc(a1-",
+        acceptor_alignment = alignment,
+        rejects = NULL,
+        product = "Gal(b1-3)GalNAc(a1-"
+      ))
+    )
+  }
+  enzymes <- list(
+    make_core1_enzyme("E_CORE", "core"),
+    make_core1_enzyme("E_WHOLE", "whole")
+  )
+  plan <- .prepare_bfs_rule_plan(enzymes)
+  expect_equal(plan$enzyme_rule_ids, list(1L, 2L))
+
+  original <- .canonicalize_valid_glycan_graphs
+  canonicalized <- 0L
+  testthat::local_mocked_bindings(
+    .canonicalize_valid_glycan_graphs = function(graphs) {
+      canonicalized <<- canonicalized + length(graphs)
+      original(graphs)
+    },
+    .package = "glyenzy"
+  )
+  engine <- BfsSynthesisSearch$new(
+    from_g = glyrepr::as_glycan_structure("GalNAc(a1-"),
+    to_gs = glyrepr::as_glycan_structure("Gal(b1-3)GalNAc(a1-"),
+    enzymes = enzymes,
+    max_steps = 1L
+  )
+  result <- engine$run()
+  edge_enzymes <- vapply(
+    result$all_edges,
+    `[[`,
+    character(1),
+    "enzyme"
+  )
+
+  expect_equal(canonicalized, 1L)
+  expect_equal(
+    engine$.__enclos_env__$private$product_cache$size(),
+    1L
+  )
+  expect_equal(edge_enzymes, c("E_CORE", "E_WHOLE"))
+})
+
 test_that("BFS rule plans share only equivalent standard rules", {
   enzymes <- list(
     enzyme("MAN2A1"),
