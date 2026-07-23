@@ -59,10 +59,9 @@ documented, such as \code{apply_enzyme(structure_level = "basic")},
 
 \subsection{Substituents}{
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+\code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} when unsupported substituents are present.
 }
 
 \subsection{Incomplete glycan structures}{

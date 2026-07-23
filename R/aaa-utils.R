@@ -26,7 +26,10 @@
 }
 
 .is_n_glycan <- function(x) {
-  .have_motif(x, "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-")
+  .have_motif_substituent_subset(
+    x,
+    "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
 }
 
 .process_glycan_arg <- function(x, allow_generic = FALSE) {
@@ -58,11 +61,11 @@
     ))
   }
 
-  has_substituents <- .has_substituents(x)
-  if (any(has_substituents)) {
+  has_unsupported_substituents <- .has_unsupported_substituents(x)
+  if (any(has_unsupported_substituents)) {
     cli::cli_abort(c(
-      "Glycans with substituents are not supported.",
-      "x" = "These glycans have substituents: {.val {unique(x[has_substituents])}}.",
+      "Only sulfate substituents are supported.",
+      "x" = "These glycans have unsupported substituents: {.val {unique(x[has_unsupported_substituents])}}.",
       "i" = "Use {.fn glyrepr::remove_substituents} to get clean glycans."
     ))
   }
@@ -80,6 +83,424 @@
     purrr::some(igraph::V(graph)$sub, ~ .x != "")
   }
   glyrepr::smap_lgl(x, has_sub_single)
+}
+
+#' Split a normalized substituent string into tokens
+#'
+#' @param x A scalar substituent string.
+#' @returns A character vector of substituent tokens.
+#' @noRd
+.substituent_tokens <- function(x) {
+  if (length(x) == 0L || is.na(x) || identical(x, "")) {
+    return(character())
+  }
+  tokens <- strsplit(x, ",", fixed = TRUE)[[1]]
+  tokens[tokens != ""]
+}
+
+#' Identify substituent tokens supported by glyenzy
+#'
+#' @param x A character vector of substituent tokens.
+#' @returns A logical vector.
+#' @noRd
+.supported_substituents <- function(x) {
+  grepl("^(\\?|[0-9]+)S$", x)
+}
+
+#' Detect glycans containing unsupported substituents
+#'
+#' @param x A `glyrepr_structure` vector.
+#' @returns A logical vector.
+#' @noRd
+.has_unsupported_substituents <- function(x) {
+  has_unsupported_single <- function(graph) {
+    tokens <- unlist(
+      purrr::map(igraph::V(graph)$sub, .substituent_tokens),
+      use.names = FALSE
+    )
+    length(tokens) > 0L && !all(.supported_substituents(tokens))
+  }
+  glyrepr::smap_lgl(x, has_unsupported_single)
+}
+
+#' Check whether required substituents are contained in available ones
+#'
+#' Each required token must match a distinct available token. Unknown positions
+#' are compatible with concrete positions only in lenient mode.
+#'
+#' @param available_sub A scalar substituent string on the target residue.
+#' @param required_sub A scalar substituent string on the motif residue.
+#' @param mode Matching mode.
+#' @returns A logical scalar.
+#' @noRd
+.substituent_tokens_contained <- function(
+  available_sub,
+  required_sub,
+  mode = c("strict", "lenient")
+) {
+  mode <- match.arg(mode)
+  available <- .substituent_tokens(available_sub)
+  required <- .substituent_tokens(required_sub)
+  if (length(required) == 0L) {
+    return(TRUE)
+  }
+  if (length(required) > length(available)) {
+    return(FALSE)
+  }
+
+  token_matches <- function(available_token, required_token) {
+    if (identical(available_token, required_token)) {
+      return(TRUE)
+    }
+    if (!identical(mode, "lenient")) {
+      return(FALSE)
+    }
+
+    available_parts <- regmatches(
+      available_token,
+      regexec("^(\\?|[0-9]+)(.+)$", available_token)
+    )[[1]]
+    required_parts <- regmatches(
+      required_token,
+      regexec("^(\\?|[0-9]+)(.+)$", required_token)
+    )[[1]]
+    if (length(available_parts) == 0L || length(required_parts) == 0L) {
+      return(FALSE)
+    }
+    identical(available_parts[[3]], required_parts[[3]]) &&
+      (identical(available_parts[[2]], "?") ||
+        identical(required_parts[[2]], "?"))
+  }
+
+  candidates <- purrr::map(
+    required,
+    ~ which(purrr::map_lgl(available, token_matches, required_token = .x))
+  )
+  if (any(lengths(candidates) == 0L)) {
+    return(FALSE)
+  }
+  candidates <- candidates[order(lengths(candidates))]
+  assign_next <- function(i, used) {
+    if (i > length(candidates)) {
+      return(TRUE)
+    }
+    available_idx <- setdiff(candidates[[i]], used)
+    any(purrr::map_lgl(
+      available_idx,
+      ~ assign_next(i + 1L, c(used, .x))
+    ))
+  }
+  assign_next(1L, integer())
+}
+
+#' Match a motif graph with substituent-subset semantics
+#'
+#' Topology and residues are matched by glymotif after substituent attributes
+#' are blanked. Candidate mappings are then filtered so every motif
+#' substituent occurs on the corresponding glycan residue.
+#'
+#' @param glycan_graph Target glycan graph.
+#' @param motif_graph Motif graph.
+#' @param alignment Motif alignment.
+#' @param ignore_linkages Whether to ignore linkage attributes.
+#' @param match_degree Optional degree matching mode.
+#' @param mode Matching mode.
+#' @returns A list of integer node mappings.
+#' @noRd
+.g_match_motif_substituent_subset <- function(
+  glycan_graph,
+  motif_graph,
+  alignment = "substructure",
+  ignore_linkages = FALSE,
+  match_degree = NULL,
+  mode = c("strict", "lenient")
+) {
+  mode <- match.arg(mode)
+  glycan_base <- igraph::set_vertex_attr(
+    glycan_graph,
+    "sub",
+    value = rep("", igraph::vcount(glycan_graph))
+  )
+  motif_base <- igraph::set_vertex_attr(
+    motif_graph,
+    "sub",
+    value = rep("", igraph::vcount(motif_graph))
+  )
+  matches <- glymotif::.g_match_motif(
+    glycan_base,
+    motif_base,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    strict_sub = TRUE,
+    match_degree = match_degree,
+    mode = mode
+  )
+  if (length(matches) == 0L) {
+    return(matches)
+  }
+
+  glycan_subs <- igraph::vertex_attr(glycan_graph, "sub")
+  motif_subs <- igraph::vertex_attr(motif_graph, "sub")
+  keep <- purrr::map_lgl(matches, function(mapping) {
+    purrr::every(seq_along(mapping), function(i) {
+      .substituent_tokens_contained(
+        glycan_subs[[mapping[[i]]]],
+        motif_subs[[i]],
+        mode = mode
+      )
+    })
+  })
+  matches[keep]
+}
+
+#' Match a motif using substituent-subset semantics
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param motif A scalar `glyrepr_structure` or parseable motif string.
+#' @param alignment Motif alignment.
+#' @param ignore_linkages Whether to ignore linkage attributes.
+#' @param match_degree Optional degree matching mode.
+#' @returns A nested list of node mappings.
+#' @noRd
+.match_motif_substituent_subset <- function(
+  glycans,
+  motif,
+  alignment = "substructure",
+  ignore_linkages = FALSE,
+  match_degree = NULL
+) {
+  if (is.character(motif)) {
+    motif <- glyparse::auto_parse(motif)
+  }
+  checkmate::assert_class(motif, "glyrepr_structure")
+  checkmate::assert_true(length(motif) == 1L)
+  mode <- .glymotif_mode(glycans)
+  glycan_graphs <- glyrepr::get_structure_graphs(
+    glycans,
+    return_list = TRUE
+  )
+  motif_graph <- glyrepr::get_structure_graphs(
+    motif,
+    return_list = FALSE
+  )
+  purrr::map(
+    glycan_graphs,
+    .g_match_motif_substituent_subset,
+    motif_graph = motif_graph,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    match_degree = match_degree,
+    mode = mode
+  )
+}
+
+#' Match motifs using substituent-subset semantics
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param motifs A `glyrepr_structure` vector.
+#' @param alignments Motif alignments.
+#' @returns A list indexed by motif, then glycan.
+#' @noRd
+.match_motifs_substituent_subset <- function(
+  glycans,
+  motifs,
+  alignments = "substructure"
+) {
+  if (is.character(motifs)) {
+    motifs <- glyparse::auto_parse(motifs)
+  }
+  alignments <- rep_len(alignments, length(motifs))
+  res <- purrr::map2(
+    seq_along(motifs),
+    alignments,
+    ~ .match_motif_substituent_subset(
+      glycans,
+      motifs[.x],
+      alignment = .y
+    )
+  )
+  names(res) <- names(motifs)
+  res
+}
+
+#' Check for a motif using substituent-subset semantics
+#'
+#' @inheritParams .match_motif_substituent_subset
+#' @returns A logical vector.
+#' @noRd
+.have_motif_substituent_subset <- function(
+  glycans,
+  motif,
+  alignment = "substructure",
+  ignore_linkages = FALSE,
+  match_degree = NULL
+) {
+  lengths(.match_motif_substituent_subset(
+    glycans,
+    motif,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    match_degree = match_degree
+  )) >
+    0L
+}
+
+#' Check for motifs using substituent-subset semantics
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param motifs A `glyrepr_structure` vector.
+#' @param alignments Motif alignments.
+#' @returns A logical matrix with glycans in rows and motifs in columns.
+#' @noRd
+.have_motifs_substituent_subset <- function(
+  glycans,
+  motifs,
+  alignments = "substructure"
+) {
+  matches <- .match_motifs_substituent_subset(glycans, motifs, alignments)
+  if (length(matches) == 0L) {
+    return(matrix(
+      logical(),
+      nrow = length(glycans),
+      ncol = 0L
+    ))
+  }
+  res <- do.call(
+    cbind,
+    purrr::map(matches, ~ lengths(.x) > 0L)
+  )
+  colnames(res) <- names(motifs)
+  rownames(res) <- names(glycans)
+  res
+}
+
+#' Count a motif using substituent-subset semantics
+#'
+#' @inheritParams .match_motif_substituent_subset
+#' @returns An integer vector.
+#' @noRd
+.count_motif_substituent_subset <- function(
+  glycans,
+  motif,
+  alignment = "substructure",
+  ignore_linkages = FALSE,
+  match_degree = NULL
+) {
+  lengths(.match_motif_substituent_subset(
+    glycans,
+    motif,
+    alignment = alignment,
+    ignore_linkages = ignore_linkages,
+    match_degree = match_degree
+  ))
+}
+
+#' Count motifs using substituent-subset semantics
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param motifs A `glyrepr_structure` vector.
+#' @param alignments Motif alignments.
+#' @returns An integer matrix with glycans in rows and motifs in columns.
+#' @noRd
+.count_motifs_substituent_subset <- function(
+  glycans,
+  motifs,
+  alignments = "substructure"
+) {
+  matches <- .match_motifs_substituent_subset(glycans, motifs, alignments)
+  if (length(matches) == 0L) {
+    return(matrix(
+      integer(),
+      nrow = length(glycans),
+      ncol = 0L
+    ))
+  }
+  res <- do.call(cbind, purrr::map(matches, lengths))
+  colnames(res) <- names(motifs)
+  rownames(res) <- names(glycans)
+  res
+}
+
+#' Evaluate OR-valued rule requirements
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param rule A `glyenzy_enzyme_rule`.
+#' @returns A logical vector.
+#' @noRd
+.rule_requirements_met <- function(glycans, rule) {
+  if (length(rule$requires) == 0L) {
+    return(rep(TRUE, length(glycans)))
+  }
+  requirement_matches <- purrr::map(
+    rule$requires,
+    function(requirement) {
+      .have_motif_substituent_subset(
+        glycans,
+        requirement$motif,
+        alignment = requirement$alignment
+      )
+    }
+  )
+  Reduce(`|`, requirement_matches)
+}
+
+#' Check whether a sulfate position is available on a residue
+#'
+#' @param graph A glycan graph.
+#' @param vertex A node index.
+#' @param sulfate A sulfate token such as `"6S"`.
+#' @returns A logical scalar.
+#' @noRd
+.sulfate_position_available <- function(graph, vertex, sulfate) {
+  position <- sub("S$", "", sulfate)
+  if (identical(position, "?")) {
+    return(TRUE)
+  }
+
+  existing_substituents <- .substituent_tokens(
+    igraph::vertex_attr(graph, "sub", index = vertex)
+  )
+  existing_positions <- sub("[^0-9?].*$", "", existing_substituents)
+  if (position %in% existing_positions) {
+    return(FALSE)
+  }
+
+  incoming_edges <- igraph::incident(graph, vertex, mode = "in")
+  incoming_linkages <- igraph::edge_attr(
+    graph,
+    "linkage",
+    index = incoming_edges
+  )
+  donor_positions <- sub("-.*$", "", incoming_linkages)
+  donor_positions <- sub("^[ab?]", "", donor_positions)
+  donor_positions <- donor_positions[
+    grepl("^[0-9]+$", donor_positions)
+  ]
+  if (length(incoming_edges) == 0L) {
+    root_anomer <- igraph::graph_attr(graph, "anomer")
+    if (length(root_anomer) == 1L) {
+      root_position <- sub("^[ab?]", "", root_anomer)
+      if (grepl("^[0-9]+$", root_position)) {
+        donor_positions <- c(donor_positions, root_position)
+      }
+    }
+  }
+  if (position %in% donor_positions) {
+    return(FALSE)
+  }
+
+  outgoing_edges <- igraph::incident(graph, vertex, mode = "out")
+  existing_linkages <- igraph::edge_attr(
+    graph,
+    "linkage",
+    index = outgoing_edges
+  )
+  linkage_positions <- sub(".*-", "", existing_linkages)
+  linkage_positions <- linkage_positions[
+    linkage_positions != "?" &
+      !grepl("/", linkage_positions, fixed = TRUE)
+  ]
+  !position %in% linkage_positions
 }
 
 #' Warn when glycan structures require lenient motif matching

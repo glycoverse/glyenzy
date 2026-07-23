@@ -2,7 +2,7 @@
 % Please edit documentation in R/view-enzyme.R
 \name{view_enzyme}
 \alias{view_enzyme}
-\title{View Residues Added by an Enzyme}
+\title{View Residues Added or Modified by an Enzyme}
 \usage{
 view_enzyme(glycan, enzyme)
 }
@@ -10,15 +10,15 @@ view_enzyme(glycan, enzyme)
 \item{glycan}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a glycan structure string
 supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
-\item{enzyme}{A glycosyltransferase \code{\link[=enzyme]{enzyme()}} or a gene symbol for one.
-Glycoside hydrolases are not supported.}
+\item{enzyme}{A glycosyltransferase or sulfotransferase \code{\link[=enzyme]{enzyme()}}, or a gene
+symbol for one. Glycoside hydrolases are not supported.}
 }
 \value{
 A \code{ggplot} object returned by \code{\link[glydraw:draw_cartoon]{glydraw::draw_cartoon()}}. If no match is found,
 the glycan is drawn without highlighted residues and a cli alert is emitted.
 }
 \description{
-Visualize where an enzyme contributes residues to a glycan structure.
+Visualize where an enzyme adds or modifies residues in a glycan structure.
 }
 \details{
 \code{view_enzyme()} matches one \code{enzyme} against one \code{glycan} with the same
@@ -59,10 +59,9 @@ documented, such as \code{apply_enzyme(structure_level = "basic")},
 
 \subsection{Substituents}{
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+\code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} when unsupported substituents are present.
 }
 
 \subsection{Incomplete glycan structures}{

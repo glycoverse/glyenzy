@@ -28,8 +28,8 @@ candidate concrete enzyme for each transition.
 }
 \description{
 Reconstruct every structure-driven biosynthetic path for one or more
-glycans by trimming terminal residues backward. Unlike \code{\link[=trace_biosynthesis]{trace_biosynthesis()}},
-this does not require known enzyme rules.
+glycans by trimming terminal residues and sulfate groups backward. Unlike
+\code{\link[=trace_biosynthesis]{trace_biosynthesis()}}, this does not require known enzyme rules.
 }
 \section{Virtual enzymes}{
 
@@ -39,10 +39,17 @@ labeled \code{"b4GlcNAcT"}. Partial and topological glycans omit linkage
 information and use \code{"GlcNAcT"}; basic glycans use the generic residue name,
 such as \code{"HexNAcT"}.
 
+Sulfation is represented as its own atomic transition. Sulfate additions at
+positions 3 and 6 use \code{"3SulfoT"} and \code{"6SulfoT"}; an unknown or other
+position uses \code{"?SulfoT"}. A sulfated terminal residue is therefore
+desulfated before the residue itself can be trimmed.
+
 Virtual tracing starts N-glycans at the N-glycan core and all other glycans
-at their reducing-end root residue. In \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}, the
-explicit \code{from} glycan is always the virtual starting structure. These
-networks represent structural possibilities rather than biological
+at their reducing-end root residue. Sulfates are removed from these
+automatically selected starts. In \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}, the
+explicit \code{from} glycan is always the virtual starting structure, including
+any sulfate groups it contains; those sulfates must also occur in \code{to}.
+These networks represent structural possibilities rather than biological
 feasibility.
 
 Basic structures do not retain glycan-class metadata. A basic structure
@@ -85,10 +92,9 @@ documented, such as \code{apply_enzyme(structure_level = "basic")},
 
 \subsection{Substituents}{
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+\code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} when unsupported substituents are present.
 }
 
 \subsection{Incomplete glycan structures}{

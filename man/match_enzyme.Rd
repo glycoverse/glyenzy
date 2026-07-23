@@ -2,15 +2,15 @@
 % Please edit documentation in R/match-enzyme.R
 \name{match_enzyme}
 \alias{match_enzyme}
-\title{Match Residues Added by an Enzyme}
+\title{Match Residues Added or Modified by an Enzyme}
 \usage{
 match_enzyme(glycans, enzyme, method = c("motif", "path"))
 }
 \arguments{
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector.}
 
-\item{enzyme}{A glycosyltransferase \code{\link[=enzyme]{enzyme()}} or a gene symbol for one.
-Glycoside hydrolases are not supported.}
+\item{enzyme}{A glycosyltransferase or sulfotransferase \code{\link[=enzyme]{enzyme()}}, or a
+gene symbol for one. Glycoside hydrolases are not supported.}
 
 \item{method}{Method used to decide whether the enzyme is involved.
 \code{"motif"} matches product motifs directly in each glycan.
@@ -19,12 +19,12 @@ results back to each glycan, which is more accurate but slower.}
 }
 \value{
 A list of integer vectors with the same length as \code{glycans}.
-Each integer vector contains node indices for residues added by \code{enzyme}
-in the corresponding glycan.
+Each integer vector contains node indices for residues added or modified
+by \code{enzyme} in the corresponding glycan.
 }
 \description{
 This function finds residues in glycans that match the product motifs of a
-glycosyltransferase and returns their node indices.
+glycosyltransferase or sulfotransferase and returns their node indices.
 }
 \section{Important notes}{
 Here are some important notes for all functions in the \code{glyenzy} package.
@@ -60,10 +60,9 @@ documented, such as \code{apply_enzyme(structure_level = "basic")},
 
 \subsection{Substituents}{
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+\code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} when unsupported substituents are present.
 }
 
 \subsection{Incomplete glycan structures}{

@@ -107,6 +107,14 @@ apply_enzyme <- function(
   .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
 }
 
+.apply_enzyme.glyenzy_st_enzyme <- function(
+  glycans,
+  enzyme,
+  structure_level = "intact"
+) {
+  .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
+}
+
 #' Apply all enzyme rules to a vector of glycan structures
 #'
 #' @param glycans A `glyrepr_structure` vector.
@@ -138,7 +146,16 @@ apply_enzyme <- function(
 
   list(
     acceptor = glyrepr::get_structure_graphs(rule$acceptor),
-    rejects = glyrepr::get_structure_graphs(rule$rejects, return_list = TRUE)
+    rejects = glyrepr::get_structure_graphs(rule$rejects, return_list = TRUE),
+    requires = purrr::map(rule$requires, function(requirement) {
+      list(
+        motif = glyrepr::get_structure_graphs(
+          requirement$motif,
+          return_list = FALSE
+        ),
+        alignment = requirement$alignment
+      )
+    })
   )
 }
 
@@ -150,6 +167,20 @@ apply_enzyme <- function(
     alignment = rule$acceptor_alignment,
     mode = mode
   )
+  if (
+    length(prepared_rule$requires) > 0L &&
+      !purrr::some(prepared_rule$requires, function(requirement) {
+        length(.g_match_motif_substituent_subset(
+          glycan_graph,
+          requirement$motif,
+          alignment = requirement$alignment,
+          mode = mode
+        )) >
+          0L
+      })
+  ) {
+    return(list())
+  }
   if (length(prepared_rule$rejects) == 0L) {
     return(acceptor_matches)
   }
@@ -312,7 +343,8 @@ apply_enzyme <- function(
 .uses_standard_graph_action <- function(enzyme) {
   enzyme_class <- class(enzyme)
   identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
-    identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme"))
+    identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme")) ||
+    identical(enzyme_class, c("glyenzy_st_enzyme", "glyenzy_enzyme"))
 }
 
 # Stateful custom S3 actions must retain scalar frontier execution order.
@@ -357,6 +389,10 @@ apply_enzyme <- function(
     identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme"))
   ) {
     "standard_gh"
+  } else if (
+    identical(enzyme_class, c("glyenzy_st_enzyme", "glyenzy_enzyme"))
+  ) {
+    "standard_st"
   } else {
     return(list(dispatch = "private", nonce = nonce))
   }
@@ -366,11 +402,19 @@ apply_enzyme <- function(
     acceptor = unname(as.character(rule$acceptor)),
     alignment = rule$acceptor_alignment,
     rejects = unname(as.character(rule$rejects)),
+    requires = purrr::map(rule$requires, function(requirement) {
+      list(
+        motif = unname(as.character(requirement$motif)),
+        alignment = requirement$alignment
+      )
+    }),
     product = unname(as.character(rule$product)),
     acceptor_idx = unname(rule$acceptor_idx),
     product_idx = unname(rule$product_idx),
     new_residue = unname(rule$new_residue),
-    new_linkage = unname(rule$new_linkage)
+    new_linkage = unname(rule$new_linkage),
+    new_substituent = unname(rule$new_substituent),
+    product_sub = unname(rule$product_sub)
   )
 }
 
@@ -564,6 +608,24 @@ apply_enzyme <- function(
   purrr::map(indices_to_act_on, ~ .remove_residue(graph, .x))
 }
 
+.apply_rule_action.glyenzy_st_enzyme <- function(
+  enzyme,
+  graph,
+  indices_to_act_on,
+  rule,
+  structure_level = "intact"
+) {
+  purrr::map(
+    indices_to_act_on,
+    ~ .add_sulfate(
+      graph,
+      .x,
+      rule$new_substituent,
+      rule$product_sub
+    )
+  )
+}
+
 .apply_rule_action.glyenzy_enzyme <- function(
   enzyme,
   graph,
@@ -581,6 +643,13 @@ apply_enzyme <- function(
       structure_level = structure_level
     ),
     GH = .apply_rule_action.glyenzy_gh_enzyme(
+      enzyme,
+      graph,
+      indices_to_act_on,
+      rule,
+      structure_level = structure_level
+    ),
+    ST = .apply_rule_action.glyenzy_st_enzyme(
       enzyme,
       graph,
       indices_to_act_on,
@@ -649,6 +718,8 @@ apply_enzyme <- function(
     )
     res <- .reject_matches(res, rej_match_res)
   }
+  requirements_met <- .rule_requirements_met(glycans, rule)
+  res[!requirements_met] <- rep(list(list()), sum(!requirements_met))
   res
 }
 
@@ -732,6 +803,37 @@ apply_enzyme <- function(
     attr = list(linkage = new_linkage)
   )
   new_graph
+}
+
+#' Add a sulfate substituent to a glycan graph
+#'
+#' @param graph An igraph glycan graph.
+#' @param idx_to_modify The residue node to modify.
+#' @param new_substituent The sulfate token added by the rule.
+#' @param product_sub The validated complete product substituent state.
+#' @returns A modified graph, or `NULL` when the sulfate position is occupied.
+#' @noRd
+.add_sulfate <- function(
+  graph,
+  idx_to_modify,
+  new_substituent,
+  product_sub
+) {
+  if (
+    !.sulfate_position_available(
+      graph,
+      idx_to_modify,
+      new_substituent
+    )
+  ) {
+    return(NULL)
+  }
+  igraph::set_vertex_attr(
+    graph,
+    "sub",
+    index = idx_to_modify,
+    value = product_sub
+  )
 }
 
 # Check that a known acceptor carbon is not already occupied. Unknown or

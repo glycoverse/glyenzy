@@ -17,6 +17,32 @@ test_that("view_enzyme highlights residues matched by an enzyme", {
   )
 })
 
+test_that("view_enzyme highlights residues modified by an ST", {
+  glycan <- glyrepr::as_glycan_structure(
+    "Gal6S(b1-3)GalNAc(a1-"
+  )
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Gal6S(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  result <- suppressMessages(view_enzyme(glycan, enz))
+  expected <- glydraw::draw_cartoon(glycan, highlight = 1L)
+
+  expect_s3_class(result, "glydraw_cartoon")
+  expect_equal(
+    ggplot2::ggplot_build(result)$data,
+    ggplot2::ggplot_build(expected)$data
+  )
+})
+
 test_that("view_enzyme returns an unhighlighted plot when no match is found", {
   glycan <- glyrepr::as_glycan_structure("Gal(b1-3)GlcNAc(b1-")
 

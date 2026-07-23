@@ -142,6 +142,47 @@ test_that("count_enzyme works for MAN1A1, MAN1A2, and MAN1C1", {
   expect_equal(count_enzyme(glycans, "MAN1C1"), MAN1C1_res)
 })
 
+test_that("count_enzyme deduplicates ST contexts by node and sulfate", {
+  rule <- list(
+    acceptor = "Gal(b1-",
+    acceptor_alignment = "whole",
+    rejects = NULL,
+    product = "Gal3S(b1-"
+  )
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(rule, rule)
+  )
+
+  expect_equal(count_enzyme("Gal3S(b1-", enz), 1L)
+})
+
+test_that("count_enzyme distinguishes two sulfate events on one residue", {
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(
+      list(
+        acceptor = "Gal(b1-",
+        acceptor_alignment = "whole",
+        rejects = NULL,
+        product = "Gal3S(b1-"
+      ),
+      list(
+        acceptor = "Gal3S(b1-",
+        acceptor_alignment = "whole",
+        rejects = NULL,
+        product = "Gal3S6S(b1-"
+      )
+    )
+  )
+
+  expect_equal(count_enzyme("Gal3S6S(b1-", enz), 2L)
+})
+
 # ===== Starter cases =====
 test_that("count_enzyme works for DPAGT1", {
   expect_equal(count_enzyme(glyrepr::n_glycan_core(), "DPAGT1"), 1L)
@@ -205,6 +246,39 @@ test_that("count_enzyme path method supports custom enzyme objects", {
       count_enzyme("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enz, method = "path")
     ),
     1L
+  )
+})
+
+test_that("count_enzyme path method deduplicates ST events by node and sulfate", {
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(
+      list(
+        acceptor = "Gal(b1-3)GalNAc(a1-",
+        acceptor_alignment = "core",
+        rejects = NULL,
+        product = "Gal3S(b1-3)GalNAc(a1-"
+      ),
+      list(
+        acceptor = "Gal3S(b1-3)GalNAc(a1-",
+        acceptor_alignment = "core",
+        rejects = NULL,
+        product = "Gal3S6S(b1-3)GalNAc(a1-"
+      )
+    )
+  )
+
+  expect_equal(
+    suppressMessages(
+      count_enzyme(
+        "Gal3S6S(b1-3)GalNAc(a1-",
+        enz,
+        method = "path"
+      )
+    ),
+    2L
   )
 })
 

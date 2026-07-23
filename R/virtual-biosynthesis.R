@@ -1,8 +1,8 @@
 #' Trace a Virtual Biosynthetic Path of Glycans
 #'
 #' Reconstruct every structure-driven biosynthetic path for one or more
-#' glycans by trimming terminal residues backward. Unlike [trace_biosynthesis()],
-#' this does not require known enzyme rules.
+#' glycans by trimming terminal residues and sulfate groups backward. Unlike
+#' [trace_biosynthesis()], this does not require known enzyme rules.
 #'
 #' @inheritSection have_enzyme Important notes
 #' @inheritParams trace_biosynthesis
@@ -14,10 +14,17 @@
 #' information and use `"GlcNAcT"`; basic glycans use the generic residue name,
 #' such as `"HexNAcT"`.
 #'
+#' Sulfation is represented as its own atomic transition. Sulfate additions at
+#' positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or other
+#' position uses `"?SulfoT"`. A sulfated terminal residue is therefore
+#' desulfated before the residue itself can be trimmed.
+#'
 #' Virtual tracing starts N-glycans at the N-glycan core and all other glycans
-#' at their reducing-end root residue. In [path_biosynthesis_virtual()], the
-#' explicit `from` glycan is always the virtual starting structure. These
-#' networks represent structural possibilities rather than biological
+#' at their reducing-end root residue. Sulfates are removed from these
+#' automatically selected starts. In [path_biosynthesis_virtual()], the
+#' explicit `from` glycan is always the virtual starting structure, including
+#' any sulfate groups it contains; those sulfates must also occur in `to`.
+#' These networks represent structural possibilities rather than biological
 #' feasibility.
 #'
 #' Basic structures do not retain glycan-class metadata. A basic structure
@@ -78,8 +85,8 @@ trace_biosynthesis_virtual <- function(
 #' Find a Virtual Biosynthesis Path Between Glycan Structures
 #'
 #' Infer every structure-driven biosynthetic path from `from` to `to` by
-#' trimming `to` backward to `from`. Unlike [path_biosynthesis()], this does
-#' not require known enzyme rules.
+#' trimming terminal residues and sulfate groups from `to` backward to `from`.
+#' Unlike [path_biosynthesis()], this does not require known enzyme rules.
 #'
 #' @inheritSection trace_biosynthesis_virtual Virtual enzymes
 #' @inheritParams path_biosynthesis
