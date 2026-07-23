@@ -1,5 +1,31 @@
-Sulfotransferase rule attribution
-=================================
+Enzyme rule data attribution
+============================
+
+GlycoEnzDB-derived rules
+------------------------
+
+The enzyme rules distributed with glyenzy, other than the sulfotransferase
+rules described below, were selected and translated from GlycoEnzDB:
+
+https://virtualglycome.org/glycoenzdb/
+
+GlycoEnzDB is described in:
+
+Zhou et al., "GlycoEnzDB: A database of enzymes involved in human
+glycosylation", Glycobiology.
+https://doi.org/10.1093/glycob/cwaf074
+
+GlycoEnzDB states that its material is licensed under the Creative Commons
+Attribution 4.0 International license (CC BY 4.0), except for textbook figures
+from Essentials of Glycobiology:
+
+https://creativecommons.org/licenses/by/4.0/
+
+glyenzy adapts the selected reactions into its IUPAC-condensed enzyme-rule
+format and does not redistribute those textbook figures.
+
+GlycoEnzOnto-derived sulfotransferase rules
+-------------------------------------------
 
 The human N- and O-glycan sulfotransferase rules distributed with glyenzy were
 selected and translated from GlycoEnzOnto:
