@@ -281,7 +281,8 @@ BfsSynthesisSearch <- R6::R6Class(
           chunk_graphs,
           rep(private$product_match_mode, length(chunk_graphs)),
           private$rule_plan,
-          structure_level = self$structure_level
+          structure_level = self$structure_level,
+          glycan_keys = chunk_keys
         )
         plan_products <- private$prepare_plan_products(
           rule_results,
