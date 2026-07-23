@@ -86,10 +86,9 @@ documented, such as \code{apply_enzyme(structure_level = "basic")},
 
 \subsection{Substituents}{
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use \code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} to get clean glycans.
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+\code{\link[glyrepr:remove_substituents]{glyrepr::remove_substituents()}} when unsupported substituents are present.
 }
 
 \subsection{Incomplete glycan structures}{
@@ -126,11 +125,12 @@ enzyme ("bad" steps). By default, an error is raised for these glycans.
 For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
 continue. For example, for the O-GalNAc core 5
 "GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
-the a3 GalNAc.
+the a3 GalNAc. Unsupported sulfate additions similarly use \code{"3SulfoT"},
+\code{"6SulfoT"}, or \code{"?SulfoT"}.
 
 Therefore, \code{max_virtual_steps} can also be interpreted as
-"the maximum number of glycosidic bonds that cannot be assigned by a known
-enzyme."
+"the maximum number of glycosidic bonds or sulfate transfers that cannot be
+assigned by a known enzyme."
 Increasing this number loosens the criteria.
 }
 

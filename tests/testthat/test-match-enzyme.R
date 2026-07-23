@@ -24,6 +24,31 @@ test_that("match_enzyme works vectorizedly and preserves names", {
   )
 })
 
+test_that("match_enzyme identifies ST-modified residues once", {
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(
+      list(
+        acceptor = "Gal(b1-",
+        acceptor_alignment = "whole",
+        rejects = NULL,
+        product = "Gal3S(b1-"
+      ),
+      list(
+        acceptor = "Gal3S(b1-",
+        acceptor_alignment = "whole",
+        rejects = NULL,
+        product = "Gal3S6S(b1-"
+      )
+    )
+  )
+  glycan <- glyparse::auto_parse("Gal3S6S(b1-")
+
+  expect_equal(match_enzyme(glycan, enz), list(1L))
+})
+
 test_that("match_enzyme uses lenient matching for non-intact glycans", {
   glycan <- glyparse::auto_parse("Gal(b1-?)GalNAc(a1-")
 
@@ -216,6 +241,39 @@ test_that("match_enzyme path method supports custom enzyme objects", {
   expect_equal(
     suppressMessages(match_enzyme(glycan, enz, method = "path")),
     list(1L)
+  )
+})
+
+test_that("match_enzyme path method maps an ST-modified node", {
+  glycan <- glyparse::auto_parse("Gal6S(b1-3)GalNAc(a1-")
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "core",
+      rejects = NULL,
+      product = "Gal6S(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  expect_equal(
+    suppressMessages(match_enzyme(glycan, enz, method = "path")),
+    list(1L)
+  )
+})
+
+test_that("GT path matching tolerates later sulfation in the final glycan", {
+  glycan <- glyparse::auto_parse("Gal6S(b1-3)GalNAc(a1-")
+
+  expect_equal(
+    .match_traced_edge_added_residues(
+      glycan,
+      "GalNAc(a1-",
+      "Gal(b1-3)GalNAc(a1-"
+    ),
+    1L
   )
 })
 

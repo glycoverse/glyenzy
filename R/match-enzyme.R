@@ -1,21 +1,21 @@
-#' Match Residues Added by an Enzyme
+#' Match Residues Added or Modified by an Enzyme
 #'
 #' This function finds residues in glycans that match the product motifs of a
-#' glycosyltransferase and returns their node indices.
+#' glycosyltransferase or sulfotransferase and returns their node indices.
 #'
 #' @inheritSection have_enzyme Important notes
 #'
 #' @param glycans A [glyrepr::glycan_structure()] vector.
-#' @param enzyme A glycosyltransferase [enzyme()] or a gene symbol for one.
-#'   Glycoside hydrolases are not supported.
+#' @param enzyme A glycosyltransferase or sulfotransferase [enzyme()], or a
+#'   gene symbol for one. Glycoside hydrolases are not supported.
 #' @param method Method used to decide whether the enzyme is involved.
 #'   `"motif"` matches product motifs directly in each glycan.
 #'   `"path"` matches substrates and products from [trace_biosynthesis()]
 #'   results back to each glycan, which is more accurate but slower.
 #'
 #' @return A list of integer vectors with the same length as `glycans`.
-#'   Each integer vector contains node indices for residues added by `enzyme`
-#'   in the corresponding glycan.
+#'   Each integer vector contains node indices for residues added or modified
+#'   by `enzyme` in the corresponding glycan.
 #'
 #' @examples
 #' glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
@@ -61,6 +61,14 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   .match_enzyme_motif.glyenzy_enzyme(glycans, enzyme)
 }
 
+.match_enzyme_path.glyenzy_st_enzyme <- function(glycans, enzyme) {
+  events <- .match_st_enzyme_path_events(glycans, enzyme)
+  purrr::map(
+    events,
+    ~ .unique_match_indices(unname(.x))
+  )
+}
+
 .match_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
   enzymes <- .trace_enzymes_with(enzyme)
   purrr::map(
@@ -104,12 +112,12 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 .match_traced_edge_added_residues <- function(glycan, substrate, product) {
   substrate <- glyparse::auto_parse(substrate)
   product <- glyparse::auto_parse(product)
-  substrate_matches <- .match_motif(
+  substrate_matches <- .match_motif_substituent_subset(
     glycan,
     substrate,
     alignment = "substructure"
   )[[1]]
-  product_matches <- .match_motif(
+  product_matches <- .match_motif_substituent_subset(
     glycan,
     product,
     alignment = "substructure"
@@ -121,6 +129,85 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     substrate_matches = substrate_matches
   )
   unlist(added_residues, use.names = FALSE)
+}
+
+#' Match unique ST events from traced paths
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme An ST enzyme.
+#' @returns A list of named integer event vectors.
+#' @noRd
+.match_st_enzyme_path_events <- function(glycans, enzyme) {
+  enzymes <- .trace_enzymes_with(enzyme)
+  purrr::map(
+    glycans,
+    ~ .match_st_enzyme_path_single(.x, enzyme$name, enzymes)
+  )
+}
+
+#' Match ST events from traced edges in one final glycan
+#'
+#' @param glycan A length-one `glyrepr_structure`.
+#' @param enzyme_name An enzyme name.
+#' @param enzymes Enzymes used for tracing.
+#' @returns A named integer vector keyed by node and sulfate.
+#' @noRd
+.match_st_enzyme_path_single <- function(glycan, enzyme_name, enzymes) {
+  path <- trace_biosynthesis(glycan, enzymes = enzymes)
+  edges <- igraph::as_data_frame(path, what = "edges")
+  edges <- edges[edges$enzyme == enzyme_name, , drop = FALSE]
+  if (nrow(edges) == 0L) {
+    return(integer())
+  }
+  events <- purrr::map2(
+    edges$from,
+    edges$to,
+    ~ .match_traced_edge_modified_events(glycan, .x, .y)
+  )
+  events <- unlist(events, use.names = TRUE)
+  events[!duplicated(names(events))]
+}
+
+#' Match unique sulfate events for one traced ST edge
+#'
+#' @param glycan A final glycan.
+#' @param substrate A traced substrate string.
+#' @param product A traced product string.
+#' @returns A named integer vector keyed by node and sulfate.
+#' @noRd
+.match_traced_edge_modified_events <- function(
+  glycan,
+  substrate,
+  product
+) {
+  rule <- new_enzyme_rule(
+    acceptor = glyparse::auto_parse(substrate),
+    product = glyparse::auto_parse(product),
+    acceptor_alignment = "whole",
+    rejects = glyrepr::glycan_structure()
+  )
+  action <- tryCatch(
+    .derive_st_rule_action(rule),
+    error = function(e) NULL
+  )
+  if (is.null(action)) {
+    return(integer())
+  }
+  product_matches <- .match_motif_substituent_subset(
+    glycan,
+    rule$product,
+    alignment = "substructure"
+  )[[1]]
+  if (length(product_matches) == 0L) {
+    return(integer())
+  }
+  nodes <- purrr::map_int(
+    product_matches,
+    ~ .x[[action$product_idx]]
+  )
+  keys <- paste(nodes, action$new_substituent, sep = "\r")
+  events <- stats::setNames(nodes, keys)
+  events[!duplicated(names(events))]
 }
 
 #' Match one traced product occurrence to substrate occurrences
@@ -180,6 +267,14 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   purrr::map(res, .unique_match_indices)
 }
 
+.match_enzyme_motif.glyenzy_st_enzyme <- function(glycans, enzyme) {
+  events <- .match_st_enzyme_events(glycans, enzyme)
+  purrr::map(
+    events,
+    ~ .unique_match_indices(unname(.x))
+  )
+}
+
 .match_enzyme_motif.glyenzy_enzyme <- function(glycans, enzyme) {
   if (.is_starter_gt(enzyme)) {
     return(.match_enzyme_motif.glyenzy_starter_gt_enzyme(glycans, enzyme))
@@ -188,8 +283,9 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   switch(
     enzyme$type,
     GT = .match_enzyme_motif.glyenzy_gt_enzyme(glycans, enzyme),
+    ST = .match_enzyme_motif.glyenzy_st_enzyme(glycans, enzyme),
     GH = cli::cli_abort(
-      "{.fn match_enzyme} only supports glycosyltransferases."
+      "{.fn match_enzyme} only supports glycosyltransferases and sulfotransferases."
     ),
     cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
   )
@@ -217,7 +313,7 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @noRd
 .match_enzyme_rule <- function(glycans, rule) {
   product_alignment <- .product_alignment(rule)
-  product_matches <- .match_motif(
+  product_matches <- .match_motif_substituent_subset(
     glycans,
     rule$product,
     alignment = product_alignment
@@ -226,6 +322,15 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     glycans,
     rule,
     product_alignment
+  )
+  requirements_met <- .rule_requirements_met(glycans, rule)
+  product_matches[!requirements_met] <- rep(
+    list(list()),
+    sum(!requirements_met)
+  )
+  acceptor_matches[!requirements_met] <- rep(
+    list(list()),
+    sum(!requirements_met)
   )
 
   purrr::map2(
@@ -248,12 +353,52 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   rule,
   product_alignment
 ) {
-  res <- .match_motif(
+  res <- .match_motif_substituent_subset(
     glycans,
     rule$acceptor,
     alignment = product_alignment
   )
   res
+}
+
+#' Match unique ST events in final glycans
+#'
+#' Events are deduplicated by glycan node and sulfate token, so overlapping
+#' context rules do not inflate counts while distinct sulfate additions on one
+#' residue remain distinct.
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param enzyme An ST enzyme.
+#' @returns A list of named integer vectors.
+#' @noRd
+.match_st_enzyme_events <- function(glycans, enzyme) {
+  events <- rep(list(integer()), length(glycans))
+  if (length(enzyme$rules) == 0L) {
+    return(events)
+  }
+
+  for (rule in enzyme$rules) {
+    product_matches <- .match_motif_substituent_subset(
+      glycans,
+      rule$product,
+      alignment = .product_alignment(rule)
+    )
+    requirements_met <- .rule_requirements_met(glycans, rule)
+    for (i in seq_along(glycans)) {
+      if (!requirements_met[[i]] || length(product_matches[[i]]) == 0L) {
+        next
+      }
+      nodes <- purrr::map_int(
+        product_matches[[i]],
+        ~ .x[[rule$product_idx]]
+      )
+      keys <- paste(nodes, rule$new_substituent, sep = "\r")
+      new_events <- stats::setNames(nodes, keys)
+      combined <- c(events[[i]], new_events)
+      events[[i]] <- combined[!duplicated(names(combined))]
+    }
+  }
+  events
 }
 
 #' Match residues added by one enzyme rule in one glycan
@@ -306,9 +451,13 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #'
 #' @noRd
 .validate_match_enzyme_type <- function(enzyme) {
-  if (!inherits(enzyme, "glyenzy_gt_enzyme") && enzyme$type != "GT") {
+  if (
+    !inherits(enzyme, "glyenzy_gt_enzyme") &&
+      !inherits(enzyme, "glyenzy_st_enzyme") &&
+      !enzyme$type %in% c("GT", "ST")
+  ) {
     cli::cli_abort(
-      "{.fn match_enzyme} only supports glycosyltransferases."
+      "{.fn match_enzyme} only supports glycosyltransferases and sulfotransferases."
     )
   }
   invisible(enzyme)

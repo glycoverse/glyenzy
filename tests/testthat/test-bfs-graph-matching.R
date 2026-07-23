@@ -592,3 +592,112 @@ test_that("stateful filters retain scalar enzyme calls", {
   expect_equal(calls, rep(list("Gal(b1-3)GalNAc(a1-"), 2L))
   expect_equal(edges$enzyme, "E2")
 })
+
+test_that("BFS pruning preserves sulfate-subset intermediates", {
+  products <- glyparse::auto_parse(c(
+    "Gal(b1-",
+    "Gal6S(b1-",
+    "Gal3S(b1-",
+    "Gal4S(b1-"
+  ))
+  target <- glyparse::auto_parse("Gal3S6S(b1-")
+
+  expect_equal(
+    is_promising_intermediate(products, target),
+    c(TRUE, TRUE, TRUE, FALSE)
+  )
+})
+
+test_that("MGAT2 readiness ignores additional sulfates", {
+  glycans <- glyparse::auto_parse(c(
+    "Man6S(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  ))
+
+  expect_equal(mgat2_ready(glycans), c(FALSE, TRUE))
+})
+
+test_that("ST actions use batched BFS through sequential sulfation", {
+  st6 <- make_enzyme(
+    name = "TEST_ST6",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "substructure",
+      rejects = NULL,
+      product = "Gal6S(b1-"
+    ))
+  )
+  st3 <- make_enzyme(
+    name = "TEST_ST3",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal6S(b1-",
+      acceptor_alignment = "whole",
+      rejects = NULL,
+      product = "Gal3S6S(b1-"
+    ))
+  )
+
+  expect_true(.uses_standard_graph_action(st6))
+  expect_true(.can_batch_bfs_enzyme(st6))
+
+  frontier <- glyparse::auto_parse(c(
+    "Gal(b1-",
+    "Neu5Ac(a2-6)Gal(b1-"
+  ))
+  graphs <- glyrepr::get_structure_graphs(frontier, return_list = TRUE)
+  modes <- vapply(
+    seq_along(frontier),
+    function(i) .glymotif_mode(frontier[i]),
+    character(1)
+  )
+  plan <- .prepare_bfs_rule_plan(list(st6))
+  batched <- .apply_bfs_rule_frontier(
+    graphs,
+    modes,
+    plan,
+    structure_level = "intact"
+  )
+  for (i in seq_along(frontier)) {
+    expected <- .apply_enzyme_prepared(
+      graphs[[i]],
+      st6,
+      plan$prepared_rules[[1]],
+      structure_level = "intact",
+      mode = modes[[i]]
+    )
+    actual <- .new_glycan_structure_from_valid_graphs(
+      .collect_bfs_rule_products(
+        batched,
+        plan$enzyme_rule_ids[[1]],
+        i
+      )
+    )
+    expect_equal(as.character(actual), as.character(expected))
+  }
+  expect_length(
+    .collect_bfs_rule_products(
+      batched,
+      plan$enzyme_rule_ids[[1]],
+      2L
+    ),
+    0L
+  )
+
+  path <- path_biosynthesis(
+    "Gal(b1-",
+    "Gal3S6S(b1-",
+    enzymes = list(st6, st3),
+    max_steps = 2
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(edges$enzyme, c("TEST_ST6", "TEST_ST3"))
+  expect_equal(
+    edges$to,
+    c("Gal6S(b1-", "Gal3S6S(b1-")
+  )
+})

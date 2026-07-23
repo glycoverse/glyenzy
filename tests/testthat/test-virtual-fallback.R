@@ -14,6 +14,60 @@ test_that("path fallback resumes concrete synthesis after an early virtual step"
   expect_equal(edges$step, 1:2)
 })
 
+test_that("path fallback treats unsupported sulfation as one virtual step", {
+  path <- path_biosynthesis(
+    "Gal(b1-3)GalNAc(a1-",
+    "Gal3S(b1-3)GalNAc(a1-",
+    enzymes = "C1GALT1",
+    max_steps = 1,
+    max_virtual_steps = 1
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(edges$enzyme, "3SulfoT")
+  expect_identical(edges$is_virtual, TRUE)
+  expect_equal(edges$step, 1L)
+})
+
+test_that("fallback counts every sulfate against both step budgets", {
+  call <- function(max_steps, max_virtual_steps) {
+    path_biosynthesis(
+      "Gal(b1-3)GalNAc(a1-",
+      "Gal3S6S(b1-3)GalNAc(a1-",
+      enzymes = "C1GALT1",
+      max_steps = max_steps,
+      max_virtual_steps = max_virtual_steps
+    )
+  }
+
+  expect_snapshot(error = TRUE, call(2L, 1L))
+  expect_snapshot(error = TRUE, call(1L, 2L))
+
+  path <- call(2L, 2L)
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(nrow(edges), 4L)
+  expect_setequal(edges$enzyme, c("3SulfoT", "6SulfoT"))
+  expect_identical(edges$is_virtual, rep(TRUE, 4L))
+  expect_setequal(edges$step, 1:2)
+})
+
+test_that("fallback can resume at an unsupported sulfate transition", {
+  path <- path_biosynthesis(
+    "GalNAc(a1-",
+    "Gal3S(b1-3)GalNAc(a1-",
+    enzymes = "C1GALT1",
+    max_steps = 2,
+    max_virtual_steps = 1
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+  edges <- edges[order(edges$step), ]
+
+  expect_equal(edges$enzyme, c("C1GALT1", "3SulfoT"))
+  expect_identical(edges$is_virtual, c(FALSE, TRUE))
+  expect_equal(edges$step, 1:2)
+})
+
 test_that("an early fallback can precede multiple concrete steps", {
   add_glcnac <- make_enzyme(
     name = "ADD_GLCNAC",
@@ -243,6 +297,24 @@ test_that("filters apply to virtual products", {
       enzymes = "ST3GAL1",
       max_steps = 2,
       filter = reject_core_1,
+      max_virtual_steps = 1
+    )
+  )
+})
+
+test_that("filters apply to virtual sulfate products", {
+  reject_sulfate <- function(glycans) {
+    as.character(glycans) != "Gal3S(b1-3)GalNAc(a1-"
+  }
+
+  expect_snapshot(
+    error = TRUE,
+    path_biosynthesis(
+      "Gal(b1-3)GalNAc(a1-",
+      "Gal3S(b1-3)GalNAc(a1-",
+      enzymes = "C1GALT1",
+      max_steps = 1,
+      filter = reject_sulfate,
       max_virtual_steps = 1
     )
   )

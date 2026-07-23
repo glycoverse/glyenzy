@@ -13,6 +13,29 @@ test_that("enzyme objects carry type-specific S3 classes", {
   expect_s3_class(enzyme("MOGS"), "glyenzy_gh_enzyme")
 })
 
+test_that("ST enzymes carry a dedicated class and derived action", {
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal6S(b1-4)GlcNAc(b1-",
+      acceptor_alignment = "terminal",
+      rejects = NULL,
+      product = "Gal3S6S(b1-4)GlcNAc(b1-"
+    ))
+  )
+
+  expect_s3_class(enz, "glyenzy_st_enzyme")
+  rule <- enz$rules[[1]]
+  expect_equal(rule$acceptor_idx, 1L)
+  expect_equal(rule$product_idx, 1L)
+  expect_equal(rule$new_substituent, "3S")
+  expect_equal(rule$product_sub, "3S,6S")
+  expect_null(rule$new_residue)
+  expect_null(rule$new_linkage)
+})
+
 test_that("enzyme() throws error for unknown enzyme", {
   expect_error(
     enzyme("UNKNOWN_ENZYME"),
@@ -215,6 +238,86 @@ test_that("validate_enzyme_rule works with valid GH rule", {
   rule <- new_enzyme_rule(acceptor, product, "terminal", rejects)
 
   expect_invisible(validate_enzyme_rule_gh(rule))
+})
+
+test_that("validate_enzyme_rule_st requires one same-topology sulfate addition", {
+  make_rule <- function(acceptor, product) {
+    new_enzyme_rule(
+      glyparse::auto_parse(acceptor),
+      glyparse::auto_parse(product),
+      "terminal",
+      glyrepr::glycan_structure()
+    )
+  }
+
+  expect_invisible(validate_enzyme_rule_st(make_rule(
+    "Gal6S(b1-4)GlcNAc(b1-",
+    "Gal3S6S(b1-4)GlcNAc(b1-"
+  )))
+  expect_error(
+    validate_enzyme_rule_st(make_rule(
+      "Gal(b1-4)GlcNAc(b1-",
+      "Gal6S(b1-3)GlcNAc(b1-"
+    )),
+    "same residue and linkage topology"
+  )
+  expect_error(
+    validate_enzyme_rule_st(make_rule(
+      "Gal6S(b1-4)GlcNAc(b1-",
+      "Gal3S(b1-4)GlcNAc(b1-"
+    )),
+    "exactly one sulfate"
+  )
+  expect_error(
+    validate_enzyme_rule_st(make_rule(
+      "Gal(b1-4)GlcNAc(b1-",
+      "Gal3S(b1-4)GlcNAc6S(b1-"
+    )),
+    "exactly one sulfate"
+  )
+})
+
+test_that("new_enzyme_rule rejects duplicate requirement keys", {
+  requirement <- list(
+    motif = glyparse::auto_parse("GalNAc(a1-"),
+    motif = glyparse::auto_parse("GlcNAc(b1-")
+  )
+
+  expect_error(
+    new_enzyme_rule(
+      glyparse::auto_parse("Gal(b1-"),
+      glyparse::auto_parse("Gal6S(b1-"),
+      "whole",
+      glyrepr::glycan_structure(),
+      requires = list(requirement)
+    ),
+    "must contain only"
+  )
+})
+
+test_that("validate_enzyme_rule_st rejects an occupied sulfate carbon", {
+  outgoing_rule <- new_enzyme_rule(
+    acceptor = glyparse::auto_parse("Neu5Ac(a2-6)Gal(b1-"),
+    product = glyparse::auto_parse("Neu5Ac(a2-6)Gal6S(b1-"),
+    acceptor_alignment = "substructure",
+    rejects = glyrepr::glycan_structure()
+  )
+  incoming_rule <- new_enzyme_rule(
+    acceptor = glyparse::auto_parse("Gal(b1-4)GlcNAc(b1-"),
+    product = glyparse::auto_parse("Gal1S(b1-4)GlcNAc(b1-"),
+    acceptor_alignment = "terminal",
+    rejects = glyrepr::glycan_structure()
+  )
+  root_rule <- new_enzyme_rule(
+    acceptor = glyparse::auto_parse("GalNAc(a1-"),
+    product = glyparse::auto_parse("GalNAc1S(a1-"),
+    acceptor_alignment = "core",
+    rejects = glyrepr::glycan_structure()
+  )
+
+  expect_error(validate_enzyme_rule_st(outgoing_rule), "already occupied")
+  expect_error(validate_enzyme_rule_st(incoming_rule), "already occupied")
+  expect_error(validate_enzyme_rule_st(root_rule), "already occupied")
 })
 
 test_that("validate_enzyme_rule_starter works with valid starter GT rule", {

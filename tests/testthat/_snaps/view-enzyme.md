@@ -3,5 +3,5 @@
     Code
       result <- view_enzyme(glycan, "ST3GAL3")
     Message
-      x No residues added by the enzyme were found in the glycan.
+      x No residues added or modified by the enzyme were found in the glycan.
 

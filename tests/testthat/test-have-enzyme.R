@@ -47,6 +47,16 @@ test_that("have_enzyme uses lenient matching for non-intact special cases", {
   )
 })
 
+test_that("special-case inference tolerates downstream sulfate additions", {
+  mgat1_glycan <- "GlcNAc6S(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  mogs_acceptor <- "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc6S(b1-"
+
+  expect_true(have_enzyme(mgat1_glycan, "MGAT1"))
+  expect_false(have_enzyme(mogs_acceptor, "MOGS"))
+  expect_equal(count_enzyme(mgat1_glycan, "MGAT1"), 1L)
+  expect_equal(count_enzyme(mogs_acceptor, "MOGS"), 0L)
+})
+
 test_that("have_enzyme rejects invalid inputs", {
   expect_error(have_enzyme(123, "ST3GAL3"), "`glycans` must be")
   expect_error(
@@ -156,6 +166,57 @@ test_that("have_enzyme works correctly for MAN1B1, MAN1A1, MAN1A2, and MAN1C1", 
 test_that("have_enzyme handles product alignments", {
   expect_true(have_enzyme("GlcNAc(b1-3)GalNAc(a1-", "B3GNT6"))
   expect_false(have_enzyme("GlcNAc(b1-3)GalNAc(a1-3)GlcNAc(b1-", "B3GNT6"))
+})
+
+test_that("have_enzyme uses sulfate-subset product semantics", {
+  st6 <- make_enzyme(
+    name = "TEST_ST6",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "whole",
+      rejects = NULL,
+      product = "Gal6S(b1-"
+    ))
+  )
+
+  expect_true(have_enzyme("Gal3S6S(b1-", st6))
+  expect_false(have_enzyme("Gal3S(b1-", st6))
+  expect_true(have_enzyme("Gal6S(b1-4)GlcNAc(b1-", "B4GALT1"))
+})
+
+test_that("have_enzyme applies OR-valued requirements to product inference", {
+  enz <- make_enzyme(
+    name = "TEST_REQUIRED_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "substructure",
+      rejects = NULL,
+      requires = list(
+        list(motif = "GalNAc(a1-", alignment = "core"),
+        list(
+          motif = "GlcNAc(b1-4)GlcNAc(b1-",
+          alignment = "core"
+        )
+      ),
+      product = "Gal6S(b1-"
+    ))
+  )
+
+  expect_equal(
+    have_enzyme(
+      c(
+        "Gal6S(b1-3)GalNAc(a1-",
+        "Gal6S(b1-4)GlcNAc(b1-",
+        "Gal6S(b1-3)GlcNAc(b1-4)GlcNAc(b1-"
+      ),
+      enz
+    ),
+    c(TRUE, FALSE, TRUE)
+  )
 })
 
 # ===== Starter Cases =====

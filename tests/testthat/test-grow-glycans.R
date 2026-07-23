@@ -208,3 +208,38 @@ test_that("grow_glycans filter is applied after each step", {
   # No result should contain sialic acid
   expect_true(all(glyrepr::count_mono(result, "Neu5Ac") == 0))
 })
+
+test_that("grow_glycans supports sequential ST actions", {
+  st6 <- make_enzyme(
+    name = "TEST_ST6",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "whole",
+      rejects = NULL,
+      product = "Gal6S(b1-"
+    ))
+  )
+  st3 <- make_enzyme(
+    name = "TEST_ST3",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal6S(b1-",
+      acceptor_alignment = "whole",
+      rejects = NULL,
+      product = "Gal3S6S(b1-"
+    ))
+  )
+
+  one_step <- grow_glycans_step("Gal(b1-", list(st6, st3))
+  result <- suppressMessages(grow_glycans(
+    "Gal(b1-",
+    list(st6, st3),
+    n_steps = 2
+  ))
+
+  expect_equal(as.character(one_step), "Gal6S(b1-")
+  expect_true("Gal3S6S(b1-" %in% as.character(result))
+})

@@ -29,8 +29,8 @@ candidate concrete enzyme for each transition.
 }
 \description{
 Infer every structure-driven biosynthetic path from \code{from} to \code{to} by
-trimming \code{to} backward to \code{from}. Unlike \code{\link[=path_biosynthesis]{path_biosynthesis()}}, this does
-not require known enzyme rules.
+trimming terminal residues and sulfate groups from \code{to} backward to \code{from}.
+Unlike \code{\link[=path_biosynthesis]{path_biosynthesis()}}, this does not require known enzyme rules.
 }
 \section{Virtual enzymes}{
 
@@ -40,10 +40,17 @@ labeled \code{"b4GlcNAcT"}. Partial and topological glycans omit linkage
 information and use \code{"GlcNAcT"}; basic glycans use the generic residue name,
 such as \code{"HexNAcT"}.
 
+Sulfation is represented as its own atomic transition. Sulfate additions at
+positions 3 and 6 use \code{"3SulfoT"} and \code{"6SulfoT"}; an unknown or other
+position uses \code{"?SulfoT"}. A sulfated terminal residue is therefore
+desulfated before the residue itself can be trimmed.
+
 Virtual tracing starts N-glycans at the N-glycan core and all other glycans
-at their reducing-end root residue. In \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}, the
-explicit \code{from} glycan is always the virtual starting structure. These
-networks represent structural possibilities rather than biological
+at their reducing-end root residue. Sulfates are removed from these
+automatically selected starts. In \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}, the
+explicit \code{from} glycan is always the virtual starting structure, including
+any sulfate groups it contains; those sulfates must also occur in \code{to}.
+These networks represent structural possibilities rather than biological
 feasibility.
 
 Basic structures do not retain glycan-class metadata. A basic structure

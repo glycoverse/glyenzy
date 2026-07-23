@@ -206,6 +206,135 @@ test_that("apply_enzyme does not reuse an occupied acceptor carbon", {
   expect_equal(result, glyrepr::glycan_structure())
 })
 
+test_that("apply_enzyme adds one sulfate while preserving existing sulfates", {
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal6S(b1-4)GlcNAc(b1-",
+      acceptor_alignment = "terminal",
+      rejects = NULL,
+      product = "Gal3S6S(b1-4)GlcNAc(b1-"
+    ))
+  )
+
+  result <- apply_enzyme("Gal6S(b1-4)GlcNAc(b1-", enz)
+  expect_equal(as.character(result), "Gal3S6S(b1-4)GlcNAc(b1-")
+  expect_equal(apply_enzyme(result, enz), glyrepr::glycan_structure())
+})
+
+test_that("apply_enzyme returns one unique ST product per modifiable site", {
+  rule <- list(
+    acceptor = "Gal(b1-4)GlcNAc(b1-",
+    acceptor_alignment = "terminal",
+    rejects = NULL,
+    product = "Gal6S(b1-4)GlcNAc(b1-"
+  )
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(rule, rule)
+  )
+  glycan <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-"
+
+  result <- apply_enzyme(glycan, enz)
+
+  expect_length(result, 2L)
+  expect_true(all(glyrepr::count_mono(result, "Gal") == 2L))
+  expect_true(all(.has_substituents(result)))
+})
+
+test_that("ST requirements are OR-valued with sulfate-subset matching", {
+  enz <- make_enzyme(
+    name = "TEST_REQUIRED_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "substructure",
+      rejects = NULL,
+      requires = list(
+        list(motif = "GalNAc(a1-", alignment = "core"),
+        list(
+          motif = "GlcNAc(b1-4)GlcNAc(b1-",
+          alignment = "core"
+        )
+      ),
+      product = "Gal6S(b1-"
+    ))
+  )
+  glycans <- c(
+    "Gal(b1-3)GalNAc6S(a1-",
+    "Gal(b1-4)GlcNAc(b1-",
+    "Gal(b1-3)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+
+  result <- apply_enzyme(glycans, enz)
+
+  expect_equal(
+    as.character(result[[1]]),
+    "Gal6S(b1-3)GalNAc6S(a1-"
+  )
+  expect_equal(result[[2]], glyrepr::glycan_structure())
+  expect_equal(
+    as.character(result[[3]]),
+    "Gal6S(b1-3)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+})
+
+test_that("ST requirements use subset matching while acceptors and rejects stay exact", {
+  enz <- make_enzyme(
+    name = "TEST_EXACT_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal6S(b1-",
+      acceptor_alignment = "substructure",
+      rejects = "GlcNAc(b1-4)Gal6S(b1-",
+      requires = list(list(
+        motif = "GlcNAc(b1-4)Gal6S(b1-",
+        alignment = "substructure"
+      )),
+      product = "Gal3S6S(b1-"
+    ))
+  )
+
+  expect_equal(
+    as.character(apply_enzyme("GlcNAc6S(b1-4)Gal6S(b1-", enz)),
+    "GlcNAc6S(b1-4)Gal3S6S(b1-"
+  )
+  expect_equal(
+    apply_enzyme("GlcNAc6S(b1-4)Gal4S6S(b1-", enz),
+    glyrepr::glycan_structure()
+  )
+})
+
+test_that("ST action does not sulfate an occupied carbon", {
+  enz <- make_enzyme(
+    name = "TEST_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "substructure",
+      rejects = NULL,
+      product = "Gal6S(b1-"
+    ))
+  )
+
+  result <- apply_enzyme("Neu5Ac(a2-6)Gal(b1-", enz)
+
+  expect_equal(result, glyrepr::glycan_structure())
+})
+
+test_that("existing GT rules can act on sulfated substrates", {
+  result <- apply_enzyme("GlcNAc6S(b1-", "B4GALT4")
+
+  expect_equal(as.character(result), "Gal(b1-4)GlcNAc6S(b1-")
+})
+
 # ===== Normal Cases for GH Enzymes =====
 test_that("apply_enzyme works for MAN2A1", {
   glycans <- c(

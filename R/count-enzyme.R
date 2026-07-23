@@ -95,6 +95,10 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   .f(glycans, enzyme)
 }
 
+.count_enzyme_motif.glyenzy_st_enzyme <- function(glycans, enzyme) {
+  lengths(.match_st_enzyme_events(glycans, enzyme))
+}
+
 #' Count trace-derived enzyme edges for each glycan
 #'
 #' @param glycans A `glyrepr_structure` vector.
@@ -108,6 +112,10 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 
 .count_enzyme_path.glyenzy_npre_gt_enzyme <- function(glycans, enzyme) {
   .count_enzyme_motif.glyenzy_npre_gt_enzyme(glycans, enzyme)
+}
+
+.count_enzyme_path.glyenzy_st_enzyme <- function(glycans, enzyme) {
+  lengths(.match_st_enzyme_path_events(glycans, enzyme))
 }
 
 .count_enzyme_path.glyenzy_enzyme <- function(glycans, enzyme) {
@@ -137,9 +145,13 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  have_motifs_mat <- .have_motifs(glycans, motifs, alignments = "core")
+  have_motifs_mat <- .have_motifs_substituent_subset(
+    glycans,
+    motifs,
+    alignments = "core"
+  )
   special_glycan <- "Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  is_special <- .have_motif(
+  is_special <- .have_motif_substituent_subset(
     glycans,
     special_glycan,
     alignment = "whole"
@@ -162,7 +174,11 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     "b_branch" = "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
     "c_branch" = "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  have_motifs_mat <- .have_motifs(glycans, motifs, alignments = "core")
+  have_motifs_mat <- .have_motifs_substituent_subset(
+    glycans,
+    motifs,
+    alignments = "core"
+  )
   dplyr::case_when(
     rowSums(have_motifs_mat) == 0L ~ 3L,
     have_motifs_mat[, "b_branch"] ~ 9L - glyrepr::count_mono(glycans, "Man"),
@@ -173,7 +189,12 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 
 .count_enzyme_man2a12 <- function(glycans, enzyme) {
   branch_motif <- "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  2L - .count_motif(glycans, branch_motif, alignment = "core")
+  2L -
+    .count_motif_substituent_subset(
+      glycans,
+      branch_motif,
+      alignment = "core"
+    )
 }
 .count_enzyme_man2a12 <- .make_n_glycan_guard(
   .count_enzyme_man2a12,
@@ -183,8 +204,12 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 .count_enzyme_ganab <- function(glycans, enzyme) {
   man9_motif <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   res <- dplyr::if_else(
-    .have_motif(glycans, man9_motif, alignment = "core"),
-    2L - .count_motif(glycans, "Glc(a1-"),
+    .have_motif_substituent_subset(
+      glycans,
+      man9_motif,
+      alignment = "core"
+    ),
+    2L - .count_motif_substituent_subset(glycans, "Glc(a1-"),
     2L
   )
   res[res < 0] <- 0L
@@ -196,12 +221,22 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 )
 
 .count_enzyme_motif_gt_default <- function(glycans, enzyme) {
-  products <- do.call(c, purrr::map(enzyme$rules, ~ .x$product))
-  product_alignments <- purrr::map_chr(enzyme$rules, .product_alignment)
-  count_products_mat <- .count_motifs(
-    glycans,
-    products,
-    alignments = product_alignments
+  if (length(enzyme$rules) == 0L) {
+    return(integer(length(glycans)))
+  }
+  counts <- purrr::map(
+    enzyme$rules,
+    function(rule) {
+      rule_counts <- .count_motif_substituent_subset(
+        glycans,
+        rule$product,
+        alignment = .product_alignment(rule)
+      )
+      requirements_met <- .rule_requirements_met(glycans, rule)
+      rule_counts[!requirements_met] <- 0L
+      rule_counts
+    }
   )
+  count_products_mat <- do.call(cbind, counts)
   unname(rowSums(count_products_mat))
 }

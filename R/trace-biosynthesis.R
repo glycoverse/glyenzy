@@ -32,11 +32,12 @@
 #' For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
 #' continue. For example, for the O-GalNAc core 5
 #' "GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
-#' the a3 GalNAc.
+#' the a3 GalNAc. Unsupported sulfate additions similarly use `"3SulfoT"`,
+#' `"6SulfoT"`, or `"?SulfoT"`.
 #'
 #' Therefore, `max_virtual_steps` can also be interpreted as
-#' "the maximum number of glycosidic bonds that cannot be assigned by a known
-#' enzyme."
+#' "the maximum number of glycosidic bonds or sulfate transfers that cannot be
+#' assigned by a known enzyme."
 #' Increasing this number loosens the criteria.
 #'
 #' @returns An [igraph::igraph()] object representing the synthesis path(s).
@@ -107,15 +108,45 @@ trace_biosynthesis <- function(
 .decide_starting_glycan <- function(glycan) {
   if (.can_reliably_detect_n_glycan(glycan) && .is_n_glycan(glycan)) {
     start <- .n_glycan_starting_glycan()
-  } else if (.have_motif(glycan, "GalNAc(a1-", alignment = "core")) {
+  } else if (
+    .have_motif_substituent_subset(
+      glycan,
+      "GalNAc(a1-",
+      alignment = "core"
+    )
+  ) {
     start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
-  } else if (.have_motif(glycan, "GlcNAc(b1-", alignment = "core")) {
+  } else if (
+    .have_motif_substituent_subset(
+      glycan,
+      "GlcNAc(b1-",
+      alignment = "core"
+    )
+  ) {
     start <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
-  } else if (.have_motif(glycan, "Man(a1-", alignment = "core")) {
+  } else if (
+    .have_motif_substituent_subset(
+      glycan,
+      "Man(a1-",
+      alignment = "core"
+    )
+  ) {
     start <- glyparse::parse_iupac_condensed("Man(a1-")
-  } else if (.have_motif(glycan, "Fuc(a1-", alignment = "core")) {
+  } else if (
+    .have_motif_substituent_subset(
+      glycan,
+      "Fuc(a1-",
+      alignment = "core"
+    )
+  ) {
     start <- glyparse::parse_iupac_condensed("Fuc(a1-")
-  } else if (.have_motif(glycan, "Glc(b1-", alignment = "core")) {
+  } else if (
+    .have_motif_substituent_subset(
+      glycan,
+      "Glc(b1-",
+      alignment = "core"
+    )
+  ) {
     start <- glyparse::parse_iupac_condensed("Glc(b1-")
   } else {
     cli::cli_abort(c(
@@ -140,6 +171,11 @@ trace_biosynthesis <- function(
     root <- which(igraph::degree(graph, mode = "in") == 0L)
     start_graph <- igraph::induced_subgraph(graph, root)
   }
+  start_graph <- igraph::set_vertex_attr(
+    start_graph,
+    "sub",
+    value = rep("", igraph::vcount(start_graph))
+  )
 
   .new_glycan_structure_from_valid_graphs(list(start_graph))
 }
@@ -173,19 +209,11 @@ trace_biosynthesis <- function(
 }
 
 .virtual_core_matches <- function(glycan, core) {
-  structure_level <- .glycan_structure_level(glycan)
-  mode <- if (identical(structure_level, "partial")) {
-    "lenient"
-  } else {
-    "strict"
-  }
-
   tryCatch(
-    glymotif::match_motif(
+    .match_motif_substituent_subset(
       glycan,
       core,
-      alignment = "core",
-      mode = mode
+      alignment = "core"
     )[[1]],
     error = function(e) list()
   )

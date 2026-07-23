@@ -1,6 +1,6 @@
-#' View Residues Added by an Enzyme
+#' View Residues Added or Modified by an Enzyme
 #'
-#' Visualize where an enzyme contributes residues to a glycan structure.
+#' Visualize where an enzyme adds or modifies residues in a glycan structure.
 #'
 #' `view_enzyme()` matches one `enzyme` against one `glycan` with the same
 #' matching rules used by [match_enzyme()], then draws the glycan with the
@@ -10,8 +10,8 @@
 #'
 #' @param glycan A [glyrepr::glycan_structure()], or a glycan structure string
 #'   supported by [glyparse::auto_parse()].
-#' @param enzyme A glycosyltransferase [enzyme()] or a gene symbol for one.
-#'   Glycoside hydrolases are not supported.
+#' @param enzyme A glycosyltransferase or sulfotransferase [enzyme()], or a gene
+#'   symbol for one. Glycoside hydrolases are not supported.
 #'
 #' @returns
 #' A `ggplot` object returned by [glydraw::draw_cartoon()]. If no match is found,
@@ -39,7 +39,7 @@ view_enzyme <- function(glycan, enzyme) {
 
   if (length(idx) == 0L) {
     cli::cli_alert_danger(
-      "No residues added by the enzyme were found in the glycan."
+      "No residues added or modified by the enzyme were found in the glycan."
     )
     glydraw::draw_cartoon(glycan, highlight = integer(0))
   } else {

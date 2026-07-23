@@ -20,12 +20,53 @@ test_that("functions warn on non-intact glycan structures", {
   )
 })
 
-test_that("functions check glycan substituents", {
-  glycan <- "Gal3Me(b1-3)GalNAc(a1-"
-  expect_error(
-    have_enzyme(glycan, "B3GNT6"),
-    "Glycans with substituents are not supported"
+test_that("functions allow sulfates and reject other substituents", {
+  sulfate <- .process_glycans_arg("Gal6S(b1-3)GalNAc(a1-")
+  expect_equal(as.character(sulfate), "Gal6S(b1-3)GalNAc(a1-")
+
+  unsupported <- c(
+    methyl = "Gal3Me(b1-3)GalNAc(a1-",
+    phosphate = "Gal6P(b1-3)GalNAc(a1-",
+    acetyl = "Gal3Ac(b1-3)GalNAc(a1-"
   )
+  purrr::walk(unsupported, function(glycan) {
+    expect_error(
+      have_enzyme(glycan, "B3GNT6"),
+      "Only sulfate substituents are supported"
+    )
+  })
+})
+
+test_that("substituent-subset matching is topology aware", {
+  target <- glyparse::auto_parse(c(
+    "Gal3S6S(b1-4)GlcNAc(b1-",
+    "Gal3S(b1-4)GlcNAc(b1-",
+    "Gal6S(b1-3)GlcNAc(b1-"
+  ))
+
+  expect_equal(
+    .have_motif_substituent_subset(
+      target,
+      "Gal6S(b1-4)GlcNAc(b1-",
+      alignment = "whole"
+    ),
+    c(TRUE, FALSE, FALSE)
+  )
+  expect_equal(
+    .have_motif_substituent_subset(
+      target,
+      "Gal(b1-4)GlcNAc(b1-",
+      alignment = "whole"
+    ),
+    c(TRUE, TRUE, FALSE)
+  )
+})
+
+test_that("substituent token containment supports lenient positions", {
+  expect_true(.substituent_tokens_contained("3S,6S", "6S", "strict"))
+  expect_false(.substituent_tokens_contained("3S", "6S", "strict"))
+  expect_true(.substituent_tokens_contained("?S", "6S", "lenient"))
+  expect_false(.substituent_tokens_contained("?S", "6S", "strict"))
 })
 
 test_that("enzyme list processing accepts supported input forms", {

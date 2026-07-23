@@ -1,3 +1,19 @@
+# explicit sulfate starts must be a subset of the target
+
+    Code
+      path_biosynthesis_virtual("GalNAc6S(a1-", "GalNAc(a1-")
+    Condition
+      Error in `.perform_virtual_synthesis()`:
+      ! No synthesis path found for 1 target(s) within 0 steps.
+
+---
+
+    Code
+      path_biosynthesis_virtual("GalNAc3S(a1-", "GalNAc6S(a1-")
+    Condition
+      Error in `.perform_virtual_synthesis()`:
+      ! No synthesis path found for 1 target(s) within 0 steps.
+
 # virtual tracing only accepts enzymes when annotating
 
     Code

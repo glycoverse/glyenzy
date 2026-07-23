@@ -748,7 +748,7 @@ BfsSynthesisSearch <- R6::R6Class(
 #' @returns A logical vector of the same length as `glycans`.
 #' @noRd
 mgat2_ready <- function(glycans) {
-  !.have_motif(
+  !.have_motif_substituent_subset(
     glycans,
     "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
@@ -773,7 +773,7 @@ mgat2_ready <- function(glycans) {
 #' @returns A logical vector of the same length as `products`.
 #' @noRd
 is_promising_intermediate <- function(products, target_glycans) {
-  res_mat <- .have_motifs(
+  res_mat <- .have_motifs_substituent_subset(
     target_glycans,
     products,
     alignments = "core"
@@ -795,32 +795,35 @@ is_promising_intermediate <- function(products, target_glycans) {
   target_contains_product <- purrr::some(
     target_graphs,
     function(target_graph) {
-      glymotif::.g_have_motif(
+      length(.g_match_motif_substituent_subset(
         target_graph,
         product_graph,
         alignment = "core",
         mode = target_mode
-      )
+      )) >
+        0L
     }
   )
   if (target_contains_product) {
     return(TRUE)
   }
 
-  is_n_glycan <- glymotif::.g_have_motif(
+  is_n_glycan <- length(.g_match_motif_substituent_subset(
     product_graph,
     n_core_graph,
     mode = product_mode
-  )
+  )) >
+    0L
   if (!is_n_glycan) {
     return(FALSE)
   }
 
-  glymotif::.g_have_motif(
+  length(.g_match_motif_substituent_subset(
     product_graph,
     pre_mgat2_graph,
     mode = product_mode
-  )
+  )) >
+    0L
 }
 
 #' Build result graph from BFS search results

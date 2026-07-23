@@ -18,11 +18,14 @@
   to_gs
 ) {
   from_key <- as.character(from_g)[[1]]
-  max_steps <- max(vapply(
-    seq_along(to_gs),
-    \(i) .virtual_glycan_size(to_gs[i]) - .virtual_glycan_size(from_g),
-    numeric(1)
-  ))
+  max_steps <- max(
+    0,
+    vapply(
+      seq_along(to_gs),
+      \(i) .virtual_glycan_size(to_gs[i]) - .virtual_glycan_size(from_g),
+      numeric(1)
+    )
+  )
   endpoint_keys <- character(length(to_gs))
   all_edges <- list()
   found <- logical(length(to_gs))
@@ -181,11 +184,32 @@
     return(FALSE)
   }
   if (identical(target_level, "partial")) {
-    return(any(glymotif::have_motif(
-      products,
-      target,
-      alignment = "whole",
-      mode = "lenient"
+    target_size <- .virtual_glycan_size(target)
+    matching_size <- vapply(
+      seq_along(products),
+      \(i) .virtual_glycan_size(products[i]) == target_size,
+      logical(1)
+    )
+    if (!any(matching_size)) {
+      return(FALSE)
+    }
+    target_graph <- glyrepr::get_structure_graphs(target)
+    product_graphs <- glyrepr::get_structure_graphs(
+      products[matching_size],
+      return_list = TRUE
+    )
+    return(any(vapply(
+      product_graphs,
+      function(product_graph) {
+        length(.g_match_motif_substituent_subset(
+          product_graph,
+          target_graph,
+          alignment = "whole",
+          mode = "lenient"
+        )) >
+          0L
+      },
+      logical(1)
     )))
   }
   as.character(target)[[1]] %in% as.character(products)
@@ -280,9 +304,17 @@
     current <- queue[[i]]
     current_key <- queue_keys[[i]]
     graph <- glyrepr::get_structure_graphs(current)
+    current_size <- .virtual_glycan_size(current)
+
     root <- which(igraph::degree(graph, mode = "in") == 0L)
     leaves <- which(igraph::degree(graph, mode = "out") == 0L)
     leaves <- setdiff(leaves, root)
+    leaf_sulfate_counts <- vapply(
+      igraph::vertex_attr(graph, "sub", index = leaves),
+      .virtual_sulfate_count,
+      integer(1)
+    )
+    leaves <- leaves[leaf_sulfate_counts == 0L]
 
     for (leaf in leaves) {
       incoming <- igraph::incident(graph, leaf, mode = "in")
@@ -315,7 +347,68 @@
         key = precursor_key,
         product_key = current_key,
         enzyme = enzyme,
-        step = igraph::vcount(graph) - from_size
+        step = current_size - from_size
+      )
+    }
+
+    sulfate_candidates <- .virtual_trim_sulfates(
+      graph,
+      current_key,
+      from_g,
+      from_size,
+      current_size
+    )
+    if (length(sulfate_candidates) > 0L) {
+      candidates <- c(candidates, sulfate_candidates)
+    }
+  }
+
+  candidates
+}
+
+.virtual_trim_sulfates <- function(
+  graph,
+  product_key,
+  from_g,
+  from_size,
+  current_size
+) {
+  candidates <- list()
+  from_key <- as.character(from_g)[[1]]
+  substituents <- igraph::vertex_attr(graph, "sub")
+
+  for (vertex in seq_along(substituents)) {
+    tokens <- .substituent_tokens(substituents[[vertex]])
+    sulfate_idx <- which(grepl("S$", tokens))
+
+    for (token_idx in sulfate_idx) {
+      sulfate <- tokens[[token_idx]]
+      precursor_graph <- igraph::set_vertex_attr(
+        graph,
+        "sub",
+        index = vertex,
+        value = paste(tokens[-token_idx], collapse = ",")
+      )
+      precursor <- .new_glycan_structure_from_valid_graphs(list(
+        precursor_graph
+      ))
+
+      if (!.virtual_contains_start(precursor, from_g)) {
+        next
+      }
+
+      precursor_key <- as.character(precursor)[[1]]
+      if (current_size - 1L == from_size) {
+        precursor <- from_g
+        precursor_key <- from_key
+      }
+
+      candidates[[length(candidates) + 1L]] <- list(
+        glycan = precursor,
+        key = precursor_key,
+        product_key = product_key,
+        enzyme = .virtual_sulfotransferase_name(sulfate),
+        step = current_size - from_size
       )
     }
   }
@@ -336,12 +429,13 @@
   }
 
   tryCatch(
-    isTRUE(glymotif::have_motif(
-      glycan,
-      from,
+    length(.g_match_motif_substituent_subset(
+      glyrepr::get_structure_graphs(glycan),
+      glyrepr::get_structure_graphs(from),
       alignment = "core",
       mode = mode
-    )),
+    )) >
+      0L,
     error = function(e) FALSE
   )
 }
@@ -356,8 +450,26 @@
   paste0(anomer, acceptor_position, mono, "T")
 }
 
+.virtual_sulfotransferase_name <- function(sulfate) {
+  position <- sub("S$", "", sulfate)
+  if (!position %in% c("3", "6")) {
+    position <- "?"
+  }
+  paste0(position, "SulfoT")
+}
+
+.virtual_sulfate_count <- function(substituents) {
+  sum(grepl("S$", .substituent_tokens(substituents)))
+}
+
 .virtual_glycan_size <- function(glycan) {
-  igraph::vcount(glyrepr::get_structure_graphs(glycan))
+  graph <- glyrepr::get_structure_graphs(glycan)
+  sulfate_count <- sum(vapply(
+    igraph::vertex_attr(graph, "sub"),
+    .virtual_sulfate_count,
+    integer(1)
+  ))
+  igraph::vcount(graph) + sulfate_count
 }
 
 .validate_virtual_enzymes <- function(enzymes) {

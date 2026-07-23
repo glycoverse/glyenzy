@@ -12,6 +12,94 @@ test_that("virtual enzymes trace an intact glycan backward", {
   expect_null(igraph::edge_attr(path, "concrete_enzymes"))
 })
 
+test_that("virtual enzymes add sulfate groups as atomic actions", {
+  target <- "Gal3S6S(b1-3)GalNAc(a1-"
+
+  path <- trace_biosynthesis_virtual(target)
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(nrow(edges), 5L)
+  expect_setequal(
+    edges$enzyme,
+    c("b3GalT", "3SulfoT", "6SulfoT")
+  )
+  expect_setequal(edges$step, 1:3)
+
+  substrate_sizes <- vapply(
+    seq_len(nrow(edges)),
+    \(i) .virtual_glycan_size(glyparse::auto_parse(edges$from[[i]])),
+    numeric(1)
+  )
+  product_sizes <- vapply(
+    seq_len(nrow(edges)),
+    \(i) .virtual_glycan_size(glyparse::auto_parse(edges$to[[i]])),
+    numeric(1)
+  )
+  expect_equal(product_sizes - substrate_sizes, rep(1L, nrow(edges)))
+  expect_equal(edges$step, product_sizes - 1L)
+})
+
+test_that("virtual enzymes desulfate a terminal residue before deleting it", {
+  target <- "Gal6S(b1-3)GalNAc(a1-"
+
+  path <- trace_biosynthesis_virtual(target)
+  edges <- igraph::as_data_frame(path, what = "edges")
+  edges <- edges[order(edges$step), ]
+
+  expect_equal(edges$enzyme, c("b3GalT", "6SulfoT"))
+  expect_equal(edges$from[[1]], "GalNAc(a1-")
+  expect_equal(edges$to[[1]], "Gal(b1-3)GalNAc(a1-")
+  expect_equal(edges$from[[2]], edges$to[[1]])
+  expect_equal(edges$to[[2]], target)
+})
+
+test_that("automatically selected virtual starts are desulfated", {
+  o_path <- trace_biosynthesis_virtual("GalNAc6S(a1-")
+  o_edges <- igraph::as_data_frame(o_path, what = "edges")
+
+  expect_equal(o_edges$from, "GalNAc(a1-")
+  expect_equal(o_edges$to, "GalNAc6S(a1-")
+  expect_equal(o_edges$enzyme, "6SulfoT")
+  expect_equal(o_edges$step, 1L)
+
+  n_target <- paste0(
+    "Man(a1-3)[Man(a1-6)]Man(b1-4)",
+    "GlcNAc(b1-4)GlcNAc6S(b1-"
+  )
+  n_path <- trace_biosynthesis_virtual(n_target)
+  n_edges <- igraph::as_data_frame(n_path, what = "edges")
+
+  expect_equal(nrow(n_edges), 1L)
+  expect_equal(n_edges$from, as.character(glyrepr::n_glycan_core()))
+  expect_equal(n_edges$to, n_target)
+  expect_equal(n_edges$enzyme, "6SulfoT")
+})
+
+test_that("explicit virtual starts preserve sulfate groups", {
+  from <- "GalNAc6S(a1-"
+  to <- "Gal3S(b1-3)GalNAc6S(a1-"
+
+  path <- path_biosynthesis_virtual(from, to)
+  edges <- igraph::as_data_frame(path, what = "edges")
+  edges <- edges[order(edges$step), ]
+
+  expect_equal(edges$enzyme, c("b3GalT", "3SulfoT"))
+  expect_equal(edges$from[[1]], from)
+  expect_equal(edges$to[[2]], to)
+  expect_equal(edges$step, 1:2)
+})
+
+test_that("explicit sulfate starts must be a subset of the target", {
+  expect_snapshot(
+    error = TRUE,
+    path_biosynthesis_virtual("GalNAc6S(a1-", "GalNAc(a1-")
+  )
+  expect_snapshot(
+    error = TRUE,
+    path_biosynthesis_virtual("GalNAc3S(a1-", "GalNAc6S(a1-")
+  )
+})
+
 test_that("virtual enzymes include every order for independent branches", {
   target <- "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
 
@@ -99,6 +187,30 @@ test_that("virtual enzyme names follow the target structure level", {
   expect_setequal(
     igraph::E(basic_path)$enzyme,
     c("HexT", "HexNAcT")
+  )
+})
+
+test_that("virtual sulfate labels support reduced structures", {
+  intact <- glyparse::auto_parse("Gal6S(b1-3)GalNAc(a1-")
+  topological <- glyrepr::reduce_structure_level(intact, "topological")
+  basic <- glyrepr::reduce_structure_level(intact, "basic")
+  partial <- glyparse::auto_parse("Gal?S(b1-?)GalNAc(a1-")
+
+  paths <- list(
+    topological = suppressWarnings(
+      trace_biosynthesis_virtual(topological)
+    ),
+    basic = suppressWarnings(trace_biosynthesis_virtual(basic)),
+    partial = suppressWarnings(trace_biosynthesis_virtual(partial))
+  )
+
+  expect_equal(
+    unname(lapply(paths, \(path) sort(igraph::E(path)$enzyme))),
+    list(
+      c("6SulfoT", "GalT"),
+      c("6SulfoT", "HexT"),
+      c("?SulfoT", "GalT")
+    )
   )
 })
 
@@ -284,6 +396,31 @@ test_that("virtual tracing annotates exact transitions in candidate order", {
     igraph::E(default_path)$concrete_enzymes,
     list(c("ST6GAL1", "ST6GAL2"))
   )
+})
+
+test_that("virtual tracing annotates sulfate transitions", {
+  enzyme <- make_enzyme(
+    name = "CUSTOM_ST",
+    type = "ST",
+    species = "human",
+    rules = list(list(
+      acceptor = "Gal(b1-3)GalNAc(a1-",
+      acceptor_alignment = "whole",
+      rejects = NULL,
+      product = "Gal3S(b1-3)GalNAc(a1-"
+    ))
+  )
+
+  path <- path_biosynthesis_virtual(
+    "Gal(b1-3)GalNAc(a1-",
+    "Gal3S(b1-3)GalNAc(a1-",
+    enzymes = list(enzyme),
+    annotate_enzymes = TRUE
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_equal(edges$enzyme, "3SulfoT")
+  expect_equal(edges$concrete_enzymes, list("CUSTOM_ST"))
 })
 
 test_that("virtual tracing retains unsupported annotated transitions", {
