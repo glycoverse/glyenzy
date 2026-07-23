@@ -130,84 +130,26 @@ bfs_synthesis_search <- function(
   paste0(prefixes, values)
 }
 
-# Wrap trusted graphs for exported vectorized glymotif calls without paying for
-# canonical IUPAC generation. Substituents are blanked for subset matching and
-# checked against the original graphs after topology matching.
-.bfs_match_structures <- function(graphs, key_prefix) {
-  if (length(graphs) == 0L) {
-    return(glyrepr::new_glycan_structure())
+# Put the targets most likely to contain an intermediate first so scalar
+# matching can stop early. Larger and more substituted structures dominate
+# the common multi-target case where targets are related biosynthetic states.
+.order_bfs_pruning_targets <- function(target_graphs) {
+  if (length(target_graphs) < 2L) {
+    return(target_graphs)
   }
 
-  match_graphs <- lapply(graphs, function(graph) {
-    igraph::set_vertex_attr(
-      graph,
-      "sub",
-      value = rep("", igraph::vcount(graph))
-    )
-  })
-  keys <- paste0(".", key_prefix, "-", seq_along(match_graphs))
-  names(match_graphs) <- keys
-  glyrepr::new_glycan_structure(keys, match_graphs)
-}
-
-# Match all product motifs against all targets in one glymotif call, then
-# restore substituent-subset semantics on the returned node mappings.
-.bfs_targets_contain_products <- function(
-  target_match_glycans,
-  target_graphs,
-  product_graphs,
-  mode
-) {
-  if (length(product_graphs) == 0L) {
-    return(logical())
-  }
-
-  product_match_glycans <- .bfs_match_structures(
-    product_graphs,
-    "product"
-  )
-  matches <- glymotif::match_motifs(
-    target_match_glycans,
-    product_match_glycans,
-    alignments = "core",
-    mode = mode
-  )
-  target_substituents <- lapply(
+  sizes <- vapply(target_graphs, igraph::vcount, numeric(1))
+  substituent_counts <- vapply(
     target_graphs,
-    igraph::vertex_attr,
-    name = "sub"
-  )
-
-  vapply(
-    seq_along(product_graphs),
-    function(product_idx) {
-      product_substituents <- igraph::vertex_attr(
-        product_graphs[[product_idx]],
-        "sub"
-      )
-      product_matches <- matches[[product_idx]]
-      for (target_idx in seq_along(product_matches)) {
-        for (mapping in product_matches[[target_idx]]) {
-          substituents_match <- vapply(
-            seq_along(mapping),
-            function(vertex_idx) {
-              .substituent_tokens_contained(
-                target_substituents[[target_idx]][[mapping[[vertex_idx]]]],
-                product_substituents[[vertex_idx]],
-                mode = mode
-              )
-            },
-            logical(1)
-          )
-          if (all(substituents_match)) {
-            return(TRUE)
-          }
-        }
-      }
-      FALSE
+    function(target_graph) {
+      sum(lengths(lapply(
+        igraph::vertex_attr(target_graph, "sub"),
+        .substituent_tokens
+      )))
     },
-    logical(1)
+    integer(1)
   )
+  target_graphs[order(-sizes, -substituent_counts)]
 }
 
 #' BFS synthesis search as an R6 engine
@@ -298,9 +240,11 @@ BfsSynthesisSearch <- R6::R6Class(
         return_list = TRUE
       )
       private$target_match_mode <- .glymotif_mode(self$to_gs)
-      private$target_match_glycans <- .bfs_match_structures(
-        private$target_graphs,
-        "target"
+      unique_target_graphs <- private$target_graphs[
+        !duplicated(self$to_keys)
+      ]
+      private$pruning_target_graphs <- .order_bfs_pruning_targets(
+        unique_target_graphs
       )
       private$product_match_mode <- .glymotif_mode(self$from_g)
       private$rule_plan <- .prepare_bfs_rule_plan(self$enzymes)
@@ -312,14 +256,6 @@ BfsSynthesisSearch <- R6::R6Class(
         glyrepr::as_glycan_structure(
           "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
         )
-      )
-      private$n_core_match_glycan <- .bfs_match_structures(
-        list(private$n_core_graph),
-        "n-core"
-      )
-      private$pre_mgat2_match_glycan <- .bfs_match_structures(
-        list(private$pre_mgat2_graph),
-        "pre-mgat2"
       )
     },
 
@@ -390,15 +326,13 @@ BfsSynthesisSearch <- R6::R6Class(
   private = list(
     source_graph = NULL,
     target_graphs = NULL,
+    pruning_target_graphs = NULL,
     target_match_mode = NULL,
-    target_match_glycans = NULL,
     product_match_mode = NULL,
     rule_plan = NULL,
     product_cache = NULL,
     n_core_graph = NULL,
     pre_mgat2_graph = NULL,
-    n_core_match_glycan = NULL,
-    pre_mgat2_match_glycan = NULL,
 
     # Expand entire BFS frontier for current step.
     # Applies every enzyme to all glycans in the queue, collects successors,
@@ -611,41 +545,12 @@ BfsSynthesisSearch <- R6::R6Class(
 
     # Prepare each shared rule result once, then replay unique enzyme plans.
     prepare_plan_products = function(rule_results, frontier_size) {
-      all_product_graphs <- unlist(
-        lapply(
-          rule_results,
-          function(rule_result) {
-            unlist(rule_result, recursive = FALSE)
-          }
-        ),
-        recursive = FALSE
-      )
-      all_prepared_products <- private$prepare_graph_product_records(
-        all_product_graphs,
-        product_mode = private$product_match_mode
-      )
-
-      prepared_rule_results <- vector("list", length(rule_results))
-      next_product <- 1L
-      for (rule_idx in seq_along(rule_results)) {
-        prepared_rule_results[[rule_idx]] <- vector(
-          "list",
-          length(rule_results[[rule_idx]])
-        )
-        for (frontier_idx in seq_along(rule_results[[rule_idx]])) {
-          n_products <- length(rule_results[[rule_idx]][[frontier_idx]])
-          product_idx <- if (n_products == 0L) {
-            integer()
-          } else {
-            seq.int(next_product, length.out = n_products)
-          }
-          prepared_rule_results[[rule_idx]][[frontier_idx]] <-
-            private$combine_graph_product_records(
-              all_prepared_products[product_idx]
-            )
-          next_product <- next_product + n_products
+      prepared_rule_results <- purrr::map(
+        rule_results,
+        function(rule_result) {
+          purrr::map(rule_result, private$prepare_graph_products)
         }
-      }
+      )
 
       purrr::map(
         private$rule_plan$enzyme_plans,
@@ -670,7 +575,11 @@ BfsSynthesisSearch <- R6::R6Class(
     # every canonical product key, matching glycan-vector unique() semantics.
     combine_prepared_graph_products = function(prepared_products) {
       if (length(prepared_products) == 0L) {
-        return(private$empty_prepared_products())
+        return(list(
+          products = NULL,
+          graphs = list(),
+          keys = character()
+        ))
       }
 
       product_graphs <- unlist(
@@ -695,81 +604,27 @@ BfsSynthesisSearch <- R6::R6Class(
       product_graphs,
       product_mode = private$product_match_mode
     ) {
-      prepared_products <- private$prepare_graph_product_records(
+      if (length(product_graphs) == 0L) {
+        return(list(
+          products = NULL,
+          graphs = list(),
+          keys = character()
+        ))
+      }
+
+      prepared_products <- purrr::map(
         product_graphs,
+        private$prepare_graph_product,
         product_mode = product_mode
       )
-      private$combine_graph_product_records(prepared_products)
-    },
-
-    # Prepare uncached product graphs together so target motifs are matched
-    # once per frontier chunk rather than once per product and target.
-    prepare_graph_product_records = function(product_graphs, product_mode) {
-      if (length(product_graphs) == 0L) {
-        return(list())
-      }
-
-      signatures <- vapply(
-        product_graphs,
-        function(product_graph) {
-          paste0(
-            product_mode,
-            "|",
-            .bfs_graph_signature(product_graph)
-          )
-        },
-        character(1)
-      )
-      cached <- vapply(
-        signatures,
-        private$product_cache$has,
-        logical(1)
-      )
-      new_product_idx <- which(!cached & !duplicated(signatures))
-      if (length(new_product_idx) > 0L) {
-        new_product_graphs <- lapply(
-          product_graphs[new_product_idx],
-          .move_glycan_root_last
-        )
-        keep <- private$are_promising_products(
-          new_product_graphs,
-          product_mode = product_mode
-        )
-        keyed <- .canonicalize_valid_glycan_graphs(
-          new_product_graphs[keep]
-        )
-        next_keyed <- 1L
-        for (i in seq_along(new_product_idx)) {
-          if (keep[[i]]) {
-            prepared_product <- list(
-              keep = TRUE,
-              graph = keyed$graphs[[next_keyed]],
-              key = unname(keyed$keys[[next_keyed]])
-            )
-            next_keyed <- next_keyed + 1L
-          } else {
-            prepared_product <- list(keep = FALSE)
-          }
-          private$product_cache$set(
-            signatures[[new_product_idx[[i]]]],
-            prepared_product
-          )
-        }
-      }
-
-      lapply(signatures, private$product_cache$get)
-    },
-
-    # Retain the first graph for every canonical product key in one rule cell.
-    combine_graph_product_records = function(prepared_products) {
-      if (length(prepared_products) == 0L) {
-        return(private$empty_prepared_products())
-      }
-
       keep <- vapply(prepared_products, `[[`, logical(1), "keep")
       prepared_products <- prepared_products[keep]
       if (length(prepared_products) == 0L) {
-        return(private$empty_prepared_products())
+        return(list(
+          products = NULL,
+          graphs = list(),
+          keys = character()
+        ))
       }
 
       product_graphs <- lapply(prepared_products, `[[`, "graph")
@@ -787,44 +642,40 @@ BfsSynthesisSearch <- R6::R6Class(
       )
     },
 
-    empty_prepared_products = function() {
-      list(
-        products = NULL,
-        graphs = list(),
-        keys = character()
+    # Cache standard graph products before target pruning and canonicalization.
+    prepare_graph_product = function(product_graph, product_mode) {
+      signature <- paste0(
+        product_mode,
+        "|",
+        .bfs_graph_signature(product_graph)
       )
-    },
-
-    # Batch target containment and the two early N-glycan exceptions.
-    are_promising_products = function(product_graphs, product_mode) {
-      target_contains_product <- .bfs_targets_contain_products(
-        private$target_match_glycans,
-        private$target_graphs,
-        product_graphs,
-        mode = private$target_match_mode
-      )
-      unresolved <- which(!target_contains_product)
-      if (length(unresolved) == 0L) {
-        return(target_contains_product)
+      if (
+        !is.null(private$product_cache) &&
+          private$product_cache$has(signature)
+      ) {
+        return(private$product_cache$get(signature))
       }
 
-      product_match_glycans <- .bfs_match_structures(
-        product_graphs[unresolved],
-        "product"
+      product_graph <- .move_glycan_root_last(product_graph)
+      keep <- private$is_promising_product(
+        product_graph,
+        product_mode = product_mode
       )
-      is_n_glycan <- glymotif::have_motif(
-        product_match_glycans,
-        private$n_core_match_glycan,
-        mode = product_mode
-      )
-      not_mgat2_ready <- glymotif::have_motif(
-        product_match_glycans,
-        private$pre_mgat2_match_glycan,
-        mode = product_mode
-      )
-      target_contains_product[unresolved] <-
-        is_n_glycan & not_mgat2_ready
-      target_contains_product
+      if (keep) {
+        keyed <- .canonicalize_valid_glycan_graphs(list(product_graph))
+        prepared_product <- list(
+          keep = TRUE,
+          graph = keyed$graphs[[1]],
+          key = unname(keyed$keys[[1]])
+        )
+      } else {
+        prepared_product <- list(keep = FALSE)
+      }
+
+      if (!is.null(private$product_cache)) {
+        private$product_cache$set(signature, prepared_product)
+      }
+      prepared_product
     },
 
     # Preserve structure materialization for filters and custom S3 enzymes.
@@ -858,7 +709,7 @@ BfsSynthesisSearch <- R6::R6Class(
     is_promising_product = function(product_graph, product_mode) {
       .is_promising_intermediate_graph(
         product_graph,
-        target_graphs = private$target_graphs,
+        target_graphs = private$pruning_target_graphs,
         product_mode = product_mode,
         target_mode = private$target_match_mode,
         n_core_graph = private$n_core_graph,
