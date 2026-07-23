@@ -198,6 +198,47 @@ test_that("root-only normalization preserves graph pruning semantics", {
   }
 })
 
+test_that("BFS graph signatures ignore only vertex numbering", {
+  graph <- glyrepr::get_structure_graphs(
+    glyrepr::as_glycan_structure(
+      "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Fuc(a1-6)]Man(b1-"
+    )
+  )
+  renumbered <- igraph::permute(
+    graph,
+    rev(seq_len(igraph::vcount(graph)))
+  )
+  changed_linkage <- igraph::set_edge_attr(
+    graph,
+    "linkage",
+    index = 1L,
+    value = "b1-3"
+  )
+  changed_substituent <- igraph::set_vertex_attr(
+    graph,
+    "sub",
+    index = 1L,
+    value = "6S"
+  )
+
+  expect_identical(
+    .bfs_graph_signature(graph),
+    .bfs_graph_signature(renumbered)
+  )
+  expect_false(
+    identical(
+      .bfs_graph_signature(graph),
+      .bfs_graph_signature(changed_linkage)
+    )
+  )
+  expect_false(
+    identical(
+      .bfs_graph_signature(graph),
+      .bfs_graph_signature(changed_substituent)
+    )
+  )
+})
+
 test_that("BFS keys only promising shared graph products", {
   make_core1_enzyme <- function(name) {
     make_enzyme(
