@@ -592,6 +592,28 @@ test_that("batched expansion processes bounded chunks in frontier order", {
   expect_equal(edge_sources, frontier_keys)
 })
 
+test_that("reverse reachability combines multiple BFS targets", {
+  graph <- igraph::graph_from_data_frame(
+    data.frame(
+      from = c("source", "a", "a", "b", "c", "a"),
+      to = c("a", "b", "c", "target-1", "target-2", "dead")
+    ),
+    directed = TRUE
+  )
+  target_vertices <- match(
+    c("target-1", "target-2", "target-1"),
+    igraph::V(graph)$name
+  )
+
+  reachable <- .bfs_reverse_reachable(graph, target_vertices)
+
+  expect_setequal(
+    igraph::V(graph)$name[reachable],
+    c("source", "a", "b", "c", "target-1", "target-2")
+  )
+  expect_false("dead" %in% igraph::V(graph)$name[reachable])
+})
+
 test_that("custom enzyme actions retain scalar frontier order", {
   action_order <- character()
   action_method <- function(
