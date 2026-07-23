@@ -817,12 +817,13 @@ BfsSynthesisSearch <- R6::R6Class(
         return(invisible(NULL))
       }
 
-      endpoint_keys <- endpoint_keys[
-        target_keys %in% self$remaining_targets_map$keys()
-      ]
-      target_keys <- target_keys[
-        target_keys %in% self$remaining_targets_map$keys()
-      ]
+      remaining <- vapply(
+        target_keys,
+        self$remaining_targets_map$has,
+        logical(1)
+      )
+      endpoint_keys <- endpoint_keys[remaining]
+      target_keys <- target_keys[remaining]
       if (length(endpoint_keys) == 0L) {
         return(invisible(NULL))
       }
@@ -846,18 +847,18 @@ BfsSynthesisSearch <- R6::R6Class(
     },
 
     matched_target_keys = function(key, glycan_graph) {
-      remaining_target_keys <- self$remaining_targets_map$keys()
-      if (length(remaining_target_keys) == 0L) {
+      if (self$remaining_targets_map$size() == 0L) {
         return(character())
       }
 
       if (identical(self$target_match, "key")) {
-        if (key %in% remaining_target_keys) {
+        if (self$remaining_targets_map$has(key)) {
           return(key)
         }
         return(character())
       }
 
+      remaining_target_keys <- self$remaining_targets_map$keys()
       target_idx <- match(remaining_target_keys, self$to_keys)
       target_graphs <- private$target_graphs[target_idx]
       target_matches <- purrr::map_lgl(
@@ -967,6 +968,29 @@ is_promising_intermediate <- function(products, target_glycans) {
     0L
 }
 
+# Find every vertex that can reach at least one target with one reverse
+# traversal through a temporary multi-target sink.
+.bfs_reverse_reachable <- function(graph, target_vertices) {
+  target_vertices <- unique(as.integer(target_vertices))
+  if (length(target_vertices) == 0L) {
+    return(integer())
+  }
+
+  sink <- igraph::vcount(graph) + 1L
+  graph_with_sink <- igraph::add_vertices(graph, 1L)
+  sink_edges <- as.vector(rbind(
+    target_vertices,
+    rep.int(sink, length(target_vertices))
+  ))
+  graph_with_sink <- igraph::add_edges(graph_with_sink, sink_edges)
+  reachable <- igraph::subcomponent(
+    graph_with_sink,
+    sink,
+    mode = "in"
+  )
+  setdiff(as.integer(reachable), sink)
+}
+
 #' Build result graph from BFS search results
 #'
 #' Constructs an igraph object representing synthesis paths from BFS search results.
@@ -1036,28 +1060,28 @@ build_synthesis_result_graph <- function(
   #
   # Algorithm:
   # 1. Compute forward reachable set: vertices reachable from 'from' via out-edges
-  # 2. For each target, compute backward reachable set: vertices that can reach this target via in-edges
-  # 3. Union all backward reachable sets to get vertices that can reach any target
+  # 2. Connect every target to a temporary sink
+  # 3. Compute one backward reachable set from that sink
   # 4. Keep intersection: vertices that lie on at least one valid from→(any target) path
   # 5. Return induced subgraph containing only these vertices and their connecting edges
   #
-  # Complexity: O(V + E) × (1 + number_of_targets) for reachability computations
+  # Complexity: O(V + E + number_of_targets)
   # Result: All dead-end branches are automatically pruned
 
   vid_from <- which(igraph::V(g_all)$name == from_key)
-  vid_to_list <- sapply(to_keys, function(key) {
-    which(igraph::V(g_all)$name == key)
-  })
+  vid_to_list <- vapply(
+    to_keys,
+    function(key) {
+      which(igraph::V(g_all)$name == key)
+    },
+    integer(1)
+  )
 
   # Forward reachability: vertices reachable from starting glycan
   reach_from <- igraph::subcomponent(g_all, vid_from, mode = "out")
 
   # Backward reachability: vertices that can reach any target glycan
-  reach_to_any <- integer(0)
-  for (vid_to in vid_to_list) {
-    reach_to_current <- igraph::subcomponent(g_all, vid_to, mode = "in")
-    reach_to_any <- union(reach_to_any, reach_to_current)
-  }
+  reach_to_any <- .bfs_reverse_reachable(g_all, vid_to_list)
 
   # Keep only vertices that are on valid synthesis paths to any target
   keep <- intersect(reach_from, reach_to_any)
