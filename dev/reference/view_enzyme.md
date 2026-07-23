@@ -1,6 +1,7 @@
-# View Residues Added by an Enzyme
+# View Residues Added or Modified by an Enzyme
 
-Visualize where an enzyme contributes residues to a glycan structure.
+Visualize where an enzyme adds or modifies residues in a glycan
+structure.
 
 ## Usage
 
@@ -19,8 +20,8 @@ view_enzyme(glycan, enzyme)
 
 - enzyme:
 
-  A glycosyltransferase
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
+  A glycosyltransferase or sulfotransferase
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
   or a gene symbol for one. Glycoside hydrolases are not supported.
 
 ## Value
@@ -72,11 +73,10 @@ and
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 

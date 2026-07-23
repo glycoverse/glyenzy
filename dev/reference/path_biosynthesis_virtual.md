@@ -1,7 +1,8 @@
 # Find a Virtual Biosynthesis Path Between Glycan Structures
 
 Infer every structure-driven biosynthetic path from `from` to `to` by
-trimming `to` backward to `from`. Unlike
+trimming terminal residues and sulfate groups from `to` backward to
+`from`. Unlike
 [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md),
 this does not require known enzyme rules.
 
@@ -59,11 +60,18 @@ GlcNAc is labeled `"b4GlcNAcT"`. Partial and topological glycans omit
 linkage information and use `"GlcNAcT"`; basic glycans use the generic
 residue name, such as `"HexNAcT"`.
 
+Sulfation is represented as its own atomic transition. Sulfate additions
+at positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or
+other position uses `"?SulfoT"`. A sulfated terminal residue is
+therefore desulfated before the residue itself can be trimmed.
+
 Virtual tracing starts N-glycans at the N-glycan core and all other
-glycans at their reducing-end root residue. In
-`path_biosynthesis_virtual()`, the explicit `from` glycan is always the
-virtual starting structure. These networks represent structural
-possibilities rather than biological feasibility.
+glycans at their reducing-end root residue. Sulfates are removed from
+these automatically selected starts. In `path_biosynthesis_virtual()`,
+the explicit `from` glycan is always the virtual starting structure,
+including any sulfate groups it contains; those sulfates must also occur
+in `to`. These networks represent structural possibilities rather than
+biological feasibility.
 
 Basic structures do not retain glycan-class metadata. A basic structure
 matching the generic N-glycan-core topology is therefore assumed to be

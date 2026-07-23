@@ -1,7 +1,8 @@
 # Trace a Virtual Biosynthetic Path of Glycans
 
 Reconstruct every structure-driven biosynthetic path for one or more
-glycans by trimming terminal residues backward. Unlike
+glycans by trimming terminal residues and sulfate groups backward.
+Unlike
 [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
 this does not require known enzyme rules.
 
@@ -53,12 +54,19 @@ GlcNAc is labeled `"b4GlcNAcT"`. Partial and topological glycans omit
 linkage information and use `"GlcNAcT"`; basic glycans use the generic
 residue name, such as `"HexNAcT"`.
 
+Sulfation is represented as its own atomic transition. Sulfate additions
+at positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or
+other position uses `"?SulfoT"`. A sulfated terminal residue is
+therefore desulfated before the residue itself can be trimmed.
+
 Virtual tracing starts N-glycans at the N-glycan core and all other
-glycans at their reducing-end root residue. In
+glycans at their reducing-end root residue. Sulfates are removed from
+these automatically selected starts. In
 [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md),
-the explicit `from` glycan is always the virtual starting structure.
-These networks represent structural possibilities rather than biological
-feasibility.
+the explicit `from` glycan is always the virtual starting structure,
+including any sulfate groups it contains; those sulfates must also occur
+in `to`. These networks represent structural possibilities rather than
+biological feasibility.
 
 Basic structures do not retain glycan-class metadata. A basic structure
 matching the generic N-glycan-core topology is therefore assumed to be
@@ -102,11 +110,10 @@ and
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 

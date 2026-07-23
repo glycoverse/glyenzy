@@ -115,10 +115,11 @@ enzyme ("bad" steps). By default, an error is raised for these glycans.</p>
 For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
 continue. For example, for the O-GalNAc core 5
 "GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
-the a3 GalNAc.</p>
+the a3 GalNAc. Unsupported sulfate additions similarly use <code>"3SulfoT"</code>,
+<code>"6SulfoT"</code>, or <code>"?SulfoT"</code>.</p>
 <p>Therefore, <code>max_virtual_steps</code> can also be interpreted as
-"the maximum number of glycosidic bonds that cannot be assigned by a known
-enzyme."
+"the maximum number of glycosidic bonds or sulfate transfers that cannot be
+assigned by a known enzyme."
 Increasing this number loosens the criteria.</p>
     </div>
     <div class="section level2">
@@ -162,10 +163,9 @@ documented, such as <code>apply_enzyme(structure_level = "basic")</code>,
 <h3 id="substituents">Substituents<a class="anchor" aria-label="anchor" href="#substituents"></a></h3>
 
 
-<p>Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_substituents.html" class="external-link">glyrepr::remove_substituents()</a></code> to get clean glycans.</p>
+<p>Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+<code><a href="https://glycoverse.github.io/glyrepr/reference/remove_substituents.html" class="external-link">glyrepr::remove_substituents()</a></code> when unsupported substituents are present.</p>
 </div>
 
 <div class="section">

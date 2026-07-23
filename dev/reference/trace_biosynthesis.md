@@ -79,11 +79,13 @@ enzyme ("bad" steps). By default, an error is raised for these glycans.
 `max_virtual_steps` provides a fallback for these glycans. For a "bad"
 step, a virtual enzyme is assigned to allow the algorithm to continue.
 For example, for the O-GalNAc core 5 "GalNAc(a1-3)GalNAc(a1-", an
-"a3GalNAcT" is assigned to the step that adds the a3 GalNAc.
+"a3GalNAcT" is assigned to the step that adds the a3 GalNAc. Unsupported
+sulfate additions similarly use `"3SulfoT"`, `"6SulfoT"`, or
+`"?SulfoT"`.
 
 Therefore, `max_virtual_steps` can also be interpreted as "the maximum
-number of glycosidic bonds that cannot be assigned by a known enzyme."
-Increasing this number loosens the criteria.
+number of glycosidic bonds or sulfate transfers that cannot be assigned
+by a known enzyme." Increasing this number loosens the criteria.
 
 ## Important notes
 
@@ -118,11 +120,10 @@ residues are supported where explicitly documented, such as
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 

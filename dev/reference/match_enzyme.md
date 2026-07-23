@@ -1,7 +1,8 @@
-# Match Residues Added by an Enzyme
+# Match Residues Added or Modified by an Enzyme
 
 This function finds residues in glycans that match the product motifs of
-a glycosyltransferase and returns their node indices.
+a glycosyltransferase or sulfotransferase and returns their node
+indices.
 
 ## Usage
 
@@ -19,8 +20,8 @@ match_enzyme(glycans, enzyme, method = c("motif", "path"))
 
 - enzyme:
 
-  A glycosyltransferase
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
+  A glycosyltransferase or sulfotransferase
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
   or a gene symbol for one. Glycoside hydrolases are not supported.
 
 - method:
@@ -34,8 +35,8 @@ match_enzyme(glycans, enzyme, method = c("motif", "path"))
 ## Value
 
 A list of integer vectors with the same length as `glycans`. Each
-integer vector contains node indices for residues added by `enzyme` in
-the corresponding glycan.
+integer vector contains node indices for residues added or modified by
+`enzyme` in the corresponding glycan.
 
 ## Important notes
 
@@ -72,11 +73,10 @@ and
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 

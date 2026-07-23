@@ -125,7 +125,7 @@ apply_enzyme(glycan, "ST3GAL1")
 - [`make_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/make_enzyme.md)
   : Make a Custom Enzyme
 - [`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md)
-  : Match Residues Added by an Enzyme
+  : Match Residues Added or Modified by an Enzyme
 - [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
   : Find a Biosynthesis Path Between Glycan Structures
 - [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)
@@ -137,7 +137,7 @@ apply_enzyme(glycan, "ST3GAL1")
 - [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
   : Trace a Virtual Biosynthetic Path of Glycans
 - [`view_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/view_enzyme.md)
-  : View Residues Added by an Enzyme
+  : View Residues Added or Modified by an Enzyme
 
 # Articles
 

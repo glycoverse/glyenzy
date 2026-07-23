@@ -4,6 +4,9 @@
 
 ### New features
 
+- Add first-class sulfotransferases (`ST`) with 12 human N- and O-glycan
+  enzymes, sulfate-aware inference and biosynthesis, and virtual
+  sulfation steps. (#20, \#33)
 - [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
   and
   [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)

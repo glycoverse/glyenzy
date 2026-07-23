@@ -84,11 +84,10 @@ and
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 
