@@ -17,9 +17,9 @@
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
 #'   Default is 10.
 #' @param max_virtual_steps Integer, maximum number of target-directed virtual
-#'   enzyme steps allowed when no fully enzymatic path exists. Virtual products
-#'   re-enter the enzymatic search, so concrete steps can follow a virtual step.
+#'   enzyme steps allowed when no fully enzymatic path exists.
 #'   Default is `0L`, which disables virtual fallback.
+#'   See the "Virtual fallback" section for more details.
 #' @param filter Optional function to filter generated glycans at each step.
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length. It filters generated products.

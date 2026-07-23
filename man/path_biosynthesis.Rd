@@ -31,9 +31,9 @@ Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}
 a logical vector of the same length. It filters generated products.}
 
 \item{max_virtual_steps}{Integer, maximum number of target-directed virtual
-enzyme steps allowed when no fully enzymatic path exists. Virtual products
-re-enter the enzymatic search, so concrete steps can follow a virtual step.
-Default is \code{0L}, which disables virtual fallback.}
+enzyme steps allowed when no fully enzymatic path exists.
+Default is \code{0L}, which disables virtual fallback.
+See the "Virtual fallback" section for more details.}
 }
 \value{
 An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
@@ -118,11 +118,20 @@ the N-glycan precursor transferred to Asn by OST.
 
 \section{Virtual fallback}{
 
-With \code{max_virtual_steps > 0L}, a fully enzymatic path is still preferred.
-If none exists, the search may add a target-directed, single-residue virtual
-transition only when no supplied enzyme performs that exact transition. Its
-product then re-enters the ordinary enzymatic search. Returned paths minimize
-the number of virtual transitions first and total steps second.
+Sometimes the biosynthesis network of a glycan cannot be fully resolved;
+i.e., some enzymatic steps are not inferred to be catalyzed by any known
+enzyme ("bad" steps). By default, an error is raised for these glycans.
+
+\code{max_virtual_steps} provides a fallback for these glycans.
+For a "bad" step, a virtual enzyme is assigned to allow the algorithm to
+continue. For example, for the O-GalNAc core 5
+"GalNAc(a1-3)GalNAc(a1-", an "a3GalNAcT" is assigned to the step that adds
+the a3 GalNAc.
+
+Therefore, \code{max_virtual_steps} can also be interpreted as
+"the maximum number of glycosidic bonds that cannot be assigned by a known
+enzyme."
+Increasing this number loosens the criteria.
 }
 
 \examples{
