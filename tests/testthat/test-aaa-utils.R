@@ -114,6 +114,43 @@ test_that("enzyme list processing can prefilter against target glycans", {
   expect_equal(purrr::map_chr(unfiltered, "name"), c("C1GALT1", "ST6GAL1"))
 })
 
+test_that("enzyme prefiltering vectorizes targets with a scalar fallback", {
+  calls <- integer()
+  have_method <- function(glycans, enzyme) {
+    calls <<- c(calls, length(glycans))
+    rep(TRUE, length(glycans))
+  }
+  rlang::local_bindings(
+    .have_enzyme_motif.test_prefilter_enzyme = have_method,
+    .env = globalenv()
+  )
+  custom <- enzyme("C1GALT1")
+  class(custom) <- c("test_prefilter_enzyme", class(custom))
+  targets <- glyparse::auto_parse(c(
+    "Gal(b1-3)GalNAc(a1-",
+    "GlcNAc(b1-3)GalNAc(a1-"
+  ))
+
+  expect_equal(.can_enzymes_contribute(list(custom), targets), TRUE)
+  expect_equal(calls, 2L)
+
+  calls <- integer()
+  fallback_method <- function(glycans, enzyme) {
+    calls <<- c(calls, length(glycans))
+    if (length(glycans) > 1L) {
+      stop("scalar only")
+    }
+    as.character(glycans) == "GlcNAc(b1-3)GalNAc(a1-"
+  }
+  rlang::local_bindings(
+    .have_enzyme_motif.test_prefilter_enzyme = fallback_method,
+    .env = globalenv()
+  )
+
+  expect_equal(.can_enzymes_contribute(list(custom), targets), TRUE)
+  expect_equal(calls, c(2L, 1L, 1L))
+})
+
 test_that("enzyme list processing errors when no enzyme can contribute", {
   glycan <- glyparse::auto_parse("Gal(b1-3)GalNAc(a1-")
 
