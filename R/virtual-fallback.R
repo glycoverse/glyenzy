@@ -12,19 +12,21 @@
   strict_result
 ) {
   from_key <- as.character(from_g)[[1]]
-  strict_edges <- .offset_concrete_edges(strict_result$all_edges, 0L)
   found_keys <- setdiff(unique(strict_result$found_keys), from_key)
-  strict_paths <- lapply(
-    found_keys,
-    function(found_key) {
-      .build_virtual_fallback_result_graph(
-        strict_edges,
-        from_key,
-        found_key,
-        max_steps
+  strict_paths <- if (length(found_keys) > 0L) {
+    list(
+      .mark_concrete_path(
+        build_synthesis_result_graph(
+          strict_result,
+          from_key,
+          found_keys,
+          max_steps
+        )
       )
-    }
-  )
+    )
+  } else {
+    list()
+  }
 
   to_keys <- as.character(to_gs)
   missing_idx <- which(to_keys %in% strict_result$missing_target_keys)

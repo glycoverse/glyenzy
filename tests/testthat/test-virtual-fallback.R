@@ -96,6 +96,96 @@ test_that("trace fallback combines strict and rescued targets", {
   expect_identical(edges$is_virtual, c(FALSE, TRUE))
 })
 
+test_that("mixed fallback preserves every concrete route to strict targets", {
+  source <- glyrepr::as_glycan_structure("GalNAc(a1-")
+  long_mid <- glyrepr::as_glycan_structure("Gal(b1-3)GalNAc(a1-")
+  strict_target <- glyrepr::as_glycan_structure(
+    "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+  )
+  rescued_target <- glyrepr::as_glycan_structure(
+    "Neu5Ac(a2-3)Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+  )
+
+  action_method <- function(
+    glycans,
+    enzyme,
+    structure_level = "intact"
+  ) {
+    lapply(
+      as.character(glycans),
+      function(glycan) {
+        product <- switch(
+          enzyme$name,
+          SHORT = if (identical(glycan, as.character(source))) strict_target,
+          LONG1 = if (identical(glycan, as.character(source))) long_mid,
+          LONG2 = if (identical(glycan, as.character(long_mid))) strict_target
+        )
+        if (is.null(product)) {
+          glyrepr::as_glycan_structure(character())
+        } else {
+          product
+        }
+      }
+    )
+  }
+  rlang::local_bindings(
+    .apply_enzyme.test_fallback_route_enzyme = action_method,
+    .env = globalenv()
+  )
+
+  make_route_enzyme <- function(name) {
+    custom <- make_enzyme(
+      name = name,
+      type = "GT",
+      species = "human",
+      rules = list(list(
+        acceptor = "GalNAc(a1-",
+        acceptor_alignment = "core",
+        rejects = NULL,
+        product = "Gal(b1-3)GalNAc(a1-"
+      ))
+    )
+    class(custom) <- c(
+      "test_fallback_route_enzyme",
+      class(custom)
+    )
+    custom
+  }
+  enzymes <- lapply(
+    c("SHORT", "LONG1", "LONG2"),
+    make_route_enzyme
+  )
+
+  strict_result <- bfs_synthesis_search(
+    from_g = source,
+    to_gs = c(strict_target, rescued_target),
+    enzymes = enzymes,
+    max_steps = 3L,
+    allow_partial = TRUE
+  )
+  strict_path <- build_synthesis_result_graph(
+    strict_result,
+    as.character(source),
+    as.character(strict_target),
+    3L
+  )
+  expected <- igraph::as_data_frame(strict_path, what = "edges")
+
+  path <- .perform_bfs_synthesis(
+    source,
+    c(strict_target, rescued_target),
+    enzymes,
+    max_steps = 3L,
+    max_virtual_steps = 1L
+  )
+  edges <- igraph::as_data_frame(path, what = "edges")
+  concrete <- edges[!edges$is_virtual, names(expected)]
+
+  edge_keys <- function(x) do.call(paste, c(x, sep = "\r"))
+  expect_equal(sort(edge_keys(concrete)), sort(edge_keys(expected)))
+  expect_equal(sum(edges$is_virtual), 1L)
+})
+
 test_that("fallback minimizes virtual steps before total steps", {
   target <- "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
 
