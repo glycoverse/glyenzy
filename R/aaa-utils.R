@@ -974,14 +974,25 @@
   tryCatch(
     purrr::map_lgl(
       enzymes,
-      ~ any(purrr::map_lgl(
-        glycans,
-        .enzyme_contributes_to_target,
-        enzyme = .x
-      ))
+      .enzyme_contributes_to_targets,
+      targets = glycans
     ),
     error = function(e) {
       rep(TRUE, length(enzymes))
+    }
+  )
+}
+
+# Check all targets together so vectorized motif preparation is shared.
+.enzyme_contributes_to_targets <- function(enzyme, targets) {
+  tryCatch(
+    any(.have_enzyme_motif(targets, enzyme)),
+    error = function(e) {
+      any(purrr::map_lgl(
+        targets,
+        .enzyme_contributes_to_target,
+        enzyme = enzyme
+      ))
     }
   )
 }
