@@ -112,6 +112,67 @@ test_that("prepared graph pruning matches glycan-level pruning", {
   expect_equal(actual, expected)
 })
 
+test_that("batched target containment preserves substituent subsets", {
+  products <- glyparse::auto_parse(c(
+    "Gal(b1-",
+    "Gal6S(b1-",
+    "Gal3S(b1-",
+    "Gal4S(b1-"
+  ))
+  targets <- glyparse::auto_parse("Gal3S6S(b1-")
+  target_graphs <- glyrepr::get_structure_graphs(
+    targets,
+    return_list = TRUE
+  )
+  product_graphs <- glyrepr::get_structure_graphs(
+    products,
+    return_list = TRUE
+  )
+
+  actual <- .bfs_targets_contain_products(
+    .bfs_match_structures(target_graphs, "target"),
+    target_graphs,
+    product_graphs,
+    mode = "strict"
+  )
+
+  expect_equal(actual, c(TRUE, TRUE, TRUE, FALSE))
+})
+
+test_that("BFS batches target containment across shared rule jobs", {
+  original <- .bfs_targets_contain_products
+  batch_sizes <- integer()
+  testthat::local_mocked_bindings(
+    .bfs_targets_contain_products = function(
+      target_match_glycans,
+      target_graphs,
+      product_graphs,
+      mode
+    ) {
+      batch_sizes <<- c(batch_sizes, length(product_graphs))
+      original(
+        target_match_glycans,
+        target_graphs,
+        product_graphs,
+        mode
+      )
+    },
+    .package = "glyenzy"
+  )
+
+  path <- trace_biosynthesis(
+    c(
+      "Gal(b1-3)GalNAc(a1-",
+      "GlcNAc(b1-3)GalNAc(a1-"
+    ),
+    enzymes = c("C1GALT1", "B3GNT6"),
+    max_steps = 1L
+  )
+
+  expect_equal(batch_sizes, 2L)
+  expect_equal(igraph::ecount(path), 2L)
+})
+
 test_that("root-only normalization preserves graph pruning semantics", {
   intact_from <- glyrepr::as_glycan_structure("GalNAc(a1-")
   intact_target <- glyrepr::as_glycan_structure(
