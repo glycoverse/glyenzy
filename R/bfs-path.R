@@ -63,15 +63,43 @@ bfs_synthesis_search <- function(
   engine$run()
 }
 
-# Encode the ordered graph state used by standard glycan actions. Vertex names
-# are intentionally excluded because they are igraph identifiers rather than
-# glycan semantics.
+# Encode the canonical colored tree topology used by standard glycan actions.
+# Vertex names are intentionally excluded because they are igraph identifiers
+# rather than glycan semantics.
 .bfs_graph_signature <- function(graph) {
   edges <- igraph::as_edgelist(graph, names = FALSE)
-  edge_indices <- if (length(edges) == 0L) {
+  incoming_linkages <- rep(NA_character_, igraph::vcount(graph))
+  if (length(edges) > 0L) {
+    incoming_linkages[edges[, 2]] <- igraph::edge_attr(graph, "linkage")
+  }
+  vertex_labels <- paste0(
+    .bfs_signature_values(igraph::vertex_attr(graph, "mono")),
+    .bfs_signature_values(igraph::vertex_attr(graph, "sub")),
+    .bfs_signature_values(incoming_linkages)
+  )
+  label_levels <- sort(unique(vertex_labels))
+  colors <- match(vertex_labels, label_levels)
+  labeling <- igraph::canonical_permutation(
+    graph,
+    colors = colors
+  )$labeling
+
+  canonical_edges <- if (length(edges) == 0L) {
+    edges
+  } else {
+    matrix(labeling[edges], ncol = 2L)
+  }
+  if (nrow(canonical_edges) > 1L) {
+    canonical_edges <- canonical_edges[
+      order(canonical_edges[, 1], canonical_edges[, 2]),
+      ,
+      drop = FALSE
+    ]
+  }
+  edge_indices <- if (length(canonical_edges) == 0L) {
     ""
   } else {
-    paste(as.integer(t(edges)), collapse = ",")
+    paste(as.integer(t(canonical_edges)), collapse = ",")
   }
 
   paste0(
@@ -83,21 +111,23 @@ bfs_synthesis_search <- function(
     ";",
     edge_indices,
     ";",
-    .bfs_signature_strings(igraph::vertex_attr(graph, "mono")),
+    .bfs_signature_strings(label_levels),
     ";",
-    .bfs_signature_strings(igraph::vertex_attr(graph, "sub")),
-    ";",
-    .bfs_signature_strings(igraph::edge_attr(graph, "linkage"))
+    paste(colors[order(labeling)], collapse = ",")
   )
 }
 
 .bfs_signature_strings <- function(values) {
+  paste0(.bfs_signature_values(values), collapse = "")
+}
+
+.bfs_signature_values <- function(values) {
   values <- enc2utf8(as.character(values))
   missing <- is.na(values)
   values[missing] <- ""
   lengths <- nchar(values, type = "bytes")
   prefixes <- ifelse(missing, "N:", paste0(lengths, ":"))
-  paste0(prefixes, values, collapse = "")
+  paste0(prefixes, values)
 }
 
 #' BFS synthesis search as an R6 engine
