@@ -6,7 +6,6 @@
       Error in `.abort_virtual_fallback()`:
       ! No synthesis path found for 1 target(s) within 2 steps.
       i Virtual fallback was limited to 1 step(s).
-
 # filters apply to virtual products
 
     Code
@@ -16,4 +15,3 @@
       Error in `.abort_virtual_fallback()`:
       ! No synthesis path found for 1 target(s) within 2 steps.
       i Virtual fallback was limited to 1 step(s).
-
