@@ -11,7 +11,7 @@ in the biosynthesis of a given glycan (or glycans)."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,8 +77,8 @@ more accurate but slower.</p></dd>
 <h3 id="applicability">Applicability<a class="anchor" aria-label="anchor" href="#applicability"></a></h3>
 
 
-<p>All algorithms and enzyme information in glyenzy are applicable only to humans,
-and specifically to N-glycans and O-GalNAc glycans.
+<p>Known-enzyme algorithms and enzyme information in glyenzy are applicable only
+to humans, and specifically to N-glycans and O-glycans.
 Results may be inaccurate for other types of glycans (e.g., GAGs, glycolipids)
 or for glycans in other species (e.g., plants, insects).</p>
 </div>
@@ -97,22 +97,24 @@ on factors such as tissue specificity.</p>
 </div>
 
 <div class="section">
-<h3 id="only-concrete-glycans">Only "concrete" glycans<a class="anchor" aria-label="anchor" href="#only-concrete-glycans"></a></h3>
+<h3 id="concrete-glycans-by-default">Concrete glycans by default<a class="anchor" aria-label="anchor" href="#concrete-glycans-by-default"></a></h3>
 
 
-<p>The function only works for glycans containing <strong>concrete</strong> residues
+<p>Most functions only work for glycans containing <strong>concrete</strong> residues
 (e.g., <code>"Glc"</code>, <code>"GalNAc"</code>), and not for glycans with <strong>generic</strong>
-residues (e.g., <code>"Hex"</code>, <code>"HexNAc"</code>).</p>
+residues (e.g., <code>"Hex"</code>, <code>"HexNAc"</code>).
+Reduced-level inputs with generic residues are supported where explicitly
+documented, such as <code>apply_enzyme(structure_level = "basic")</code>,
+<code><a href="trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="path_biosynthesis.html">path_biosynthesis()</a></code>.</p>
 </div>
 
 <div class="section">
 <h3 id="substituents">Substituents<a class="anchor" aria-label="anchor" href="#substituents"></a></h3>
 
 
-<p>Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents.
-If your glycans contain substituents,
-use <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_substituents.html" class="external-link">glyrepr::remove_substituents()</a></code> to get clean glycans.</p>
+<p>Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
+<code><a href="https://glycoverse.github.io/glyrepr/reference/remove_substituents.html" class="external-link">glyrepr::remove_substituents()</a></code> when unsupported substituents are present.</p>
 </div>
 
 <div class="section">
@@ -120,13 +122,17 @@ use <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_substit
 
 
 <p>If the glycan structure is incomplete or partially degraded,
-the result may be misleading.</p>
+the result may be misleading.
+Glycans with a <code><a href="https://glycoverse.github.io/glyrepr/reference/get_structure_level.html" class="external-link">glyrepr::get_structure_level()</a></code> other than <code>"intact"</code>
+are matched with the lenient motif matching mode in glymotif,
+and a warning is raised because enzyme predictions may be less reliable.</p>
 </div>
 
 <div class="section">
 <h3 id="starting-points">Starting points<a class="anchor" aria-label="anchor" href="#starting-points"></a></h3>
 
-<ul><li><p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
+
+<p>For known-enzyme path inference:</p><ul><li><p>For N-glycans, the starting structure is assumed to be "Glc(3)Man(9)GlcNAc(2)",
 the N-glycan precursor transferred to Asn by OST.</p></li>
 <li><p>For O-GalNAc glycans, the starting structure is assumed to be "GalNAc(a1-".</p></li>
 <li><p>For O-GlcNAc glycans, the starting structure is assumed to be "GlcNAc(b1-".</p></li>
@@ -187,7 +193,7 @@ to determine enzyme involvement.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

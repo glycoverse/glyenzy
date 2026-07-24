@@ -1,13 +1,21 @@
 # Find a Biosynthesis Path Between Glycan Structures
 
-Find a synthesis path from one glycan structure to another using
-enzymatic reactions. This function uses breadth-first search to find the
-shortest path or all possible paths within a given number of steps.
+Find biosynthetic paths from one glycan structure to another. The
+default method uses known enzyme rules in a forward breadth-first
+search. To infer structure-driven paths without enzyme specificity, use
+[`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis_virtual.md).
 
 ## Usage
 
 ``` r
-path_biosynthesis(from, to, enzymes = NULL, max_steps = 10, filter = NULL)
+path_biosynthesis(
+  from,
+  to,
+  enzymes = NULL,
+  max_steps = 10,
+  filter = NULL,
+  max_virtual_steps = 0L
+)
 ```
 
 ## Arguments
@@ -44,17 +52,27 @@ path_biosynthesis(from, to, enzymes = NULL, max_steps = 10, filter = NULL)
   take a
   [`glyrepr::glycan_structure()`](https://glycoverse.github.io/glyrepr/reference/glycan_structure.html)
   vector as input and return a logical vector of the same length. It
-  will be applied to all the generated glycans at each BFS step for
-  pruning.
+  filters generated products.
+
+- max_virtual_steps:
+
+  Integer, maximum number of target-directed virtual enzyme steps
+  allowed when no fully enzymatic path exists. Default is `0L`, which
+  disables virtual fallback. See the "Virtual fallback" section for more
+  details.
 
 ## Value
 
 An
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html)
 object representing the synthesis path(s). Vertices represent glycan
-structures with `name` attribute containing IUPAC-condensed strings.
-Edges represent enzymatic reactions with `enzyme` attribute containing
-gene symbols and `step` attribute indicating the step number.
+structures, with IUPAC-condensed strings in the `name` attribute. Every
+edge has a `step` attribute indicating the forward synthesis step and an
+`enzyme` attribute containing its gene symbol. Multiple enzymes
+catalysing the same substrate-to-product transition are represented by
+parallel edges. When virtual fallback is required, every edge also has
+an `is_virtual` attribute; virtual edges use the structural
+virtual-enzyme name in `enzyme`.
 
 ## Important notes
 
@@ -63,8 +81,8 @@ package.
 
 ### Applicability
 
-All algorithms and enzyme information in glyenzy are applicable only to
-humans, and specifically to N-glycans and O-GalNAc glycans. Results may
+Known-enzyme algorithms and enzyme information in glyenzy are applicable
+only to humans, and specifically to N-glycans and O-glycans. Results may
 be inaccurate for other types of glycans (e.g., GAGs, glycolipids) or
 for glycans in other species (e.g., plants, insects).
 
@@ -78,26 +96,35 @@ For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-"
 will return both "ST3GAL3" and "ST3GAL4". In reality, only one of them
 might be active, depending on factors such as tissue specificity.
 
-### Only "concrete" glycans
+### Concrete glycans by default
 
-The function only works for glycans containing **concrete** residues
+Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`).
+residues (e.g., `"Hex"`, `"HexNAc"`). Reduced-level inputs with generic
+residues are supported where explicitly documented, such as
+`apply_enzyme(structure_level = "basic")`,
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md),
+and `path_biosynthesis()`.
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 
 If the glycan structure is incomplete or partially degraded, the result
-may be misleading.
+may be misleading. Glycans with a
+[`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
+other than `"intact"` are matched with the lenient motif matching mode
+in glymotif, and a warning is raised because enzyme predictions may be
+less reliable.
 
 ### Starting points
+
+For known-enzyme path inference:
 
 - For N-glycans, the starting structure is assumed to be
   "Glc(3)Man(9)GlcNAc(2)", the N-glycan precursor transferred to Asn by
@@ -114,6 +141,23 @@ may be misleading.
 - For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".
 
 - For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
+
+## Virtual fallback
+
+Sometimes the biosynthesis network of a glycan cannot be fully resolved;
+i.e., some enzymatic steps are not inferred to be catalyzed by any known
+enzyme ("bad" steps). By default, an error is raised for these glycans.
+
+`max_virtual_steps` provides a fallback for these glycans. For a "bad"
+step, a virtual enzyme is assigned to allow the algorithm to continue.
+For example, for the O-GalNAc core 5 "GalNAc(a1-3)GalNAc(a1-", an
+"a3GalNAcT" is assigned to the step that adds the a3 GalNAc. Unsupported
+sulfate additions similarly use `"3SulfoT"`, `"6SulfoT"`, or
+`"?SulfoT"`.
+
+Therefore, `max_virtual_steps` can also be interpreted as "the maximum
+number of glycosidic bonds or sulfate transfers that cannot be assigned
+by a known enzyme." Increasing this number loosens the criteria.
 
 ## Examples
 

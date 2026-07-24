@@ -1,6 +1,7 @@
-# View Residues Added by an Enzyme
+# View Residues Added or Modified by an Enzyme
 
-Visualize where an enzyme contributes residues to a glycan structure.
+Visualize where an enzyme adds or modifies residues in a glycan
+structure.
 
 ## Usage
 
@@ -19,8 +20,8 @@ view_enzyme(glycan, enzyme)
 
 - enzyme:
 
-  A glycosyltransferase
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
+  A glycosyltransferase or sulfotransferase
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md),
   or a gene symbol for one. Glycoside hydrolases are not supported.
 
 ## Value
@@ -44,8 +45,8 @@ package.
 
 ### Applicability
 
-All algorithms and enzyme information in glyenzy are applicable only to
-humans, and specifically to N-glycans and O-GalNAc glycans. Results may
+Known-enzyme algorithms and enzyme information in glyenzy are applicable
+only to humans, and specifically to N-glycans and O-glycans. Results may
 be inaccurate for other types of glycans (e.g., GAGs, glycolipids) or
 for glycans in other species (e.g., plants, insects).
 
@@ -59,26 +60,36 @@ For example, in humans, detection of the motif "Neu5Ac(a2-3)Gal(b1-"
 will return both "ST3GAL3" and "ST3GAL4". In reality, only one of them
 might be active, depending on factors such as tissue specificity.
 
-### Only "concrete" glycans
+### Concrete glycans by default
 
-The function only works for glycans containing **concrete** residues
+Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`).
+residues (e.g., `"Hex"`, `"HexNAc"`). Reduced-level inputs with generic
+residues are supported where explicitly documented, such as
+`apply_enzyme(structure_level = "basic")`,
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md),
+and
+[`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md).
 
 ### Substituents
 
-Substituents (e.g. sulfation, phosphorylation) are not supported yet,
-and the algorithms might fail for glycans with substituents. If your
-glycans contain substituents, use
+Sulfate substituents are supported. Other substituents, such as
+phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
-to get clean glycans.
+when unsupported substituents are present.
 
 ### Incomplete glycan structures
 
 If the glycan structure is incomplete or partially degraded, the result
-may be misleading.
+may be misleading. Glycans with a
+[`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
+other than `"intact"` are matched with the lenient motif matching mode
+in glymotif, and a warning is raised because enzyme predictions may be
+less reliable.
 
 ### Starting points
+
+For known-enzyme path inference:
 
 - For N-glycans, the starting structure is assumed to be
   "Glc(3)Man(9)GlcNAc(2)", the N-glycan precursor transferred to Asn by

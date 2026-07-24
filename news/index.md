@@ -1,5 +1,48 @@
 # Changelog
 
+## glyenzy 0.7.0
+
+### Breaking changes
+
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  no longer support paucimannose N-glycans; use glyenzy 0.6.3 if you
+  need to analyze those structures. (#25)
+
+### New features
+
+- Add first-class sulfotransferases (`ST`) with 12 human N- and O-glycan
+  enzymes, sulfate-aware inference and biosynthesis, and virtual
+  sulfation steps. (#20, \#33)
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  gain `max_virtual_steps` to bridge a bounded number of unsupported,
+  target-directed transitions before resuming concrete enzyme tracing;
+  fallback edges are marked by `is_virtual`. (#32)
+- New
+  [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis_virtual.md)
+  and
+  [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis_virtual.md)
+  build enzyme-agnostic networks by trimming targets backward;
+  `annotate_enzymes = TRUE` adds exact rule-matched candidates in
+  `concrete_enzymes`. (#22, \#28, \#30)
+- Add support for non-intact glycan structures by using lenient motif
+  matching with a warning about reduced reliability. (#25)
+
+### Minor improvements and fixes
+
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  now scale better to large and multi-target searches by keeping
+  intermediates as graphs, sharing prepared graph and rule work,
+  vectorizing and batching frontier matching, caching graph products,
+  pruning irreversible pre-MGAT2 decorations and occupied acceptor
+  carbons, prioritizing inclusive targets, and using one multi-target
+  reachability traversal. (#26, \#29, \#34)
+
 ## glyenzy 0.6.3
 
 ### Minor improvements and fixes

@@ -73,5 +73,7 @@ db_enzymes(return_str = TRUE)
 #> [131] "GALNT4"     "GALNT5"     "GALNT6"     "GALNT7"     "GALNT8"    
 #> [136] "GALNT9"     "GALNT10"    "GALNT11"    "GALNT12"    "GALNT13"   
 #> [141] "GALNT14"    "GALNT15"    "GALNT16"    "GALNT17"    "GALNT18"   
-#> [146] "GALNT19"   
+#> [146] "GALNT19"    "CHST1"      "CHST2"      "CHST3"      "CHST4"     
+#> [151] "CHST5"      "CHST6"      "CHST8"      "CHST9"      "CHST10"    
+#> [156] "GAL3ST2"    "GAL3ST3"    "GAL3ST4"   
 ```

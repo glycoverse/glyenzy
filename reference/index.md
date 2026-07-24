@@ -20,12 +20,16 @@
 - [`make_enzyme()`](https://glycoverse.github.io/glyenzy/reference/make_enzyme.md)
   : Make a Custom Enzyme
 - [`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md)
-  : Match Residues Added by an Enzyme
+  : Match Residues Added or Modified by an Enzyme
 - [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
   : Find a Biosynthesis Path Between Glycan Structures
+- [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis_virtual.md)
+  : Find a Virtual Biosynthesis Path Between Glycan Structures
 - [`print(`*`<glyenzy_enzyme>`*`)`](https://glycoverse.github.io/glyenzy/reference/print.glyenzy_enzyme.md)
   : Print method for glyenzy_enzyme objects
 - [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
   : Trace the Biosynthetic Path of Glycans
+- [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis_virtual.md)
+  : Trace a Virtual Biosynthetic Path of Glycans
 - [`view_enzyme()`](https://glycoverse.github.io/glyenzy/reference/view_enzyme.md)
-  : View Residues Added by an Enzyme
+  : View Residues Added or Modified by an Enzyme
