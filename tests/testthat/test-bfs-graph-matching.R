@@ -98,7 +98,7 @@ test_that("prepared graph pruning matches glycan-level pruning", {
   )
 
   expected <- is_promising_intermediate(products, targets)
-  expect_equal(expected, c(TRUE, FALSE, TRUE, TRUE))
+  expect_equal(expected, c(FALSE, FALSE, TRUE, TRUE))
   actual <- purrr::map_lgl(
     product_graphs,
     .is_promising_intermediate_graph,
@@ -110,6 +110,37 @@ test_that("prepared graph pruning matches glycan-level pruning", {
   )
 
   expect_equal(actual, expected)
+})
+
+test_that("pre-MGAT2 pruning rejects irreversible core fucosylation", {
+  target <- glyrepr::as_glycan_structure(
+    "Fuc(??-?)Gal(??-?)GlcNAc(??-?)Man(??-?)[Gal(??-?)GlcNAc(??-?)Man(??-?)]Man(??-?)GlcNAc(??-?)[Fuc(??-?)]GlcNAc(??-"
+  )
+  three_core_fuc <- paste0(
+    "Man(??-?)[Man(??-?)]Man(??-?)[GlcNAc(??-?)Man(??-?)]",
+    "[Gal(??-?)GlcNAc(??-?)][GlcNAc(??-?)]Man(??-?)GlcNAc(??-?)",
+    "[Fuc(??-?)][Fuc(??-?)][Fuc(??-?)]GlcNAc(??-"
+  )
+  two_core_fuc <- sub(
+    "[Fuc(??-?)]",
+    "",
+    three_core_fuc,
+    fixed = TRUE
+  )
+  precursor <- .reduce_structure_level(
+    .n_glycan_starting_glycan(),
+    "topological"
+  )
+  products <- glyrepr::as_glycan_structure(c(
+    as.character(precursor),
+    two_core_fuc,
+    three_core_fuc
+  ))
+
+  expect_equal(
+    is_promising_intermediate(products, target),
+    c(TRUE, FALSE, FALSE)
+  )
 })
 
 test_that("root-only normalization preserves graph pruning semantics", {

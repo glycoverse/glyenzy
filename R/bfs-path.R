@@ -915,14 +915,31 @@ mgat2_ready <- function(glycans) {
 #' @returns A logical vector of the same length as `products`.
 #' @noRd
 is_promising_intermediate <- function(products, target_glycans) {
-  res_mat <- .have_motifs_substituent_subset(
-    target_glycans,
+  product_graphs <- glyrepr::get_structure_graphs(
     products,
-    alignments = "core"
+    return_list = TRUE
   )
-  res <- colSums(res_mat) > 0L
-  res[.is_n_glycan(products) & !mgat2_ready(products)] <- TRUE
-  res
+  target_graphs <- glyrepr::get_structure_graphs(
+    target_glycans,
+    return_list = TRUE
+  )
+  n_core_graph <- glyrepr::get_structure_graphs(
+    .n_glycan_starting_glycan("virtual")
+  )
+  pre_mgat2_graph <- glyrepr::get_structure_graphs(
+    glyrepr::as_glycan_structure(
+      "Man(a1-3/6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    )
+  )
+  purrr::map_lgl(
+    product_graphs,
+    .is_promising_intermediate_graph,
+    target_graphs = target_graphs,
+    product_mode = .glymotif_mode(products),
+    target_mode = .glymotif_mode(target_glycans),
+    n_core_graph = n_core_graph,
+    pre_mgat2_graph = pre_mgat2_graph
+  )
 }
 
 # Check one canonical product graph using graphs prepared for a BFS search.
@@ -934,19 +951,13 @@ is_promising_intermediate <- function(products, target_glycans) {
   n_core_graph,
   pre_mgat2_graph
 ) {
-  target_contains_product <- purrr::some(
-    target_graphs,
-    function(target_graph) {
-      length(.g_match_motif_substituent_subset(
-        target_graph,
-        product_graph,
-        alignment = "core",
-        mode = target_mode
-      )) >
-        0L
-    }
-  )
-  if (target_contains_product) {
+  if (
+    .target_contains_intermediate_graph(
+      product_graph,
+      target_graphs,
+      target_mode
+    )
+  ) {
     return(TRUE)
   }
 
@@ -960,12 +971,62 @@ is_promising_intermediate <- function(products, target_glycans) {
     return(FALSE)
   }
 
-  length(.g_match_motif_substituent_subset(
+  is_pre_mgat2 <- length(.g_match_motif_substituent_subset(
     product_graph,
     pre_mgat2_graph,
     mode = product_mode
   )) >
     0L
+  if (!is_pre_mgat2) {
+    return(FALSE)
+  }
+
+  # Before MGAT2, extra terminal Glc and Man residues may still be removed by
+  # the supported N-glycan hydrolases. Remove only those reversible residues,
+  # then require every irreversible decoration to fit at least one target.
+  trimmed_graph <- .trim_pruning_n_glycan_graph(product_graph)
+  .target_contains_intermediate_graph(
+    trimmed_graph,
+    target_graphs,
+    target_mode
+  )
+}
+
+.target_contains_intermediate_graph <- function(
+  product_graph,
+  target_graphs,
+  target_mode
+) {
+  purrr::some(
+    target_graphs,
+    function(target_graph) {
+      length(.g_match_motif_substituent_subset(
+        target_graph,
+        product_graph,
+        alignment = "core",
+        mode = target_mode
+      )) >
+        0L
+    }
+  )
+}
+
+.trim_pruning_n_glycan_graph <- function(graph) {
+  repeat {
+    monosaccharides <- igraph::vertex_attr(graph, "mono")
+    substituents <- igraph::vertex_attr(graph, "sub")
+    removable <- which(
+      igraph::degree(graph, mode = "out") == 0L &
+        monosaccharides %in% c("Glc", "Man", "Hex") &
+        lengths(lapply(substituents, .substituent_tokens)) == 0L
+    )
+    if (length(removable) == 0L) {
+      break
+    }
+    graph <- igraph::delete_vertices(graph, removable)
+  }
+  igraph::V(graph)$name <- as.character(seq_len(igraph::vcount(graph)))
+  graph
 }
 
 # Find every vertex that can reach at least one target with one reverse
