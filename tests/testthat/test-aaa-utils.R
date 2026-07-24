@@ -151,6 +151,27 @@ test_that("enzyme prefiltering vectorizes targets with a scalar fallback", {
   expect_equal(calls, c(2L, 1L, 1L))
 })
 
+test_that("enzyme prefiltering rejects scalar-length vectorized results", {
+  calls <- integer()
+  scalar_method <- function(glycans, enzyme) {
+    calls <<- c(calls, length(glycans))
+    as.character(glycans[1]) == "GlcNAc(b1-3)GalNAc(a1-"
+  }
+  rlang::local_bindings(
+    .have_enzyme_motif.test_scalar_prefilter_enzyme = scalar_method,
+    .env = globalenv()
+  )
+  custom <- enzyme("C1GALT1")
+  class(custom) <- c("test_scalar_prefilter_enzyme", class(custom))
+  targets <- glyparse::auto_parse(c(
+    "Gal(b1-3)GalNAc(a1-",
+    "GlcNAc(b1-3)GalNAc(a1-"
+  ))
+
+  expect_equal(.can_enzymes_contribute(list(custom), targets), TRUE)
+  expect_equal(calls, c(2L, 1L, 1L))
+})
+
 test_that("enzyme list processing errors when no enzyme can contribute", {
   glycan <- glyparse::auto_parse("Gal(b1-3)GalNAc(a1-")
 

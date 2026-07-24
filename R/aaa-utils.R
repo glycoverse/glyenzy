@@ -985,16 +985,19 @@
 
 # Check all targets together so vectorized motif preparation is shared.
 .enzyme_contributes_to_targets <- function(enzyme, targets) {
-  tryCatch(
-    any(.have_enzyme_motif(targets, enzyme)),
-    error = function(e) {
-      any(purrr::map_lgl(
-        targets,
-        .enzyme_contributes_to_target,
-        enzyme = enzyme
-      ))
-    }
+  vectorized <- tryCatch(
+    .have_enzyme_motif(targets, enzyme),
+    error = function(e) NULL
   )
+  if (is.logical(vectorized) && length(vectorized) == length(targets)) {
+    return(any(vectorized))
+  }
+
+  any(purrr::map_lgl(
+    targets,
+    .enzyme_contributes_to_target,
+    enzyme = enzyme
+  ))
 }
 
 #' Check whether one enzyme can contribute to one target glycan
