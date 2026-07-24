@@ -1,4 +1,8 @@
-# glyenzy (development version)
+# glyenzy 0.7.0
+
+## Breaking changes
+
+* `path_biosynthesis()` and `trace_biosynthesis()` no longer support paucimannose N-glycans; use glyenzy 0.6.3 if you need to analyze those structures. (#25)
 
 ## New features
 
@@ -9,10 +13,7 @@
 
 ## Minor improvements and fixes
 
-* Speed up large and multi-target biosynthesis searches by vectorizing enzyme prefiltering, sharing frontier motif matching, caching equivalent graph products, pruning irreversible pre-MGAT2 decorations, prioritizing inclusive targets, and using one multi-target reachability traversal. (#34)
-* Biosynthesis searches now keep intermediate products as graphs through pruning and only generate canonical structure keys for candidates that enter the network, using the low-level graph APIs in `glyrepr` 0.14.0. (#29)
-* `trace_biosynthesis()` now reuses prepared glycan graphs, shares equivalent enzyme-rule work, batches breadth-first expansion, and rejects products that would reuse an occupied acceptor carbon. (#26)
-* To ensure robust biosynthesis network inference, paucimannose N-glycans are not supported anymore. (#25)
+* `path_biosynthesis()` and `trace_biosynthesis()` now scale better to large and multi-target searches by keeping intermediates as graphs, sharing prepared graph and rule work, vectorizing and batching frontier matching, caching graph products, pruning irreversible pre-MGAT2 decorations and occupied acceptor carbons, prioritizing inclusive targets, and using one multi-target reachability traversal. (#26, #29, #34)
 
 # glyenzy 0.6.3
 
