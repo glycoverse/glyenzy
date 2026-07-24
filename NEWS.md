@@ -9,7 +9,7 @@
 
 ## Minor improvements and fixes
 
-* Speed up large and multi-target biosynthesis searches by vectorizing enzyme prefiltering, sharing frontier motif matching, caching equivalent graph products, prioritizing inclusive targets, and using one multi-target reachability traversal. (#34)
+* Speed up large and multi-target biosynthesis searches by vectorizing enzyme prefiltering, sharing frontier motif matching, caching equivalent graph products, pruning irreversible pre-MGAT2 decorations, prioritizing inclusive targets, and using one multi-target reachability traversal. (#34)
 * Biosynthesis searches now keep intermediate products as graphs through pruning and only generate canonical structure keys for candidates that enter the network, using the low-level graph APIs in `glyrepr` 0.14.0. (#29)
 * `trace_biosynthesis()` now reuses prepared glycan graphs, shares equivalent enzyme-rule work, batches breadth-first expansion, and rejects products that would reuse an occupied acceptor carbon. (#26)
 * To ensure robust biosynthesis network inference, paucimannose N-glycans are not supported anymore. (#25)
