@@ -27,8 +27,8 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   collapsed <- .collapse_biosynthesis_reactions(graph)
 
   expect_s3_class(plot, "ggraph")
-  expect_s3_class(plot$layers[[3]]$geom, "GeomGlycan")
-  expect_s3_class(plot$layers[[3]]$stat, "StatFilter")
+  expect_s3_class(plot$layers[[4]]$geom, "GeomGlycan")
+  expect_s3_class(plot$layers[[4]]$stat, "StatFilter")
   expect_equal(igraph::ecount(collapsed), 5L)
   expect_true(
     "C1GALT1 / ALT-C1" %in%
@@ -269,7 +269,8 @@ test_that("biosynthesis edges default to dark grey with typed line styles", {
     max_steps = 2,
     max_virtual_steps = 1
   )
-  built <- ggplot2::ggplot_build(ggplot2::autoplot(graph))
+  plot <- ggplot2::autoplot(graph)
+  built <- ggplot2::ggplot_build(plot)
 
   expect_identical(
     unique(built$data[[1]]$edge_colour),
@@ -280,7 +281,16 @@ test_that("biosynthesis edges default to dark grey with typed line styles", {
     c("solid", "22")
   )
   expect_identical(
-    unique(built$data[[2]]$colour),
+    unique(built$data[[2]]$edge_linetype),
+    "solid"
+  )
+  expect_identical(
+    unique(built$data[[2]]$edge_width),
+    0
+  )
+  expect_s3_class(plot$layers[[2]]$geom_params$arrow, "arrow")
+  expect_identical(
+    unique(built$data[[3]]$colour),
     .biosynthesis_default_edge_color
   )
 })
@@ -305,8 +315,8 @@ test_that("colored biosynthesis edges match added residue colors", {
   built <- ggplot2::autoplot(mixed, color_edge = TRUE) |>
     ggplot2::ggplot_build()
   label_colors <- setNames(
-    built$data[[2]]$colour,
-    built$data[[2]]$label
+    built$data[[3]]$colour,
+    built$data[[3]]$label
   )
   expect_setequal(
     unique(built$data[[1]]$edge_colour),
@@ -315,6 +325,14 @@ test_that("colored biosynthesis edges match added residue colors", {
   expect_setequal(
     unique(built$data[[1]]$edge_linetype),
     c("solid", "22")
+  )
+  expect_setequal(
+    unique(built$data[[2]]$edge_colour),
+    c("#FFD400", "#A54399")
+  )
+  expect_identical(
+    unique(built$data[[2]]$edge_linetype),
+    "solid"
   )
   expect_equal(
     unname(label_colors[c("b3GalT", "ST3GAL1")]),

@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* Biosynthesis functions now return typed `glyenzy_biosynthesis_network` objects that preserve their `igraph` interface and support collision-aware `ggplot2::autoplot()` tree layouts with glycan nodes and labeled concrete or virtual enzyme edges; label bounds are measured exactly, large panels scale automatically to avoid overlap and clipping, and `color_edge = TRUE` colors reactions by the added residue.
+* Biosynthesis functions now return typed `glyenzy_biosynthesis_network` objects that preserve their `igraph` interface and support collision-aware `ggplot2::autoplot()` tree layouts with glycan nodes and labeled concrete or virtual enzyme edges; label bounds are measured exactly, large panels scale automatically to avoid overlap and clipping, dashed virtual edges keep solid arrowheads, and `color_edge = TRUE` colors reactions by the added residue.
 
 # glyenzy 0.7.0
 

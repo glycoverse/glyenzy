@@ -153,6 +153,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   if (igraph::ecount(graph) > 0L) {
     plot <- plot +
       .biosynthesis_edge_layer(fit_scale, color_edge = color_edge) +
+      .biosynthesis_arrow_layer(fit_scale, color_edge = color_edge) +
       ggraph::scale_edge_linetype_manual(
         values = c(
           Enzyme = "solid",
@@ -782,15 +783,43 @@ autoplot.glyenzy_biosynthesis_network <- function(
   arguments <- list(
     mapping = mapping,
     data = ggraph::get_edges("short", "all"),
+    linewidth = 0.65 * scale,
+    alpha = 0.9,
+    lineend = "round",
+    show.legend = TRUE
+  )
+  if (!color_edge) {
+    arguments$edge_colour <- .biosynthesis_default_edge_color
+  }
+  rlang::exec(ggraph::geom_edge_link, !!!arguments)
+}
+
+.biosynthesis_arrow_layer <- function(scale = 1, color_edge = FALSE) {
+  mapping <- if (color_edge) {
+    ggplot2::aes(
+      start_cap = .data$node1..node_cap,
+      end_cap = .data$node2..node_cap,
+      edge_colour = .data$.edge_colour
+    )
+  } else {
+    ggplot2::aes(
+      start_cap = .data$node1..node_cap,
+      end_cap = .data$node2..node_cap
+    )
+  }
+  arguments <- list(
+    mapping = mapping,
+    data = ggraph::get_edges("short", "all"),
     arrow = grid::arrow(
       angle = 25,
       length = grid::unit(2.4 * scale, "mm"),
       type = "closed"
     ),
-    linewidth = 0.65 * scale,
+    linewidth = 0,
+    edge_linetype = "solid",
     alpha = 0.9,
     lineend = "round",
-    show.legend = TRUE
+    show.legend = FALSE
   )
   if (!color_edge) {
     arguments$edge_colour <- .biosynthesis_default_edge_color
