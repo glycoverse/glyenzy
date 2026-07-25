@@ -25,12 +25,12 @@
 #'
 #' `autoplot.glyenzy_biosynthesis_network()` draws the typed networks returned
 #' by [trace_biosynthesis()], [trace_biosynthesis_virtual()],
-#' [path_biosynthesis()], and [path_biosynthesis_virtual()]. A spanning tree
-#' determines the node positions without discarding converging biosynthesis
-#' routes. The original network edges are retained and parallel enzyme names
-#' are combined on one reaction edge.
+#' [path_biosynthesis()], and [path_biosynthesis_virtual()]. A layered DAG
+#' layout determines the node positions while accounting for converging
+#' biosynthesis routes. Parallel enzyme names are combined on one reaction
+#' edge.
 #'
-#' Glycan dimensions are measured before the tree is laid out. Nodes at the
+#' Glycan dimensions are measured before the network is laid out. Nodes at the
 #' same rank are separated by their rendered bounds, while rectangular edge
 #' caps stop arrows outside the source and target glycans. The plot uses a
 #' fixed-size panel so these clearances remain physical rather than changing
@@ -47,13 +47,14 @@
 #' @param size Positive numeric whole-cartoon scale multiplier passed to
 #'   [glydraw::geom_node_glycan()]. Defaults to `0.4`.
 #' @param node_gap Non-negative physical clearance, in inches, between glycan
-#'   nodes at the same tree rank.
+#'   nodes at the same rank.
 #' @param level_gap Non-negative physical clearance, in inches, between
-#'   adjacent tree ranks. Increase this when enzyme labels are unusually long.
+#'   adjacent ranks. Increase this when enzyme labels are unusually long.
 #' @param max_panel_width,max_panel_height Positive maximum panel dimensions,
 #'   in inches. Networks larger than either limit are scaled proportionally so
-#'   the complete plot fits a standard graphics device. Use `Inf` to preserve
-#'   the network's natural size along one dimension.
+#'   the complete base plot, with no additional outer margin, fits a graphics
+#'   device of the same dimensions. Use `Inf` to preserve the network's natural
+#'   size along one dimension.
 #' @param show_linkage Logical. Whether glycan linkage annotations are shown.
 #'   Defaults to `FALSE` for a compact network.
 #' @param orient Glycan drawing orientation passed to
@@ -70,7 +71,7 @@
 #' @param ... Additional glycan appearance arguments accepted by
 #'   [glydraw::glycanGrob()], such as `node_size`, `colors`, or `style`.
 #'
-#' @returns A ggraph/ggplot object with a fixed-size, collision-aware tree
+#' @returns A ggraph/ggplot object with a fixed-size, collision-aware layered
 #'   panel.
 #'
 #' @examples
@@ -210,7 +211,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
     ggplot2::theme(
       panel.widths = grid::unit(diff(bounds$x), "in"),
       panel.heights = grid::unit(diff(bounds$y), "in"),
-      plot.margin = ggplot2::margin(6, 6, 6, 6)
+      plot.margin = ggplot2::margin(0, 0, 0, 0)
     )
 
   attr(plot, "glyenzy_panel_size_in") <- c(
@@ -562,7 +563,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   )
 }
 
-.biosynthesis_tree_layout <- function(
+.biosynthesis_layered_layout <- function(
   graph,
   dimensions,
   node_gap,
@@ -588,47 +589,28 @@ autoplot.glyenzy_biosynthesis_network <- function(
       any(search$dist[edges[, 2]] - search$dist[edges[, 1]] != 1)
   ) {
     cli::cli_abort(
-      "Biosynthesis reactions must connect adjacent tree ranks."
+      "Biosynthesis reactions must connect adjacent ranks."
     )
   }
 
-  tree <- igraph::make_empty_graph(
-    n = igraph::vcount(graph),
-    directed = TRUE
-  )
-  igraph::V(tree)$name <- igraph::V(graph)$name
-  parents <- as.integer(search$parent)
-  children <- which(!is.na(parents))
-  if (length(children) > 0L) {
-    tree <- igraph::add_edges(
-      tree,
-      as.vector(rbind(parents[children], children))
-    )
-  }
-  tree_layout <- ggraph::create_layout(
-    tree,
-    layout = "tree",
-    root = root
-  )
-  tree_order <- match(
-    igraph::V(graph)$name,
-    tree_layout$name
-  )
-  raw_x <- tree_layout$x[tree_order]
+  raw_x <- igraph::layout_with_sugiyama(
+    graph,
+    layers = as.integer(search$dist) + 1L
+  )$layout[, 1]
 
   same_rank_spacing <- unlist(lapply(
     split(raw_x, search$dist),
     function(x) diff(sort(unique(x)))
   ))
   same_rank_spacing <- same_rank_spacing[same_rank_spacing > 0]
-  min_tree_spacing <- if (length(same_rank_spacing) == 0L) {
+  min_layout_spacing <- if (length(same_rank_spacing) == 0L) {
     1
   } else {
     min(same_rank_spacing)
   }
   x_spacing <- max(dimensions$width) + node_gap
   y_spacing <- max(dimensions$height) + level_gap
-  x <- raw_x / min_tree_spacing * x_spacing
+  x <- raw_x / min_layout_spacing * x_spacing
   x <- x - mean(range(x))
   y <- -search$dist * y_spacing
   y <- y - mean(range(y))
@@ -662,7 +644,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   scaled_dimensions <- dimensions
   scaled_dimensions$width <- scaled_dimensions$width * scale
   scaled_dimensions$height <- scaled_dimensions$height * scale
-  layout <- .biosynthesis_tree_layout(
+  layout <- .biosynthesis_layered_layout(
     graph,
     scaled_dimensions,
     node_gap = node_gap * scale,

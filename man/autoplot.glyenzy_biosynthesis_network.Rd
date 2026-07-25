@@ -30,15 +30,16 @@ virtual-enzyme names.}
 \code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}. Defaults to \code{0.4}.}
 
 \item{node_gap}{Non-negative physical clearance, in inches, between glycan
-nodes at the same tree rank.}
+nodes at the same rank.}
 
 \item{level_gap}{Non-negative physical clearance, in inches, between
-adjacent tree ranks. Increase this when enzyme labels are unusually long.}
+adjacent ranks. Increase this when enzyme labels are unusually long.}
 
 \item{max_panel_width, max_panel_height}{Positive maximum panel dimensions,
 in inches. Networks larger than either limit are scaled proportionally so
-the complete plot fits a standard graphics device. Use \code{Inf} to preserve
-the network's natural size along one dimension.}
+the complete base plot, with no additional outer margin, fits a graphics
+device of the same dimensions. Use \code{Inf} to preserve the network's natural
+size along one dimension.}
 
 \item{show_linkage}{Logical. Whether glycan linkage annotations are shown.
 Defaults to \code{FALSE} for a compact network.}
@@ -61,19 +62,19 @@ complete names separated by \code{" / "}.}
 \code{\link[glydraw:glycanGrob]{glydraw::glycanGrob()}}, such as \code{node_size}, \code{colors}, or \code{style}.}
 }
 \value{
-A ggraph/ggplot object with a fixed-size, collision-aware tree
+A ggraph/ggplot object with a fixed-size, collision-aware layered
 panel.
 }
 \description{
 \code{autoplot.glyenzy_biosynthesis_network()} draws the typed networks returned
 by \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}, \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}},
-\code{\link[=path_biosynthesis]{path_biosynthesis()}}, and \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}. A spanning tree
-determines the node positions without discarding converging biosynthesis
-routes. The original network edges are retained and parallel enzyme names
-are combined on one reaction edge.
+\code{\link[=path_biosynthesis]{path_biosynthesis()}}, and \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}. A layered DAG
+layout determines the node positions while accounting for converging
+biosynthesis routes. Parallel enzyme names are combined on one reaction
+edge.
 }
 \details{
-Glycan dimensions are measured before the tree is laid out. Nodes at the
+Glycan dimensions are measured before the network is laid out. Nodes at the
 same rank are separated by their rendered bounds, while rectangular edge
 caps stop arrows outside the source and target glycans. The plot uses a
 fixed-size panel so these clearances remain physical rather than changing

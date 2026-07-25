@@ -302,6 +302,71 @@ test_that("large N-glycan networks fit the default panel limits", {
   expect_gt(file.info(output)$size, 0)
 })
 
+test_that("converging N-glycan networks use a balanced layered layout", {
+  skip_if_not_installed("ggraph")
+  target <- paste0(
+    "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)",
+    "[Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+  )
+  graph <- trace_biosynthesis(target)
+  plot <- ggplot2::autoplot(
+    graph,
+    max_panel_width = Inf,
+    max_panel_height = Inf
+  )
+  dimensions <- .biosynthesis_node_dimensions(
+    .collapse_biosynthesis_reactions(graph),
+    size = 0.4,
+    show_linkage = FALSE,
+    orient = "H",
+    dots = list()
+  )
+  rank_midpoints <- vapply(
+    split(plot$data$x, plot$data$y),
+    function(x) mean(range(x)),
+    numeric(1)
+  )
+  root_x <- plot$data$x[which.max(plot$data$y)]
+  x_spacing <- max(dimensions$width) + 0.25
+
+  expect_lte(max(abs(rank_midpoints - root_x)), 4 * x_spacing + 1e-8)
+})
+
+test_that("finite plot limits include the complete reported O-glycan path", {
+  skip_if_not_installed("ggraph")
+  target <- paste0(
+    "Neu5Ac(a2-3)Gal(b1-3)",
+    "[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]",
+    "GalNAc(a1-"
+  )
+  plot <- ggplot2::autoplot(
+    trace_biosynthesis(target),
+    max_panel_width = 5,
+    max_panel_height = 5
+  )
+
+  grDevices::pdf(NULL, width = 5, height = 5)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  gtable <- ggplot2::ggplotGrob(plot)
+  complete_size <- c(
+    width = grid::convertWidth(
+      sum(gtable$widths),
+      "in",
+      valueOnly = TRUE
+    ),
+    height = grid::convertHeight(
+      sum(gtable$heights),
+      "in",
+      valueOnly = TRUE
+    )
+  )
+
+  expect_lte(unname(complete_size[["width"]]), 5)
+  expect_lte(unname(complete_size[["height"]]), 5)
+  expect_equal(plot$theme$plot.margin, ggplot2::margin(0, 0, 0, 0))
+})
+
 test_that("all biosynthesis functions return networks that can be plotted", {
   skip_if_not_installed("ggraph")
   concrete_target <- "Gal(b1-3)GalNAc(a1-"
