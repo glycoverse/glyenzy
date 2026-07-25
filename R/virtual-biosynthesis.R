@@ -38,11 +38,12 @@
 #' @param annotate_enzymes Whether to annotate each virtual transition with
 #'   concrete enzymes whose rules can perform it. Defaults to `FALSE`.
 #'
-#' @returns An [igraph::igraph()] object representing the synthesis path(s).
-#' Vertices contain IUPAC-condensed strings in `name`; edges have a forward
-#' `step` and virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is
-#' `TRUE`, `concrete_enzymes` is a list of character vectors containing every
-#' candidate concrete enzyme for each transition.
+#' @returns A `glyenzy_virtual_biosynthesis_network` object inheriting from
+#' `glyenzy_biosynthesis_network` and [igraph::igraph()]. Vertices contain
+#' IUPAC-condensed strings in `name`; edges have a forward `step` and
+#' virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is `TRUE`,
+#' `concrete_enzymes` is a list of character vectors containing every candidate
+#' concrete enzyme for each transition.
 #'
 #' @examples
 #' library(glyrepr)
@@ -79,7 +80,7 @@ trace_biosynthesis_virtual <- function(
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)
   }
-  path
+  .new_biosynthesis_network(path, virtual = TRUE)
 }
 
 #' Find a Virtual Biosynthesis Path Between Glycan Structures
@@ -97,11 +98,12 @@ trace_biosynthesis_virtual <- function(
 #' @param annotate_enzymes Whether to annotate each virtual transition with
 #'   concrete enzymes whose rules can perform it. Defaults to `FALSE`.
 #'
-#' @returns An [igraph::igraph()] object representing the synthesis path(s).
-#' Vertices contain IUPAC-condensed strings in `name`; edges have a forward
-#' `step` and virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is
-#' `TRUE`, `concrete_enzymes` is a list of character vectors containing every
-#' candidate concrete enzyme for each transition.
+#' @returns A `glyenzy_virtual_biosynthesis_network` object inheriting from
+#' `glyenzy_biosynthesis_network` and [igraph::igraph()]. Vertices contain
+#' IUPAC-condensed strings in `name`; edges have a forward `step` and
+#' virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is `TRUE`,
+#' `concrete_enzymes` is a list of character vectors containing every candidate
+#' concrete enzyme for each transition.
 #'
 #' @examples
 #' virtual_path <- path_biosynthesis_virtual(
@@ -139,5 +141,5 @@ path_biosynthesis_virtual <- function(
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)
   }
-  path
+  .new_biosynthesis_network(path, virtual = TRUE)
 }

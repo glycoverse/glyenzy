@@ -5,11 +5,25 @@ test_that("virtual enzymes trace an intact glycan backward", {
   edges <- igraph::as_data_frame(path, what = "edges")
   edges <- edges[order(edges$step), ]
 
+  expect_s3_class(path, "glyenzy_virtual_biosynthesis_network")
+  expect_s3_class(path, "glyenzy_biosynthesis_network")
+  expect_s3_class(path, "igraph")
   expect_equal(edges$enzyme, c("b3GalT", "b4GlcNAcT"))
   expect_equal(edges$step, 1:2)
   expect_equal(edges$from[[1]], "GalNAc(a1-")
   expect_equal(edges$to[[2]], target)
   expect_null(igraph::edge_attr(path, "concrete_enzymes"))
+})
+
+test_that("virtual path results retain their network classes", {
+  path <- path_biosynthesis_virtual(
+    "GalNAc(a1-",
+    "Gal(b1-3)GalNAc(a1-"
+  )
+
+  expect_s3_class(path, "glyenzy_virtual_biosynthesis_network")
+  expect_s3_class(path, "glyenzy_biosynthesis_network")
+  expect_s3_class(path, "igraph")
 })
 
 test_that("virtual enzymes add sulfate groups as atomic actions", {

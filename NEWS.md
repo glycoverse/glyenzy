@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* Biosynthesis functions now return typed `glyenzy_biosynthesis_network` objects while preserving their `igraph` interface.
+
 # glyenzy 0.7.0
 
 ## Breaking changes

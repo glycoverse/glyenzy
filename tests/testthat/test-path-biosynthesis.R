@@ -5,6 +5,7 @@ test_that("path_biosynthesis finds shortest path for single enzyme", {
 
   g <- suppressMessages(path_biosynthesis(from, to, enzymes, max_steps = 3))
 
+  expect_s3_class(g, "glyenzy_biosynthesis_network")
   expect_s3_class(g, "igraph")
 
   # Check edges

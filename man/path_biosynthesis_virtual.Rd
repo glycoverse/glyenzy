@@ -21,11 +21,12 @@ available enzymes are considered.}
 concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}
 }
 \value{
-An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
-Vertices contain IUPAC-condensed strings in \code{name}; edges have a forward
-\code{step} and virtual-enzyme \code{enzyme} attribute. When \code{annotate_enzymes} is
-\code{TRUE}, \code{concrete_enzymes} is a list of character vectors containing every
-candidate concrete enzyme for each transition.
+A \code{glyenzy_virtual_biosynthesis_network} object inheriting from
+\code{glyenzy_biosynthesis_network} and \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}}. Vertices contain
+IUPAC-condensed strings in \code{name}; edges have a forward \code{step} and
+virtual-enzyme \code{enzyme} attribute. When \code{annotate_enzymes} is \code{TRUE},
+\code{concrete_enzymes} is a list of character vectors containing every candidate
+concrete enzyme for each transition.
 }
 \description{
 Infer every structure-driven biosynthetic path from \code{from} to \code{to} by
