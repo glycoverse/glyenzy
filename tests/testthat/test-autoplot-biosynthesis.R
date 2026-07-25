@@ -260,6 +260,132 @@ test_that("all biosynthesis functions return networks that can be plotted", {
   )
 })
 
+test_that("biosynthesis edges default to dark grey with typed line styles", {
+  skip_if_not_installed("ggraph")
+  graph <- path_biosynthesis(
+    "GalNAc(a1-",
+    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-",
+    enzymes = "ST3GAL1",
+    max_steps = 2,
+    max_virtual_steps = 1
+  )
+  built <- ggplot2::ggplot_build(ggplot2::autoplot(graph))
+
+  expect_identical(
+    unique(built$data[[1]]$edge_colour),
+    .biosynthesis_default_edge_color
+  )
+  expect_setequal(
+    unique(built$data[[1]]$edge_linetype),
+    c("solid", "22")
+  )
+  expect_identical(
+    unique(built$data[[2]]$colour),
+    .biosynthesis_default_edge_color
+  )
+})
+
+test_that("colored biosynthesis edges match added residue colors", {
+  skip_if_not_installed("ggraph")
+  mixed <- path_biosynthesis(
+    "GalNAc(a1-",
+    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-",
+    enzymes = "ST3GAL1",
+    max_steps = 2,
+    max_virtual_steps = 1
+  )
+  mixed_graph <- mixed |>
+    .collapse_biosynthesis_reactions() |>
+    .color_biosynthesis_reactions()
+  mixed_edges <- igraph::as_data_frame(mixed_graph, what = "edges")
+
+  expect_equal(mixed_edges$.added_residue, c("Gal", "Neu5Ac"))
+  expect_equal(mixed_edges$.edge_colour, c("#FFD400", "#A54399"))
+
+  built <- ggplot2::autoplot(mixed, color_edge = TRUE) |>
+    ggplot2::ggplot_build()
+  label_colors <- setNames(
+    built$data[[2]]$colour,
+    built$data[[2]]$label
+  )
+  expect_setequal(
+    unique(built$data[[1]]$edge_colour),
+    c("#FFD400", "#A54399")
+  )
+  expect_setequal(
+    unique(built$data[[1]]$edge_linetype),
+    c("solid", "22")
+  )
+  expect_equal(
+    unname(label_colors[c("b3GalT", "ST3GAL1")]),
+    c("#FFD400", "#A54399")
+  )
+
+  glcnac <- path_biosynthesis_virtual(
+    "GalNAc(a1-",
+    "GlcNAc(b1-6)GalNAc(a1-"
+  ) |>
+    .collapse_biosynthesis_reactions() |>
+    .color_biosynthesis_reactions()
+  expect_identical(
+    igraph::edge_attr(glcnac, ".added_residue"),
+    "GlcNAc"
+  )
+  expect_identical(
+    igraph::edge_attr(glcnac, ".edge_colour"),
+    "#0072BC"
+  )
+
+  sulfate <- path_biosynthesis_virtual(
+    "Gal(b1-3)GalNAc(a1-",
+    "Gal6S(b1-3)GalNAc(a1-"
+  ) |>
+    .collapse_biosynthesis_reactions() |>
+    .color_biosynthesis_reactions()
+  expect_identical(
+    igraph::edge_attr(sulfate, ".added_residue"),
+    "S"
+  )
+  expect_identical(
+    igraph::edge_attr(sulfate, ".edge_colour"),
+    "black"
+  )
+
+  removal <- igraph::graph_from_data_frame(
+    data.frame(
+      from = "Gal(b1-3)GalNAc(a1-",
+      to = "GalNAc(a1-",
+      enzyme = "GH"
+    ),
+    directed = TRUE
+  ) |>
+    .new_biosynthesis_network() |>
+    .collapse_biosynthesis_reactions() |>
+    .color_biosynthesis_reactions()
+  expect_true(is.na(igraph::edge_attr(removal, ".added_residue")))
+  expect_identical(
+    igraph::edge_attr(removal, ".edge_colour"),
+    .biosynthesis_default_edge_color
+  )
+})
+
+test_that("biosynthesis residue colors stay aligned with glyrepr", {
+  glyrepr_color <- get(
+    "get_mono_color",
+    envir = asNamespace("glyrepr")
+  )
+  monosaccharides <- glyrepr::available_monosaccharides()
+
+  expect_identical(
+    vapply(
+      monosaccharides,
+      .biosynthesis_residue_color,
+      character(1)
+    ),
+    vapply(monosaccharides, glyrepr_color, character(1))
+  )
+})
+
 test_that("biosynthesis autoplot handles single-node networks", {
   skip_if_not_installed("ggraph")
   graph <- igraph::make_empty_graph(n = 1, directed = TRUE) |>

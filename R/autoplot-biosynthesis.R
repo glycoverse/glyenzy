@@ -4,6 +4,22 @@
 .biosynthesis_label_padding <- 0.06
 .biosynthesis_label_gap <- 0.08
 .biosynthesis_points_per_mm <- 72.27 / 25.4
+.biosynthesis_default_edge_color <- "#4D4D4D"
+.biosynthesis_residues_by_color <- strsplit(
+  c(
+    "#0072BC" = "Glc GlcNAc GlcN GlcA Qui QuiNAc Oli Bac Api",
+    "#00A651" = "Man ManNAc ManN ManA Rha RhaNAc Tyv Ara Kdn Pse LDmanHep Fru",
+    "#FFD400" = "Gal GalNAc GalN GalA Lyx Leg Kdo Tag",
+    "#F47920" = "Gul GulNAc GulN GulA 6dGul Abe Xyl Dha Sor",
+    "#F69EA1" = "Alt AltNAc AltN AltA 6dAlt 6dAltNAc Par Rib Aci DDmanHep Psi",
+    "#A54399" = "All AllNAc AllN AllA Dig Neu5Ac MurNAc",
+    "#8FCCE9" = "Tal TalNAc TalN TalA 6dTal 6dTalNAc Col Neu5Gc 4eLeg MurNGc",
+    "#A17A4D" = "Ido IdoNAc IdoN IdoA Neu Mur",
+    "#ED1C24" = "Fuc FucNAc Sia"
+  ),
+  " ",
+  fixed = TRUE
+)
 
 #' Plot a glycan biosynthesis network
 #'
@@ -38,6 +54,11 @@
 #'   Defaults to `FALSE` for a compact network.
 #' @param orient Glycan drawing orientation passed to
 #'   [glydraw::geom_node_glycan()].
+#' @param color_edge Logical. Whether reaction edges and enzyme labels use the
+#'   SNFG color of the residue added by each reaction. Defaults to `FALSE`,
+#'   which draws them in dark grey. Concrete and virtual reactions use solid
+#'   and dashed lines, respectively, in both modes. Reactions without one
+#'   unambiguous added residue remain dark grey.
 #' @param ... Additional glycan appearance arguments accepted by
 #'   [glydraw::glycanGrob()], such as `node_size`, `colors`, or `style`.
 #'
@@ -63,6 +84,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   max_panel_height = 6,
   show_linkage = FALSE,
   orient = c("H", "V"),
+  color_edge = FALSE,
   ...
 ) {
   rlang::check_installed(
@@ -70,6 +92,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
     reason = "to plot glycan biosynthesis networks"
   )
   checkmate::assert_flag(show_enzyme)
+  checkmate::assert_flag(color_edge)
   checkmate::assert_number(size, lower = 0, finite = TRUE)
   checkmate::assert_number(node_gap, lower = 0, finite = TRUE)
   checkmate::assert_number(level_gap, lower = 0, finite = TRUE)
@@ -90,6 +113,9 @@ autoplot.glyenzy_biosynthesis_network <- function(
   .validate_biosynthesis_network(object)
 
   graph <- .collapse_biosynthesis_reactions(object)
+  if (color_edge) {
+    graph <- .color_biosynthesis_reactions(graph)
+  }
   dimensions <- .biosynthesis_node_dimensions(
     graph,
     size = size,
@@ -126,47 +152,35 @@ autoplot.glyenzy_biosynthesis_network <- function(
 
   if (igraph::ecount(graph) > 0L) {
     plot <- plot +
-      .biosynthesis_edge_layer(fit_scale) +
-      ggraph::scale_edge_colour_manual(
-        values = c(
-          Enzyme = "#536779",
-          `Virtual enzyme` = "#C46B2D"
-        )
-      ) +
+      .biosynthesis_edge_layer(fit_scale, color_edge = color_edge) +
       ggraph::scale_edge_linetype_manual(
         values = c(
           Enzyme = "solid",
           `Virtual enzyme` = "22"
         )
+      ) +
+      ggplot2::guides(
+        edge_linetype = ggplot2::guide_legend(
+          override.aes = list(
+            edge_colour = .biosynthesis_default_edge_color
+          )
+        )
       )
+    if (color_edge) {
+      plot <- plot + ggraph::scale_edge_colour_identity()
+    }
   }
 
   if (!is.null(labels) && nrow(labels) > 0L) {
     plot <- plot +
-      ggplot2::geom_label(
-        data = labels,
-        mapping = ggplot2::aes(
-          x = .data$x,
-          y = .data$y,
-          label = .data$enzyme,
-          colour = .data$.reaction_type
-        ),
-        fill = "#FFFFFFF2",
-        linewidth = 0.25 * fit_scale,
-        size = .biosynthesis_label_size * fit_scale,
-        label.padding = grid::unit(0.12, "lines"),
-        label.r = grid::unit(0.08, "lines"),
-        lineheight = 0.9,
-        show.legend = FALSE,
-        inherit.aes = FALSE
-      ) +
-      ggplot2::scale_colour_manual(
-        values = c(
-          Enzyme = "#536779",
-          `Virtual enzyme` = "#C46B2D"
-        ),
-        guide = "none"
+      .biosynthesis_label_layer(
+        labels,
+        scale = fit_scale,
+        color_edge = color_edge
       )
+    if (color_edge) {
+      plot <- plot + ggplot2::scale_colour_identity()
+    }
   }
 
   plot <- plot +
@@ -319,6 +333,124 @@ autoplot.glyenzy_biosynthesis_network <- function(
     directed = TRUE,
     vertices = vertices
   )
+}
+
+.color_biosynthesis_reactions <- function(graph) {
+  edges <- igraph::as_data_frame(graph, what = "edges")
+  if (nrow(edges) == 0L) {
+    return(graph)
+  }
+
+  structures <- igraph::V(graph)$name
+  parsed <- glyparse::auto_parse(structures)
+  nodes <- glyrepr::structure_nodes(parsed)
+  residue_counts <- lapply(
+    seq_along(structures),
+    .biosynthesis_residue_counts,
+    nodes = nodes
+  )
+  from <- match(edges$from, structures)
+  to <- match(edges$to, structures)
+  added_residues <- purrr::map2_chr(
+    residue_counts[from],
+    residue_counts[to],
+    .biosynthesis_added_residue
+  )
+  colors <- purrr::map_chr(
+    added_residues,
+    .biosynthesis_residue_color
+  )
+
+  graph <- igraph::set_edge_attr(
+    graph,
+    ".added_residue",
+    value = added_residues
+  )
+  igraph::set_edge_attr(
+    graph,
+    ".edge_colour",
+    value = colors
+  )
+}
+
+.biosynthesis_residue_counts <- function(glycan_id, nodes) {
+  glycan_nodes <- nodes[nodes$glycan_id == glycan_id, , drop = FALSE]
+  substituents <- unlist(
+    strsplit(
+      glycan_nodes$sub[nzchar(glycan_nodes$sub)],
+      ",",
+      fixed = TRUE
+    ),
+    use.names = FALSE
+  )
+  substituents <- sub("^[0-9?]+", "", substituents)
+
+  list(
+    monosaccharides = table(glycan_nodes$mono),
+    substituents = table(substituents)
+  )
+}
+
+.biosynthesis_added_residue <- function(from, to) {
+  mono_delta <- .biosynthesis_count_delta(
+    from$monosaccharides,
+    to$monosaccharides
+  )
+  substituent_delta <- .biosynthesis_count_delta(
+    from$substituents,
+    to$substituents
+  )
+  if (any(c(mono_delta, substituent_delta) < 0L)) {
+    return(NA_character_)
+  }
+
+  added_monos <- names(mono_delta)[mono_delta > 0L]
+  if (
+    length(added_monos) == 1L &&
+      unname(mono_delta[added_monos]) == 1L
+  ) {
+    return(added_monos)
+  }
+
+  added_substituents <- names(substituent_delta)[substituent_delta > 0L]
+  if (
+    length(added_monos) == 0L &&
+      length(added_substituents) == 1L &&
+      unname(substituent_delta[added_substituents]) == 1L
+  ) {
+    return(added_substituents)
+  }
+
+  NA_character_
+}
+
+.biosynthesis_count_delta <- function(from, to) {
+  residues <- union(names(from), names(to))
+  if (length(residues) == 0L) {
+    return(integer())
+  }
+
+  from_counts <- integer(length(residues))
+  names(from_counts) <- residues
+  to_counts <- from_counts
+  from_counts[names(from)] <- as.integer(from)
+  to_counts[names(to)] <- as.integer(to)
+  to_counts - from_counts
+}
+
+.biosynthesis_residue_color <- function(residue) {
+  if (is.na(residue)) {
+    return(.biosynthesis_default_edge_color)
+  }
+
+  # Keep this palette aligned with glyrepr's internal SNFG color helper.
+  matches <- vapply(
+    .biosynthesis_residues_by_color,
+    function(residues) residue %in% residues,
+    logical(1)
+  )
+  colors <- names(.biosynthesis_residues_by_color)[matches]
+  if (length(colors) == 1L) colors else "black"
 }
 
 .biosynthesis_node_dimensions <- function(
@@ -518,6 +650,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
     y = (layout$y[from] + layout$y[to]) / 2,
     enzyme = edges$enzyme,
     .reaction_type = edges$.reaction_type,
+    .edge_colour = edges$.edge_colour,
     .label_width = label_dimensions[, "width"],
     .label_height = label_dimensions[, "height"],
     .rank = pmin(layout$y[from], layout$y[to])
@@ -631,14 +764,23 @@ autoplot.glyenzy_biosynthesis_network <- function(
   )
 }
 
-.biosynthesis_edge_layer <- function(scale = 1) {
-  ggraph::geom_edge_link(
-    mapping = ggplot2::aes(
+.biosynthesis_edge_layer <- function(scale = 1, color_edge = FALSE) {
+  mapping <- if (color_edge) {
+    ggplot2::aes(
       start_cap = .data$node1..node_cap,
       end_cap = .data$node2..node_cap,
-      edge_colour = .data$.reaction_type,
+      edge_colour = .data$.edge_colour,
       edge_linetype = .data$.reaction_type
-    ),
+    )
+  } else {
+    ggplot2::aes(
+      start_cap = .data$node1..node_cap,
+      end_cap = .data$node2..node_cap,
+      edge_linetype = .data$.reaction_type
+    )
+  }
+  arguments <- list(
+    mapping = mapping,
     data = ggraph::get_edges("short", "all"),
     arrow = grid::arrow(
       angle = 25,
@@ -650,4 +792,41 @@ autoplot.glyenzy_biosynthesis_network <- function(
     lineend = "round",
     show.legend = TRUE
   )
+  if (!color_edge) {
+    arguments$edge_colour <- .biosynthesis_default_edge_color
+  }
+  rlang::exec(ggraph::geom_edge_link, !!!arguments)
+}
+
+.biosynthesis_label_layer <- function(labels, scale = 1, color_edge = FALSE) {
+  mapping <- if (color_edge) {
+    ggplot2::aes(
+      x = .data$x,
+      y = .data$y,
+      label = .data$enzyme,
+      colour = .data$.edge_colour
+    )
+  } else {
+    ggplot2::aes(
+      x = .data$x,
+      y = .data$y,
+      label = .data$enzyme
+    )
+  }
+  arguments <- list(
+    data = labels,
+    mapping = mapping,
+    fill = "#FFFFFFF2",
+    linewidth = 0.25 * scale,
+    size = .biosynthesis_label_size * scale,
+    label.padding = grid::unit(0.12, "lines"),
+    label.r = grid::unit(0.08, "lines"),
+    lineheight = 0.9,
+    show.legend = FALSE,
+    inherit.aes = FALSE
+  )
+  if (!color_edge) {
+    arguments$colour <- .biosynthesis_default_edge_color
+  }
+  rlang::exec(ggplot2::geom_label, !!!arguments)
 }

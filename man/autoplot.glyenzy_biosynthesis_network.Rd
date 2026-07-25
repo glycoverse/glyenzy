@@ -14,6 +14,7 @@
   max_panel_height = 6,
   show_linkage = FALSE,
   orient = c("H", "V"),
+  color_edge = FALSE,
   ...
 )
 }
@@ -43,6 +44,12 @@ Defaults to \code{FALSE} for a compact network.}
 
 \item{orient}{Glycan drawing orientation passed to
 \code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}.}
+
+\item{color_edge}{Logical. Whether reaction edges and enzyme labels use the
+SNFG color of the residue added by each reaction. Defaults to \code{FALSE},
+which draws them in dark grey. Concrete and virtual reactions use solid
+and dashed lines, respectively, in both modes. Reactions without one
+unambiguous added residue remain dark grey.}
 
 \item{...}{Additional glycan appearance arguments accepted by
 \code{\link[glydraw:glycanGrob]{glydraw::glycanGrob()}}, such as \code{node_size}, \code{colors}, or \code{style}.}
