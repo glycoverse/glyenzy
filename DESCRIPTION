@@ -20,6 +20,7 @@ Description:
     biosynthesis for omics researchers.
 License: MIT + file LICENSE
 Suggests: 
+    ggraph,
     ggplot2,
     knitr,
     rmarkdown,
