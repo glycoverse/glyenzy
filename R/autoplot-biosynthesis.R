@@ -1,5 +1,9 @@
 .biosynthesis_edge_padding <- 0.04
 .biosynthesis_plot_padding <- 0.15
+.biosynthesis_label_size <- 3
+.biosynthesis_label_padding <- 0.06
+.biosynthesis_label_gap <- 0.08
+.biosynthesis_points_per_mm <- 72.27 / 25.4
 
 #' Plot a glycan biosynthesis network
 #'
@@ -26,6 +30,10 @@
 #'   nodes at the same tree rank.
 #' @param level_gap Non-negative physical clearance, in inches, between
 #'   adjacent tree ranks. Increase this when enzyme labels are unusually long.
+#' @param max_panel_width,max_panel_height Positive maximum panel dimensions,
+#'   in inches. Networks larger than either limit are scaled proportionally so
+#'   the complete plot fits a standard graphics device. Use `Inf` to preserve
+#'   the network's natural size along one dimension.
 #' @param show_linkage Logical. Whether glycan linkage annotations are shown.
 #'   Defaults to `FALSE` for a compact network.
 #' @param orient Glycan drawing orientation passed to
@@ -51,6 +59,8 @@ autoplot.glyenzy_biosynthesis_network <- function(
   size = 0.22,
   node_gap = 0.25,
   level_gap = 0.6,
+  max_panel_width = 6,
+  max_panel_height = 6,
   show_linkage = FALSE,
   orient = c("H", "V"),
   ...
@@ -63,9 +73,16 @@ autoplot.glyenzy_biosynthesis_network <- function(
   checkmate::assert_number(size, lower = 0, finite = TRUE)
   checkmate::assert_number(node_gap, lower = 0, finite = TRUE)
   checkmate::assert_number(level_gap, lower = 0, finite = TRUE)
+  checkmate::assert_number(max_panel_width, lower = 0)
+  checkmate::assert_number(max_panel_height, lower = 0)
   checkmate::assert_flag(show_linkage)
   if (size == 0) {
     cli::cli_abort("{.arg size} must be larger than 0.")
+  }
+  if (max_panel_width == 0 || max_panel_height == 0) {
+    cli::cli_abort(
+      "{.arg max_panel_width} and {.arg max_panel_height} must be larger than 0."
+    )
   }
   orient <- match.arg(orient)
   dots <- rlang::list2(...)
@@ -80,23 +97,36 @@ autoplot.glyenzy_biosynthesis_network <- function(
     orient = orient,
     dots = dots
   )
-  layout <- .biosynthesis_tree_layout(
+  geometry <- .biosynthesis_plot_geometry(
     graph,
     dimensions,
     node_gap = node_gap,
-    level_gap = level_gap
+    level_gap = level_gap,
+    show_enzyme = show_enzyme
   )
-  labels <- if (show_enzyme) {
-    .biosynthesis_edge_labels(graph, layout)
-  } else {
-    NULL
+  fit_scale <- .biosynthesis_fit_scale(
+    geometry$bounds,
+    max_width = max_panel_width,
+    max_height = max_panel_height
+  )
+  if (fit_scale < 1) {
+    geometry <- .biosynthesis_plot_geometry(
+      graph,
+      dimensions,
+      node_gap = node_gap,
+      level_gap = level_gap,
+      show_enzyme = show_enzyme,
+      scale = fit_scale
+    )
   }
-  bounds <- .biosynthesis_plot_bounds(layout, labels)
+  layout <- geometry$layout
+  labels <- geometry$labels
+  bounds <- geometry$bounds
   plot <- ggraph::ggraph(layout)
 
   if (igraph::ecount(graph) > 0L) {
     plot <- plot +
-      .biosynthesis_edge_layer() +
+      .biosynthesis_edge_layer(fit_scale) +
       ggraph::scale_edge_colour_manual(
         values = c(
           Enzyme = "#536779",
@@ -122,8 +152,8 @@ autoplot.glyenzy_biosynthesis_network <- function(
           colour = .data$.reaction_type
         ),
         fill = "#FFFFFFF2",
-        linewidth = 0.25,
-        size = 3,
+        linewidth = 0.25 * fit_scale,
+        size = .biosynthesis_label_size * fit_scale,
         label.padding = grid::unit(0.12, "lines"),
         label.r = grid::unit(0.08, "lines"),
         lineheight = 0.9,
@@ -143,7 +173,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
     rlang::exec(
       glydraw::geom_node_glycan,
       mapping = ggplot2::aes(structure = .data$name),
-      size = size,
+      size = size * fit_scale,
       show_linkage = show_linkage,
       orient = orient,
       !!!dots
@@ -167,6 +197,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
     width = diff(bounds$x),
     height = diff(bounds$y)
   )
+  attr(plot, "glyenzy_layout_scale") <- fit_scale
   plot
 }
 
@@ -349,7 +380,8 @@ autoplot.glyenzy_biosynthesis_network <- function(
   graph,
   dimensions,
   node_gap,
-  level_gap
+  level_gap,
+  edge_padding
 ) {
   root <- which(igraph::degree(graph, mode = "in") == 0L)
   search <- igraph::bfs(
@@ -425,25 +457,69 @@ autoplot.glyenzy_biosynthesis_network <- function(
   layout$.node_width <- dimensions$width[dimension_order]
   layout$.node_height <- dimensions$height[dimension_order]
   layout$.node_cap <- ggraph::rectangle(
-    width = layout$.node_width + 2 * .biosynthesis_edge_padding,
-    height = layout$.node_height + 2 * .biosynthesis_edge_padding,
+    width = layout$.node_width + 2 * edge_padding,
+    height = layout$.node_height + 2 * edge_padding,
     width_unit = "in",
     height_unit = "in"
   )
   layout
 }
 
-.biosynthesis_edge_labels <- function(graph, layout) {
+.biosynthesis_plot_geometry <- function(
+  graph,
+  dimensions,
+  node_gap,
+  level_gap,
+  show_enzyme,
+  scale = 1
+) {
+  scaled_dimensions <- dimensions
+  scaled_dimensions$width <- scaled_dimensions$width * scale
+  scaled_dimensions$height <- scaled_dimensions$height * scale
+  layout <- .biosynthesis_tree_layout(
+    graph,
+    scaled_dimensions,
+    node_gap = node_gap * scale,
+    level_gap = level_gap * scale,
+    edge_padding = .biosynthesis_edge_padding * scale
+  )
+  labels <- if (show_enzyme) {
+    .biosynthesis_edge_labels(graph, layout, scale = scale)
+  } else {
+    NULL
+  }
+  bounds <- .biosynthesis_plot_bounds(
+    layout,
+    labels,
+    padding = .biosynthesis_plot_padding * scale
+  )
+
+  list(layout = layout, labels = labels, bounds = bounds)
+}
+
+.biosynthesis_fit_scale <- function(bounds, max_width, max_height) {
+  min(
+    1,
+    max_width / diff(bounds$x),
+    max_height / diff(bounds$y)
+  )
+}
+
+.biosynthesis_edge_labels <- function(graph, layout, scale = 1) {
   edges <- igraph::as_data_frame(graph, what = "edges")
   from <- match(edges$from, layout$name)
   to <- match(edges$to, layout$name)
+  label_dimensions <- .biosynthesis_label_dimensions(
+    edges$enzyme,
+    scale = scale
+  )
   labels <- tibble::tibble(
     x = (layout$x[from] + layout$x[to]) / 2,
     y = (layout$y[from] + layout$y[to]) / 2,
     enzyme = edges$enzyme,
     .reaction_type = edges$.reaction_type,
-    .label_width = 0.12 + 0.055 * nchar(edges$enzyme),
-    .label_height = 0.18,
+    .label_width = label_dimensions[, "width"],
+    .label_height = label_dimensions[, "height"],
     .rank = pmin(layout$y[from], layout$y[to])
   )
 
@@ -461,7 +537,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
         separation <- (labels$.label_width[previous] +
           labels$.label_width[current]) /
           2 +
-          0.08
+          .biosynthesis_label_gap * scale
         packed[[i]] <- max(
           packed[[i]],
           packed[[i - 1L]] + separation
@@ -474,7 +550,54 @@ autoplot.glyenzy_biosynthesis_network <- function(
   labels
 }
 
-.biosynthesis_plot_bounds <- function(layout, labels = NULL) {
+.biosynthesis_label_dimensions <- function(labels, scale) {
+  if (length(labels) == 0L) {
+    return(matrix(
+      numeric(),
+      nrow = 0L,
+      ncol = 2L,
+      dimnames = list(NULL, c("width", "height"))
+    ))
+  }
+
+  opened_device <- grDevices::dev.cur() == 1L
+  if (opened_device) {
+    grDevices::pdf(NULL)
+    on.exit(grDevices::dev.off(), add = TRUE)
+  }
+
+  dimensions <- lapply(labels, function(label) {
+    text <- grid::textGrob(
+      label,
+      gp = grid::gpar(
+        fontsize = .biosynthesis_label_size *
+          .biosynthesis_points_per_mm *
+          scale,
+        lineheight = 0.9
+      )
+    )
+    c(
+      width = grid::convertWidth(
+        grid::grobWidth(text),
+        "in",
+        valueOnly = TRUE
+      ),
+      height = grid::convertHeight(
+        grid::grobHeight(text),
+        "in",
+        valueOnly = TRUE
+      )
+    ) +
+      .biosynthesis_label_padding * scale
+  })
+  do.call(rbind, dimensions)
+}
+
+.biosynthesis_plot_bounds <- function(
+  layout,
+  labels = NULL,
+  padding = .biosynthesis_plot_padding
+) {
   x_values <- c(
     layout$x - layout$.node_width / 2,
     layout$x + layout$.node_width / 2
@@ -498,17 +621,17 @@ autoplot.glyenzy_biosynthesis_network <- function(
 
   list(
     x = c(
-      min(x_values) - .biosynthesis_plot_padding,
-      max(x_values) + .biosynthesis_plot_padding
+      min(x_values) - padding,
+      max(x_values) + padding
     ),
     y = c(
-      min(y_values) - .biosynthesis_plot_padding,
-      max(y_values) + .biosynthesis_plot_padding
+      min(y_values) - padding,
+      max(y_values) + padding
     )
   )
 }
 
-.biosynthesis_edge_layer <- function() {
+.biosynthesis_edge_layer <- function(scale = 1) {
   ggraph::geom_edge_link(
     mapping = ggplot2::aes(
       start_cap = .data$node1..node_cap,
@@ -519,10 +642,10 @@ autoplot.glyenzy_biosynthesis_network <- function(
     data = ggraph::get_edges("short", "all"),
     arrow = grid::arrow(
       angle = 25,
-      length = grid::unit(2.4, "mm"),
+      length = grid::unit(2.4 * scale, "mm"),
       type = "closed"
     ),
-    linewidth = 0.65,
+    linewidth = 0.65 * scale,
     alpha = 0.9,
     lineend = "round",
     show.legend = TRUE

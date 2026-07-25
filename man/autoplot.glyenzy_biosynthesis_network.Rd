@@ -10,6 +10,8 @@
   size = 0.22,
   node_gap = 0.25,
   level_gap = 0.6,
+  max_panel_width = 6,
+  max_panel_height = 6,
   show_linkage = FALSE,
   orient = c("H", "V"),
   ...
@@ -30,6 +32,11 @@ nodes at the same tree rank.}
 
 \item{level_gap}{Non-negative physical clearance, in inches, between
 adjacent tree ranks. Increase this when enzyme labels are unusually long.}
+
+\item{max_panel_width, max_panel_height}{Positive maximum panel dimensions,
+in inches. Networks larger than either limit are scaled proportionally so
+the complete plot fits a standard graphics device. Use \code{Inf} to preserve
+the network's natural size along one dimension.}
 
 \item{show_linkage}{Logical. Whether glycan linkage annotations are shown.
 Defaults to \code{FALSE} for a compact network.}

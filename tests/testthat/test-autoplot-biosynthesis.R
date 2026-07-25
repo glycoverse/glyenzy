@@ -161,6 +161,73 @@ test_that("biosynthesis tree geometry keeps enzyme labels apart", {
   )
 })
 
+test_that("long labels do not overlap on converging O-glycan routes", {
+  skip_if_not_installed("ggraph")
+  target <- paste0(
+    "Neu5Ac(a2-3)Gal(b1-3)",
+    "[Gal(b1-4)GlcNAc(b1-6)]GalNAc(a1-"
+  )
+  graphs <- list(
+    concrete = trace_biosynthesis(target),
+    virtual = trace_biosynthesis_virtual(target)
+  )
+  excess_clearances <- lapply(graphs, function(graph) {
+    collapsed <- .collapse_biosynthesis_reactions(graph)
+    plot <- ggplot2::autoplot(graph)
+    scale <- attr(plot, "glyenzy_layout_scale")
+    labels <- .biosynthesis_edge_labels(
+      collapsed,
+      plot$data,
+      scale = scale
+    )
+    same_rank <- combn(seq_len(nrow(labels)), 2)
+    same_rank <- same_rank[,
+      labels$.rank[same_rank[1, ]] == labels$.rank[same_rank[2, ]],
+      drop = FALSE
+    ]
+    apply(same_rank, 2, function(pair) {
+      abs(diff(labels$x[pair])) -
+        sum(labels$.label_width[pair]) / 2 -
+        .biosynthesis_label_gap * scale
+    })
+  })
+
+  expect_gte(min(unlist(excess_clearances)), -1e-8)
+})
+
+test_that("large N-glycan networks fit the default panel limits", {
+  skip_if_not_installed("ggraph")
+  target <- paste0(
+    "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  graph <- trace_biosynthesis(target)
+  plot <- ggplot2::autoplot(graph)
+  natural <- ggplot2::autoplot(
+    graph,
+    max_panel_width = Inf,
+    max_panel_height = Inf
+  )
+  output <- tempfile(fileext = ".png")
+  on.exit(unlink(output), add = TRUE)
+  ggplot2::ggsave(
+    output,
+    plot,
+    width = 7,
+    height = 7,
+    units = "in",
+    dpi = 72
+  )
+
+  panel_size <- attr(plot, "glyenzy_panel_size_in")
+  natural_size <- attr(natural, "glyenzy_panel_size_in")
+  expect_lte(unname(panel_size[["width"]]), 6)
+  expect_lte(unname(panel_size[["height"]]), 6)
+  expect_gt(unname(natural_size[["height"]]), 6)
+  expect_lt(attr(plot, "glyenzy_layout_scale"), 1)
+  expect_gt(file.info(output)$size, 0)
+})
+
 test_that("all biosynthesis functions return networks that can be plotted", {
   skip_if_not_installed("ggraph")
   concrete_target <- "Gal(b1-3)GalNAc(a1-"
