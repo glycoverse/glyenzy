@@ -15,6 +15,7 @@
   show_linkage = FALSE,
   orient = c("H", "V"),
   color_edge = FALSE,
+  enzyme_label_style = c("condensed", "full"),
   ...
 )
 }
@@ -50,6 +51,11 @@ SNFG color of the residue added by each reaction. Defaults to \code{FALSE},
 which draws them in dark grey. Concrete and virtual reactions use solid
 and dashed lines, respectively, in both modes. Reactions without one
 unambiguous added residue remain dark grey.}
+
+\item{enzyme_label_style}{How parallel enzymes on one reaction edge are
+labeled. \code{"condensed"} (the default) groups names with the same prefix and
+terminal number, for example, \code{"B4GALT1/2/3, B3GALT3/4"}. \code{"full"} keeps
+complete names separated by \code{" / "}.}
 
 \item{...}{Additional glycan appearance arguments accepted by
 \code{\link[glydraw:glycanGrob]{glydraw::glycanGrob()}}, such as \code{node_size}, \code{colors}, or \code{style}.}

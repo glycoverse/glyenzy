@@ -31,7 +31,7 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   expect_s3_class(plot$layers[[4]]$stat, "StatFilter")
   expect_equal(igraph::ecount(collapsed), 5L)
   expect_true(
-    "C1GALT1 / ALT-C1" %in%
+    "C1GALT1, ALT-C1" %in%
       igraph::edge_attr(collapsed, "enzyme")
   )
   expect_equal(
@@ -45,6 +45,80 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   expect_named(
     attr(plot, "glyenzy_panel_size_in"),
     c("width", "height")
+  )
+})
+
+test_that("biosynthesis enzyme labels support full and condensed styles", {
+  enzymes <- c(
+    "B4GALT1",
+    "B4GALT2",
+    "B4GALT3",
+    "B3GALT3",
+    "B3GALT4"
+  )
+
+  expect_identical(
+    .biosynthesis_enzyme_label(enzymes, style = "full"),
+    paste(enzymes, collapse = " / ")
+  )
+  expect_identical(
+    .biosynthesis_enzyme_label(enzymes, style = "condensed"),
+    "B4GALT1/2/3, B3GALT3/4"
+  )
+  expect_identical(
+    .biosynthesis_enzyme_label(enzymes),
+    "B4GALT1/2/3, B3GALT3/4"
+  )
+  expect_identical(
+    .biosynthesis_enzyme_label(
+      c("b3GalT", "B4GALT1", "B4GALT1", "B4GALT2", "3SulfoT"),
+      style = "condensed"
+    ),
+    "b3GalT, B4GALT1/2, 3SulfoT"
+  )
+})
+
+test_that("biosynthesis autoplot uses condensed multi-enzyme labels", {
+  skip_if_not_installed("ggraph")
+  enzymes <- c(
+    "B4GALT1",
+    "B4GALT2",
+    "B4GALT3",
+    "B3GALT3",
+    "B3GALT4"
+  )
+  graph <- igraph::graph_from_data_frame(
+    data.frame(
+      from = rep("GalNAc(a1-", length(enzymes)),
+      to = rep("Gal(b1-3)GalNAc(a1-", length(enzymes)),
+      enzyme = enzymes
+    ),
+    directed = TRUE
+  ) |>
+    .new_biosynthesis_network()
+
+  full <- ggplot2::autoplot(
+    graph,
+    enzyme_label_style = "full",
+    max_panel_width = Inf,
+    max_panel_height = Inf
+  )
+  condensed <- ggplot2::autoplot(
+    graph,
+    max_panel_width = Inf,
+    max_panel_height = Inf
+  )
+  full_label <- ggplot2::ggplot_build(full)$data[[3]]$label
+  condensed_label <- ggplot2::ggplot_build(condensed)$data[[3]]$label
+
+  expect_identical(full_label, paste(enzymes, collapse = " / "))
+  expect_identical(
+    condensed_label,
+    "B4GALT1/2/3, B3GALT3/4"
+  )
+  expect_lt(
+    attr(condensed, "glyenzy_panel_size_in")[["width"]],
+    attr(full, "glyenzy_panel_size_in")[["width"]]
   )
 })
 

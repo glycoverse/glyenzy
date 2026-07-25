@@ -59,6 +59,10 @@
 #'   which draws them in dark grey. Concrete and virtual reactions use solid
 #'   and dashed lines, respectively, in both modes. Reactions without one
 #'   unambiguous added residue remain dark grey.
+#' @param enzyme_label_style How parallel enzymes on one reaction edge are
+#'   labeled. `"condensed"` (the default) groups names with the same prefix and
+#'   terminal number, for example, `"B4GALT1/2/3, B3GALT3/4"`. `"full"` keeps
+#'   complete names separated by `" / "`.
 #' @param ... Additional glycan appearance arguments accepted by
 #'   [glydraw::glycanGrob()], such as `node_size`, `colors`, or `style`.
 #'
@@ -85,6 +89,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   show_linkage = FALSE,
   orient = c("H", "V"),
   color_edge = FALSE,
+  enzyme_label_style = c("condensed", "full"),
   ...
 ) {
   rlang::check_installed(
@@ -108,11 +113,15 @@ autoplot.glyenzy_biosynthesis_network <- function(
     )
   }
   orient <- match.arg(orient)
+  enzyme_label_style <- match.arg(enzyme_label_style)
   dots <- rlang::list2(...)
   .validate_biosynthesis_glycan_dots(dots)
   .validate_biosynthesis_network(object)
 
-  graph <- .collapse_biosynthesis_reactions(object)
+  graph <- .collapse_biosynthesis_reactions(
+    object,
+    enzyme_label_style = enzyme_label_style
+  )
   if (color_edge) {
     graph <- .color_biosynthesis_reactions(graph)
   }
@@ -273,7 +282,11 @@ autoplot.glyenzy_biosynthesis_network <- function(
   invisible(graph)
 }
 
-.collapse_biosynthesis_reactions <- function(graph) {
+.collapse_biosynthesis_reactions <- function(
+  graph,
+  enzyme_label_style = c("condensed", "full")
+) {
+  enzyme_label_style <- match.arg(enzyme_label_style)
   vertices <- igraph::as_data_frame(graph, what = "vertices")
   edges <- igraph::as_data_frame(graph, what = "edges")
   if (nrow(edges) == 0L) {
@@ -320,7 +333,10 @@ autoplot.glyenzy_biosynthesis_network <- function(
     tibble::tibble(
       from = edges$from[indices[[1]]],
       to = edges$to[indices[[1]]],
-      enzyme = paste(enzymes, collapse = " / "),
+      enzyme = .biosynthesis_enzyme_label(
+        enzymes,
+        style = enzyme_label_style
+      ),
       .reaction_type = reaction_type
     )
   })
@@ -334,6 +350,47 @@ autoplot.glyenzy_biosynthesis_network <- function(
     directed = TRUE,
     vertices = vertices
   )
+}
+
+.biosynthesis_enzyme_label <- function(
+  enzymes,
+  style = c("condensed", "full")
+) {
+  style <- match.arg(style)
+  enzymes <- unique(as.character(enzymes))
+  if (style == "full") {
+    return(paste(enzymes, collapse = " / "))
+  }
+
+  has_terminal_number <- grepl("[0-9]+$", enzymes)
+  prefixes <- sub("[0-9]+$", "", enzymes)
+  suffixes <- sub("^.*?([0-9]+)$", "\\1", enzymes, perl = TRUE)
+  group_keys <- ifelse(
+    has_terminal_number,
+    paste0("numbered\r", prefixes),
+    paste0("literal\r", seq_along(enzymes))
+  )
+  groups <- split(
+    seq_along(enzymes),
+    factor(group_keys, levels = unique(group_keys))
+  )
+  labels <- vapply(
+    groups,
+    function(indices) {
+      first <- indices[[1]]
+      if (has_terminal_number[[first]] && length(indices) > 1L) {
+        paste0(
+          prefixes[[first]],
+          paste(suffixes[indices], collapse = "/")
+        )
+      } else {
+        enzymes[[first]]
+      }
+    },
+    character(1)
+  )
+
+  paste(labels, collapse = ", ")
 }
 
 .color_biosynthesis_reactions <- function(graph) {
