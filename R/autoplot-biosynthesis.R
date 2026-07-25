@@ -41,7 +41,7 @@
 #' @param show_enzyme Logical. Whether to label reaction edges with enzyme or
 #'   virtual-enzyme names.
 #' @param size Positive numeric whole-cartoon scale multiplier passed to
-#'   [glydraw::geom_node_glycan()]. Defaults to `0.22`.
+#'   [glydraw::geom_node_glycan()]. Defaults to `0.4`.
 #' @param node_gap Non-negative physical clearance, in inches, between glycan
 #'   nodes at the same tree rank.
 #' @param level_gap Non-negative physical clearance, in inches, between
@@ -81,7 +81,7 @@
 autoplot.glyenzy_biosynthesis_network <- function(
   object,
   show_enzyme = TRUE,
-  size = 0.22,
+  size = 0.4,
   node_gap = 0.25,
   level_gap = 0.6,
   max_panel_width = 6,

@@ -7,7 +7,7 @@
 \method{autoplot}{glyenzy_biosynthesis_network}(
   object,
   show_enzyme = TRUE,
-  size = 0.22,
+  size = 0.4,
   node_gap = 0.25,
   level_gap = 0.6,
   max_panel_width = 6,
@@ -27,7 +27,7 @@ biosynthesis function.}
 virtual-enzyme names.}
 
 \item{size}{Positive numeric whole-cartoon scale multiplier passed to
-\code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}. Defaults to \code{0.22}.}
+\code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}. Defaults to \code{0.4}.}
 
 \item{node_gap}{Non-negative physical clearance, in inches, between glycan
 nodes at the same tree rank.}
