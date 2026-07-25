@@ -334,7 +334,7 @@ test_that("all biosynthesis functions return networks that can be plotted", {
   )
 })
 
-test_that("biosynthesis edges default to dark grey with typed line styles", {
+test_that("biosynthesis edges use typed line styles without a legend", {
   skip_if_not_installed("ggraph")
   graph <- path_biosynthesis(
     "GalNAc(a1-",
@@ -363,6 +363,12 @@ test_that("biosynthesis edges default to dark grey with typed line styles", {
     0
   )
   expect_s3_class(plot$layers[[2]]$geom_params$arrow, "arrow")
+  expect_identical(plot$layers[[1]]$show.legend, FALSE)
+  expect_identical(
+    plot$scales$get_scales("edge_linetype")$guide,
+    "none"
+  )
+  expect_length(built$plot$guides$guides, 0L)
   expect_identical(
     unique(built$data[[3]]$colour),
     .biosynthesis_default_edge_color

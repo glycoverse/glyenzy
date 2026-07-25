@@ -78,6 +78,10 @@ same rank are separated by their rendered bounds, while rectangular edge
 caps stop arrows outside the source and target glycans. The plot uses a
 fixed-size panel so these clearances remain physical rather than changing
 with the coordinate range.
+
+Concrete enzyme reactions use solid edge shafts, while virtual enzyme
+reactions use dashed shafts; arrowheads remain solid in both cases. This
+convention is documented rather than repeated in an in-plot legend.
 }
 \examples{
 \dontrun{

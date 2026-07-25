@@ -36,6 +36,10 @@
 #' fixed-size panel so these clearances remain physical rather than changing
 #' with the coordinate range.
 #'
+#' Concrete enzyme reactions use solid edge shafts, while virtual enzyme
+#' reactions use dashed shafts; arrowheads remain solid in both cases. This
+#' convention is documented rather than repeated in an in-plot legend.
+#'
 #' @param object A `glyenzy_biosynthesis_network` object returned by a
 #'   biosynthesis function.
 #' @param show_enzyme Logical. Whether to label reaction edges with enzyme or
@@ -167,14 +171,8 @@ autoplot.glyenzy_biosynthesis_network <- function(
         values = c(
           Enzyme = "solid",
           `Virtual enzyme` = "22"
-        )
-      ) +
-      ggplot2::guides(
-        edge_linetype = ggplot2::guide_legend(
-          override.aes = list(
-            edge_colour = .biosynthesis_default_edge_color
-          )
-        )
+        ),
+        guide = "none"
       )
     if (color_edge) {
       plot <- plot + ggraph::scale_edge_colour_identity()
@@ -212,8 +210,6 @@ autoplot.glyenzy_biosynthesis_network <- function(
     ggplot2::theme(
       panel.widths = grid::unit(diff(bounds$x), "in"),
       panel.heights = grid::unit(diff(bounds$y), "in"),
-      legend.position = "bottom",
-      legend.title = ggplot2::element_blank(),
       plot.margin = ggplot2::margin(6, 6, 6, 6)
     )
 
@@ -843,7 +839,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
     linewidth = 0.65 * scale,
     alpha = 0.9,
     lineend = "round",
-    show.legend = TRUE
+    show.legend = FALSE
   )
   if (!color_edge) {
     arguments$edge_colour <- .biosynthesis_default_edge_color
