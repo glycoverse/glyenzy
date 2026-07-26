@@ -21,6 +21,9 @@ test_that("trace_biosynthesis works for a high-mannose N-glycan", {
   glycan <- "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   path <- trace_biosynthesis(glycan)
 
+  expect_s3_class(path, "glyenzy_biosynthesis_network")
+  expect_s3_class(path, "igraph")
+
   # The path starts with the N-glycan precursor
   root_node <- igraph::V(path)[igraph::degree(path, mode = "in") == 0]
   expect_equal(length(root_node), 1L)

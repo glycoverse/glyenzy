@@ -34,9 +34,10 @@ Default is \code{0L}, which disables virtual fallback.
 See the "Virtual fallback" section for more details.}
 }
 \value{
-An \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} object representing the synthesis path(s).
-Vertices represent glycan structures, with IUPAC-condensed strings in the
-\code{name} attribute. Every edge has a \code{step} attribute indicating the forward
+A \code{glyenzy_biosynthesis_network} object inheriting from
+\code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} and representing the synthesis path(s). Vertices
+represent glycan structures, with IUPAC-condensed strings in the \code{name}
+attribute. Every edge has a \code{step} attribute indicating the forward
 synthesis step and an \code{enzyme} attribute containing its gene symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
 represented by parallel edges.

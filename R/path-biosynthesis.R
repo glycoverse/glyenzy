@@ -24,9 +24,10 @@
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length. It filters generated products.
 #'
-#' @returns An [igraph::igraph()] object representing the synthesis path(s).
-#'   Vertices represent glycan structures, with IUPAC-condensed strings in the
-#'   `name` attribute. Every edge has a `step` attribute indicating the forward
+#' @returns A `glyenzy_biosynthesis_network` object inheriting from
+#'   [igraph::igraph()] and representing the synthesis path(s). Vertices
+#'   represent glycan structures, with IUPAC-condensed strings in the `name`
+#'   attribute. Every edge has a `step` attribute indicating the forward
 #'   synthesis step and an `enzyme` attribute containing its gene symbol.
 #'   Multiple enzymes catalysing the same substrate-to-product transition are
 #'   represented by parallel edges.
@@ -66,12 +67,14 @@ path_biosynthesis <- function(
 
   enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
   # Perform BFS search using unified logic
-  .perform_bfs_synthesis(
-    from,
-    to,
-    enzymes,
-    max_steps,
-    filter,
-    max_virtual_steps
+  .new_biosynthesis_network(
+    .perform_bfs_synthesis(
+      from,
+      to,
+      enzymes,
+      max_steps,
+      filter,
+      max_virtual_steps
+    )
   )
 }
