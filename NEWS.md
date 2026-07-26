@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* Biosynthesis functions now return typed `glyenzy_biosynthesis_network` objects that preserve their `igraph` interface and support collision-aware `plot()` and `ggplot2::autoplot()` layered DAG layouts with glycan nodes and labeled concrete or virtual enzyme edges; converging routes remain balanced, label bounds are measured exactly, finite plot limits include all outer spacing to avoid clipping, parallel enzyme labels default to condensed family notation with full labels available, dashed virtual edges keep solid arrowheads without a redundant reaction-type legend, and `color_edge = TRUE` colors reactions by the added residue.
+* Biosynthesis functions now return typed `glyenzy_biosynthesis_network` objects that preserve their `igraph` interface and support collision-aware `plot()` and `ggplot2::autoplot()` layered DAG layouts with glycan nodes and labeled concrete or virtual enzyme edges; converging routes remain balanced, label bounds are measured exactly, finite plot limits include all outer spacing to avoid clipping, parallel enzyme labels default to condensed family notation with full labels available, dashed virtual edges keep solid arrowheads without a redundant reaction-type legend, and `color_edge = TRUE` colors reactions by the added residue. (#35)
 
 # glyenzy 0.7.0
 
