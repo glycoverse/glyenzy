@@ -21,7 +21,6 @@ Description:
 License: MIT + file LICENSE
 Suggests: 
     ggraph,
-    ggplot2,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
@@ -42,7 +41,8 @@ Imports:
     dplyr,
     rlang,
     tibble,
-    R6
+    R6,
+    ggplot2
 Depends: 
     R (>= 4.1)
 LazyData: true

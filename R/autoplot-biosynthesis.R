@@ -82,7 +82,8 @@
 #' ggplot2::autoplot(network)
 #' }
 #' @importFrom rlang .data
-#' @exportS3Method ggplot2::autoplot
+#' @importFrom ggplot2 autoplot
+#' @export
 autoplot.glyenzy_biosynthesis_network <- function(
   object,
   show_enzyme = TRUE,
@@ -220,6 +221,12 @@ autoplot.glyenzy_biosynthesis_network <- function(
   )
   attr(plot, "glyenzy_layout_scale") <- fit_scale
   plot
+}
+
+#' @importFrom graphics plot
+#' @export
+plot.glyenzy_biosynthesis_network <- function(x, ...) {
+  print(autoplot(x, ...))
 }
 
 .validate_biosynthesis_glycan_dots <- function(dots) {
