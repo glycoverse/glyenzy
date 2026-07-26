@@ -109,6 +109,8 @@ apply_enzyme(glycan, "ST3GAL1")
 
 - [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/apply_enzyme.md)
   : Apply an Enzyme to a Glycan
+- [`autoplot(`*`<glyenzy_biosynthesis_network>`*`)`](https://glycoverse.github.io/glyenzy/dev/reference/autoplot.glyenzy_biosynthesis_network.md)
+  : Plot a glycan biosynthesis network
 - [`count_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/count_enzyme.md)
   : Count Enzyme Involvement
 - [`db_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/db_enzymes.md)

@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH dcdabc5 DN-- 4 8 -- 
+#> IGRAPH 6b05efe DN-- 4 8 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from dcdabc5 (vertex names):
+#> + edges from 6b05efe (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -160,14 +160,7 @@ Here is the same workflow with a more complex N-glycan:
 
 glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 path <- trace_biosynthesis(glycan)
-plot(
-  path,
-  layout = layout_as_tree(path),
-  vertex.label = NA,
-  vertex.size = 10,
-  edge.arrow.size = 0.3,
-  margin = 0
-)
+plot(path)
 ```
 
 ![](glyenzy_files/figure-html/unnamed-chunk-6-1.png)

@@ -92,9 +92,10 @@ See the "Virtual fallback" section for more details.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph::igraph()</a></code> object representing the synthesis path(s).
-Vertices represent glycan structures, with IUPAC-condensed strings in the
-<code>name</code> attribute. Every edge has a <code>step</code> attribute indicating the forward
+    <p>A <code>glyenzy_biosynthesis_network</code> object inheriting from
+<code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph::igraph()</a></code> and representing the synthesis path(s). Vertices
+represent glycan structures, with IUPAC-condensed strings in the <code>name</code>
+attribute. Every edge has a <code>step</code> attribute indicating the forward
 synthesis step and an <code>enzyme</code> attribute containing its gene symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
 represented by parallel edges.

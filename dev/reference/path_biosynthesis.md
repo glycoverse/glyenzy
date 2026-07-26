@@ -63,9 +63,9 @@ path_biosynthesis(
 
 ## Value
 
-An
+A `glyenzy_biosynthesis_network` object inheriting from
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html)
-object representing the synthesis path(s). Vertices represent glycan
+and representing the synthesis path(s). Vertices represent glycan
 structures, with IUPAC-condensed strings in the `name` attribute. Every
 edge has a `step` attribute indicating the forward synthesis step and an
 `enzyme` attribute containing its gene symbol. Multiple enzymes
