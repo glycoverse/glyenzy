@@ -48,6 +48,17 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   )
 })
 
+test_that("graphics plot dispatches to the biosynthesis network method", {
+  skip_if_not_installed("ggraph")
+  graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  plot <- graphics::plot(graph)
+
+  expect_s3_class(plot, "ggraph")
+})
+
 test_that("biosynthesis enzyme labels support full and condensed styles", {
   enzymes <- c(
     "B4GALT1",
