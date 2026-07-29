@@ -170,9 +170,9 @@ biosynthetic path:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trace_biosynthesis.html">trace_biosynthesis</a></span><span class="op">(</span><span class="va">glycan</span><span class="op">)</span></span>
 <span><span class="va">path</span></span>
-<span><span class="co">#&gt; IGRAPH 057c6f2 DN-- 4 8 -- </span></span>
+<span><span class="co">#&gt; IGRAPH e0db5a8 DN-- 4 8 -- </span></span>
 <span><span class="co">#&gt; + attr: name (v/c), enzyme (e/c), step (e/n)</span></span>
-<span><span class="co">#&gt; + edges from 057c6f2 (vertex names):</span></span>
+<span><span class="co">#&gt; + edges from e0db5a8 (vertex names):</span></span>
 <span><span class="co">#&gt; [1] GalNAc(a1-                       -&gt;Gal(b1-3)GalNAc(a1-                       </span></span>
 <span><span class="co">#&gt; [2] Gal(b1-3)GalNAc(a1-              -&gt;Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         </span></span>
 <span><span class="co">#&gt; [3] Gal(b1-3)GalNAc(a1-              -&gt;Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         </span></span>
@@ -185,11 +185,13 @@ biosynthetic path:</p>
 represents a glycan structure, and each edge represents an enzymatic
 step. If more than one enzyme is involved in an enzymatic step, multiple
 edges are created between the two vertices.</p>
-<p>Here is the same workflow with a more complex N-glycan:</p>
+<p>Here is the same workflow with a more complex N-glycan: The plot
+dimensions match the knitr figure dimensions so the collision-aware
+layout is fitted to the rendered canvas.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">glycan</span> <span class="op">&lt;-</span> <span class="st">"GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"</span></span>
 <span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trace_biosynthesis.html">trace_biosynthesis</a></span><span class="op">(</span><span class="va">glycan</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">path</span>, show_enzyme <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">path</span>, show_enzyme <span class="op">=</span> <span class="cn">FALSE</span>, width <span class="op">=</span> <span class="fl">6</span>, height <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 <p><img src="glyenzy_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level2">

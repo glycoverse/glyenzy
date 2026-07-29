@@ -9,11 +9,13 @@
   [`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
   layered DAG layouts with glycan nodes and labeled concrete or virtual
   enzyme edges; converging routes remain balanced, label bounds are
-  measured exactly, finite plot limits include all outer spacing to
-  avoid clipping, parallel enzyme labels default to condensed family
-  notation with full labels available, dashed virtual edges keep solid
-  arrowheads without a redundant reaction-type legend, and
-  `color_edge = TRUE` colors reactions by the added residue. (#35)
+  measured exactly, `width`, `height`, and `units` control an exact
+  figure canvas with centered proportional fitting, labels too small to
+  render are hidden with guidance to increase the figure size, parallel
+  enzyme labels default to condensed family notation with full labels
+  available, dashed virtual edges keep solid arrowheads without a
+  redundant reaction-type legend, and `color_edge = TRUE` colors
+  reactions by the added residue. (#35, \#36)
 
 ## glyenzy 0.7.0
 
