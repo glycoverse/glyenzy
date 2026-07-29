@@ -44,13 +44,13 @@ path_biosynthesis_virtual(from, to, enzymes = NULL, annotate_enzymes = FALSE)
 
 ## Value
 
-An
-[`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html)
-object representing the synthesis path(s). Vertices contain
-IUPAC-condensed strings in `name`; edges have a forward `step` and
-virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is `TRUE`,
-`concrete_enzymes` is a list of character vectors containing every
-candidate concrete enzyme for each transition.
+A `glyenzy_virtual_biosynthesis_network` object inheriting from
+`glyenzy_biosynthesis_network` and
+[`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html).
+Vertices contain IUPAC-condensed strings in `name`; edges have a forward
+`step` and virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is
+`TRUE`, `concrete_enzymes` is a list of character vectors containing
+every candidate concrete enzyme for each transition.
 
 ## Virtual enzymes
 

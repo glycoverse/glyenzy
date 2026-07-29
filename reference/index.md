@@ -4,6 +4,8 @@
 
 - [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/reference/apply_enzyme.md)
   : Apply an Enzyme to a Glycan
+- [`autoplot(`*`<glyenzy_biosynthesis_network>`*`)`](https://glycoverse.github.io/glyenzy/reference/autoplot.glyenzy_biosynthesis_network.md)
+  : Plot a glycan biosynthesis network
 - [`count_enzyme()`](https://glycoverse.github.io/glyenzy/reference/count_enzyme.md)
   : Count Enzyme Involvement
 - [`db_enzymes()`](https://glycoverse.github.io/glyenzy/reference/db_enzymes.md)
