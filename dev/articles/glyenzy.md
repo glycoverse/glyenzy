@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 6b05efe DN-- 4 8 -- 
+#> IGRAPH 057c6f2 DN-- 4 8 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from 6b05efe (vertex names):
+#> + edges from 057c6f2 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -160,7 +160,7 @@ Here is the same workflow with a more complex N-glycan:
 
 glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 path <- trace_biosynthesis(glycan)
-plot(path)
+plot(path, show_enzyme = FALSE)
 ```
 
 ![](glyenzy_files/figure-html/unnamed-chunk-6-1.png)
@@ -288,25 +288,12 @@ specificity and other factors might mean only one is actually active.
 Treat the output as a list of plausible candidates rather than a
 definitive assignment.
 
-### Concrete Residues Only
-
-glyenzy requires precise residues – it only works with **concrete**
-residues like “Glc” and “GalNAc”, not **generic** ones like “Hex” or
-“HexNAc”. If your data uses generic terms, you’ll need to resolve them
-before using these functions.
-
 ### Sulfate Is the Supported Substituent
 
 Sulfate substituents are supported in enzyme application, inference, and
 biosynthesis workflows. Other substituents, including phosphorylation,
 methylation, and acetylation, are not supported and are rejected rather
 than silently ignored.
-
-### Complete Structures Required
-
-Incomplete or partially degraded glycan structures can lead glyenzy
-astray. Make sure your input represents the full, intact glycan for
-reliable results.
 
 ### Biosynthetic Starting Points
 
