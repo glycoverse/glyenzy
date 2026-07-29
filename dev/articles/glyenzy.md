@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH e0db5a8 DN-- 4 8 -- 
+#> IGRAPH 56bbff8 DN-- 4 8 -- 
 #> + attr: name (v/c), enzyme (e/c), step (e/n)
-#> + edges from e0db5a8 (vertex names):
+#> + edges from 56bbff8 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -154,9 +154,7 @@ glycan structure, and each edge represents an enzymatic step. If more
 than one enzyme is involved in an enzymatic step, multiple edges are
 created between the two vertices.
 
-Here is the same workflow with a more complex N-glycan: The plot
-dimensions match the knitr figure dimensions so the collision-aware
-layout is fitted to the rendered canvas.
+Here is the same workflow with a more complex N-glycan:
 
 ``` r
 
