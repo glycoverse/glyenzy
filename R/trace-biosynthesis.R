@@ -43,8 +43,10 @@
 #' @returns A `glyenzy_biosynthesis_network` object inheriting from
 #'   [igraph::igraph()] and representing the synthesis path(s). Vertices
 #'   represent glycan structures, with IUPAC-condensed strings in the `name`
-#'   attribute. Every edge has a `step` attribute indicating the forward
-#'   synthesis step and an `enzyme` attribute containing its gene symbol.
+#'   attribute and a logical `target` attribute indicating whether each vertex
+#'   is a target glycan. Every edge has a `step` attribute indicating the
+#'   forward synthesis step and an `enzyme` attribute containing its gene
+#'   symbol.
 #'   Multiple enzymes catalysing the same substrate-to-product transition are
 #'   represented by parallel edges.
 #'   When virtual fallback is required, every edge also has an `is_virtual`
@@ -96,15 +98,20 @@ trace_biosynthesis <- function(
 
   # Find all possible paths using unified BFS logic
   starting_glycan <- .decide_starting_glycan(glycans[1])
-  .new_biosynthesis_network(
-    .perform_bfs_synthesis(
-      starting_glycan,
+  path <- .perform_bfs_synthesis(
+    starting_glycan,
+    glycans,
+    enzymes,
+    max_steps,
+    filter,
+    max_virtual_steps
+  ) |>
+    .set_biosynthesis_targets(
       glycans,
-      enzymes,
-      max_steps,
-      filter,
-      max_virtual_steps
+      match = .bfs_target_match(.glycan_structure_level(glycans))
     )
+  .new_biosynthesis_network(
+    path
   )
 }
 

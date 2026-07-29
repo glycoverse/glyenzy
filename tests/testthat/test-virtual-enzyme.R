@@ -253,6 +253,10 @@ test_that("virtual tracing combines multiple targets from one root", {
   expect_setequal(edges$enzyme, c("b4GlcNAcT", "a2FucT"))
   expect_equal(unique(edges$from), "Gal(b1-")
   expect_equal(edges$step, rep(1L, 2L))
+  expect_identical(
+    igraph::V(path)$target,
+    igraph::V(path)$name %in% targets
+  )
 })
 
 test_that("virtual N-glycan labels follow reduced structure levels", {

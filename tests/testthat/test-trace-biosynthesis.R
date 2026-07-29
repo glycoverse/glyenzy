@@ -122,6 +122,7 @@ test_that("trace_biosynthesis matches partial targets with whole alignment", {
 
   end_node <- igraph::V(path)[igraph::degree(path, mode = "out") == 0]
   end_glycans <- glyparse::auto_parse(end_node$name)
+  expect_identical(end_node$target, TRUE)
   expect_true(any(glymotif::have_motif(
     end_glycans,
     glycan,
@@ -239,6 +240,10 @@ test_that("trace_biosynthesis works with multiple target glycans", {
   # Both target glycans should be present as vertices
   all_vertices <- igraph::V(path)$name
   expect_true(all(glycans %in% all_vertices))
+  expect_identical(
+    igraph::V(path)$target,
+    all_vertices %in% glycans
+  )
 
   # Should be a valid connected graph
   expect_true(igraph::is_connected(path, mode = "weak"))
