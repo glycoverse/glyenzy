@@ -48,6 +48,113 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   )
 })
 
+test_that("biosynthesis autoplot highlights targets in multi-target networks", {
+  skip_if_not_installed("ggraph")
+  targets <- c(
+    "GlcNAc(b1-4)Gal(b1-",
+    "Fuc(a1-2)Gal(b1-"
+  )
+  graph <- trace_biosynthesis_virtual(targets)
+  highlighted <- ggplot2::autoplot(graph)
+  plain <- ggplot2::autoplot(graph, highlight_target = FALSE)
+  highlighted_build <- ggplot2::ggplot_build(highlighted)
+  plain_build <- ggplot2::ggplot_build(plain)
+
+  expect_length(highlighted$layers, 5L)
+  expect_identical(
+    highlighted$layers[[4]]$geom_params$highlight,
+    integer()
+  )
+  expect_s3_class(
+    highlighted$layers[[5]]$geom,
+    "GeomCustomAnn"
+  )
+  expect_length(
+    highlighted$layers[[5]]$geom_params$grob$children,
+    2L
+  )
+  expect_equal(
+    highlighted_build$data[1:3],
+    plain_build$data[1:3]
+  )
+
+  gtable <- ggplot2::ggplotGrob(highlighted)
+  panel <- gtable$grobs[[which(gtable$layout$name == "panel")]]
+  target_layer <- panel$children[[
+    grep(
+      "^biosynthesis_target_glycans",
+      grid::childNames(panel),
+      value = TRUE
+    )
+  ]]
+  alphas <- lapply(
+    list(
+      panel$children[["geom_glycan"]],
+      target_layer
+    ),
+    function(layer) {
+      unname(unlist(lapply(
+        layer$children,
+        \(grob) unique(grob$polygon_coor$alpha)
+      )))
+    }
+  )
+  expect_equal(alphas, list(0.3, c(1, 1)))
+})
+
+test_that("target highlighting defaults off for single-target networks", {
+  skip_if_not_installed("ggraph")
+  graph <- trace_biosynthesis_virtual("GlcNAc(b1-4)Gal(b1-")
+
+  default <- ggplot2::autoplot(graph)
+  highlighted <- ggplot2::autoplot(graph, highlight_target = TRUE)
+
+  expect_length(default$layers, 4L)
+  expect_null(default$layers[[4]]$geom_params$highlight)
+  expect_length(highlighted$layers, 5L)
+  expect_length(
+    highlighted$layers[[5]]$geom_params$grob$children,
+    1L
+  )
+})
+
+test_that("target highlighting explains unsupported path networks", {
+  skip_if_not_installed("ggraph")
+  target <- "Gal(b1-3)GalNAc(a1-"
+  networks <- list(
+    concrete = suppressMessages(path_biosynthesis(
+      "GalNAc(a1-",
+      target,
+      enzymes = "C1GALT1",
+      max_steps = 1
+    )),
+    virtual = path_biosynthesis_virtual("GalNAc(a1-", target)
+  )
+
+  expect_equal(
+    vapply(
+      networks,
+      \(network) is.null(igraph::vertex_attr(network, "target")),
+      logical(1)
+    ),
+    c(concrete = TRUE, virtual = TRUE)
+  )
+  expect_snapshot(
+    error = TRUE,
+    ggplot2::autoplot(
+      networks$concrete,
+      highlight_target = TRUE
+    )
+  )
+  expect_snapshot(
+    error = TRUE,
+    ggplot2::autoplot(
+      networks$virtual,
+      highlight_target = TRUE
+    )
+  )
+})
+
 test_that("figure dimensions support equivalent physical units", {
   skip_if_not_installed("ggraph")
   graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")

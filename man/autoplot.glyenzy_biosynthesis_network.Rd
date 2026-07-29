@@ -17,6 +17,7 @@
   orient = c("H", "V"),
   color_edge = FALSE,
   enzyme_label_style = c("condensed", "full"),
+  highlight_target = NULL,
   ...
 )
 }
@@ -60,6 +61,13 @@ unambiguous added residue remain dark grey.}
 labeled. \code{"condensed"} (the default) groups names with the same prefix and
 terminal number, for example, \code{"B4GALT1/2/3, B3GALT3/4"}. \code{"full"} keeps
 complete names separated by \code{" / "}.}
+
+\item{highlight_target}{Logical or \code{NULL}. When \code{TRUE}, target glycans are
+drawn normally and all other glycans are semi-transparent. The default,
+\code{NULL}, highlights targets in multi-target networks but not in
+single-target networks. Reaction edges and enzyme labels are unchanged.
+This argument cannot be \code{TRUE} for networks returned by
+\code{\link[=path_biosynthesis]{path_biosynthesis()}} or \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}.}
 
 \item{...}{Additional glycan appearance arguments accepted by
 \code{\link[glydraw:glycanGrob]{glydraw::glycanGrob()}}, such as \code{node_size}, \code{colors}, or \code{style}.}

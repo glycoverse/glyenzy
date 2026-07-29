@@ -70,6 +70,12 @@
 #'   labeled. `"condensed"` (the default) groups names with the same prefix and
 #'   terminal number, for example, `"B4GALT1/2/3, B3GALT3/4"`. `"full"` keeps
 #'   complete names separated by `" / "`.
+#' @param highlight_target Logical or `NULL`. When `TRUE`, target glycans are
+#'   drawn normally and all other glycans are semi-transparent. The default,
+#'   `NULL`, highlights targets in multi-target networks but not in
+#'   single-target networks. Reaction edges and enzyme labels are unchanged.
+#'   This argument cannot be `TRUE` for networks returned by
+#'   [path_biosynthesis()] or [path_biosynthesis_virtual()].
 #' @param ... Additional glycan appearance arguments accepted by
 #'   [glydraw::glycanGrob()], such as `node_size`, `colors`, or `style`.
 #'
@@ -112,6 +118,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   orient = c("H", "V"),
   color_edge = FALSE,
   enzyme_label_style = c("condensed", "full"),
+  highlight_target = NULL,
   ...
 ) {
   rlang::check_installed(
@@ -120,6 +127,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   )
   checkmate::assert_flag(show_enzyme)
   checkmate::assert_flag(color_edge)
+  checkmate::assert_flag(highlight_target, null.ok = TRUE)
   checkmate::assert_number(size, lower = 0, finite = TRUE)
   checkmate::assert_number(node_gap, lower = 0, finite = TRUE)
   checkmate::assert_number(level_gap, lower = 0, finite = TRUE)
@@ -138,6 +146,10 @@ autoplot.glyenzy_biosynthesis_network <- function(
   dots <- rlang::list2(...)
   .validate_biosynthesis_glycan_dots(dots)
   .validate_biosynthesis_network(object)
+  highlight_target <- .resolve_biosynthesis_highlight_target(
+    object,
+    highlight_target
+  )
   figure_size <- .biosynthesis_figure_size_in(width, height, units)
 
   graph <- .collapse_biosynthesis_reactions(
@@ -207,6 +219,9 @@ autoplot.glyenzy_biosynthesis_network <- function(
     )
   }
   layout <- geometry$layout
+  if (highlight_target) {
+    layout$.structure <- glyparse::auto_parse(layout$name)
+  }
   labels <- geometry$labels
   bounds <- geometry$bounds
   panel_size <- c(
@@ -244,15 +259,51 @@ autoplot.glyenzy_biosynthesis_network <- function(
     }
   }
 
-  plot <- plot +
-    rlang::exec(
-      glydraw::geom_node_glycan,
-      mapping = ggplot2::aes(structure = .data$name),
+  glycan_args <- c(
+    list(
+      size = size * fit_scale,
+      show_linkage = show_linkage,
+      orient = orient
+    ),
+    dots
+  )
+  if (highlight_target) {
+    dimmed_args <- glycan_args
+    dimmed_args$highlight <- integer()
+    target_grob <- .biosynthesis_target_grob(
+      layout,
       size = size * fit_scale,
       show_linkage = show_linkage,
       orient = orient,
-      !!!dots
-    ) +
+      dots = dots,
+      bounds = bounds
+    )
+    plot <- plot +
+      rlang::exec(
+        glydraw::geom_node_glycan,
+        mapping = ggplot2::aes(
+          structure = .data$.structure,
+          filter = !.data$target
+        ),
+        !!!dimmed_args
+      ) +
+      ggplot2::annotation_custom(
+        target_grob,
+        xmin = -Inf,
+        xmax = Inf,
+        ymin = -Inf,
+        ymax = Inf
+      )
+  } else {
+    plot <- plot +
+      rlang::exec(
+        glydraw::geom_node_glycan,
+        mapping = ggplot2::aes(structure = .data$name),
+        !!!glycan_args
+      )
+  }
+
+  plot <- plot +
     ggplot2::coord_fixed(
       xlim = bounds$x,
       ylim = bounds$y,
@@ -275,6 +326,81 @@ autoplot.glyenzy_biosynthesis_network <- function(
   attr(plot, "glyenzy_panel_size_in") <- panel_size
   attr(plot, "glyenzy_layout_scale") <- fit_scale
   plot
+}
+
+.biosynthesis_target_grob <- function(
+  layout,
+  size,
+  show_linkage,
+  orient,
+  dots,
+  bounds
+) {
+  target_rows <- which(layout$target)
+  dots$highlight <- NULL
+  grobs <- lapply(seq_along(target_rows), function(index) {
+    row <- target_rows[[index]]
+    grob <- rlang::exec(
+      glydraw::glycanGrob,
+      structure = layout$.structure[[row]],
+      show_linkage = show_linkage,
+      orient = orient,
+      !!!dots
+    )
+    grob$name <- paste0("target_glycan.", index)
+    grob$glydraw_scale <- size
+    grob$glydraw_hjust <- 0.5
+    grob$glydraw_vjust <- 0.5
+    grob$glydraw_angle <- 0
+    grob$glydraw_border_px <- 0
+    grob$glydraw_background <- FALSE
+    grob$vp <- grid::viewport(
+      x = grid::unit(
+        (layout$x[[row]] - bounds$x[[1]]) / diff(bounds$x),
+        "npc"
+      ),
+      y = grid::unit(
+        (layout$y[[row]] - bounds$y[[1]]) / diff(bounds$y),
+        "npc"
+      ),
+      just = c("center", "center")
+    )
+    grob
+  })
+  grid::grobTree(
+    children = rlang::exec(grid::gList, !!!grobs),
+    name = "biosynthesis_target_glycans"
+  )
+}
+
+.resolve_biosynthesis_highlight_target <- function(
+  graph,
+  highlight_target
+) {
+  targets <- igraph::vertex_attr(graph, "target")
+  if (is.null(targets)) {
+    if (identical(highlight_target, TRUE)) {
+      cli::cli_abort(
+        "{.arg highlight_target} cannot be {.code TRUE} for networks returned by {.fn path_biosynthesis} or {.fn path_biosynthesis_virtual}.",
+        call = rlang::caller_env()
+      )
+    }
+    return(FALSE)
+  }
+  if (
+    !is.logical(targets) ||
+      length(targets) != igraph::vcount(graph) ||
+      anyNA(targets)
+  ) {
+    cli::cli_abort(
+      "The network {.field target} vertex attribute must contain one non-missing logical value per glycan.",
+      call = rlang::caller_env()
+    )
+  }
+  if (is.null(highlight_target)) {
+    return(sum(targets) > 1L)
+  }
+  highlight_target
 }
 
 #' @importFrom graphics plot
