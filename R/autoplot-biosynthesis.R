@@ -74,6 +74,8 @@
 #'   drawn normally and all other glycans are semi-transparent. The default,
 #'   `NULL`, highlights targets in multi-target networks but not in
 #'   single-target networks. Reaction edges and enzyme labels are unchanged.
+#'   This argument cannot be `TRUE` for networks returned by
+#'   [path_biosynthesis()] or [path_biosynthesis_virtual()].
 #' @param ... Additional glycan appearance arguments accepted by
 #'   [glydraw::glycanGrob()], such as `node_size`, `colors`, or `style`.
 #'
@@ -379,7 +381,8 @@ autoplot.glyenzy_biosynthesis_network <- function(
   if (is.null(targets)) {
     if (identical(highlight_target, TRUE)) {
       cli::cli_abort(
-        "Target glycans cannot be highlighted because the network has no {.field target} vertex attribute."
+        "{.arg highlight_target} cannot be {.code TRUE} for networks returned by {.fn path_biosynthesis} or {.fn path_biosynthesis_virtual}.",
+        call = rlang::caller_env()
       )
     }
     return(FALSE)
@@ -390,7 +393,8 @@ autoplot.glyenzy_biosynthesis_network <- function(
       anyNA(targets)
   ) {
     cli::cli_abort(
-      "The network {.field target} vertex attribute must contain one non-missing logical value per glycan."
+      "The network {.field target} vertex attribute must contain one non-missing logical value per glycan.",
+      call = rlang::caller_env()
     )
   }
   if (is.null(highlight_target)) {

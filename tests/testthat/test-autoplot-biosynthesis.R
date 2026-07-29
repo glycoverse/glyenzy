@@ -118,6 +118,43 @@ test_that("target highlighting defaults off for single-target networks", {
   )
 })
 
+test_that("target highlighting explains unsupported path networks", {
+  skip_if_not_installed("ggraph")
+  target <- "Gal(b1-3)GalNAc(a1-"
+  networks <- list(
+    concrete = suppressMessages(path_biosynthesis(
+      "GalNAc(a1-",
+      target,
+      enzymes = "C1GALT1",
+      max_steps = 1
+    )),
+    virtual = path_biosynthesis_virtual("GalNAc(a1-", target)
+  )
+
+  expect_equal(
+    vapply(
+      networks,
+      \(network) is.null(igraph::vertex_attr(network, "target")),
+      logical(1)
+    ),
+    c(concrete = TRUE, virtual = TRUE)
+  )
+  expect_snapshot(
+    error = TRUE,
+    ggplot2::autoplot(
+      networks$concrete,
+      highlight_target = TRUE
+    )
+  )
+  expect_snapshot(
+    error = TRUE,
+    ggplot2::autoplot(
+      networks$virtual,
+      highlight_target = TRUE
+    )
+  )
+})
+
 test_that("figure dimensions support equivalent physical units", {
   skip_if_not_installed("ggraph")
   graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")
