@@ -67,6 +67,7 @@ edge.</p>
 <span>  orient <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"V"</span><span class="op">)</span>,</span>
 <span>  color_edge <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  enzyme_label_style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condensed"</span>, <span class="st">"full"</span><span class="op">)</span>,</span>
+<span>  highlight_target <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -135,6 +136,15 @@ unambiguous added residue remain dark grey.</p></dd>
 labeled. <code>"condensed"</code> (the default) groups names with the same prefix and
 terminal number, for example, <code>"B4GALT1/2/3, B3GALT3/4"</code>. <code>"full"</code> keeps
 complete names separated by <code>" / "</code>.</p></dd>
+
+
+<dt id="arg-highlight-target">highlight_target<a class="anchor" aria-label="anchor" href="#arg-highlight-target"></a></dt>
+<dd><p>Logical or <code>NULL</code>. When <code>TRUE</code>, target glycans are
+drawn normally and all other glycans are semi-transparent. The default,
+<code>NULL</code>, highlights targets in multi-target networks but not in
+single-target networks. Reaction edges and enzyme labels are unchanged.
+This argument cannot be <code>TRUE</code> for networks returned by
+<code><a href="path_biosynthesis.html">path_biosynthesis()</a></code> or <code><a href="path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

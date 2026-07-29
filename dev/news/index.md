@@ -6,7 +6,9 @@
   and
   [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
   now add a logical `target` vertex attribute indicating which nodes are
-  target glycans. (#37)
+  target glycans; `autoplot()` uses it to highlight targets by default
+  in multi-target networks, with explicit control through
+  `highlight_target`. (#37, \#38)
 
 - Biosynthesis functions now return typed `glyenzy_biosynthesis_network`
   objects that preserve their `igraph` interface and support

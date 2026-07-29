@@ -28,6 +28,7 @@ autoplot(
   orient = c("H", "V"),
   color_edge = FALSE,
   enzyme_label_style = c("condensed", "full"),
+  highlight_target = NULL,
   ...
 )
 ```
@@ -96,6 +97,17 @@ autoplot(
   (the default) groups names with the same prefix and terminal number,
   for example, `"B4GALT1/2/3, B3GALT3/4"`. `"full"` keeps complete names
   separated by `" / "`.
+
+- highlight_target:
+
+  Logical or `NULL`. When `TRUE`, target glycans are drawn normally and
+  all other glycans are semi-transparent. The default, `NULL`,
+  highlights targets in multi-target networks but not in single-target
+  networks. Reaction edges and enzyme labels are unchanged. This
+  argument cannot be `TRUE` for networks returned by
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  or
+  [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md).
 
 - ...:
 
