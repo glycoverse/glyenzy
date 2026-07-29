@@ -335,6 +335,25 @@ test_that("virtual tracing shares a root across partial targets", {
   expect_equal(edges$enzyme, "GalT")
 })
 
+test_that("virtual tracing flags leniently matched partial targets", {
+  targets <- glyparse::auto_parse(c(
+    "Gal(b1-3)GalNAc(?1-",
+    "GalNAc(a?-"
+  ))
+
+  path <- suppressWarnings(trace_biosynthesis_virtual(targets))
+  vertices <- igraph::as_data_frame(path, what = "vertices")
+
+  expect_setequal(
+    vertices$name,
+    c(
+      "GalNAc(?1-",
+      "Gal(b1-3)GalNAc(?1-"
+    )
+  )
+  expect_identical(vertices$target, rep(TRUE, 2L))
+})
+
 test_that("virtual paths handle a trivial starting target", {
   glycan <- "Gal(b1-3)GalNAc(a1-"
 
