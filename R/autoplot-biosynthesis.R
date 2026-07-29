@@ -4,6 +4,7 @@
 .biosynthesis_label_padding <- 0.06
 .biosynthesis_label_gap <- 0.08
 .biosynthesis_points_per_mm <- 72.27 / 25.4
+.biosynthesis_min_label_size_pt <- 4
 .biosynthesis_default_edge_color <- "#4D4D4D"
 .biosynthesis_residues_by_color <- strsplit(
   c(
@@ -33,8 +34,8 @@
 #' Glycan dimensions are measured before the network is laid out. Nodes at the
 #' same rank are separated by their rendered bounds, while rectangular edge
 #' caps stop arrows outside the source and target glycans. The plot uses a
-#' fixed-size panel so these clearances remain physical rather than changing
-#' with the coordinate range.
+#' fixed-size panel inside a requested figure canvas so these clearances remain
+#' physical rather than changing with the coordinate range.
 #'
 #' Concrete enzyme reactions use solid edge shafts, while virtual enzyme
 #' reactions use dashed shafts; arrowheads remain solid in both cases. This
@@ -43,18 +44,19 @@
 #' @param object A `glyenzy_biosynthesis_network` object returned by a
 #'   biosynthesis function.
 #' @param show_enzyme Logical. Whether to label reaction edges with enzyme or
-#'   virtual-enzyme names.
+#'   virtual-enzyme names. Labels that would be too small to render after panel
+#'   fitting are hidden with a warning.
 #' @param size Positive numeric whole-cartoon scale multiplier passed to
 #'   [glydraw::geom_node_glycan()]. Defaults to `0.4`.
 #' @param node_gap Non-negative physical clearance, in inches, between glycan
 #'   nodes at the same rank.
 #' @param level_gap Non-negative physical clearance, in inches, between
 #'   adjacent ranks. Increase this when enzyme labels are unusually long.
-#' @param max_panel_width,max_panel_height Positive maximum panel dimensions,
-#'   in inches. Networks larger than either limit are scaled proportionally so
-#'   the complete base plot, with no additional outer margin, fits a graphics
-#'   device of the same dimensions. Use `Inf` to preserve the network's natural
-#'   size along one dimension.
+#' @param width,height Positive, finite figure dimensions. Networks larger than
+#'   the available figure are scaled proportionally, while smaller networks
+#'   retain their natural size and are centered in the figure.
+#' @param units Units for `width` and `height`. One of `"in"` (the default),
+#'   `"cm"`, or `"mm"`.
 #' @param show_linkage Logical. Whether glycan linkage annotations are shown.
 #'   Defaults to `FALSE` for a compact network.
 #' @param orient Glycan drawing orientation passed to
@@ -72,14 +74,27 @@
 #'   [glydraw::glycanGrob()], such as `node_size`, `colors`, or `style`.
 #'
 #' @returns A ggraph/ggplot object with a fixed-size, collision-aware layered
-#'   panel.
+#'   panel centered in the requested figure dimensions.
+#'
+#' @section Figure size:
+#' `width`, `height`, and `units` describe the complete base figure returned by
+#' this method. Use the same dimensions with [ggplot2::ggsave()] or the
+#' corresponding knitr/Quarto figure options. Titles, legends, or margins added
+#' after this method returns may require additional output space.
 #'
 #' @examples
 #' \dontrun{
 #' network <- trace_biosynthesis_virtual(
 #'   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-"
 #' )
-#' ggplot2::autoplot(network)
+#' network_plot <- ggplot2::autoplot(network, width = 8, height = 5)
+#' ggplot2::ggsave(
+#'   "biosynthesis-network.png",
+#'   network_plot,
+#'   width = 8,
+#'   height = 5,
+#'   units = "in"
+#' )
 #' }
 #' @importFrom rlang .data
 #' @importFrom ggplot2 autoplot
@@ -90,8 +105,9 @@ autoplot.glyenzy_biosynthesis_network <- function(
   size = 0.4,
   node_gap = 0.25,
   level_gap = 0.6,
-  max_panel_width = 6,
-  max_panel_height = 6,
+  width = 6,
+  height = 6,
+  units = c("in", "cm", "mm"),
   show_linkage = FALSE,
   orient = c("H", "V"),
   color_edge = FALSE,
@@ -107,22 +123,22 @@ autoplot.glyenzy_biosynthesis_network <- function(
   checkmate::assert_number(size, lower = 0, finite = TRUE)
   checkmate::assert_number(node_gap, lower = 0, finite = TRUE)
   checkmate::assert_number(level_gap, lower = 0, finite = TRUE)
-  checkmate::assert_number(max_panel_width, lower = 0)
-  checkmate::assert_number(max_panel_height, lower = 0)
+  checkmate::assert_number(width, lower = 0, finite = TRUE)
+  checkmate::assert_number(height, lower = 0, finite = TRUE)
   checkmate::assert_flag(show_linkage)
   if (size == 0) {
     cli::cli_abort("{.arg size} must be larger than 0.")
   }
-  if (max_panel_width == 0 || max_panel_height == 0) {
-    cli::cli_abort(
-      "{.arg max_panel_width} and {.arg max_panel_height} must be larger than 0."
-    )
+  if (width == 0 || height == 0) {
+    cli::cli_abort("{.arg width} and {.arg height} must be larger than 0.")
   }
+  units <- match.arg(units)
   orient <- match.arg(orient)
   enzyme_label_style <- match.arg(enzyme_label_style)
   dots <- rlang::list2(...)
   .validate_biosynthesis_glycan_dots(dots)
   .validate_biosynthesis_network(object)
+  figure_size <- .biosynthesis_figure_size_in(width, height, units)
 
   graph <- .collapse_biosynthesis_reactions(
     object,
@@ -147,9 +163,39 @@ autoplot.glyenzy_biosynthesis_network <- function(
   )
   fit_scale <- .biosynthesis_fit_scale(
     geometry$bounds,
-    max_width = max_panel_width,
-    max_height = max_panel_height
+    max_width = figure_size[["width"]],
+    max_height = figure_size[["height"]]
   )
+  label_size_pt <- .biosynthesis_label_size *
+    .biosynthesis_points_per_mm *
+    fit_scale
+  if (
+    show_enzyme &&
+      !is.null(geometry$labels) &&
+      nrow(geometry$labels) > 0L &&
+      label_size_pt < .biosynthesis_min_label_size_pt
+  ) {
+    cli::cli_warn(c(
+      "Enzyme labels cannot be rendered at the fitted plot size and have been hidden.",
+      "i" = paste(
+        "Increase {.arg width} or {.arg height} to display enzyme",
+        "labels."
+      )
+    ))
+    show_enzyme <- FALSE
+    geometry <- .biosynthesis_plot_geometry(
+      graph,
+      dimensions,
+      node_gap = node_gap,
+      level_gap = level_gap,
+      show_enzyme = show_enzyme
+    )
+    fit_scale <- .biosynthesis_fit_scale(
+      geometry$bounds,
+      max_width = figure_size[["width"]],
+      max_height = figure_size[["height"]]
+    )
+  }
   if (fit_scale < 1) {
     geometry <- .biosynthesis_plot_geometry(
       graph,
@@ -163,6 +209,11 @@ autoplot.glyenzy_biosynthesis_network <- function(
   layout <- geometry$layout
   labels <- geometry$labels
   bounds <- geometry$bounds
+  panel_size <- c(
+    width = diff(bounds$x),
+    height = diff(bounds$y)
+  )
+  figure_padding <- pmax(figure_size - panel_size, 0)
   plot <- ggraph::ggraph(layout)
 
   if (igraph::ecount(graph) > 0L) {
@@ -210,15 +261,18 @@ autoplot.glyenzy_biosynthesis_network <- function(
     ) +
     ggraph::theme_graph(base_family = "") +
     ggplot2::theme(
-      panel.widths = grid::unit(diff(bounds$x), "in"),
-      panel.heights = grid::unit(diff(bounds$y), "in"),
-      plot.margin = ggplot2::margin(0, 0, 0, 0)
+      panel.widths = grid::unit(panel_size[["width"]], "in"),
+      panel.heights = grid::unit(panel_size[["height"]], "in"),
+      plot.margin = ggplot2::margin(
+        t = figure_padding[["height"]] / 2,
+        r = figure_padding[["width"]] / 2,
+        b = figure_padding[["height"]] / 2,
+        l = figure_padding[["width"]] / 2,
+        unit = "in"
+      )
     )
 
-  attr(plot, "glyenzy_panel_size_in") <- c(
-    width = diff(bounds$x),
-    height = diff(bounds$y)
-  )
+  attr(plot, "glyenzy_panel_size_in") <- panel_size
   attr(plot, "glyenzy_layout_scale") <- fit_scale
   plot
 }
@@ -238,6 +292,19 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
       "Glycan appearance arguments in {.arg ...} must be named."
     )
   }
+  removed_size_args <- intersect(
+    names(dots),
+    c("max_panel_width", "max_panel_height")
+  )
+  if (length(removed_size_args) > 0L) {
+    cli::cli_abort(c(
+      "The old panel-size argument{?s} {.arg {removed_size_args}} {?has/have} been removed.",
+      "i" = paste(
+        "Use {.arg width} and {.arg height} to set the complete",
+        "figure size."
+      )
+    ))
+  }
 
   allowed <- setdiff(
     names(formals(glydraw::glycanGrob)),
@@ -254,6 +321,16 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
     ))
   }
   invisible(dots)
+}
+
+.biosynthesis_figure_size_in <- function(width, height, units) {
+  unit_scale <- switch(
+    units,
+    "in" = 1,
+    "cm" = 1 / 2.54,
+    "mm" = 1 / 25.4
+  )
+  c(width = width, height = height) * unit_scale
 }
 
 .validate_biosynthesis_network <- function(graph) {

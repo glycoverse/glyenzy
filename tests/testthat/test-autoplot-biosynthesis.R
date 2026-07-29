@@ -48,6 +48,82 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   )
 })
 
+test_that("figure dimensions support equivalent physical units", {
+  skip_if_not_installed("ggraph")
+  graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")
+  sizes <- list(
+    inches = c(width = 8, height = 5),
+    centimetres = c(width = 20.32, height = 12.7),
+    millimetres = c(width = 203.2, height = 127)
+  )
+  plots <- list(
+    ggplot2::autoplot(
+      graph,
+      width = sizes$inches[["width"]],
+      height = sizes$inches[["height"]],
+      units = "in"
+    ),
+    ggplot2::autoplot(
+      graph,
+      width = sizes$centimetres[["width"]],
+      height = sizes$centimetres[["height"]],
+      units = "cm"
+    ),
+    ggplot2::autoplot(
+      graph,
+      width = sizes$millimetres[["width"]],
+      height = sizes$millimetres[["height"]],
+      units = "mm"
+    )
+  )
+
+  for (plot in plots[-1]) {
+    expect_equal(plot$data$x, plots[[1]]$data$x)
+    expect_equal(plot$data$y, plots[[1]]$data$y)
+    expect_equal(plot$data$.node_width, plots[[1]]$data$.node_width)
+    expect_equal(plot$data$.node_height, plots[[1]]$data$.node_height)
+    expect_equal(
+      attr(plot, "glyenzy_panel_size_in"),
+      attr(plots[[1]], "glyenzy_panel_size_in")
+    )
+    expect_equal(
+      attr(plot, "glyenzy_layout_scale"),
+      attr(plots[[1]], "glyenzy_layout_scale")
+    )
+    expect_equal(plot$theme$plot.margin, plots[[1]]$theme$plot.margin)
+  }
+})
+
+test_that("figure dimensions are validated", {
+  skip_if_not_installed("ggraph")
+  graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")
+
+  expect_snapshot(
+    ggplot2::autoplot(graph, width = 0),
+    error = TRUE
+  )
+  expect_snapshot(
+    ggplot2::autoplot(graph, width = -1),
+    error = TRUE
+  )
+  expect_snapshot(
+    ggplot2::autoplot(graph, height = Inf),
+    error = TRUE
+  )
+  expect_snapshot(
+    ggplot2::autoplot(graph, units = "px"),
+    error = TRUE
+  )
+  expect_snapshot(
+    ggplot2::autoplot(graph, max_panel_width = 5),
+    error = TRUE
+  )
+  expect_snapshot(
+    ggplot2::autoplot(graph, max_panel_height = 5),
+    error = TRUE
+  )
+})
+
 test_that("graphics plot dispatches to the biosynthesis network method", {
   skip_if_not_installed("ggraph")
   graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")
@@ -111,13 +187,13 @@ test_that("biosynthesis autoplot uses condensed multi-enzyme labels", {
   full <- ggplot2::autoplot(
     graph,
     enzyme_label_style = "full",
-    max_panel_width = Inf,
-    max_panel_height = Inf
+    width = 50,
+    height = 50
   )
   condensed <- ggplot2::autoplot(
     graph,
-    max_panel_width = Inf,
-    max_panel_height = Inf
+    width = 50,
+    height = 50
   )
   full_label <- ggplot2::ggplot_build(full)$data[[3]]$label
   condensed_label <- ggplot2::ggplot_build(condensed)$data[[3]]$label
@@ -280,7 +356,7 @@ test_that("long labels do not overlap on converging O-glycan routes", {
   expect_gte(min(unlist(excess_clearances)), -1e-8)
 })
 
-test_that("large N-glycan networks fit the default panel limits", {
+test_that("large N-glycan networks fit the default figure", {
   skip_if_not_installed("ggraph")
   target <- paste0(
     "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]",
@@ -290,8 +366,8 @@ test_that("large N-glycan networks fit the default panel limits", {
   plot <- ggplot2::autoplot(graph)
   natural <- ggplot2::autoplot(
     graph,
-    max_panel_width = Inf,
-    max_panel_height = Inf
+    width = 50,
+    height = 50
   )
   output <- tempfile(fileext = ".png")
   on.exit(unlink(output), add = TRUE)
@@ -313,6 +389,36 @@ test_that("large N-glycan networks fit the default panel limits", {
   expect_gt(file.info(output)$size, 0)
 })
 
+test_that("unrenderable enzyme labels are hidden with a warning", {
+  skip_if_not_installed("ggraph")
+  target <- paste0(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  graph <- trace_biosynthesis(target)
+
+  expect_snapshot(
+    plot <- ggplot2::autoplot(graph)
+  )
+
+  expect_length(plot$layers, 3L)
+  expect_equal(
+    unname(vapply(
+      plot$layers,
+      \(layer) inherits(layer$geom, "GeomLabel"),
+      logical(1)
+    )),
+    rep(FALSE, 3L)
+  )
+
+  larger <- expect_no_warning(ggplot2::autoplot(
+    graph,
+    width = 12,
+    height = 12
+  ))
+  expect_s3_class(larger$layers[[3]]$geom, "GeomLabel")
+})
+
 test_that("converging N-glycan networks use a balanced layered layout", {
   skip_if_not_installed("ggraph")
   target <- paste0(
@@ -323,8 +429,8 @@ test_that("converging N-glycan networks use a balanced layered layout", {
   graph <- trace_biosynthesis(target)
   plot <- ggplot2::autoplot(
     graph,
-    max_panel_width = Inf,
-    max_panel_height = Inf
+    width = 50,
+    height = 50
   )
   dimensions <- .biosynthesis_node_dimensions(
     .collapse_biosynthesis_reactions(graph),
@@ -344,20 +450,17 @@ test_that("converging N-glycan networks use a balanced layered layout", {
   expect_lte(max(abs(rank_midpoints - root_x)), 4 * x_spacing + 1e-8)
 })
 
-test_that("finite plot limits include the complete reported O-glycan path", {
+test_that("figure size includes and centers the complete panel", {
   skip_if_not_installed("ggraph")
-  target <- paste0(
-    "Neu5Ac(a2-3)Gal(b1-3)",
-    "[Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-6)]",
-    "GalNAc(a1-"
-  )
+  target <- "Gal(b1-3)GalNAc(a1-"
   plot <- ggplot2::autoplot(
     trace_biosynthesis(target),
-    max_panel_width = 5,
-    max_panel_height = 5
+    show_enzyme = FALSE,
+    width = 8,
+    height = 5
   )
 
-  grDevices::pdf(NULL, width = 5, height = 5)
+  grDevices::pdf(NULL, width = 8, height = 5)
   on.exit(grDevices::dev.off(), add = TRUE)
   gtable <- ggplot2::ggplotGrob(plot)
   complete_size <- c(
@@ -373,9 +476,11 @@ test_that("finite plot limits include the complete reported O-glycan path", {
     )
   )
 
-  expect_lte(unname(complete_size[["width"]]), 5)
-  expect_lte(unname(complete_size[["height"]]), 5)
-  expect_equal(plot$theme$plot.margin, ggplot2::margin(0, 0, 0, 0))
+  plot_margin <- plot$theme$plot.margin
+  expect_equal(complete_size, c(width = 8, height = 5))
+  expect_equal(attr(plot, "glyenzy_layout_scale"), 1)
+  expect_equal(plot_margin[[1]], plot_margin[[3]])
+  expect_equal(plot_margin[[2]], plot_margin[[4]])
 })
 
 test_that("all biosynthesis functions return networks that can be plotted", {
