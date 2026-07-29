@@ -117,11 +117,13 @@ If more than one enzyme is involved in an enzymatic step,
 multiple edges are created between the two vertices.
 
 Here is the same workflow with a more complex N-glycan:
+The plot dimensions match the knitr figure dimensions so the
+collision-aware layout is fitted to the rendered canvas.
 
 ```{r, fig.width=6, fig.height=6}
 glycan <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 path <- trace_biosynthesis(glycan)
-plot(path, show_enzyme = FALSE)
+plot(path, show_enzyme = FALSE, width = 6, height = 6)
 ```
 
 ## Predicting Glycan Products

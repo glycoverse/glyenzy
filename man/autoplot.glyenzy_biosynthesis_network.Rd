@@ -10,8 +10,9 @@
   size = 0.4,
   node_gap = 0.25,
   level_gap = 0.6,
-  max_panel_width = 6,
-  max_panel_height = 6,
+  width = 6,
+  height = 6,
+  units = c("in", "cm", "mm"),
   show_linkage = FALSE,
   orient = c("H", "V"),
   color_edge = FALSE,
@@ -36,11 +37,12 @@ nodes at the same rank.}
 \item{level_gap}{Non-negative physical clearance, in inches, between
 adjacent ranks. Increase this when enzyme labels are unusually long.}
 
-\item{max_panel_width, max_panel_height}{Positive maximum panel dimensions,
-in inches. Networks larger than either limit are scaled proportionally so
-the complete base plot, with no additional outer margin, fits a graphics
-device of the same dimensions. Use \code{Inf} to preserve the network's natural
-size along one dimension.}
+\item{width, height}{Positive, finite figure dimensions. Networks larger than
+the available figure are scaled proportionally, while smaller networks
+retain their natural size and are centered in the figure.}
+
+\item{units}{Units for \code{width} and \code{height}. One of \code{"in"} (the default),
+\code{"cm"}, or \code{"mm"}.}
 
 \item{show_linkage}{Logical. Whether glycan linkage annotations are shown.
 Defaults to \code{FALSE} for a compact network.}
@@ -64,7 +66,7 @@ complete names separated by \code{" / "}.}
 }
 \value{
 A ggraph/ggplot object with a fixed-size, collision-aware layered
-panel.
+panel centered in the requested figure dimensions.
 }
 \description{
 \code{autoplot.glyenzy_biosynthesis_network()} draws the typed networks returned
@@ -78,18 +80,33 @@ edge.
 Glycan dimensions are measured before the network is laid out. Nodes at the
 same rank are separated by their rendered bounds, while rectangular edge
 caps stop arrows outside the source and target glycans. The plot uses a
-fixed-size panel so these clearances remain physical rather than changing
-with the coordinate range.
+fixed-size panel inside a requested figure canvas so these clearances remain
+physical rather than changing with the coordinate range.
 
 Concrete enzyme reactions use solid edge shafts, while virtual enzyme
 reactions use dashed shafts; arrowheads remain solid in both cases. This
 convention is documented rather than repeated in an in-plot legend.
 }
+\section{Figure size}{
+
+\code{width}, \code{height}, and \code{units} describe the complete base figure returned by
+this method. Use the same dimensions with \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}} or the
+corresponding knitr/Quarto figure options. Titles, legends, or margins added
+after this method returns may require additional output space.
+}
+
 \examples{
 \dontrun{
 network <- trace_biosynthesis_virtual(
   "GlcNAc(b1-4)Gal(b1-3)GalNAc(a1-"
 )
-ggplot2::autoplot(network)
+network_plot <- ggplot2::autoplot(network, width = 8, height = 5)
+ggplot2::ggsave(
+  "biosynthesis-network.png",
+  network_plot,
+  width = 8,
+  height = 5,
+  units = "in"
+)
 }
 }
