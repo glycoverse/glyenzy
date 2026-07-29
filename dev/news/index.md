@@ -2,13 +2,9 @@
 
 ## glyenzy (development version)
 
-- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
-  and
-  [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
-  now add a logical `target` vertex attribute indicating which nodes are
-  target glycans; `autoplot()` uses it to highlight targets by default
-  in multi-target networks, with explicit control through
-  `highlight_target`. (#37, \#38)
+## glyenzy 0.8.0
+
+### New features
 
 - Biosynthesis functions now return typed `glyenzy_biosynthesis_network`
   objects that preserve their `igraph` interface and support
@@ -16,14 +12,13 @@
   [`plot()`](https://rdrr.io/r/graphics/plot.default.html) and
   [`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
   layered DAG layouts with glycan nodes and labeled concrete or virtual
-  enzyme edges; converging routes remain balanced, label bounds are
-  measured exactly, `width`, `height`, and `units` control an exact
-  figure canvas with centered proportional fitting, labels too small to
-  render are hidden with guidance to increase the figure size, parallel
-  enzyme labels default to condensed family notation with full labels
-  available, dashed virtual edges keep solid arrowheads without a
-  redundant reaction-type legend, and `color_edge = TRUE` colors
-  reactions by the added residue. (#35, \#36)
+  enzyme edges. (#35, \#36)
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  and
+  [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
+  now mark target glycans with a logical `target` vertex attribute;
+  `autoplot()` highlights them by default in multi-target networks, with
+  explicit control through `highlight_target`. (#37, \#38)
 
 ## glyenzy 0.7.0
 
