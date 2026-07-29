@@ -2,6 +2,12 @@
 
 ## glyenzy (development version)
 
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  and
+  [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
+  now add a logical `target` vertex attribute indicating which nodes are
+  target glycans. (#37)
+
 - Biosynthesis functions now return typed `glyenzy_biosynthesis_network`
   objects that preserve their `igraph` interface and support
   collision-aware

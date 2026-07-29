@@ -95,8 +95,10 @@ See the "Virtual fallback" section for more details.</p></dd>
     <p>A <code>glyenzy_biosynthesis_network</code> object inheriting from
 <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph::igraph()</a></code> and representing the synthesis path(s). Vertices
 represent glycan structures, with IUPAC-condensed strings in the <code>name</code>
-attribute. Every edge has a <code>step</code> attribute indicating the forward
-synthesis step and an <code>enzyme</code> attribute containing its gene symbol.
+attribute and a logical <code>target</code> attribute indicating whether each vertex
+is a target glycan. Every edge has a <code>step</code> attribute indicating the
+forward synthesis step and an <code>enzyme</code> attribute containing its gene
+symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
 represented by parallel edges.
 When virtual fallback is required, every edge also has an <code>is_virtual</code>

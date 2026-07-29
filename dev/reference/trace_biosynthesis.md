@@ -59,13 +59,14 @@ trace_biosynthesis(
 A `glyenzy_biosynthesis_network` object inheriting from
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html)
 and representing the synthesis path(s). Vertices represent glycan
-structures, with IUPAC-condensed strings in the `name` attribute. Every
-edge has a `step` attribute indicating the forward synthesis step and an
-`enzyme` attribute containing its gene symbol. Multiple enzymes
-catalysing the same substrate-to-product transition are represented by
-parallel edges. When virtual fallback is required, every edge also has
-an `is_virtual` attribute; virtual edges use the structural
-virtual-enzyme name in `enzyme`.
+structures, with IUPAC-condensed strings in the `name` attribute and a
+logical `target` attribute indicating whether each vertex is a target
+glycan. Every edge has a `step` attribute indicating the forward
+synthesis step and an `enzyme` attribute containing its gene symbol.
+Multiple enzymes catalysing the same substrate-to-product transition are
+represented by parallel edges. When virtual fallback is required, every
+edge also has an `is_virtual` attribute; virtual edges use the
+structural virtual-enzyme name in `enzyme`.
 
 For multiple targets, the graph includes all synthesis paths needed to
 reach every target glycan.
