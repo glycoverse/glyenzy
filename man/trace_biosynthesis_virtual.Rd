@@ -22,7 +22,8 @@ concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}
 \value{
 A \code{glyenzy_virtual_biosynthesis_network} object inheriting from
 \code{glyenzy_biosynthesis_network} and \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}}. Vertices contain
-IUPAC-condensed strings in \code{name}; edges have a forward \code{step} and
+IUPAC-condensed strings in \code{name} and a logical \code{target} attribute indicating
+whether each vertex is a target glycan; edges have a forward \code{step} and
 virtual-enzyme \code{enzyme} attribute. When \code{annotate_enzymes} is \code{TRUE},
 \code{concrete_enzymes} is a list of character vectors containing every candidate
 concrete enzyme for each transition.

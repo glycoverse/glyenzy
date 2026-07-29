@@ -253,6 +253,10 @@ test_that("virtual tracing combines multiple targets from one root", {
   expect_setequal(edges$enzyme, c("b4GlcNAcT", "a2FucT"))
   expect_equal(unique(edges$from), "Gal(b1-")
   expect_equal(edges$step, rep(1L, 2L))
+  expect_identical(
+    igraph::V(path)$target,
+    igraph::V(path)$name %in% targets
+  )
 })
 
 test_that("virtual N-glycan labels follow reduced structure levels", {
@@ -329,6 +333,25 @@ test_that("virtual tracing shares a root across partial targets", {
   expect_equal(edges$from, "GalNAc(a1-")
   expect_equal(edges$to, as.character(targets[[2]]))
   expect_equal(edges$enzyme, "GalT")
+})
+
+test_that("virtual tracing flags leniently matched partial targets", {
+  targets <- glyparse::auto_parse(c(
+    "Gal(b1-3)GalNAc(?1-",
+    "GalNAc(a?-"
+  ))
+
+  path <- suppressWarnings(trace_biosynthesis_virtual(targets))
+  vertices <- igraph::as_data_frame(path, what = "vertices")
+
+  expect_setequal(
+    vertices$name,
+    c(
+      "GalNAc(?1-",
+      "Gal(b1-3)GalNAc(?1-"
+    )
+  )
+  expect_identical(vertices$target, rep(TRUE, 2L))
 })
 
 test_that("virtual paths handle a trivial starting target", {

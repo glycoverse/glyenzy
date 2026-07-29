@@ -37,8 +37,10 @@ See the "Virtual fallback" section for more details.}
 A \code{glyenzy_biosynthesis_network} object inheriting from
 \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} and representing the synthesis path(s). Vertices
 represent glycan structures, with IUPAC-condensed strings in the \code{name}
-attribute. Every edge has a \code{step} attribute indicating the forward
-synthesis step and an \code{enzyme} attribute containing its gene symbol.
+attribute and a logical \code{target} attribute indicating whether each vertex
+is a target glycan. Every edge has a \code{step} attribute indicating the
+forward synthesis step and an \code{enzyme} attribute containing its gene
+symbol.
 Multiple enzymes catalysing the same substrate-to-product transition are
 represented by parallel edges.
 When virtual fallback is required, every edge also has an \code{is_virtual}

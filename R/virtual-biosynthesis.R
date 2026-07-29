@@ -40,7 +40,8 @@
 #'
 #' @returns A `glyenzy_virtual_biosynthesis_network` object inheriting from
 #' `glyenzy_biosynthesis_network` and [igraph::igraph()]. Vertices contain
-#' IUPAC-condensed strings in `name`; edges have a forward `step` and
+#' IUPAC-condensed strings in `name` and a logical `target` attribute indicating
+#' whether each vertex is a target glycan; edges have a forward `step` and
 #' virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is `TRUE`,
 #' `concrete_enzymes` is a list of character vectors containing every candidate
 #' concrete enzyme for each transition.
@@ -80,6 +81,11 @@ trace_biosynthesis_virtual <- function(
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)
   }
+  path <- .set_biosynthesis_targets(
+    path,
+    glycans,
+    match = .bfs_target_match(.glycan_structure_level(glycans))
+  )
   .new_biosynthesis_network(path, virtual = TRUE)
 }
 
