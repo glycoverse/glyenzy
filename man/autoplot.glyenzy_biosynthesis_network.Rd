@@ -24,7 +24,8 @@
 biosynthesis function.}
 
 \item{show_enzyme}{Logical. Whether to label reaction edges with enzyme or
-virtual-enzyme names.}
+virtual-enzyme names. Labels that would be too small to render after panel
+fitting are hidden with a warning.}
 
 \item{size}{Positive numeric whole-cartoon scale multiplier passed to
 \code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}. Defaults to \code{0.4}.}

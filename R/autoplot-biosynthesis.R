@@ -4,6 +4,7 @@
 .biosynthesis_label_padding <- 0.06
 .biosynthesis_label_gap <- 0.08
 .biosynthesis_points_per_mm <- 72.27 / 25.4
+.biosynthesis_min_label_size_pt <- 4
 .biosynthesis_default_edge_color <- "#4D4D4D"
 .biosynthesis_residues_by_color <- strsplit(
   c(
@@ -43,7 +44,8 @@
 #' @param object A `glyenzy_biosynthesis_network` object returned by a
 #'   biosynthesis function.
 #' @param show_enzyme Logical. Whether to label reaction edges with enzyme or
-#'   virtual-enzyme names.
+#'   virtual-enzyme names. Labels that would be too small to render after panel
+#'   fitting are hidden with a warning.
 #' @param size Positive numeric whole-cartoon scale multiplier passed to
 #'   [glydraw::geom_node_glycan()]. Defaults to `0.4`.
 #' @param node_gap Non-negative physical clearance, in inches, between glycan
@@ -150,6 +152,36 @@ autoplot.glyenzy_biosynthesis_network <- function(
     max_width = max_panel_width,
     max_height = max_panel_height
   )
+  label_size_pt <- .biosynthesis_label_size *
+    .biosynthesis_points_per_mm *
+    fit_scale
+  if (
+    show_enzyme &&
+      !is.null(geometry$labels) &&
+      nrow(geometry$labels) > 0L &&
+      label_size_pt < .biosynthesis_min_label_size_pt
+  ) {
+    cli::cli_warn(c(
+      "Enzyme labels cannot be rendered at the fitted plot size and have been hidden.",
+      "i" = paste(
+        "Increase the figure size and set {.arg max_panel_width} and",
+        "{.arg max_panel_height} accordingly to display enzyme labels."
+      )
+    ))
+    show_enzyme <- FALSE
+    geometry <- .biosynthesis_plot_geometry(
+      graph,
+      dimensions,
+      node_gap = node_gap,
+      level_gap = level_gap,
+      show_enzyme = show_enzyme
+    )
+    fit_scale <- .biosynthesis_fit_scale(
+      geometry$bounds,
+      max_width = max_panel_width,
+      max_height = max_panel_height
+    )
+  }
   if (fit_scale < 1) {
     geometry <- .biosynthesis_plot_geometry(
       graph,

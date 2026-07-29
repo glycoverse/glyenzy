@@ -313,6 +313,36 @@ test_that("large N-glycan networks fit the default panel limits", {
   expect_gt(file.info(output)$size, 0)
 })
 
+test_that("unrenderable enzyme labels are hidden with a warning", {
+  skip_if_not_installed("ggraph")
+  target <- paste0(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  graph <- trace_biosynthesis(target)
+
+  expect_snapshot(
+    plot <- ggplot2::autoplot(graph)
+  )
+
+  expect_length(plot$layers, 3L)
+  expect_equal(
+    unname(vapply(
+      plot$layers,
+      \(layer) inherits(layer$geom, "GeomLabel"),
+      logical(1)
+    )),
+    rep(FALSE, 3L)
+  )
+
+  larger <- expect_no_warning(ggplot2::autoplot(
+    graph,
+    max_panel_width = Inf,
+    max_panel_height = Inf
+  ))
+  expect_s3_class(larger$layers[[3]]$geom, "GeomLabel")
+})
+
 test_that("converging N-glycan networks use a balanced layered layout", {
   skip_if_not_installed("ggraph")
   target <- paste0(
@@ -353,6 +383,7 @@ test_that("finite plot limits include the complete reported O-glycan path", {
   )
   plot <- ggplot2::autoplot(
     trace_biosynthesis(target),
+    show_enzyme = FALSE,
     max_panel_width = 5,
     max_panel_height = 5
   )
