@@ -17,6 +17,18 @@ test_that("N-glycan starting structures depend on the tracing function", {
   )
 })
 
+test_that("trace_biosynthesis returns starting glycans without enzyme steps", {
+  path <- trace_biosynthesis("GalNAc(a1-")
+
+  vertices <- igraph::as_data_frame(path, what = "vertices")
+  edges <- igraph::as_data_frame(path, what = "edges")
+
+  expect_s3_class(path, "glyenzy_biosynthesis_network")
+  expect_equal(vertices$name, "GalNAc(a1-")
+  expect_equal(vertices$target, TRUE)
+  expect_equal(nrow(edges), 0L)
+})
+
 test_that("trace_biosynthesis works for a high-mannose N-glycan", {
   glycan <- "Man(a1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   path <- trace_biosynthesis(glycan)
