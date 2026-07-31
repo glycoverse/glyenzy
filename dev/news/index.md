@@ -2,6 +2,11 @@
 
 ## glyenzy (development version)
 
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  now returns a single-vertex target network when the target is already
+  the selected starting glycan and no enzymatic steps are required.
+  (#39)
+
 ## glyenzy 0.8.0
 
 ### New features
