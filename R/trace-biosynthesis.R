@@ -90,14 +90,18 @@ trace_biosynthesis <- function(
     filter <- rlang::as_function(filter)
   }
 
+  starting_glycan <- .decide_starting_glycan(glycans[1])
+  targets_requiring_synthesis <- .bfs_targets_requiring_synthesis(
+    starting_glycan,
+    glycans
+  )
   enzymes <- .process_enzymes_arg(
     enzymes,
-    glycans = glycans,
-    apply_prefilter = TRUE
+    glycans = targets_requiring_synthesis,
+    apply_prefilter = length(targets_requiring_synthesis) > 0L
   )
 
   # Find all possible paths using unified BFS logic
-  starting_glycan <- .decide_starting_glycan(glycans[1])
   path <- .perform_bfs_synthesis(
     starting_glycan,
     glycans,

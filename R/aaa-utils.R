@@ -1179,3 +1179,36 @@
   }
   "key"
 }
+
+# Return only targets that are not already satisfied by the starting glycan.
+.bfs_targets_requiring_synthesis <- function(from_g, to_gs) {
+  target_structure_level <- .glycan_structure_level(to_gs)
+  search_structure_level <- .bfs_search_structure_level(target_structure_level)
+  target_match <- .bfs_target_match(target_structure_level)
+
+  from_g <- .reduce_structure_level(from_g, search_structure_level)
+  to_gs <- .reduce_structure_level(to_gs, search_structure_level)
+
+  if (identical(target_match, "key")) {
+    matched <- as.character(to_gs) == as.character(from_g)[1]
+  } else {
+    from_graph <- glyrepr::get_structure_graphs(from_g)
+    target_graphs <- glyrepr::get_structure_graphs(
+      to_gs,
+      return_list = TRUE
+    )
+    matched <- purrr::map_lgl(
+      target_graphs,
+      function(target_graph) {
+        glymotif::.g_have_motif(
+          from_graph,
+          target_graph,
+          alignment = "whole",
+          mode = "lenient"
+        )
+      }
+    )
+  }
+
+  to_gs[!matched]
+}
