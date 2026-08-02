@@ -11,7 +11,7 @@ search. To infer structure-driven paths without enzyme specificity, use
 trace_biosynthesis(
   glycans,
   enzymes = NULL,
-  max_steps = 20,
+  max_steps = NULL,
   filter = NULL,
   max_virtual_steps = 0L
 )
@@ -37,7 +37,10 @@ trace_biosynthesis(
 
 - max_steps:
 
-  Integer, maximum number of enzymatic steps to search. Default is 20.
+  Integer, maximum number of enzymatic steps to search, or `NULL` to
+  infer it from the largest target glycan. The inferred value is the
+  maximum monosaccharide and substituent count plus 4 for N-glycans, and
+  the maximum count minus 1 for other glycans.
 
 - filter:
 
@@ -163,14 +166,14 @@ library(glyparse)
 
 # Rebuild the biosynthetic pathway of a single glycan
 glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
-path <- trace_biosynthesis(glycan, max_steps = 20)
+path <- trace_biosynthesis(glycan)
 
 # Rebuild pathways for multiple glycans
 glycans <- c(
   "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-",
   "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 )
-path <- trace_biosynthesis(glycans, max_steps = 20)
+path <- trace_biosynthesis(glycans)
 
 # View the path
 igraph::as_data_frame(path, what = "edges")
