@@ -7,7 +7,7 @@
 trace_biosynthesis(
   glycans,
   enzymes = NULL,
-  max_steps = 20,
+  max_steps = NULL,
   filter = NULL,
   max_virtual_steps = 0L
 )
@@ -21,8 +21,10 @@ Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 \item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
 objects. If \code{NULL} (default), all available enzymes will be used.}
 
-\item{max_steps}{Integer, maximum number of enzymatic steps to search.
-Default is 20.}
+\item{max_steps}{Integer, maximum number of enzymatic steps to search, or
+\code{NULL} to infer it from the largest target glycan. The inferred value is
+the maximum monosaccharide count plus 4 for N-glycans, and the maximum
+monosaccharide count minus 1 for other glycans.}
 
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return
@@ -144,14 +146,14 @@ library(glyparse)
 
 # Rebuild the biosynthetic pathway of a single glycan
 glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
-path <- trace_biosynthesis(glycan, max_steps = 20)
+path <- trace_biosynthesis(glycan)
 
 # Rebuild pathways for multiple glycans
 glycans <- c(
   "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-",
   "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 )
-path <- trace_biosynthesis(glycans, max_steps = 20)
+path <- trace_biosynthesis(glycans)
 
 # View the path
 igraph::as_data_frame(path, what = "edges")

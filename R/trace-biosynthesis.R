@@ -13,8 +13,10 @@
 #'   Therefore, please make sure `glycans` are not of mixed glycan types.
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
 #'   objects. If `NULL` (default), all available enzymes will be used.
-#' @param max_steps Integer, maximum number of enzymatic steps to search.
-#'   Default is 20.
+#' @param max_steps Integer, maximum number of enzymatic steps to search, or
+#'   `NULL` to infer it from the largest target glycan. The inferred value is
+#'   the maximum monosaccharide count plus 4 for N-glycans, and the maximum
+#'   monosaccharide count minus 1 for other glycans.
 #' @param max_virtual_steps Integer, maximum number of target-directed virtual
 #'   enzyme steps allowed when no fully enzymatic path exists.
 #'   Default is `0L`, which disables virtual fallback.
@@ -62,14 +64,14 @@
 #'
 #' # Rebuild the biosynthetic pathway of a single glycan
 #' glycan <- "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
-#' path <- trace_biosynthesis(glycan, max_steps = 20)
+#' path <- trace_biosynthesis(glycan)
 #'
 #' # Rebuild pathways for multiple glycans
 #' glycans <- c(
 #'   "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-",
 #'   "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-"
 #' )
-#' path <- trace_biosynthesis(glycans, max_steps = 20)
+#' path <- trace_biosynthesis(glycans)
 #'
 #' # View the path
 #' igraph::as_data_frame(path, what = "edges")
@@ -78,13 +80,17 @@
 trace_biosynthesis <- function(
   glycans,
   enzymes = NULL,
-  max_steps = 20,
+  max_steps = NULL,
   filter = NULL,
   max_virtual_steps = 0L
 ) {
   # Parse and validate basic inputs first
   glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
-  checkmate::assert_int(max_steps, lower = 1)
+  if (is.null(max_steps)) {
+    max_steps <- .infer_trace_max_steps(glycans)
+  } else {
+    checkmate::assert_int(max_steps, lower = 1)
+  }
   checkmate::assert_int(max_virtual_steps, lower = 0)
   if (!is.null(filter)) {
     filter <- rlang::as_function(filter)
@@ -117,6 +123,14 @@ trace_biosynthesis <- function(
   .new_biosynthesis_network(
     path
   )
+}
+
+.infer_trace_max_steps <- function(glycans) {
+  max_monosaccharides <- max(glyrepr::count_mono(glycans))
+  if (.is_n_glycan(glycans[1])) {
+    return(max_monosaccharides + 4L)
+  }
+  max_monosaccharides - 1L
 }
 
 .decide_starting_glycan <- function(glycan) {

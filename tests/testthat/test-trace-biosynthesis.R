@@ -17,6 +17,21 @@ test_that("N-glycan starting structures depend on the tracing function", {
   )
 })
 
+test_that("trace_biosynthesis infers max steps from target sizes", {
+  n_glycans <- glyparse::auto_parse(c(
+    "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  ))
+  o_glycans <- glyparse::auto_parse(c(
+    "GalNAc(a1-",
+    "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
+  ))
+
+  expect_null(formals(trace_biosynthesis)$max_steps)
+  expect_identical(.infer_trace_max_steps(n_glycans), 10L)
+  expect_identical(.infer_trace_max_steps(o_glycans), 3L)
+})
+
 test_that("trace_biosynthesis returns starting glycans without enzyme steps", {
   path <- trace_biosynthesis("GalNAc(a1-")
 
