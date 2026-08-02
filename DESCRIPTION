@@ -31,7 +31,7 @@ URL: https://glycoverse.github.io/glyenzy/
 Imports:
     checkmate,
     cli,
-    glydraw (>= 0.7.0),
+    glydraw (>= 0.8.0),
     glymotif (>= 0.17.0),
     glyrepr (>= 0.14.0),
     glyparse (>= 0.5.3),

@@ -60,7 +60,8 @@
 #' @param show_linkage Logical. Whether glycan linkage annotations are shown.
 #'   Defaults to `FALSE` for a compact network.
 #' @param orient Glycan drawing orientation passed to
-#'   [glydraw::geom_node_glycan()].
+#'   [glydraw::geom_node_glycan()]. One of `"left"`, `"right"`, `"up"`, or
+#'   `"down"`; the default is `"left"`.
 #' @param color_edge Logical. Whether reaction edges and enzyme labels use the
 #'   SNFG color of the residue added by each reaction. Defaults to `FALSE`,
 #'   which draws them in dark grey. Concrete and virtual reactions use solid
@@ -115,7 +116,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   height = 6,
   units = c("in", "cm", "mm"),
   show_linkage = FALSE,
-  orient = c("H", "V"),
+  orient = c("left", "right", "up", "down"),
   color_edge = FALSE,
   enzyme_label_style = c("condensed", "full"),
   highlight_target = NULL,

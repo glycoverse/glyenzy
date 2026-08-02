@@ -48,6 +48,31 @@ test_that("biosynthesis autoplot draws typed networks as glycan trees", {
   )
 })
 
+test_that("biosynthesis autoplot supports all glydraw orientations", {
+  skip_if_not_installed("ggraph")
+  graph <- trace_biosynthesis("Gal(b1-3)GalNAc(a1-")
+  orientations <- c("left", "right", "up", "down")
+
+  plots <- lapply(orientations, function(orient) {
+    plot <- ggplot2::autoplot(
+      graph,
+      orient = orient,
+      show_enzyme = FALSE
+    )
+    ggplot2::ggplot_build(plot)
+    plot
+  })
+
+  expect_equal(
+    vapply(
+      plots,
+      function(plot) plot$layers[[3]]$geom_params$orient,
+      character(1)
+    ),
+    orientations
+  )
+})
+
 test_that("biosynthesis autoplot highlights targets in multi-target networks", {
   skip_if_not_installed("ggraph")
   targets <- c(
@@ -543,7 +568,7 @@ test_that("converging N-glycan networks use a balanced layered layout", {
     .collapse_biosynthesis_reactions(graph),
     size = 0.4,
     show_linkage = FALSE,
-    orient = "H",
+    orient = "left",
     dots = list()
   )
   rank_midpoints <- vapply(

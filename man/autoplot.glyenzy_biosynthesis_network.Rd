@@ -14,7 +14,7 @@
   height = 6,
   units = c("in", "cm", "mm"),
   show_linkage = FALSE,
-  orient = c("H", "V"),
+  orient = c("left", "right", "up", "down"),
   color_edge = FALSE,
   enzyme_label_style = c("condensed", "full"),
   highlight_target = NULL,
@@ -49,7 +49,8 @@ retain their natural size and are centered in the figure.}
 Defaults to \code{FALSE} for a compact network.}
 
 \item{orient}{Glycan drawing orientation passed to
-\code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}.}
+\code{\link[glydraw:geom_node_glycan]{glydraw::geom_node_glycan()}}. One of \code{"left"}, \code{"right"}, \code{"up"}, or
+\code{"down"}; the default is \code{"left"}.}
 
 \item{color_edge}{Logical. Whether reaction edges and enzyme labels use the
 SNFG color of the residue added by each reaction. Defaults to \code{FALSE},

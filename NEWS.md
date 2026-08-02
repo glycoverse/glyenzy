@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* `autoplot()` now accepts the four glydraw 0.8.0 orientation values: `"left"`,
+  `"right"`, `"up"`, and `"down"`.
 * `trace_biosynthesis()` now infers `max_steps` from the largest target glycan when it is `NULL`, using its monosaccharide and substituent count plus 4 for N-glycans and minus 1 otherwise; explicit limits remain supported. (#40)
 * `trace_biosynthesis()` now returns a single-vertex target network when the target is already the selected starting glycan and no enzymatic steps are required. (#39)
 
