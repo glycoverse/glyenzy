@@ -25,7 +25,7 @@ autoplot(
   height = 6,
   units = c("in", "cm", "mm"),
   show_linkage = FALSE,
-  orient = c("H", "V"),
+  orient = c("left", "right", "up", "down"),
   color_edge = FALSE,
   enzyme_label_style = c("condensed", "full"),
   highlight_target = NULL,
@@ -82,6 +82,8 @@ autoplot(
 
   Glycan drawing orientation passed to
   [`glydraw::geom_node_glycan()`](https://glycoverse.github.io/glydraw/reference/geom_node_glycan.html).
+  One of `"left"`, `"right"`, `"up"`, or `"down"`; the default is
+  `"left"`.
 
 - color_edge:
 

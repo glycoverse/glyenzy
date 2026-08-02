@@ -38,6 +38,8 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyenzy-development-version">glyenzy (development version)<a class="anchor" aria-label="anchor" href="#glyenzy-development-version"></a></h2>
 <ul><li>
+<code>autoplot()</code> now accepts the four glydraw 0.8.0 orientation values: <code>"left"</code>, <code>"right"</code>, <code>"up"</code>, and <code>"down"</code>.</li>
+<li>
 <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> now infers <code>max_steps</code> from the largest target glycan when it is <code>NULL</code>, using its monosaccharide and substituent count plus 4 for N-glycans and minus 1 otherwise; explicit limits remain supported. (#40)</li>
 <li>
 <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> now returns a single-vertex target network when the target is already the selected starting glycan and no enzymatic steps are required. (#39)</li>
