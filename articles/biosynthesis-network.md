@@ -32,9 +32,9 @@ To build its biosynthesis network, call
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 0995c9d DN-- 4 8 -- 
+#> IGRAPH 5c4b98a DN-- 4 8 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from 0995c9d (vertex names):
+#> + edges from 5c4b98a (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -193,7 +193,7 @@ on these glycans raises an error.
 glycan <- "Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
 try(trace_biosynthesis(glycan))
 #> Error in engine$run() : 
-#>   No synthesis path found for 1 target(s) within 20 steps.
+#>   No synthesis path found for 1 target(s) within 16 steps.
 ```
 
 `max_virtual_steps` defines the maximum number of target-directed

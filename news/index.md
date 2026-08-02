@@ -1,5 +1,22 @@
 # Changelog
 
+## glyenzy 0.8.1
+
+### Minor improvements and fixes
+
+- `autoplot()` now accepts the four glydraw 0.8.0 orientation values:
+  `"left"`, `"right"`, `"up"`, and `"down"`.
+- Enzyme rules for MGAT4 and MGAT5 have been updated.
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  now infers `max_steps` from the largest target glycan when it is
+  `NULL`, using its monosaccharide and substituent count plus 4 for
+  N-glycans and minus 1 otherwise; explicit limits remain supported.
+  (#40)
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  now returns a single-vertex target network when the target is already
+  the selected starting glycan and no enzymatic steps are required.
+  (#39)
+
 ## glyenzy 0.8.0
 
 ### New features
