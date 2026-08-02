@@ -153,13 +153,7 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 #' @returns A named integer vector keyed by node and sulfate.
 #' @noRd
 .match_st_enzyme_path_single <- function(glycan, enzyme_name, enzymes) {
-  n_substituents <- glyrepr::count_mono(glycan, include_subs = TRUE) -
-    glyrepr::count_mono(glycan)
-  path <- trace_biosynthesis(
-    glycan,
-    enzymes = enzymes,
-    max_steps = .infer_trace_max_steps(glycan) + n_substituents
-  )
+  path <- trace_biosynthesis(glycan, enzymes = enzymes)
   edges <- igraph::as_data_frame(path, what = "edges")
   edges <- edges[edges$enzyme == enzyme_name, , drop = FALSE]
   if (nrow(edges) == 0L) {

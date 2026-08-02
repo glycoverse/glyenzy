@@ -23,8 +23,8 @@ objects. If \code{NULL} (default), all available enzymes will be used.}
 
 \item{max_steps}{Integer, maximum number of enzymatic steps to search, or
 \code{NULL} to infer it from the largest target glycan. The inferred value is
-the maximum monosaccharide count plus 4 for N-glycans, and the maximum
-monosaccharide count minus 1 for other glycans.}
+the maximum monosaccharide and substituent count plus 4 for N-glycans,
+and the maximum count minus 1 for other glycans.}
 
 \item{filter}{Optional function to filter generated glycans at each step.
 Should take a \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector as input and return

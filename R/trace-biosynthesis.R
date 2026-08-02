@@ -15,8 +15,8 @@
 #'   objects. If `NULL` (default), all available enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search, or
 #'   `NULL` to infer it from the largest target glycan. The inferred value is
-#'   the maximum monosaccharide count plus 4 for N-glycans, and the maximum
-#'   monosaccharide count minus 1 for other glycans.
+#'   the maximum monosaccharide and substituent count plus 4 for N-glycans,
+#'   and the maximum count minus 1 for other glycans.
 #' @param max_virtual_steps Integer, maximum number of target-directed virtual
 #'   enzyme steps allowed when no fully enzymatic path exists.
 #'   Default is `0L`, which disables virtual fallback.
@@ -126,11 +126,11 @@ trace_biosynthesis <- function(
 }
 
 .infer_trace_max_steps <- function(glycans) {
-  max_monosaccharides <- max(glyrepr::count_mono(glycans))
+  max_components <- max(glyrepr::count_mono(glycans, include_subs = TRUE))
   if (.is_n_glycan(glycans[1])) {
-    return(max_monosaccharides + 4L)
+    return(max_components + 4L)
   }
-  max_monosaccharides - 1L
+  max_components - 1L
 }
 
 .decide_starting_glycan <- function(glycan) {
