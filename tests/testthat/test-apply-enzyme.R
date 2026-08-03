@@ -438,7 +438,10 @@ test_that("fucosylation of H (Type 1)", {
     "Fuc(a1-2)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
   )
   expect_equal(as.character(res[["FUT4"]]), character(0))
-  expect_equal(as.character(res[["FUT5"]]), character(0))
+  expect_equal(
+    as.character(res[["FUT5"]]),
+    "Fuc(a1-2)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT6"]]), character(0))
   expect_equal(as.character(res[["FUT7"]]), character(0))
   expect_equal(as.character(res[["FUT9"]]), character(0))
@@ -467,7 +470,7 @@ test_that("fucosylation of Type 1 chain", {
   names(res) <- enzymes
   expect_equal(as.character(res[["FUT3"]]), "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-")
   expect_equal(as.character(res[["FUT4"]]), character(0))
-  expect_equal(as.character(res[["FUT5"]]), character(0))
+  expect_equal(as.character(res[["FUT5"]]), "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-")
   expect_equal(as.character(res[["FUT6"]]), character(0))
   expect_equal(as.character(res[["FUT7"]]), character(0))
   expect_equal(as.character(res[["FUT9"]]), character(0))
@@ -483,7 +486,10 @@ test_that("fucosylation of sialylated Type 1 chain", {
     "Neu5Ac(a2-3)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
   )
   expect_equal(as.character(res[["FUT4"]]), character(0))
-  expect_equal(as.character(res[["FUT5"]]), character(0))
+  expect_equal(
+    as.character(res[["FUT5"]]),
+    "Neu5Ac(a2-3)Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+  )
   expect_equal(as.character(res[["FUT6"]]), character(0))
   expect_equal(as.character(res[["FUT7"]]), character(0))
   expect_equal(as.character(res[["FUT9"]]), character(0))
