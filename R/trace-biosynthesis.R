@@ -176,10 +176,18 @@ trace_biosynthesis <- function(
     )
   ) {
     start <- glyparse::parse_iupac_condensed("Glc(b1-")
+  } else if (
+    .have_motif_substituent_subset(
+      glycan,
+      "Gal(b1-",
+      alignment = "core"
+    )
+  ) {
+    start <- glyparse::parse_iupac_condensed("Gal(b1-")
   } else {
     cli::cli_abort(c(
       "Cannot decide the starting point for the given glycan(s).",
-      "i" = "Currenly, only N-glycans and O-glycans are supported."
+      "i" = "The reducing-end residue is not a supported starting point."
     ))
   }
   start
