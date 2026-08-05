@@ -155,6 +155,8 @@ new_enzyme <- function(name, rules, type, species) {
 .enzyme_classes <- function(name, type) {
   starter_gts <- c(
     "DPAGT1",
+    "UGCG",
+    "UGT8",
     "FUT10",
     "FUT11",
     "POFUT1",
