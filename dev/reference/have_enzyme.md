@@ -44,9 +44,12 @@ package.
 ### Applicability
 
 Known-enzyme algorithms and enzyme information in glyenzy are applicable
-only to humans, and specifically to N-glycans and O-glycans. Results may
-be inaccurate for other types of glycans (e.g., GAGs, glycolipids) or
-for glycans in other species (e.g., plants, insects).
+only to humans. Curated coverage is strongest for N-glycans and
+O-glycans and also includes selected glycosphingolipid headgroups and
+other glycan contexts. Lipid and protein aglycones are not represented,
+so glycolipid rules model the carbohydrate headgroup with ceramide
+omitted. Results may be inaccurate for unsupported glycan contexts or
+other species (e.g., plants, insects).
 
 ### Inclusiveness
 

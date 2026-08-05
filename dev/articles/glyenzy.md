@@ -102,7 +102,7 @@ For an existing glycan, `glyenzy` can help answer four common questions:
   enzymes?
   ([`match_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/match_enzyme.md))
 
-Behind the scenes, glyenzy has catalogued the reaction rules of 158
+Behind the scenes, glyenzy has catalogued the reaction rules of 163
 enzymes in its enzyme database. Use `enzyme("MGAT3")` to inspect a
 specific enzyme rule.
 
@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH c66800f DN-- 4 8 -- 
+#> IGRAPH a4f7203 DN-- 4 8 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from c66800f (vertex names):
+#> + edges from a4f7203 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -269,12 +269,14 @@ Here are the main caveats to keep in mind when using `glyenzy`:
 
 ### Species and Scope
 
-glyenzy is currently a human-centric package, focusing specifically on
-N-glycans and O-glycans. Its sulfotransferase rules likewise cover
-canonical N- and O-glycan contexts, not glycosaminoglycans, O-Xyl
-glycans, glycolipids, or protein sulfation. If you’re working with these
-contexts, or with glycans from mouse, plants, or insects, the results
-might not be accurate.
+glyenzy is currently a human-centric package. Its coverage is strongest
+for N-glycans and O-glycans, with selected glycosphingolipid headgroups
+and other glycan contexts also represented. Lipid and protein aglycones
+are not encoded, so glycolipid rules operate on carbohydrate headgroups
+with ceramide omitted. The sulfotransferase rules cover canonical N- and
+O-glycan contexts, not glycosaminoglycans, O-Xyl glycans, glycolipids,
+or protein sulfation. Results for unsupported contexts, or for mouse,
+plants, or insects, might not be accurate.
 
 ### Inclusive Candidate Calls
 

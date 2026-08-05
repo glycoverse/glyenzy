@@ -2,6 +2,12 @@
 
 ## glyenzy (development version)
 
+- Add human glycolipid glycosyltransferases `UGCG`, `UGT8`, `B4GALT5`,
+  `B4GALT6`, and `ST3GAL5`; complete ganglioside rules for `B3GALT4`,
+  `B4GALNT1`, and `ST8SIA1`; and correct glycolipid rules for
+  `ST6GALNAC3` and `ST8SIA5`. Glycolipid rules model carbohydrate
+  headgroups with ceramide omitted. (#42)
+
 - Built-in reaction rules now use reviewed acceptor and linkage
   specificity and include documented secondary activities for 15
   glycosyltransferases. (#41)
