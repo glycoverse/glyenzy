@@ -103,7 +103,7 @@ enzyme("ST3GAL3")
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
 #> 
-#> ── Rules (2) ──
+#> ── Rules (3) ──
 #> 
 #> → Rule 1: terminal alignment
 #> Acceptor: "Gal(b1-3)GlcNAc(b1-"
@@ -115,4 +115,7 @@ enzyme("ST3GAL3")
 #> Product: "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
 #> Rejects:
 #> "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
+#> → Rule 3: core alignment
+#> Acceptor: "Gal(b1-3)GalNAc(a1-"
+#> Product: "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
 ```
