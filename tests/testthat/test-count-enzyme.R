@@ -195,7 +195,7 @@ test_that("count_enzyme works for FUT10", {
 })
 
 test_that("count_enzyme works for POGLUT2", {
-  expect_equal(count_enzyme("Xyl(a1-3)Glc(a1-", "POGLUT2"), 1L)
+  expect_equal(count_enzyme("Xyl(a1-3)Glc(b1-", "POGLUT2"), 1L)
   expect_equal(count_enzyme(glyrepr::o_glycan_core_1(), "POGLUT2"), 0L)
 })
 

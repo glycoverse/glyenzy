@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* Built-in reaction rules now use reviewed acceptor and linkage specificity and include documented secondary activities for 15 glycosyltransferases. (#41)
+
 # glyenzy 0.8.1
 
 ## Minor improvements and fixes
