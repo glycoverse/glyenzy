@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* New `enzymes_from_rnaseq()` selects built-in enzymes whose genes meet a configurable mean TPM threshold, using the GlycoMaple cutoff of TPM = 1 by default.
+* New `enzymes_from_rnaseq()` selects built-in enzymes whose genes meet a configurable mean TPM threshold, using the GlycoMaple cutoff of TPM = 1 by default. (#43)
 
 * Add human glycolipid glycosyltransferases `UGCG`, `UGT8`, `B4GALT5`, `B4GALT6`, and `ST3GAL5`; complete ganglioside rules for `B3GALT4`, `B4GALNT1`, and `ST8SIA1`; and correct glycolipid rules for `ST6GALNAC3` and `ST8SIA5`. Glycolipid rules model carbohydrate headgroups with ceramide omitted. (#42)
 
