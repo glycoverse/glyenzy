@@ -4,3 +4,29 @@ template:
 
 development:
   mode: auto
+
+reference:
+- title: Enzymes
+  contents:
+  - enzyme
+  - db_enzymes
+  - enzymes_from_rnaseq
+  - make_enzyme
+  - print.glyenzy_enzyme
+  - view_enzyme
+- title: Enzyme actions
+  contents:
+  - apply_enzyme
+  - have_enzyme
+  - count_enzyme
+  - match_enzyme
+  - find_enzyme
+- title: Biosynthesis
+  contents:
+  - grow_glycans
+  - grow_glycans_step
+  - path_biosynthesis
+  - path_biosynthesis_virtual
+  - trace_biosynthesis
+  - trace_biosynthesis_virtual
+  - autoplot.glyenzy_biosynthesis_network
