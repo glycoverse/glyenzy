@@ -1,25 +1,3 @@
-.new_test_glyco_se <- function(
-  class,
-  abundance,
-  row_data,
-  col_data = NULL,
-  metadata = list()
-) {
-  args <- list(
-    assays = list(abundance = abundance),
-    metadata = metadata
-  )
-  if (!is.null(col_data)) {
-    args$colData <- col_data
-  }
-  se <- do.call(SummarizedExperiment::SummarizedExperiment, args)
-  for (column in names(row_data)) {
-    SummarizedExperiment::rowData(se)[[column]] <- row_data[[column]]
-  }
-  loadNamespace("glyexp")
-  methods::new(class, se)
-}
-
 test_that("product_substrate_ratio calculates glycomics rule sums", {
   structures <- glyparse::auto_parse(c(
     "Gal(b1-4)GlcNAc(b1-",
@@ -36,16 +14,13 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
     group = c("control", "case"),
     row.names = colnames(abundance)
   )
-  exp <- .new_test_glyco_se(
-    "GlycomicSE",
-    abundance,
-    row_data = list(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
-      glycan_structure = structures
-    ),
-    col_data = col_data,
-    metadata = list(glycan_type = "N", source = "test")
-  )
+  exp <- glyexp::real_experiment2[seq_len(3), seq_len(2)]
+  rownames(exp) <- rownames(abundance)
+  colnames(exp) <- colnames(abundance)
+  SummarizedExperiment::assay(exp) <- abundance
+  SummarizedExperiment::rowData(exp)$glycan_structure <- structures
+  SummarizedExperiment::colData(exp) <- col_data
+  S4Vectors::metadata(exp) <- list(glycan_type = "N", source = "test")
   enzyme <- make_enzyme(
     name = "TEST_GT",
     rules = list(
@@ -132,22 +107,23 @@ test_that("product_substrate_ratio is site specific and keeps site order", {
     byrow = TRUE,
     dimnames = list(paste0("G", 1:4), c("S1", "S2"))
   )
-  row_data <- list(
-    protein = c("P2", "P2", "P1", "P1"),
-    protein_site = c(20L, 20L, NA_integer_, NA_integer_),
-    glycan_composition = glyrepr::as_glycan_composition(structures),
-    glycan_structure = structures
+  exp <- glyexp::real_experiment[seq_len(4), seq_len(2)]
+  rownames(exp) <- rownames(abundance)
+  colnames(exp) <- colnames(abundance)
+  SummarizedExperiment::assay(exp) <- abundance
+  SummarizedExperiment::rowData(exp)$protein <- c("P2", "P2", "P1", "P1")
+  SummarizedExperiment::rowData(exp)$protein_site <- c(
+    20L,
+    20L,
+    NA_integer_,
+    NA_integer_
   )
-  exp <- .new_test_glyco_se(
-    "GlycoproteomicSE",
-    abundance,
-    row_data = row_data,
-    col_data = S4Vectors::DataFrame(
-      batch = c("A", "B"),
-      row.names = colnames(abundance)
-    ),
-    metadata = list(glycan_type = "N", source = "test")
+  SummarizedExperiment::rowData(exp)$glycan_structure <- structures
+  SummarizedExperiment::colData(exp) <- S4Vectors::DataFrame(
+    batch = c("A", "B"),
+    row.names = colnames(abundance)
   )
+  S4Vectors::metadata(exp) <- list(glycan_type = "N", source = "test")
   enzyme <- make_enzyme(
     name = "TEST_GT",
     rules = list(list(
@@ -191,15 +167,12 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
     ncol = 1,
     dimnames = list(c("G1", "G2"), "S1")
   )
-  exp <- .new_test_glyco_se(
-    "GlycomicSE",
-    abundance,
-    row_data = list(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
-      glycan_structure = structures
-    ),
-    metadata = list(glycan_type = "N")
-  )
+  exp <- glyexp::real_experiment2[seq_len(2), 1, drop = FALSE]
+  rownames(exp) <- rownames(abundance)
+  colnames(exp) <- colnames(abundance)
+  SummarizedExperiment::assay(exp) <- abundance
+  SummarizedExperiment::rowData(exp)$glycan_structure <- structures
+  S4Vectors::metadata(exp) <- list(glycan_type = "N")
   plain <- make_enzyme(
     name = "PLAIN",
     rules = list(list(
@@ -239,23 +212,18 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
 
 test_that("product_substrate_ratio validates its inputs", {
   structures <- glyparse::auto_parse("Gal(b1-4)GlcNAc(b1-")
-  exp <- .new_test_glyco_se(
-    "GlycomicSE",
-    matrix(1, nrow = 1, dimnames = list("G1", "S1")),
-    row_data = list(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
-      glycan_structure = structures
-    ),
-    metadata = list(glycan_type = "N")
+  exp <- glyexp::real_experiment2[1, 1, drop = FALSE]
+  rownames(exp) <- "G1"
+  colnames(exp) <- "S1"
+  SummarizedExperiment::assay(exp) <- matrix(
+    1,
+    nrow = 1,
+    dimnames = list("G1", "S1")
   )
-  missing_structure <- .new_test_glyco_se(
-    "GlycomicSE",
-    matrix(1, nrow = 1, dimnames = list("G1", "S1")),
-    row_data = list(
-      glycan_composition = glyrepr::as_glycan_composition(structures)
-    ),
-    metadata = list(glycan_type = "N")
-  )
+  SummarizedExperiment::rowData(exp)$glycan_structure <- structures
+  S4Vectors::metadata(exp) <- list(glycan_type = "N")
+  missing_structure <- exp
+  SummarizedExperiment::rowData(missing_structure)$glycan_structure <- NULL
   empty_enzyme <- new_enzyme("EMPTY", list(), "GT", "human")
 
   expect_snapshot(error = TRUE, {
