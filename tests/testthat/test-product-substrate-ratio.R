@@ -17,7 +17,7 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
   exp <- glyexp::GlycomicSE(
     abundance,
     rowData = S4Vectors::DataFrame(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
       glycan_structure = structures,
       row.names = rownames(abundance)
     ),
@@ -113,7 +113,7 @@ test_that("product_substrate_ratio is site specific and keeps site order", {
   row_data <- S4Vectors::DataFrame(
     protein = c("P2", "P2", "P1", "P1"),
     protein_site = c(20L, 20L, NA_integer_, NA_integer_),
-    glycan_composition = glyrepr::as_glycan_composition(structures),
+    glycan_composition = I(glyrepr::as_glycan_composition(structures)),
     glycan_structure = structures,
     row.names = rownames(abundance)
   )
@@ -172,7 +172,7 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
   exp <- glyexp::GlycomicSE(
     abundance,
     rowData = S4Vectors::DataFrame(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
       glycan_structure = structures,
       row.names = rownames(abundance)
     ),
@@ -220,7 +220,7 @@ test_that("product_substrate_ratio validates its inputs", {
   exp <- glyexp::GlycomicSE(
     matrix(1, nrow = 1, dimnames = list("G1", "S1")),
     rowData = S4Vectors::DataFrame(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
       glycan_structure = structures,
       row.names = "G1"
     ),
@@ -229,7 +229,7 @@ test_that("product_substrate_ratio validates its inputs", {
   missing_structure <- glyexp::GlycomicSE(
     matrix(1, nrow = 1, dimnames = list("G1", "S1")),
     rowData = S4Vectors::DataFrame(
-      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
       row.names = "G1"
     ),
     metadata = list(glycan_type = "N")
