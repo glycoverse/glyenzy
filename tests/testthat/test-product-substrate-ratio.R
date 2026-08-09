@@ -16,6 +16,7 @@
   for (column in names(row_data)) {
     SummarizedExperiment::rowData(se)[[column]] <- row_data[[column]]
   }
+  loadNamespace("glyexp")
   methods::new(class, se)
 }
 
