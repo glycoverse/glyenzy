@@ -23,16 +23,16 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: 'release'}
+          - {os: macos-latest,   r: 'release', use-public-rspm: false}
 
-          - {os: windows-latest, r: 'release'}
+          - {os: windows-latest, r: 'release', use-public-rspm: true}
 
-          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,  r: 'release'}
-          - {os: ubuntu-latest,  r: 'oldrel-1'}
-          - {os: ubuntu-latest,  r: 'oldrel-2'}
-          - {os: ubuntu-latest,  r: 'oldrel-3'}
-          - {os: ubuntu-latest,  r: 'oldrel-4'}
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release', use-public-rspm: true}
+          - {os: ubuntu-latest,  r: 'release', use-public-rspm: true}
+          - {os: ubuntu-latest,  r: 'oldrel-1', use-public-rspm: true}
+          - {os: ubuntu-latest,  r: 'oldrel-2', use-public-rspm: true}
+          - {os: ubuntu-latest,  r: 'oldrel-3', use-public-rspm: false}
+          - {os: ubuntu-latest,  r: 'oldrel-4', use-public-rspm: false}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -47,7 +47,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
+          use-public-rspm: ${{ matrix.config.use-public-rspm }}
           extra-repositories: 'https://glycoverse.r-universe.dev'
 
       - uses: r-lib/actions/setup-r-dependencies@v2
