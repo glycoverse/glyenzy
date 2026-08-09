@@ -23,16 +23,16 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-latest,   r: 'release', use-public-rspm: false}
+          - {os: macos-latest,   r: 'release'}
 
-          - {os: windows-latest, r: 'release', use-public-rspm: true}
+          - {os: windows-latest, r: 'release'}
 
-          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release', use-public-rspm: true}
-          - {os: ubuntu-latest,  r: 'release', use-public-rspm: true}
-          - {os: ubuntu-latest,  r: 'oldrel-1', use-public-rspm: true}
-          - {os: ubuntu-latest,  r: 'oldrel-2', use-public-rspm: true}
-          - {os: ubuntu-latest,  r: 'oldrel-3', use-public-rspm: false}
-          - {os: ubuntu-latest,  r: 'oldrel-4', use-public-rspm: false}
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest,  r: 'oldrel-1'}
+          - {os: ubuntu-latest,  r: 'oldrel-2'}
+          - {os: ubuntu-latest,  r: 'oldrel-3'}
+          - {os: ubuntu-latest,  r: 'oldrel-4'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -47,8 +47,12 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: ${{ matrix.config.use-public-rspm }}
+          use-public-rspm: true
           extra-repositories: 'https://glycoverse.r-universe.dev'
+
+      - name: Use official Bioconductor mirror on old R
+        if: matrix.config.r == 'oldrel-3' || matrix.config.r == 'oldrel-4'
+        run: echo "R_BIOC_MIRROR=https://bioconductor.org" >> "$GITHUB_ENV"
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
