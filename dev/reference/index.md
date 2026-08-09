@@ -27,6 +27,8 @@
   : Match Residues Added or Modified by an Enzyme
 - [`find_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/find_enzyme.md)
   : Identify Potentially Involved Enzymes
+- [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/dev/reference/product_substrate_ratio.md)
+  : Calculate Product-Substrate Ratios
 
 ## Biosynthesis
 
