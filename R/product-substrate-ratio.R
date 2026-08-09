@@ -222,7 +222,7 @@ product_substrate_ratio <- function(exp, enzymes) {
   alignment
 ) {
   row_data <- SummarizedExperiment::rowData(exp)
-  motif_counts <- .count_motifs(
+  motif_counts <- .count_motifs_substituent_subset(
     row_data$glycan_structure,
     motifs,
     alignments = rep(alignment, length(motifs))

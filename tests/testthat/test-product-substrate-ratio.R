@@ -210,6 +210,40 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
   )
 })
 
+test_that("product_substrate_ratio uses substituent-subset motif matching", {
+  structures <- glyparse::auto_parse(c(
+    "Gal3S6S(b1-",
+    "Gal3S(b1-"
+  ))
+  exp <- glyexp::real_experiment2[seq_len(2), 1, drop = FALSE]
+  rownames(exp) <- c("G1", "G2")
+  colnames(exp) <- "S1"
+  SummarizedExperiment::assay(exp) <- matrix(
+    c(6, 2),
+    ncol = 1,
+    dimnames = list(c("G1", "G2"), "S1")
+  )
+  SummarizedExperiment::rowData(exp)$glycan_structure <- structures
+  sulfate_transferase <- make_enzyme(
+    name = "TEST_ST6",
+    rules = list(list(
+      acceptor = "Gal(b1-",
+      acceptor_alignment = "whole",
+      rejects = NULL,
+      product = "Gal6S(b1-"
+    )),
+    type = "ST",
+    species = "human"
+  )
+
+  result <- product_substrate_ratio(exp, list(sulfate_transferase))
+
+  expect_equal(
+    unname(SummarizedExperiment::assay(result)[1, 1]),
+    6 / 8
+  )
+})
+
 test_that("product_substrate_ratio validates its inputs", {
   structures <- glyparse::auto_parse("Gal(b1-4)GlcNAc(b1-")
   exp <- glyexp::real_experiment2[1, 1, drop = FALSE]
