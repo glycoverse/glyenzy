@@ -1,8 +1,9 @@
 # glyenzy (development version)
 
-* New `product_substrate_ratio()` calculates enzyme product-to-substrate motif
-  quantification ratios from glycomics or site-specific glycoproteomics data,
-  using lenient motif matching for partial or reduced structures. (#44)
+* New `product_substrate_ratio()` calculates glycosyltransferase and
+  sulfotransferase product-to-substrate motif quantification ratios from
+  glycomics or site-specific glycoproteomics data, using lenient motif matching
+  for partial or reduced structures. (#44)
 
 * New `enzymes_from_rnaseq()` selects built-in enzymes whose genes meet a configurable mean TPM threshold, using the GlycoMaple cutoff of TPM = 1 by default. (#43)
 

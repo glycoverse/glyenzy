@@ -1,8 +1,9 @@
 #' Calculate Product-Substrate Ratios
 #'
 #' Calculate the ratio between the motif quantification of enzyme products and
-#' substrates. For glycoproteomics data, ratios are calculated independently
-#' for each glycosite.
+#' substrates for glycosyltransferases and sulfotransferases. For
+#' glycoproteomics data, ratios are calculated independently for each
+#' glycosite.
 #'
 #' Each rule contributes its product and acceptor motif once. Quantifications
 #' are summed across all rules of an enzyme before division, including when
@@ -14,9 +15,10 @@
 #' functions.
 #'
 #' @param exp A [glyexp::GlycomicSE()] or [glyexp::GlycoproteomicSE()] object.
-#' @param enzymes A character vector of enzyme names or a list of [enzyme()]
-#'   objects. Starter glycosyltransferases are not supported because their
-#'   substrates are not glycans.
+#' @param enzymes A character vector of glycosyltransferase or sulfotransferase
+#'   names, or a list of their [enzyme()] objects. Starter
+#'   glycosyltransferases are not supported because their substrates are not
+#'   glycans.
 #'
 #' @returns A plain [SummarizedExperiment::SummarizedExperiment()] with a
 #'   `product_substrate_ratio` assay. For glycomics data, `rowData()` contains
@@ -137,6 +139,17 @@ product_substrate_ratio <- function(exp, enzymes) {
   enzymes <- .enzymes_from_arg(enzymes)
   if (length(enzymes) == 0L) {
     cli::cli_abort("{.arg enzymes} must not be empty.")
+  }
+
+  unsupported_type <- !purrr::map_lgl(
+    enzymes,
+    \(enzyme) enzyme$type %in% c("GT", "ST")
+  )
+  if (any(unsupported_type)) {
+    cli::cli_abort(c(
+      "{.fn product_substrate_ratio} only supports glycosyltransferases and sulfotransferases.",
+      "x" = "Unsupported enzymes: {.val {names(enzymes)[unsupported_type]}}."
+    ))
   }
 
   no_rules <- purrr::map_lgl(enzymes, \(enzyme) length(enzyme$rules) == 0L)

@@ -9,9 +9,10 @@ product_substrate_ratio(exp, enzymes)
 \arguments{
 \item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
 
-\item{enzymes}{A character vector of enzyme names or a list of \code{\link[=enzyme]{enzyme()}}
-objects. Starter glycosyltransferases are not supported because their
-substrates are not glycans.}
+\item{enzymes}{A character vector of glycosyltransferase or sulfotransferase
+names, or a list of their \code{\link[=enzyme]{enzyme()}} objects. Starter
+glycosyltransferases are not supported because their substrates are not
+glycans.}
 }
 \value{
 A plain \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} with a
@@ -21,8 +22,9 @@ A plain \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedE
 }
 \description{
 Calculate the ratio between the motif quantification of enzyme products and
-substrates. For glycoproteomics data, ratios are calculated independently
-for each glycosite.
+substrates for glycosyltransferases and sulfotransferases. For
+glycoproteomics data, ratios are calculated independently for each
+glycosite.
 }
 \details{
 Each rule contributes its product and acceptor motif once. Quantifications

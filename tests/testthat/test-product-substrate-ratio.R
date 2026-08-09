@@ -275,6 +275,15 @@ test_that("product_substrate_ratio validates its inputs", {
     product_substrate_ratio(exp, "UNKNOWN")
   })
   expect_snapshot(error = TRUE, {
+    product_substrate_ratio(exp, c("ST6GAL1", "MAN2A1"))
+  })
+  expect_snapshot(error = TRUE, {
+    product_substrate_ratio(
+      exp,
+      list(enzyme("ST6GAL1"), enzyme("MAN2A1"))
+    )
+  })
+  expect_snapshot(error = TRUE, {
     product_substrate_ratio(exp, list(empty_enzyme))
   })
   expect_snapshot(error = TRUE, {

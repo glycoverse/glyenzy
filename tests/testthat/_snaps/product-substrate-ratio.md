@@ -26,6 +26,24 @@
 ---
 
     Code
+      product_substrate_ratio(exp, c("ST6GAL1", "MAN2A1"))
+    Condition
+      Error in `.product_substrate_enzymes()`:
+      ! `product_substrate_ratio()` only supports glycosyltransferases and sulfotransferases.
+      x Unsupported enzymes: "MAN2A1".
+
+---
+
+    Code
+      product_substrate_ratio(exp, list(enzyme("ST6GAL1"), enzyme("MAN2A1")))
+    Condition
+      Error in `.product_substrate_enzymes()`:
+      ! `product_substrate_ratio()` only supports glycosyltransferases and sulfotransferases.
+      x Unsupported enzymes: "MAN2A1".
+
+---
+
+    Code
       product_substrate_ratio(exp, list(empty_enzyme))
     Condition
       Error in `.product_substrate_enzymes()`:
