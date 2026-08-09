@@ -39,3 +39,9 @@ exp <- glyexp::real_experiment2[seq_len(10), seq_len(3)]
 product_substrate_ratio(exp, "ST6GAL1")
 
 }
+\references{
+Bao B, Kellman BP, Chiang AWT, et al. (2021). Correcting for sparsity and
+interdependence in glycomics by accounting for glycan biosynthesis.
+\emph{Nature Communications}, 12, 4988.
+\href{https://doi.org/10.1038/s41467-021-25183-5}{doi:10.1038/s41467-021-25183-5}
+}
