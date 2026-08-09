@@ -34,6 +34,7 @@ Imports:
     checkmate,
     cli,
     glydraw (>= 0.8.0),
+    glyexp (>= 0.15.0),
     glymotif (>= 0.17.0),
     glyrepr (>= 0.14.0),
     glyparse (>= 0.5.3),
@@ -44,7 +45,9 @@ Imports:
     rlang,
     tibble,
     R6,
-    ggplot2
+    ggplot2,
+    S4Vectors,
+    SummarizedExperiment
 Depends: 
     R (>= 4.1)
 LazyData: true

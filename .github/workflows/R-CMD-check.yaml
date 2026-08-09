@@ -50,6 +50,10 @@ jobs:
           use-public-rspm: true
           extra-repositories: 'https://glycoverse.r-universe.dev'
 
+      - name: Use official Bioconductor mirror on old R
+        if: matrix.config.r == 'oldrel-3' || matrix.config.r == 'oldrel-4'
+        run: echo "R_BIOC_MIRROR=https://bioconductor.org" >> "$GITHUB_ENV"
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck

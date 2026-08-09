@@ -21,6 +21,7 @@ reference:
   - count_enzyme
   - match_enzyme
   - find_enzyme
+  - product_substrate_ratio
 - title: Biosynthesis
   contents:
   - grow_glycans
