@@ -1,3 +1,24 @@
+.new_test_glyco_se <- function(
+  class,
+  abundance,
+  row_data,
+  col_data = NULL,
+  metadata = list()
+) {
+  args <- list(
+    assays = list(abundance = abundance),
+    metadata = metadata
+  )
+  if (!is.null(col_data)) {
+    args$colData <- col_data
+  }
+  se <- do.call(SummarizedExperiment::SummarizedExperiment, args)
+  for (column in names(row_data)) {
+    SummarizedExperiment::rowData(se)[[column]] <- row_data[[column]]
+  }
+  methods::new(class, se)
+}
+
 test_that("product_substrate_ratio calculates glycomics rule sums", {
   structures <- glyparse::auto_parse(c(
     "Gal(b1-4)GlcNAc(b1-",
@@ -14,14 +35,14 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
     group = c("control", "case"),
     row.names = colnames(abundance)
   )
-  exp <- glyexp::GlycomicSE(
+  exp <- .new_test_glyco_se(
+    "GlycomicSE",
     abundance,
-    rowData = S4Vectors::DataFrame(
-      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
-      glycan_structure = structures,
-      row.names = rownames(abundance)
+    row_data = list(
+      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_structure = structures
     ),
-    colData = col_data,
+    col_data = col_data,
     metadata = list(glycan_type = "N", source = "test")
   )
   enzyme <- make_enzyme(
@@ -110,17 +131,17 @@ test_that("product_substrate_ratio is site specific and keeps site order", {
     byrow = TRUE,
     dimnames = list(paste0("G", 1:4), c("S1", "S2"))
   )
-  row_data <- S4Vectors::DataFrame(
+  row_data <- list(
     protein = c("P2", "P2", "P1", "P1"),
     protein_site = c(20L, 20L, NA_integer_, NA_integer_),
-    glycan_composition = I(glyrepr::as_glycan_composition(structures)),
-    glycan_structure = structures,
-    row.names = rownames(abundance)
+    glycan_composition = glyrepr::as_glycan_composition(structures),
+    glycan_structure = structures
   )
-  exp <- glyexp::GlycoproteomicSE(
+  exp <- .new_test_glyco_se(
+    "GlycoproteomicSE",
     abundance,
-    rowData = row_data,
-    colData = S4Vectors::DataFrame(
+    row_data = row_data,
+    col_data = S4Vectors::DataFrame(
       batch = c("A", "B"),
       row.names = colnames(abundance)
     ),
@@ -169,12 +190,12 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
     ncol = 1,
     dimnames = list(c("G1", "G2"), "S1")
   )
-  exp <- glyexp::GlycomicSE(
+  exp <- .new_test_glyco_se(
+    "GlycomicSE",
     abundance,
-    rowData = S4Vectors::DataFrame(
-      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
-      glycan_structure = structures,
-      row.names = rownames(abundance)
+    row_data = list(
+      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_structure = structures
     ),
     metadata = list(glycan_type = "N")
   )
@@ -217,20 +238,20 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
 
 test_that("product_substrate_ratio validates its inputs", {
   structures <- glyparse::auto_parse("Gal(b1-4)GlcNAc(b1-")
-  exp <- glyexp::GlycomicSE(
+  exp <- .new_test_glyco_se(
+    "GlycomicSE",
     matrix(1, nrow = 1, dimnames = list("G1", "S1")),
-    rowData = S4Vectors::DataFrame(
-      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
-      glycan_structure = structures,
-      row.names = "G1"
+    row_data = list(
+      glycan_composition = glyrepr::as_glycan_composition(structures),
+      glycan_structure = structures
     ),
     metadata = list(glycan_type = "N")
   )
-  missing_structure <- glyexp::GlycomicSE(
+  missing_structure <- .new_test_glyco_se(
+    "GlycomicSE",
     matrix(1, nrow = 1, dimnames = list("G1", "S1")),
-    rowData = S4Vectors::DataFrame(
-      glycan_composition = I(glyrepr::as_glycan_composition(structures)),
-      row.names = "G1"
+    row_data = list(
+      glycan_composition = glyrepr::as_glycan_composition(structures)
     ),
     metadata = list(glycan_type = "N")
   )
