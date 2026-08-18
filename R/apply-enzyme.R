@@ -95,7 +95,16 @@ apply_enzyme <- function(
   enzyme,
   structure_level = "intact"
 ) {
-  .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  res <- rep(list(glyrepr::glycan_structure()), length(glycans))
+  if (any(compatible)) {
+    res[compatible] <- .apply_enzyme_rules(
+      glycans[compatible],
+      enzyme,
+      structure_level = structure_level
+    )
+  }
+  res
 }
 
 .apply_enzyme.glyenzy_gh_enzyme <- function(
@@ -103,7 +112,16 @@ apply_enzyme <- function(
   enzyme,
   structure_level = "intact"
 ) {
-  .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  res <- rep(list(glyrepr::glycan_structure()), length(glycans))
+  if (any(compatible)) {
+    res[compatible] <- .apply_enzyme_rules(
+      glycans[compatible],
+      enzyme,
+      structure_level = structure_level
+    )
+  }
+  res
 }
 
 .apply_enzyme.glyenzy_st_enzyme <- function(
@@ -111,7 +129,16 @@ apply_enzyme <- function(
   enzyme,
   structure_level = "intact"
 ) {
-  .apply_enzyme_rules(glycans, enzyme, structure_level = structure_level)
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  res <- rep(list(glyrepr::glycan_structure()), length(glycans))
+  if (any(compatible)) {
+    res[compatible] <- .apply_enzyme_rules(
+      glycans[compatible],
+      enzyme,
+      structure_level = structure_level
+    )
+  }
+  res
 }
 
 #' Apply all enzyme rules to a vector of glycan structures
@@ -229,6 +256,10 @@ apply_enzyme <- function(
   structure_level,
   mode
 ) {
+  if (!.enzyme_supports_glycan_graph(glycan_graph, enzyme)) {
+    return(glyrepr::glycan_structure())
+  }
+
   if (
     inherits(enzyme, "glyenzy_starter_gt_enzyme") ||
       inherits(enzyme, "glyenzy_npre_gt_enzyme")
@@ -270,6 +301,9 @@ apply_enzyme <- function(
   mode
 ) {
   if (!.uses_standard_graph_action(enzyme)) {
+    return(list())
+  }
+  if (!.enzyme_supports_glycan_graph(glycan_graph, enzyme)) {
     return(list())
   }
 

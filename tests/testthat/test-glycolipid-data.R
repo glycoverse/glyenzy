@@ -47,6 +47,11 @@ test_that("each context-free glycolipid rule creates its exact product", {
       single_rule_enzyme <- enzymes[[symbol]]
       single_rule_enzyme$rules <- list(rule)
 
+      if (!all(.enzyme_glycan_type_mask(rule$acceptor, single_rule_enzyme))) {
+        expect_length(apply_enzyme(rule$acceptor, single_rule_enzyme), 0L)
+        next
+      }
+
       expect_identical(
         as.character(apply_enzyme(rule$acceptor, single_rule_enzyme)),
         as.character(rule$product),
@@ -56,13 +61,12 @@ test_that("each context-free glycolipid rule creates its exact product", {
   }
 })
 
-test_that("B4GALT5 and B4GALT6 synthesize the LacCer headgroup", {
+test_that("B4GALT6 synthesizes the LacCer headgroup", {
   acceptor <- "Glc(b1-"
   product <- "Gal(b1-4)Glc(b1-"
 
-  for (symbol in c("B4GALT5", "B4GALT6")) {
-    expect_identical(as.character(apply_enzyme(acceptor, symbol)), product)
-  }
+  expect_identical(as.character(apply_enzyme(acceptor, "B4GALT6")), product)
+  expect_length(apply_enzyme(acceptor, "B4GALT5"), 0L)
 })
 
 test_that("ST3GAL5 supports the GM3 and GM4 headgroup routes", {
@@ -154,12 +158,12 @@ test_that("trace_biosynthesis follows GlcCer and GalCer headgroup routes", {
   gm3 <- "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
   gm3_path <- trace_biosynthesis(
     gm3,
-    enzymes = c("B4GALT5", "ST3GAL5")
+    enzymes = c("B4GALT6", "ST3GAL5")
   )
   gm4 <- "Neu5Ac(a2-3)Gal(b1-"
   gm4_path <- trace_biosynthesis(gm4, enzymes = "ST3GAL5")
 
-  expect_identical(igraph::E(gm3_path)$enzyme, c("B4GALT5", "ST3GAL5"))
+  expect_identical(igraph::E(gm3_path)$enzyme, c("B4GALT6", "ST3GAL5"))
   expect_identical(igraph::E(gm4_path)$enzyme, "ST3GAL5")
   expect_identical(
     igraph::V(gm3_path)$name[igraph::V(gm3_path)$target],

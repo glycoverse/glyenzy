@@ -40,11 +40,17 @@ count_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  switch(
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  result <- integer(length(glycans))
+  if (!any(compatible)) {
+    return(result)
+  }
+  result[compatible] <- switch(
     method,
-    motif = .count_enzyme_motif(glycans, enzyme),
-    path = .count_enzyme_path(glycans, enzyme)
+    motif = .count_enzyme_motif(glycans[compatible], enzyme),
+    path = .count_enzyme_path(glycans[compatible], enzyme)
   )
+  result
 }
 
 #' Count Enzyme Steps (Internal)

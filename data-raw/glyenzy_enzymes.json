@@ -10,7 +10,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG14",
@@ -23,7 +24,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG1",
@@ -36,7 +38,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG2",
@@ -55,7 +58,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG11",
@@ -74,7 +78,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG3",
@@ -87,7 +92,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG9",
@@ -106,7 +112,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG12",
@@ -119,7 +126,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG6",
@@ -132,7 +140,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG8",
@@ -145,7 +154,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "ALG10",
@@ -158,7 +168,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MOGS",
@@ -171,7 +182,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "GANAB",
@@ -190,7 +202,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MAN1B1",
@@ -203,7 +216,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MAN1A1",
@@ -288,7 +302,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MAN1A2",
@@ -373,7 +388,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MAN1C1",
@@ -470,7 +486,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MAN2A1",
@@ -486,7 +503,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MAN2A2",
@@ -502,7 +520,8 @@
             }
         ],
         "type": "GH",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT1",
@@ -515,7 +534,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT2",
@@ -534,7 +554,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT3",
@@ -551,7 +572,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT4A",
@@ -567,7 +589,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT4B",
@@ -583,7 +606,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT5",
@@ -599,7 +623,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT5B",
@@ -621,7 +646,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B3GNT2",
@@ -634,7 +660,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B3GNT3",
@@ -653,7 +680,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B3GNT4",
@@ -666,7 +694,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B3GNT5",
@@ -679,7 +708,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "B3GNT6",
@@ -692,7 +722,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B3GNT7",
@@ -717,7 +748,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B3GNT8",
@@ -730,7 +762,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "LFNG",
@@ -743,7 +776,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "MFNG",
@@ -756,7 +790,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "RFNG",
@@ -769,7 +804,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B3GALT1",
@@ -782,7 +818,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B3GALT2",
@@ -795,7 +832,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B3GALT4",
@@ -826,7 +864,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "B3GALT5",
@@ -851,7 +890,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "B3GALT6",
@@ -864,7 +904,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B4GALT1",
@@ -883,7 +924,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B4GALT2",
@@ -896,7 +938,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B4GALT3",
@@ -909,7 +952,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B4GALT4",
@@ -928,7 +972,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B4GALT5",
@@ -941,7 +986,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B4GALT6",
@@ -954,7 +1000,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "B4GALT7",
@@ -967,7 +1014,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "FUT1",
@@ -1010,7 +1058,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT2",
@@ -1053,7 +1102,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT3",
@@ -1080,7 +1130,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT4",
@@ -1097,7 +1148,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT5",
@@ -1122,7 +1174,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT6",
@@ -1138,7 +1191,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT7",
@@ -1151,7 +1205,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT8",
@@ -1164,7 +1219,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "FUT9",
@@ -1186,7 +1242,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "ST6GAL1",
@@ -1199,7 +1256,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST6GAL2",
@@ -1218,7 +1276,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST3GAL1",
@@ -1231,7 +1290,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "ST3GAL2",
@@ -1250,7 +1310,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ST3GAL3",
@@ -1279,7 +1340,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST3GAL4",
@@ -1294,7 +1356,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST3GAL5",
@@ -1313,7 +1376,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ST3GAL6",
@@ -1328,7 +1392,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST6GALNAC1",
@@ -1353,7 +1418,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "ST6GALNAC2",
@@ -1372,7 +1438,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "ST6GALNAC3",
@@ -1391,7 +1458,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O", "lipid"]
     },
     {
         "name": "ST6GALNAC4",
@@ -1404,7 +1472,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O", "lipid"]
     },
     {
         "name": "ST6GALNAC5",
@@ -1417,7 +1486,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ST6GALNAC6",
@@ -1436,7 +1506,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ST8SIA1",
@@ -1461,7 +1532,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ST8SIA2",
@@ -1474,7 +1546,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST8SIA3",
@@ -1487,7 +1560,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "lipid"]
     },
     {
         "name": "ST8SIA4",
@@ -1500,7 +1574,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "ST8SIA5",
@@ -1519,7 +1594,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ST8SIA6",
@@ -1538,7 +1614,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "A4GNT",
@@ -1557,7 +1634,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "C1GALT1",
@@ -1570,7 +1648,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GCNT1",
@@ -1583,7 +1662,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GCNT2",
@@ -1596,7 +1676,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "GCNT3",
@@ -1621,7 +1702,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GCNT4",
@@ -1634,7 +1716,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B3GALNT1",
@@ -1647,7 +1730,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "B3GALNT2",
@@ -1660,7 +1744,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B4GALNT1",
@@ -1691,7 +1776,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "B4GALNT2",
@@ -1710,7 +1796,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B4GALNT3",
@@ -1723,7 +1810,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B4GALNT4",
@@ -1736,7 +1824,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "CSGALNACT1",
@@ -1755,7 +1844,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CSGALNACT2",
@@ -1774,7 +1864,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "B3GAT1",
@@ -1787,7 +1878,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B3GAT2",
@@ -1800,7 +1892,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B3GAT3",
@@ -1813,7 +1906,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHPF",
@@ -1832,7 +1926,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHPF2",
@@ -1845,7 +1940,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHSY1",
@@ -1864,7 +1960,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHSY3",
@@ -1883,7 +1980,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "EXT1",
@@ -1902,7 +2000,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "EXT2",
@@ -1921,7 +2020,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "EXTL1",
@@ -1934,7 +2034,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "EXTL2",
@@ -1953,7 +2054,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "EXTL3",
@@ -1972,7 +2074,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "HAS1",
@@ -1991,7 +2094,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "HAS2",
@@ -2010,7 +2114,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "HAS3",
@@ -2029,7 +2134,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "B3GLCT",
@@ -2042,7 +2148,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "A4GALT",
@@ -2061,7 +2168,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "UGCG",
@@ -2074,7 +2182,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "UGT8",
@@ -2087,7 +2196,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["lipid"]
     },
     {
         "name": "ABO",
@@ -2106,7 +2216,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "GXYLT1",
@@ -2119,7 +2230,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GXYLT2",
@@ -2132,7 +2244,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "LARGE1",
@@ -2157,7 +2270,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "LARGE2",
@@ -2182,7 +2296,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "XXYLT1",
@@ -2195,7 +2310,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POMGNT1",
@@ -2208,7 +2324,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POMGNT2",
@@ -2221,7 +2338,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "DPAGT1",
@@ -2234,7 +2352,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["N"]
     },
     {
         "name": "FUT10",
@@ -2247,7 +2366,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "FUT11",
@@ -2260,7 +2380,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "POFUT1",
@@ -2273,7 +2394,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POFUT2",
@@ -2286,7 +2408,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POGLUT1",
@@ -2305,7 +2428,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POGLUT2",
@@ -2324,7 +2448,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POGLUT3",
@@ -2343,7 +2468,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POMT1",
@@ -2356,7 +2482,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "POMT2",
@@ -2369,7 +2496,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "TMTC1",
@@ -2382,7 +2510,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "TMTC2",
@@ -2395,7 +2524,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "TMTC3",
@@ -2408,7 +2538,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "TMTC4",
@@ -2421,7 +2552,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT1",
@@ -2434,7 +2566,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT2",
@@ -2447,7 +2580,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT3",
@@ -2460,7 +2594,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT4",
@@ -2473,7 +2608,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT5",
@@ -2486,7 +2622,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT6",
@@ -2499,7 +2636,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT7",
@@ -2512,7 +2650,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT8",
@@ -2525,7 +2664,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT9",
@@ -2538,7 +2678,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT10",
@@ -2551,7 +2692,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT11",
@@ -2564,7 +2706,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT12",
@@ -2577,7 +2720,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT13",
@@ -2590,7 +2734,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT14",
@@ -2603,7 +2748,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT15",
@@ -2616,7 +2762,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT16",
@@ -2629,7 +2776,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT17",
@@ -2642,7 +2790,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT18",
@@ -2655,7 +2804,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "GALNT19",
@@ -2668,7 +2818,8 @@
             }
         ],
         "type": "GT",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHST1",
@@ -2699,7 +2850,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHST2",
@@ -2730,7 +2882,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHST3",
@@ -2749,7 +2902,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "CHST4",
@@ -2768,7 +2922,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHST5",
@@ -2793,7 +2948,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHST6",
@@ -2818,7 +2974,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O"]
     },
     {
         "name": "CHST8",
@@ -2841,7 +2998,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "CHST9",
@@ -2864,7 +3022,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "CHST10",
@@ -2877,7 +3036,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": null
     },
     {
         "name": "GAL3ST2",
@@ -2920,7 +3080,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O", "lipid"]
     },
     {
         "name": "GAL3ST3",
@@ -2951,7 +3112,8 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O", "lipid"]
     },
     {
         "name": "GAL3ST4",
@@ -2970,6 +3132,7 @@
             }
         ],
         "type": "ST",
-        "species": "human"
+        "species": "human",
+        "glycan_type": ["O", "lipid"]
     }
 ]

@@ -54,6 +54,8 @@
 #'    `"GH"` for glycoside hydrolase, or `"ST"` for sulfotransferase.
 #'    Starter GTs are encoded as `type = "GT"`.
 #' 4. `species`: the species of the enzyme, e.g. "human" or "mouse".
+#' 5. `glycan_type`: `NULL` for enzymes that can act on all glycan classes, or
+#'    one or more of `"N"`, `"O"`, and `"lipid"` for class-specific enzymes.
 #'
 #' You can see all these information by printing the enzyme object.
 #'
@@ -125,14 +127,21 @@ db_enzymes <- function(
 #'
 #' @return A `glyenzy_enzyme` object.
 #' @noRd
-new_enzyme <- function(name, rules, type, species) {
+new_enzyme <- function(name, rules, type, species, glycan_type = NULL) {
   checkmate::assert_string(name)
   checkmate::assert_list(rules, types = "glyenzy_enzyme_rule")
   checkmate::assert_choice(type, c("GT", "GH", "ST"))
   checkmate::assert_string(species)
+  glycan_type <- .validate_glycan_type(glycan_type)
 
   structure(
-    list(name = name, rules = rules, type = type, species = species),
+    list(
+      name = name,
+      rules = rules,
+      type = type,
+      species = species,
+      glycan_type = glycan_type
+    ),
     class = .enzyme_classes(name, type)
   )
 }
@@ -770,6 +779,8 @@ print.glyenzy_enzyme <- function(x, ...) {
   type_str <- .enzyme_type_label(x)
   cli::cli_alert_info("Type: {.val {x$type}} ({.emph {type_str}})")
   cli::cli_alert_info("Species: {.val {x$species}}")
+  glycan_type <- if (is.null(x$glycan_type)) "all" else x$glycan_type
+  cli::cli_alert_info("Glycan type: {.val {glycan_type}}")
 
   # Rules section
   cli::cli_h2("Rules ({.val {length(x$rules)}})")

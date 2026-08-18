@@ -107,15 +107,24 @@ find_enzyme <- function(
   npre_enzymes <- purrr::keep(glyenzy_enzymes, .is_npre_gt)
   masks <- purrr::map_lgl(
     npre_enzymes,
-    ~ .have_enzyme_motif.glyenzy_npre_gt_enzyme(glycan, .x)
+    ~ .enzyme_glycan_type_mask(glycan, .x) &&
+      .have_enzyme_motif.glyenzy_npre_gt_enzyme(glycan, .x)
   )
   names(npre_enzymes)[masks]
 }
 
 # Like `.have_enzyme_motif()`, but returns FALSE instead of throwing error.
 .safe_have_enzyme <- function(glycans, enzyme) {
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  result <- rep(FALSE, length(glycans))
+  if (!any(compatible)) {
+    return(result)
+  }
   tryCatch(
-    .have_enzyme_motif(glycans, enzyme),
-    error = function(e) rep(FALSE, length(glycans))
+    {
+      result[compatible] <- .have_enzyme_motif(glycans[compatible], enzyme)
+      result
+    },
+    error = function(e) result
   )
 }

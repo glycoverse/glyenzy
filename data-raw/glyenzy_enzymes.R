@@ -14,6 +14,8 @@
 # - "type": "GT" for glycosyltransferase, "GH" for glycoside hydrolase,
 #   or "ST" for sulfotransferase
 # - "species": species of the enzyme
+# - "glycan_type": null for all glycan classes, or a list containing one or
+#   more of "N", "O", and "lipid"
 devtools::load_all()
 
 # Load required packages
@@ -78,12 +80,22 @@ if (any(duplicated(enzyme_names))) {
   name <- enzyme_data$name
   type <- enzyme_data$type
   species <- enzyme_data$species
+  glycan_type <- enzyme_data$glycan_type
+  if (!is.null(glycan_type)) {
+    glycan_type <- unlist(glycan_type, use.names = FALSE)
+  }
   rules <- purrr::map(enzyme_data$rules, .make_enzyme_rule_from_json)
 
   # Create and validate enzyme, and enhance it
   tryCatch(
     {
-      enzyme <- glyenzy:::new_enzyme(name, rules, type, species)
+      enzyme <- glyenzy:::new_enzyme(
+        name,
+        rules,
+        type,
+        species,
+        glycan_type = glycan_type
+      )
       glyenzy:::validate_enzyme(enzyme)
       enzyme <- glyenzy:::enhance_enzyme(enzyme)
     },

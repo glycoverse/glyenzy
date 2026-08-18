@@ -7,6 +7,7 @@
       -- Enzyme: MySiaT --------------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
+      i Glycan type: "all"
       
       -- Rules (1) --
       
@@ -23,6 +24,7 @@
       -- Enzyme: MySiaT --------------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
+      i Glycan type: "all"
       
       -- Rules (1) --
       
@@ -42,6 +44,7 @@
       -- Enzyme: MyGalH --------------------------------------------------------------
       i Type: "GH" (Glycoside hydrolase)
       i Species: "human"
+      i Glycan type: "all"
       
       -- Rules (1) --
       
@@ -58,6 +61,7 @@
       -- Enzyme: MySiaT --------------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
+      i Glycan type: "all"
       
       -- Rules (2) --
       
