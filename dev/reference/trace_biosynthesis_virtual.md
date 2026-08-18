@@ -52,8 +52,8 @@ vectors containing every candidate concrete enzyme for each transition.
 Each edge is named for the residue added by that step. Intact glycans
 include the linkage anomer and acceptor position, so a beta-1,4-linked
 GlcNAc is labeled `"b4GlcNAcT"`. Partial and topological glycans omit
-linkage information and use `"GlcNAcT"`; basic glycans use the generic
-residue name, such as `"HexNAcT"`.
+linkage information and use `"GlcNAcT"`. Generic or mixed topological
+glycans use their preserved generic residue names, such as `"HexNAcT"`.
 
 Sulfation is represented as its own atomic transition. Sulfate additions
 at positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or
@@ -69,8 +69,8 @@ including any sulfate groups it contains; those sulfates must also occur
 in `to`. These networks represent structural possibilities rather than
 biological feasibility.
 
-Basic structures do not retain glycan-class metadata. A basic structure
-matching the generic N-glycan-core topology is therefore assumed to be
+Generic structures do not retain glycan-class metadata. A generic
+structure matching the N-glycan-core topology is therefore assumed to be
 an N-glycan; use
 [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)
 with an explicit `from` when that topology belongs to another glycan
@@ -105,10 +105,9 @@ might be active, depending on factors such as tissue specificity.
 
 Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`). Reduced-level inputs with generic
+residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic or mixed
 residues are supported where explicitly documented, such as
-`apply_enzyme(structure_level = "basic")`,
-[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
 and
 [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md).
 
@@ -119,13 +118,15 @@ phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
 when unsupported substituents are present.
 
-### Incomplete glycan structures
+### Incomplete or non-concrete glycan structures
 
-If the glycan structure is incomplete or partially degraded, the result
-may be misleading. Glycans with a
+If the glycan structure is incomplete, partially degraded, or contains
+generic or mixed residues, the result may be misleading. Glycans with a
 [`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
-other than `"intact"` are matched with the lenient motif matching mode
-in glymotif, and a warning is raised because enzyme predictions may be
+other than `"intact"`, or with a
+[`glyrepr::get_mono_type()`](https://glycoverse.github.io/glyrepr/reference/get_mono_type.html)
+other than `"concrete"`, are matched with the lenient motif matching
+mode in glymotif. A warning is raised because enzyme predictions may be
 less reliable.
 
 ### Starting points

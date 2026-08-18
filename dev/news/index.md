@@ -2,6 +2,12 @@
 
 ## glyenzy (development version)
 
+- Update structure-level handling for `glyrepr` 0.14.0.9000: mixed
+  generic and concrete residues are handled element-wise, and
+  topological products now use
+  [`remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html)
+  while preserving residue identities.
+
 - New
   [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/dev/reference/product_substrate_ratio.md)
   calculates glycosyltransferase and sulfotransferase

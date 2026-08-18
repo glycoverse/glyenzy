@@ -65,10 +65,9 @@ might be active, depending on factors such as tissue specificity.
 
 Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`). Reduced-level inputs with generic
+residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic or mixed
 residues are supported where explicitly documented, such as
-`apply_enzyme(structure_level = "basic")`,
-[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
 and
 [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md).
 
@@ -79,13 +78,15 @@ phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
 when unsupported substituents are present.
 
-### Incomplete glycan structures
+### Incomplete or non-concrete glycan structures
 
-If the glycan structure is incomplete or partially degraded, the result
-may be misleading. Glycans with a
+If the glycan structure is incomplete, partially degraded, or contains
+generic or mixed residues, the result may be misleading. Glycans with a
 [`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
-other than `"intact"` are matched with the lenient motif matching mode
-in glymotif, and a warning is raised because enzyme predictions may be
+other than `"intact"`, or with a
+[`glyrepr::get_mono_type()`](https://glycoverse.github.io/glyrepr/reference/get_mono_type.html)
+other than `"concrete"`, are matched with the lenient motif matching
+mode in glymotif. A warning is raised because enzyme predictions may be
 less reliable.
 
 ### Starting points
