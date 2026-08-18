@@ -72,3 +72,4 @@
       Warning:
       Enzyme labels cannot be rendered at the fitted plot size and have been hidden.
       i Increase `width` or `height` to display enzyme labels.
+

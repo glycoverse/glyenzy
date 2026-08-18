@@ -11,3 +11,4 @@
       ! `motifs` cannot have duplications.
       x Duplicate motifs: "Fuc(a1-2)GalNAc(a1-".
       i Consider using `unique()`.
+
