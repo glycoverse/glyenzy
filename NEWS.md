@@ -3,7 +3,7 @@
 * Enzyme objects now carry broad `glycan_type` compatibility metadata for
   N-glycans, O-glycans, and glycolipids. Enzyme actions and biosynthesis
   searches use this metadata to avoid applying class-specific enzymes to
-  incompatible glycan structures.
+  incompatible glycan structures. (#45)
 
 * Update structure-level handling for `glyrepr` 0.14.0.9000: mixed generic and
   concrete residues are handled element-wise, and topological products now use
