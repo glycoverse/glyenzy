@@ -44,22 +44,15 @@ test_that("apply_enzyme uses lenient matching for non-intact glycans", {
   )
 })
 
-test_that("apply_enzyme can return reduced-level structures", {
+test_that("apply_enzyme can return topological structures", {
   topological_res <- suppressWarnings(apply_enzyme(
     "GalNAc(??-",
     "C1GALT1",
     structure_level = "topological"
   ))
-  basic_res <- suppressWarnings(apply_enzyme(
-    "HexNAc(??-",
-    "C1GALT1",
-    structure_level = "basic"
-  ))
 
   expect_equal(glyrepr::get_structure_level(topological_res), "topological")
   expect_equal(as.character(topological_res), "Gal(??-?)GalNAc(??-")
-  expect_equal(glyrepr::get_structure_level(basic_res), "basic")
-  expect_equal(as.character(basic_res), "Hex(??-?)HexNAc(??-")
 })
 
 test_that("apply_enzyme rejects structure_level lower than input structures", {
@@ -68,18 +61,8 @@ test_that("apply_enzyme rejects structure_level lower than input structures", {
     "lower than"
   )
   expect_error(
-    apply_enzyme("GalNAc(a1-", "C1GALT1", structure_level = "basic"),
-    "lower than"
-  )
-  expect_error(
     suppressWarnings(
       apply_enzyme("GalNAc(?1-", "C1GALT1", structure_level = "topological")
-    ),
-    "lower than"
-  )
-  expect_error(
-    suppressWarnings(
-      apply_enzyme("GalNAc(??-", "C1GALT1", structure_level = "basic")
     ),
     "lower than"
   )
@@ -148,18 +131,17 @@ test_that("apply_enzyme works for B4GALT1", {
   )
 })
 
-test_that("trusted graph construction deduplicates symmetric basic products", {
-  glycan <- glyrepr::reduce_structure_level(
+test_that("trusted graph construction deduplicates symmetric topological products", {
+  glycan <- glyrepr::remove_linkages(
     glyrepr::as_glycan_structure(
       "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-    ),
-    "basic"
+    )
   )
 
   products <- suppressWarnings(apply_enzyme(
     glycan,
     "B4GALT1",
-    structure_level = "basic"
+    structure_level = "topological"
   ))
 
   expect_length(products, 1L)

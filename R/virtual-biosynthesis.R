@@ -11,8 +11,8 @@
 #' Each edge is named for the residue added by that step. Intact glycans include
 #' the linkage anomer and acceptor position, so a beta-1,4-linked GlcNAc is
 #' labeled `"b4GlcNAcT"`. Partial and topological glycans omit linkage
-#' information and use `"GlcNAcT"`; basic glycans use the generic residue name,
-#' such as `"HexNAcT"`.
+#' information and use `"GlcNAcT"`. Generic or mixed topological glycans use
+#' their preserved generic residue names, such as `"HexNAcT"`.
 #'
 #' Sulfation is represented as its own atomic transition. Sulfate additions at
 #' positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or other
@@ -27,10 +27,10 @@
 #' These networks represent structural possibilities rather than biological
 #' feasibility.
 #'
-#' Basic structures do not retain glycan-class metadata. A basic structure
-#' matching the generic N-glycan-core topology is therefore assumed to be an
-#' N-glycan; use [path_biosynthesis_virtual()] with an explicit `from` when
-#' that topology belongs to another glycan class.
+#' Generic structures do not retain glycan-class metadata. A generic structure
+#' matching the N-glycan-core topology is therefore assumed to be an N-glycan;
+#' use [path_biosynthesis_virtual()] with an explicit `from` when that topology
+#' belongs to another glycan class.
 #'
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
 #'   objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
@@ -84,7 +84,7 @@ trace_biosynthesis_virtual <- function(
   path <- .set_biosynthesis_targets(
     path,
     glycans,
-    match = .bfs_target_match(.glycan_structure_level(glycans))
+    match = .bfs_target_match(.glycan_structure_level(glycans), glycans)
   )
   .new_biosynthesis_network(path, virtual = TRUE)
 }

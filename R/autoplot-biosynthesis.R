@@ -709,6 +709,14 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
     return(.biosynthesis_default_edge_color)
   }
 
+  # Keep the palette aligned with every residue form supported by glyrepr,
+  # including generic and furanose residues added after this package's palette.
+  glyrepr_color <- get("get_mono_color", envir = asNamespace("glyrepr"))
+  color <- glyrepr_color(residue)
+  if (length(color) == 1L && !identical(color, "black")) {
+    return(color)
+  }
+
   # Keep this palette aligned with glyrepr's internal SNFG color helper.
   matches <- vapply(
     .biosynthesis_residues_by_color,

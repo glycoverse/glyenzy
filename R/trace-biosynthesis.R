@@ -84,7 +84,7 @@ trace_biosynthesis <- function(
   filter = NULL,
   max_virtual_steps = 0L
 ) {
-  # Parse and validate basic inputs first
+  # Parse and validate inputs first
   glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
   if (is.null(max_steps)) {
     max_steps <- .infer_trace_max_steps(glycans)
@@ -118,7 +118,7 @@ trace_biosynthesis <- function(
   ) |>
     .set_biosynthesis_targets(
       glycans,
-      match = .bfs_target_match(.glycan_structure_level(glycans))
+      match = .bfs_target_match(.glycan_structure_level(glycans), glycans)
     )
   .new_biosynthesis_network(
     path
@@ -134,7 +134,7 @@ trace_biosynthesis <- function(
 }
 
 .decide_starting_glycan <- function(glycan) {
-  if (.can_reliably_detect_n_glycan(glycan) && .is_n_glycan(glycan)) {
+  if (.is_n_glycan(glycan)) {
     start <- .n_glycan_starting_glycan()
   } else if (
     .have_motif_substituent_subset(
@@ -223,7 +223,7 @@ trace_biosynthesis <- function(
   method <- match.arg(method)
   checkmate::assert_choice(
     structure_level,
-    c("intact", "partial", "topological", "basic")
+    c("intact", "partial", "topological")
   )
 
   if (identical(method, "enzymatic")) {
@@ -232,12 +232,6 @@ trace_biosynthesis <- function(
     ))
   }
 
-  if (identical(structure_level, "basic")) {
-    return(glyrepr::n_glycan_core(
-      linkage = FALSE,
-      mono_type = "generic"
-    ))
-  }
   if (identical(structure_level, "topological")) {
     return(glyrepr::n_glycan_core(linkage = FALSE))
   }
@@ -253,8 +247,4 @@ trace_biosynthesis <- function(
     )[[1]],
     error = function(e) list()
   )
-}
-
-.can_reliably_detect_n_glycan <- function(glycan) {
-  !identical(.glycan_structure_level(glycan), "basic")
 }

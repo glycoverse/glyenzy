@@ -53,11 +53,13 @@
     ))
   }
 
+  mono_type <- glyrepr::get_mono_type(x)
   is_concrete <- .is_concrete_glycan(x)
-  if (!allow_generic && !all(is_concrete)) {
+  non_concrete <- !is_concrete & !is.na(mono_type)
+  if (!allow_generic && any(non_concrete)) {
     cli::cli_abort(c(
       "All glycans must have concrete monosaccharides (e.g. Gal, GlcNAc, etc.).",
-      "x" = "These glycans are not concrete: {.val {unique(x[!is_concrete])}}."
+      "x" = "These glycans are not concrete: {.val {unique(x[non_concrete])}}."
     ))
   }
 
@@ -509,26 +511,65 @@
 #' @returns `x`, invisibly.
 #' @noRd
 .warn_non_intact_glycans <- function(x) {
-  structure_level <- .glycan_structure_level(x)
-  if (.is_intact_structure_level(structure_level)) {
+  structure_levels <- .glycan_structure_levels(x)
+  mono_types <- glyrepr::get_mono_type(x)
+  non_intact <- !is.na(structure_levels) & structure_levels != "intact"
+  non_concrete <- !is.na(mono_types) & mono_types != "concrete"
+  if (!any(non_intact | non_concrete)) {
     return(invisible(x))
   }
 
+  detected_levels <- unique(structure_levels[non_intact])
+  detected_types <- unique(mono_types[non_concrete])
+  details <- character()
+  if (length(detected_levels) > 0L) {
+    details <- c(
+      details,
+      "i" = "Detected structure level(s): {.val {detected_levels}}."
+    )
+  }
+  if (length(detected_types) > 0L) {
+    details <- c(
+      details,
+      "i" = "Detected monosaccharide type(s): {.val {detected_types}}."
+    )
+  }
+
   cli::cli_warn(c(
-    "Using lenient motif matching for non-intact glycan structures.",
-    "i" = "Detected structure level: {.val {structure_level}}.",
-    "i" = "Results may be less reliable when exact linkages are missing or ambiguous."
+    "Using lenient motif matching for non-concrete or non-intact glycan structures.",
+    details,
+    "i" = "Results may be less reliable when exact residue identities, linkages, or anomers are missing or ambiguous."
   ))
   invisible(x)
 }
 
-#' Get the structure level of a glycan vector
+#' Get element-wise structure levels for a glycan vector
 #'
 #' @param x A `glyrepr_structure` vector.
-#' @returns A scalar character structure level, or `NA_character_`.
+#' @returns A character vector with one level per structure.
+#' @noRd
+.glycan_structure_levels <- function(x) {
+  suppressWarnings(glyrepr::get_structure_level(x))
+}
+
+#' Summarize structure levels for algorithms that require one level
+#'
+#' @param x A `glyrepr_structure` vector.
+#' @returns A scalar structure level, or `NA_character_`.
 #' @noRd
 .glycan_structure_level <- function(x) {
-  suppressWarnings(glyrepr::get_structure_level(x))
+  levels <- .glycan_structure_levels(x)
+  levels <- levels[!is.na(levels)]
+  if (length(levels) == 0L) {
+    return(NA_character_)
+  }
+  if (all(levels == "intact")) {
+    return("intact")
+  }
+  if (all(levels == "topological")) {
+    return("topological")
+  }
+  "partial"
 }
 
 #' Check whether a structure level is intact
@@ -537,7 +578,8 @@
 #' @returns A logical scalar.
 #' @noRd
 .is_intact_structure_level <- function(x) {
-  is.na(x) || identical(x, "intact")
+  x <- x[!is.na(x)]
+  length(x) == 0L || all(x == "intact")
 }
 
 #' Select the motif matching mode for a glycan vector
@@ -546,7 +588,13 @@
 #' @returns `"strict"` for intact structures and `"lenient"` otherwise.
 #' @noRd
 .glymotif_mode <- function(glycans) {
-  if (.is_intact_structure_level(.glycan_structure_level(glycans))) {
+  structure_levels <- .glycan_structure_levels(glycans)
+  mono_types <- glyrepr::get_mono_type(glycans)
+  if (
+    .is_intact_structure_level(structure_levels) &&
+      length(mono_types) > 0L &&
+      all(!is.na(mono_types) & mono_types == "concrete")
+  ) {
     return("strict")
   }
   "lenient"
@@ -558,7 +606,7 @@
 #' @returns A scalar character structure level.
 #' @noRd
 .validate_structure_level <- function(structure_level) {
-  checkmate::assert_choice(structure_level, c("intact", "topological", "basic"))
+  checkmate::assert_choice(structure_level, c("intact", "topological"))
   structure_level
 }
 
@@ -569,15 +617,21 @@
 #' @returns `structure_level`, invisibly.
 #' @noRd
 .validate_output_structure_level <- function(glycans, structure_level) {
-  input_structure_level <- .glycan_structure_level(glycans)
-  if (is.na(input_structure_level)) {
+  input_structure_levels <- .glycan_structure_levels(glycans)
+  input_structure_levels <- input_structure_levels[
+    !is.na(input_structure_levels)
+  ]
+  if (length(input_structure_levels) == 0L) {
     return(invisible(structure_level))
   }
 
   if (
-    .structure_level_rank(structure_level) <
-      .structure_level_rank(input_structure_level)
+    any(
+      .structure_level_rank(structure_level) <
+        .structure_level_rank(input_structure_levels)
+    )
   ) {
+    input_structure_level <- .glycan_structure_level(glycans)
     cli::cli_abort(c(
       "{.arg structure_level} cannot be lower than the input glycan structure level.",
       "x" = "Input level is {.val {input_structure_level}}, but requested {.val {structure_level}}."
@@ -594,50 +648,36 @@
 #' @noRd
 .structure_level_rank <- function(structure_level) {
   ranks <- c(
-    basic = 1L,
-    topological = 2L,
-    partial = 3L,
-    intact = 4L
+    topological = 1L,
+    partial = 2L,
+    intact = 3L
   )
-  unname(ranks[[structure_level]])
+  unname(ranks[structure_level])
 }
 
-#' Reduce glycan structures to a requested output level
+#' Remove linkages from glycan structures for topological searches
 #'
 #' @param glycans A `glyrepr_structure` vector.
 #' @param structure_level Requested structure level.
 #' @returns A `glyrepr_structure` vector.
 #' @noRd
-.reduce_structure_level <- function(glycans, structure_level) {
+.remove_linkages_for_level <- function(glycans, structure_level) {
   structure_level <- .validate_structure_level(structure_level)
   if (identical(structure_level, "intact")) {
     return(glycans)
   }
 
-  suppressWarnings(glyrepr::reduce_structure_level(glycans, structure_level))
+  glyrepr::remove_linkages(glycans)
 }
 
 # Reduce trusted product graphs before constructing a glycan structure vector.
-.reduce_valid_glycan_graphs <- function(graphs, structure_level) {
+.prepare_valid_glycan_graphs <- function(graphs, structure_level) {
   structure_level <- .validate_structure_level(structure_level)
   if (identical(structure_level, "intact")) {
     return(graphs)
   }
 
-  purrr::map(graphs, function(graph) {
-    graph <- igraph::set_edge_attr(graph, "linkage", value = "??-?")
-    graph <- igraph::set_graph_attr(graph, "anomer", value = "??")
-    if (identical(structure_level, "basic")) {
-      graph <- igraph::set_vertex_attr(
-        graph,
-        "mono",
-        value = glyrepr::convert_to_generic(
-          igraph::vertex_attr(graph, "mono")
-        )
-      )
-    }
-    graph
-  })
+  purrr::map(graphs, glyrepr::remove_linkages)
 }
 
 # Put the reducing-end root in the position expected by glymotif's core
@@ -1107,10 +1147,10 @@
 ) {
   target_structure_level <- .glycan_structure_level(to_gs)
   search_structure_level <- .bfs_search_structure_level(target_structure_level)
-  target_match <- .bfs_target_match(target_structure_level)
+  target_match <- .bfs_target_match(target_structure_level, to_gs)
 
-  from_g <- .reduce_structure_level(from_g, search_structure_level)
-  to_gs <- .reduce_structure_level(to_gs, search_structure_level)
+  from_g <- .remove_linkages_for_level(from_g, search_structure_level)
+  to_gs <- .remove_linkages_for_level(to_gs, search_structure_level)
 
   # Parse glycan structures and compute keys
   from_key <- as.character(from_g)[1]
@@ -1162,9 +1202,6 @@
   if (identical(target_structure_level, "topological")) {
     return("topological")
   }
-  if (identical(target_structure_level, "basic")) {
-    return("basic")
-  }
   "intact"
 }
 
@@ -1173,9 +1210,15 @@
 #' @param target_structure_level Target glycan structure level.
 #' @returns A target matching strategy.
 #' @noRd
-.bfs_target_match <- function(target_structure_level) {
+.bfs_target_match <- function(target_structure_level, target_glycans = NULL) {
   if (identical(target_structure_level, "partial")) {
     return("whole")
+  }
+  if (!is.null(target_glycans)) {
+    mono_types <- glyrepr::get_mono_type(target_glycans)
+    if (any(!is.na(mono_types) & mono_types != "concrete")) {
+      return("whole")
+    }
   }
   "key"
 }
@@ -1184,10 +1227,10 @@
 .bfs_targets_requiring_synthesis <- function(from_g, to_gs) {
   target_structure_level <- .glycan_structure_level(to_gs)
   search_structure_level <- .bfs_search_structure_level(target_structure_level)
-  target_match <- .bfs_target_match(target_structure_level)
+  target_match <- .bfs_target_match(target_structure_level, to_gs)
 
-  from_g <- .reduce_structure_level(from_g, search_structure_level)
-  to_gs <- .reduce_structure_level(to_gs, search_structure_level)
+  from_g <- .remove_linkages_for_level(from_g, search_structure_level)
+  to_gs <- .remove_linkages_for_level(to_gs, search_structure_level)
 
   if (identical(target_match, "key")) {
     matched <- as.character(to_gs) == as.character(from_g)[1]

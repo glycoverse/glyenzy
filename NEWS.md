@@ -1,5 +1,9 @@
 # glyenzy (development version)
 
+* Update structure-level handling for `glyrepr` 0.14.0.9000: mixed generic and
+  concrete residues are handled element-wise, and topological products now use
+  `remove_linkages()` while preserving residue identities.
+
 * New `product_substrate_ratio()` calculates glycosyltransferase and
   sulfotransferase product-to-substrate motif quantification ratios from
   glycomics or site-specific glycoproteomics data, using lenient motif matching

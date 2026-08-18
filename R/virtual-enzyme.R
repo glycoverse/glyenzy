@@ -4,11 +4,10 @@
   from_level <- .glycan_structure_level(from)
   to_level <- .glycan_structure_level(to)
   if (
-    to_level %in%
-      c("topological", "basic") &&
+    identical(to_level, "topological") &&
       .structure_level_rank(from_level) > .structure_level_rank(to_level)
   ) {
-    return(.reduce_structure_level(from, to_level))
+    return(.remove_linkages_for_level(from, to_level))
   }
   from
 }
@@ -183,7 +182,10 @@
   if (length(products) == 0L) {
     return(FALSE)
   }
-  if (identical(target_level, "partial")) {
+  target_mono_type <- glyrepr::get_mono_type(target)
+  use_whole_match <- identical(target_level, "partial") ||
+    any(!is.na(target_mono_type) & target_mono_type != "concrete")
+  if (use_whole_match) {
     target_size <- .virtual_glycan_size(target)
     matching_size <- vapply(
       seq_along(products),

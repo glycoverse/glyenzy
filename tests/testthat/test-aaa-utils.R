@@ -20,6 +20,53 @@ test_that("functions warn on non-intact glycan structures", {
   )
 })
 
+test_that("structure levels and monosaccharide types are element-wise", {
+  glycans <- glyrepr::as_glycan_structure(c(
+    concrete = "Gal(b1-3)GalNAc(a1-",
+    generic = "Hex(b1-3)HexNAc(a1-",
+    mixed = "Hex(b1-3)GalNAc(a1-",
+    topological = "Gal(??-?)GalNAc(??-",
+    missing = NA_character_
+  ))
+
+  expect_identical(
+    glyrepr::get_mono_type(glycans),
+    c(
+      concrete = "concrete",
+      generic = "generic",
+      mixed = "mixed",
+      topological = "concrete",
+      missing = NA_character_
+    )
+  )
+  expect_identical(
+    .glycan_structure_levels(glycans),
+    c(
+      concrete = "intact",
+      generic = "intact",
+      mixed = "intact",
+      topological = "topological",
+      missing = NA_character_
+    )
+  )
+  expect_identical(.glycan_structure_level(glycans), "partial")
+  expect_identical(.glymotif_mode(glycans["concrete"]), "strict")
+  expect_identical(.glymotif_mode(glycans[c("concrete", "generic")]), "lenient")
+})
+
+test_that("output levels are validated against every input element", {
+  intact <- glyparse::auto_parse("Gal(b1-3)GalNAc(a1-")
+  topological <- glyrepr::remove_linkages(intact)
+
+  expect_error(
+    .validate_output_structure_level(c(intact, topological), "topological"),
+    "cannot be lower"
+  )
+  expect_invisible(
+    .validate_output_structure_level(c(topological, topological), "topological")
+  )
+})
+
 test_that("functions allow sulfates and reject other substituents", {
   sulfate <- .process_glycans_arg("Gal6S(b1-3)GalNAc(a1-")
   expect_equal(as.character(sulfate), "Gal6S(b1-3)GalNAc(a1-")

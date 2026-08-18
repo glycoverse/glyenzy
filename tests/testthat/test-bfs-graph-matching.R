@@ -31,7 +31,7 @@ test_that("prepared graph matching preserves lenient reduced-level matches", {
   intact <- glyrepr::as_glycan_structure("GalNAc(a1-")
   glycans <- list(
     glyrepr::remove_linkages(intact),
-    glyrepr::reduce_structure_level(intact, "basic")
+    glyrepr::remove_linkages(glyrepr::convert_to_generic(intact))
   )
 
   for (glycan in glycans) {
@@ -127,7 +127,7 @@ test_that("pre-MGAT2 pruning rejects irreversible core fucosylation", {
     three_core_fuc,
     fixed = TRUE
   )
-  precursor <- .reduce_structure_level(
+  precursor <- .remove_linkages_for_level(
     .n_glycan_starting_glycan(),
     "topological"
   )
@@ -158,14 +158,9 @@ test_that("root-only normalization preserves graph pruning semantics", {
       structure_level = "intact"
     ),
     list(
-      from = glyrepr::reduce_structure_level(intact_from, "topological"),
-      target = glyrepr::reduce_structure_level(intact_target, "topological"),
+      from = glyrepr::remove_linkages(intact_from),
+      target = glyrepr::remove_linkages(intact_target),
       structure_level = "topological"
-    ),
-    list(
-      from = glyrepr::reduce_structure_level(intact_from, "basic"),
-      target = glyrepr::reduce_structure_level(intact_target, "basic"),
-      structure_level = "basic"
     ),
     list(
       from = intact_from,
@@ -513,13 +508,16 @@ test_that("batched rule jobs preserve reduced-level products", {
   intact <- glyrepr::as_glycan_structure("GalNAc(a1-")
   glycans <- list(
     topological = glyrepr::remove_linkages(intact),
-    basic = glyrepr::reduce_structure_level(intact, "basic")
+    generic_topological = glyrepr::remove_linkages(
+      glyrepr::convert_to_generic(intact)
+    )
   )
   enzymes <- list(enzyme("C1GALT1"))
   plan <- .prepare_bfs_rule_plan(enzymes)
 
-  for (structure_level in names(glycans)) {
-    glycan <- glycans[[structure_level]]
+  for (structure_name in names(glycans)) {
+    glycan <- glycans[[structure_name]]
+    structure_level <- "topological"
     graph <- glyrepr::get_structure_graphs(glycan)
     batched <- .apply_bfs_rule_frontier(
       list(graph),

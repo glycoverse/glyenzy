@@ -168,13 +168,10 @@ test_that("virtual tracing protects the N-glycan core", {
 })
 
 test_that("virtual enzyme names follow the target structure level", {
-  topological <- glyrepr::reduce_structure_level(
-    glyrepr::o_glycan_core_2(),
-    "topological"
-  )
-  basic <- glyrepr::reduce_structure_level(
-    glyrepr::o_glycan_core_2(),
-    "basic"
+  intact <- glyrepr::o_glycan_core_2()
+  topological <- glyrepr::remove_linkages(intact)
+  generic_topological <- glyrepr::remove_linkages(
+    glyrepr::convert_to_generic(intact)
   )
   partial <- glyparse::auto_parse(
     "Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-"
@@ -186,8 +183,8 @@ test_that("virtual enzyme names follow the target structure level", {
   partial_path <- suppressWarnings(
     trace_biosynthesis_virtual(partial)
   )
-  basic_path <- suppressWarnings(
-    trace_biosynthesis_virtual(basic)
+  generic_topological_path <- suppressWarnings(
+    trace_biosynthesis_virtual(generic_topological)
   )
 
   expect_setequal(
@@ -199,22 +196,26 @@ test_that("virtual enzyme names follow the target structure level", {
     c("GalT", "GlcNAcT")
   )
   expect_setequal(
-    igraph::E(basic_path)$enzyme,
+    igraph::E(generic_topological_path)$enzyme,
     c("HexT", "HexNAcT")
   )
 })
 
 test_that("virtual sulfate labels support reduced structures", {
   intact <- glyparse::auto_parse("Gal6S(b1-3)GalNAc(a1-")
-  topological <- glyrepr::reduce_structure_level(intact, "topological")
-  basic <- glyrepr::reduce_structure_level(intact, "basic")
+  topological <- glyrepr::remove_linkages(intact)
+  generic_topological <- glyrepr::remove_linkages(
+    glyrepr::convert_to_generic(intact)
+  )
   partial <- glyparse::auto_parse("Gal?S(b1-?)GalNAc(a1-")
 
   paths <- list(
     topological = suppressWarnings(
       trace_biosynthesis_virtual(topological)
     ),
-    basic = suppressWarnings(trace_biosynthesis_virtual(basic)),
+    generic_topological = suppressWarnings(
+      trace_biosynthesis_virtual(generic_topological)
+    ),
     partial = suppressWarnings(trace_biosynthesis_virtual(partial))
   )
 
@@ -266,8 +267,10 @@ test_that("virtual N-glycan labels follow reduced structure levels", {
   partial <- glyparse::auto_parse(
     "GlcNAc(b1-?)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  topological <- glyrepr::reduce_structure_level(intact, "topological")
-  basic <- glyrepr::reduce_structure_level(intact, "basic")
+  topological <- glyrepr::remove_linkages(intact)
+  generic_topological <- glyrepr::remove_linkages(
+    glyrepr::convert_to_generic(intact)
+  )
 
   paths <- list(
     intact = trace_biosynthesis_virtual(intact),
@@ -277,15 +280,15 @@ test_that("virtual N-glycan labels follow reduced structure levels", {
     topological = suppressWarnings(
       trace_biosynthesis_virtual(topological)
     ),
-    basic = suppressWarnings(
-      trace_biosynthesis_virtual(basic)
+    generic_topological = suppressWarnings(
+      trace_biosynthesis_virtual(generic_topological)
     )
   )
 
   expect_equal(igraph::E(paths$intact)$enzyme, "b2GlcNAcT")
   expect_equal(igraph::E(paths$partial)$enzyme, "GlcNAcT")
   expect_equal(igraph::E(paths$topological)$enzyme, "GlcNAcT")
-  expect_equal(igraph::E(paths$basic)$enzyme, "HexNAcT")
+  expect_equal(igraph::E(paths$generic_topological)$enzyme, "HexNAcT")
 })
 
 test_that("virtual path tracing trims to the requested starting glycan", {
@@ -480,16 +483,14 @@ test_that("virtual tracing retains unsupported annotated transitions", {
 test_that("virtual tracing annotates reduced-level transitions", {
   intact_from <- glyrepr::o_glycan_core_1()
   intact_to <- glyrepr::o_glycan_core_2()
-  topological_from <- glyrepr::reduce_structure_level(
-    intact_from,
-    "topological"
+  topological_from <- glyrepr::remove_linkages(intact_from)
+  topological_to <- glyrepr::remove_linkages(intact_to)
+  generic_topological_from <- glyrepr::remove_linkages(
+    glyrepr::convert_to_generic(intact_from)
   )
-  topological_to <- glyrepr::reduce_structure_level(
-    intact_to,
-    "topological"
+  generic_topological_to <- glyrepr::remove_linkages(
+    glyrepr::convert_to_generic(intact_to)
   )
-  basic_from <- glyrepr::reduce_structure_level(intact_from, "basic")
-  basic_to <- glyrepr::reduce_structure_level(intact_to, "basic")
   partial_to <- glyparse::auto_parse(
     "Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-"
   )
@@ -507,9 +508,9 @@ test_that("virtual tracing annotates reduced-level transitions", {
       enzymes = "GCNT1",
       annotate_enzymes = TRUE
     )),
-    basic = suppressWarnings(path_biosynthesis_virtual(
-      basic_from,
-      basic_to,
+    generic_topological = suppressWarnings(path_biosynthesis_virtual(
+      generic_topological_from,
+      generic_topological_to,
       enzymes = "GCNT1",
       annotate_enzymes = TRUE
     ))

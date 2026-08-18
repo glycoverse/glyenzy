@@ -17,8 +17,10 @@
 #'   an error will be thrown.
 #' @param structure_level Output structure level.
 #'   `"intact"` keeps the current behavior and returns products with exact
-#'   linkages. `"topological"` removes linkages from products.
-#'   `"basic"` removes linkages and converts products to generic residues.
+#'   linkages. `"topological"` removes linkages from products while
+#'   preserving residue identities.
+#'   `"partial"` classifies inputs with incomplete linkage or anomer
+#'   information; it is not a generated-output option.
 #'   The requested level cannot be lower-resolution than the input glycans.
 #'
 #' @return A [glyrepr::glycan_structure()] vector, or a list of such vectors.
@@ -49,10 +51,7 @@ apply_enzyme <- function(
   structure_level = "intact"
 ) {
   structure_level <- .validate_structure_level(structure_level)
-  glycans <- .process_glycans_arg(
-    glycans,
-    allow_generic = identical(structure_level, "basic")
-  )
+  glycans <- .process_glycans_arg(glycans)
   .validate_output_structure_level(glycans, structure_level)
   enzyme <- .process_enzyme_arg(enzyme)
   return_list <- .validate_return_list(return_list, length(glycans))
@@ -294,7 +293,7 @@ apply_enzyme <- function(
     }
   )
   products <- unlist(rule_results, recursive = FALSE)
-  .reduce_valid_glycan_graphs(products, structure_level)
+  .prepare_valid_glycan_graphs(products, structure_level)
 }
 
 # Prepare shared rule jobs and the ordered enzyme plans that consume them.
@@ -572,7 +571,7 @@ apply_enzyme <- function(
             job$enzyme,
             structure_level = structure_level
           )
-          .reduce_valid_glycan_graphs(products, structure_level)
+          .prepare_valid_glycan_graphs(products, structure_level)
         }
       )
     }
@@ -674,13 +673,13 @@ apply_enzyme <- function(
     structure_level = structure_level
   )
   if (!.uses_standard_graph_action(enzyme)) {
-    return(.reduce_structure_level(
+    return(.remove_linkages_for_level(
       .materialize_product_graphs(graph_list, enzyme),
       structure_level
     ))
   }
 
-  graph_list <- .reduce_valid_glycan_graphs(graph_list, structure_level)
+  graph_list <- .prepare_valid_glycan_graphs(graph_list, structure_level)
   .materialize_product_graphs(graph_list, enzyme)
 }
 
@@ -730,10 +729,8 @@ apply_enzyme <- function(
   rule,
   structure_level = "intact"
 ) {
-  use_basic_graph_edit <- (identical(structure_level, "basic") &&
-    .graph_has_generic_monosaccharides(graph))
-  residue <- .new_residue_for_graph_edit(rule$new_residue, use_basic_graph_edit)
-  linkage <- .new_linkage_for_graph_edit(rule$new_linkage, use_basic_graph_edit)
+  residue <- rule$new_residue
+  linkage <- rule$new_linkage
   purrr::map(
     indices_to_act_on,
     ~ .add_residue(graph, .x, residue, linkage)
@@ -800,41 +797,6 @@ apply_enzyme <- function(
     ),
     cli::cli_abort("Unsupported enzyme type: {enzyme$type}")
   )
-}
-
-#' Check whether a graph already uses generic monosaccharides
-#'
-#' @param graph An igraph object representing a glycan structure.
-#' @returns A logical scalar.
-#' @noRd
-.graph_has_generic_monosaccharides <- function(graph) {
-  all(glyrepr::get_mono_type(igraph::V(graph)$mono) == "generic")
-}
-
-#' Convert a newly added residue for reduced-level graph editing
-#'
-#' @param residue Concrete monosaccharide name.
-#' @param use_basic_graph_edit Whether the target graph is already basic.
-#' @returns A monosaccharide name.
-#' @noRd
-.new_residue_for_graph_edit <- function(residue, use_basic_graph_edit) {
-  if (use_basic_graph_edit) {
-    return(glyrepr::convert_to_generic(residue))
-  }
-  residue
-}
-
-#' Convert a newly added linkage for reduced-level graph editing
-#'
-#' @param linkage Concrete linkage string.
-#' @param use_basic_graph_edit Whether the target graph is already basic.
-#' @returns A linkage string.
-#' @noRd
-.new_linkage_for_graph_edit <- function(linkage, use_basic_graph_edit) {
-  if (use_basic_graph_edit) {
-    return("??-?")
-  }
-  linkage
 }
 
 #' Match a rule's acceptor on a glycan structure

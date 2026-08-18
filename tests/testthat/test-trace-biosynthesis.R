@@ -137,8 +137,10 @@ test_that("trace_biosynthesis reaches topological target glycans", {
   ))
 })
 
-test_that("trace_biosynthesis reaches basic target glycans", {
-  glycan <- glyrepr::reduce_structure_level(glyrepr::o_glycan_core_2(), "basic")
+test_that("trace_biosynthesis reaches generic topological target glycans", {
+  glycan <- glyrepr::remove_linkages(
+    glyrepr::convert_to_generic(glyrepr::o_glycan_core_2())
+  )
   path <- suppressWarnings(trace_biosynthesis(
     glycan,
     enzymes = c("C1GALT1", "GCNT1"),
@@ -146,9 +148,18 @@ test_that("trace_biosynthesis reaches basic target glycans", {
   ))
 
   vertices <- igraph::as_data_frame(path, what = "vertices")
-  expect_true(as.character(glycan) %in% vertices$name)
+  end_node <- igraph::V(path)[igraph::degree(path, mode = "out") == 0]
+  end_glycans <- glyparse::auto_parse(end_node$name)
+  expect_identical(end_node$target, TRUE)
+  expect_true(any(glymotif::have_motif(
+    end_glycans,
+    glycan,
+    alignment = "whole",
+    mode = "lenient"
+  )))
   expect_true(all(
-    glyrepr::get_structure_level(glyparse::auto_parse(vertices$name)) == "basic"
+    glyrepr::get_structure_level(glyparse::auto_parse(vertices$name)) ==
+      "topological"
   ))
 })
 

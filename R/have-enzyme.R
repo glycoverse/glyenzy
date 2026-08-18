@@ -36,9 +36,8 @@
 #' Most functions only work for glycans containing **concrete** residues
 #' (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
 #' residues (e.g., `"Hex"`, `"HexNAc"`).
-#' Reduced-level inputs with generic residues are supported where explicitly
-#' documented, such as `apply_enzyme(structure_level = "basic")`,
-#' `trace_biosynthesis()`, and `path_biosynthesis()`.
+#' Inputs with generic or mixed residues are supported where explicitly
+#' documented, such as `trace_biosynthesis()` and `path_biosynthesis()`.
 #'
 #' ## Substituents
 #'
@@ -46,13 +45,14 @@
 #' phosphorylation and methylation, are not supported. Use
 #' [glyrepr::remove_substituents()] when unsupported substituents are present.
 #'
-#' ## Incomplete glycan structures
+#' ## Incomplete or non-concrete glycan structures
 #'
-#' If the glycan structure is incomplete or partially degraded,
-#' the result may be misleading.
-#' Glycans with a [glyrepr::get_structure_level()] other than `"intact"`
-#' are matched with the lenient motif matching mode in glymotif,
-#' and a warning is raised because enzyme predictions may be less reliable.
+#' If the glycan structure is incomplete, partially degraded, or contains
+#' generic or mixed residues, the result may be misleading. Glycans with a
+#' [glyrepr::get_structure_level()] other than `"intact"`, or with a
+#' [glyrepr::get_mono_type()] other than `"concrete"`, are matched with the
+#' lenient motif matching mode in glymotif. A warning is raised because enzyme
+#' predictions may be less reliable.
 #'
 #' ## Starting points
 #'
@@ -68,7 +68,7 @@
 #'
 #' # Algorithm
 #'
-#' The basic approach is straightforward: for each reaction rule
+#' The overall approach is straightforward: for each reaction rule
 #' associated with the enzyme, the function checks whether the
 #' corresponding product motif appears in the glycan.
 #' If any rule matches, the function returns `TRUE`.

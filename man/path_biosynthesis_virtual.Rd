@@ -38,8 +38,8 @@ Unlike \code{\link[=path_biosynthesis]{path_biosynthesis()}}, this does not requ
 Each edge is named for the residue added by that step. Intact glycans include
 the linkage anomer and acceptor position, so a beta-1,4-linked GlcNAc is
 labeled \code{"b4GlcNAcT"}. Partial and topological glycans omit linkage
-information and use \code{"GlcNAcT"}; basic glycans use the generic residue name,
-such as \code{"HexNAcT"}.
+information and use \code{"GlcNAcT"}. Generic or mixed topological glycans use
+their preserved generic residue names, such as \code{"HexNAcT"}.
 
 Sulfation is represented as its own atomic transition. Sulfate additions at
 positions 3 and 6 use \code{"3SulfoT"} and \code{"6SulfoT"}; an unknown or other
@@ -54,10 +54,10 @@ any sulfate groups it contains; those sulfates must also occur in \code{to}.
 These networks represent structural possibilities rather than biological
 feasibility.
 
-Basic structures do not retain glycan-class metadata. A basic structure
-matching the generic N-glycan-core topology is therefore assumed to be an
-N-glycan; use \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} with an explicit \code{from} when
-that topology belongs to another glycan class.
+Generic structures do not retain glycan-class metadata. A generic structure
+matching the N-glycan-core topology is therefore assumed to be an N-glycan;
+use \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} with an explicit \code{from} when that topology
+belongs to another glycan class.
 }
 
 \examples{
