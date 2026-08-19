@@ -114,6 +114,8 @@ the N-glycan precursor transferred to Asn by OST.
 \item For O-Man glycans, the starting structure is assumed to be "Man(a1-".
 \item For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".
 \item For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
+\item For GlcCer glycans, the starting structure is assumed to be "Glc(b1-",
+\item For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
 }
 }
 }

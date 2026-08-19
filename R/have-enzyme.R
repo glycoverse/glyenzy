@@ -65,6 +65,8 @@
 #' - For O-Man glycans, the starting structure is assumed to be "Man(a1-".
 #' - For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".
 #' - For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
+#' - For GlcCer glycans, the starting structure is assumed to be "Glc(b1-",
+#' - For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
 #'
 #' # Algorithm
 #'
