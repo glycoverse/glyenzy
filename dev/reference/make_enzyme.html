@@ -66,7 +66,7 @@ Special enzymes like starter GTs for glycosylation initiation are reserved for p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_enzyme</span><span class="op">(</span><span class="va">name</span>, <span class="va">rules</span>, <span class="va">type</span>, <span class="va">species</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_enzyme</span><span class="op">(</span><span class="va">name</span>, <span class="va">rules</span>, <span class="va">type</span>, <span class="va">species</span>, glycan_type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -100,6 +100,11 @@ and <code>alignment</code>. Defaults to an empty list.</p></li>
 <dd><p>The species of the enzyme. Default is "human".
 Currently no validation is done on the species.
 This field is only used for information purposes.</p></dd>
+
+
+<dt id="arg-glycan-type">glycan_type<a class="anchor" aria-label="anchor" href="#arg-glycan-type"></a></dt>
+<dd><p><code>NULL</code> for an enzyme that can act on all glycan classes,
+or one or more of <code>"N"</code>, <code>"O"</code>, and <code>"lipid"</code> for class-specific enzymes.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -210,6 +215,7 @@ with respect to substituents during enzyme application.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Enzyme: </span><span style="color: #00BB00; font-weight: bold;">MySiaT</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Type: <span style="color: #0000BB;">"GT"</span> (<span style="font-style: italic;">Glycosyltransferase</span>)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Species: <span style="color: #0000BB;">"human"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: <span style="color: #0000BB;">"all"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Rules (</span><span style="color: #0000BB; font-weight: bold;">1</span><span style="font-weight: bold;">)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -235,6 +241,7 @@ with respect to substituents during enzyme application.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Enzyme: </span><span style="color: #00BB00; font-weight: bold;">MyGalH</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Type: <span style="color: #0000BB;">"GH"</span> (<span style="font-style: italic;">Glycoside hydrolase</span>)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Species: <span style="color: #0000BB;">"human"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: <span style="color: #0000BB;">"all"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Rules (</span><span style="color: #0000BB; font-weight: bold;">1</span><span style="font-weight: bold;">)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -265,6 +272,7 @@ with respect to substituents during enzyme application.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Enzyme: </span><span style="color: #00BB00; font-weight: bold;">MySiaT</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Type: <span style="color: #0000BB;">"GT"</span> (<span style="font-style: italic;">Glycosyltransferase</span>)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Species: <span style="color: #0000BB;">"human"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: <span style="color: #0000BB;">"all"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Rules (</span><span style="color: #0000BB; font-weight: bold;">1</span><span style="font-weight: bold;">)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -300,6 +308,7 @@ with respect to substituents during enzyme application.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Enzyme: </span><span style="color: #00BB00; font-weight: bold;">MySiaT</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Type: <span style="color: #0000BB;">"GT"</span> (<span style="font-style: italic;">Glycosyltransferase</span>)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Species: <span style="color: #0000BB;">"human"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: <span style="color: #0000BB;">"all"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Rules (</span><span style="color: #0000BB; font-weight: bold;">2</span><span style="font-weight: bold;">)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

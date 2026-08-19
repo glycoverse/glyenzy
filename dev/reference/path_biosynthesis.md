@@ -146,6 +146,10 @@ For known-enzyme path inference:
 
 - For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
 
+- For GlcCer glycans, the starting structure is assumed to be "Glc(b1-",
+
+- For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
+
 ## Virtual fallback
 
 Sometimes the biosynthesis network of a glycan cannot be fully resolved;

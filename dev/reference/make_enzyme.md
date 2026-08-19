@@ -17,7 +17,7 @@ predefined enzymes.
 ## Usage
 
 ``` r
-make_enzyme(name, rules, type, species)
+make_enzyme(name, rules, type, species, glycan_type = NULL)
 ```
 
 ## Arguments
@@ -67,6 +67,11 @@ make_enzyme(name, rules, type, species)
   The species of the enzyme. Default is "human". Currently no validation
   is done on the species. This field is only used for information
   purposes.
+
+- glycan_type:
+
+  `NULL` for an enzyme that can act on all glycan classes, or one or
+  more of `"N"`, `"O"`, and `"lipid"` for class-specific enzymes.
 
 ## Value
 
@@ -178,6 +183,7 @@ make_enzyme(
 #> ── Enzyme: MySiaT ──────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "all"
 #> 
 #> ── Rules (1) ──
 #> 
@@ -203,6 +209,7 @@ make_enzyme(
 #> ── Enzyme: MyGalH ──────────────────────────────────────────────────────────────
 #> ℹ Type: "GH" (Glycoside hydrolase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "all"
 #> 
 #> ── Rules (1) ──
 #> 
@@ -233,6 +240,7 @@ make_enzyme(
 #> ── Enzyme: MySiaT ──────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "all"
 #> 
 #> ── Rules (1) ──
 #> 
@@ -268,6 +276,7 @@ make_enzyme(
 #> ── Enzyme: MySiaT ──────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "all"
 #> 
 #> ── Rules (2) ──
 #> 

@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 29eb3eb DN-- 4 8 -- 
+#> IGRAPH b51a153 DN-- 4 8 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from 29eb3eb (vertex names):
+#> + edges from b51a153 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -308,6 +308,8 @@ glyenzy uses specific starting points for biosynthetic reconstruction:
 - **O-Man glycans**: Start with Man(a1-
 - **O-Fuc glycans**: Start with Fuc(a1-
 - **O-Glc glycans**: Start with Glc(b1-
+- **GlcCer glycans**: Start with Glc(b1-
+- **GalCer glycans**: Start with Gal(b1-
 
 ## Technical Notes
 

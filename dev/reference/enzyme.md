@@ -90,6 +90,10 @@ An `enzyme()` is a list with the following elements:
 
 4.  `species`: the species of the enzyme, e.g. "human" or "mouse".
 
+5.  `glycan_type`: `NULL` for enzymes that can act on all glycan
+    classes, or one or more of `"N"`, `"O"`, and `"lipid"` for
+    class-specific enzymes.
+
 You can see all these information by printing the enzyme object.
 
 ## Examples
@@ -102,6 +106,7 @@ enzyme("ST3GAL3")
 #> ── Enzyme: ST3GAL3 ─────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "N" and "O"
 #> 
 #> ── Rules (3) ──
 #> 

@@ -53,6 +53,7 @@ enzymes_from_rnaseq(tpm)
 #> ── Enzyme: MOGS ────────────────────────────────────────────────────────────────
 #> ℹ Type: "GH" (Glycoside hydrolase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "N"
 #> 
 #> ── Rules (1) ──
 #> 
@@ -67,6 +68,7 @@ enzymes_from_rnaseq(tpm)
 #> ── Enzyme: ST3GAL3 ─────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "N" and "O"
 #> 
 #> ── Rules (3) ──
 #> 
