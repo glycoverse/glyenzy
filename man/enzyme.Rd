@@ -67,6 +67,8 @@ other enzyme types.
 \code{"GH"} for glycoside hydrolase, or \code{"ST"} for sulfotransferase.
 Starter GTs are encoded as \code{type = "GT"}.
 \item \code{species}: the species of the enzyme, e.g. "human" or "mouse".
+\item \code{glycan_type}: \code{NULL} for enzymes that can act on all glycan classes, or
+one or more of \code{"N"}, \code{"O"}, and \code{"lipid"} for class-specific enzymes.
 }
 
 You can see all these information by printing the enzyme object.

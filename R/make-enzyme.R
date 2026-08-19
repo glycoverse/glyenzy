@@ -98,6 +98,8 @@
 #' @param species The species of the enzyme. Default is "human".
 #'   Currently no validation is done on the species.
 #'   This field is only used for information purposes.
+#' @param glycan_type `NULL` for an enzyme that can act on all glycan classes,
+#'   or one or more of `"N"`, `"O"`, and `"lipid"` for class-specific enzymes.
 #'
 #' @returns A `glyenzy_enzyme` object.
 #' @seealso [enzyme()]
@@ -177,15 +179,16 @@
 #'   species = "human"
 #' )
 #' @export
-make_enzyme <- function(name, rules, type, species) {
+make_enzyme <- function(name, rules, type, species, glycan_type = NULL) {
   # Type checks
   checkmate::assert_string(name)
   checkmate::assert_list(rules, types = "list", min.len = 1L)
   checkmate::assert_choice(type, c("GT", "GH", "ST"))
   checkmate::assert_string(species)
+  glycan_type <- .validate_glycan_type(glycan_type)
 
   rules <- purrr::map(rules, .create_rule)
-  enz <- new_enzyme(name, rules, type, species)
+  enz <- new_enzyme(name, rules, type, species, glycan_type = glycan_type)
   validate_enzyme(enz)
   enhance_enzyme(enz)
 }

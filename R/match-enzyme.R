@@ -35,11 +35,21 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   enzyme <- .process_enzyme_arg(enzyme)
   .validate_match_enzyme_type(enzyme)
 
-  res <- switch(
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  res <- rep(list(integer()), length(glycans))
+  if (!any(compatible)) {
+    if (!is.null(glycan_names)) {
+      names(res) <- glycan_names
+    }
+    return(res)
+  }
+
+  matched <- switch(
     method,
-    motif = .match_enzyme_motif(glycans, enzyme),
-    path = .match_enzyme_path(glycans, enzyme)
+    motif = .match_enzyme_motif(glycans[compatible], enzyme),
+    path = .match_enzyme_path(glycans[compatible], enzyme)
   )
+  res[compatible] <- matched
   if (!is.null(glycan_names)) {
     names(res) <- glycan_names
   }

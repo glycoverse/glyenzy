@@ -7,6 +7,7 @@
       -- Enzyme: ST3GAL3 -------------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
+      i Glycan type: "N" and "O"
       
       -- Rules (3) --
       
@@ -33,6 +34,7 @@
       -- Enzyme: EMPTY_ENZYME --------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
+      i Glycan type: "all"
       
       -- Rules (0) --
       
@@ -47,6 +49,7 @@
       -- Enzyme: TEST_ENZYME ---------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
+      i Glycan type: "all"
       
       -- Rules (1) --
       

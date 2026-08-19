@@ -136,59 +136,34 @@ trace_biosynthesis <- function(
 .decide_starting_glycan <- function(glycan) {
   if (.is_n_glycan(glycan)) {
     start <- .n_glycan_starting_glycan()
-  } else if (
-    .have_motif_substituent_subset(
-      glycan,
-      "GalNAc(a1-",
-      alignment = "core"
-    )
-  ) {
-    start <- glyparse::parse_iupac_condensed("GalNAc(a1-")
-  } else if (
-    .have_motif_substituent_subset(
-      glycan,
-      "GlcNAc(b1-",
-      alignment = "core"
-    )
-  ) {
-    start <- glyparse::parse_iupac_condensed("GlcNAc(b1-")
-  } else if (
-    .have_motif_substituent_subset(
-      glycan,
-      "Man(a1-",
-      alignment = "core"
-    )
-  ) {
-    start <- glyparse::parse_iupac_condensed("Man(a1-")
-  } else if (
-    .have_motif_substituent_subset(
-      glycan,
-      "Fuc(a1-",
-      alignment = "core"
-    )
-  ) {
-    start <- glyparse::parse_iupac_condensed("Fuc(a1-")
-  } else if (
-    .have_motif_substituent_subset(
-      glycan,
-      "Glc(b1-",
-      alignment = "core"
-    )
-  ) {
-    start <- glyparse::parse_iupac_condensed("Glc(b1-")
-  } else if (
-    .have_motif_substituent_subset(
-      glycan,
-      "Gal(b1-",
-      alignment = "core"
-    )
-  ) {
-    start <- glyparse::parse_iupac_condensed("Gal(b1-")
   } else {
-    cli::cli_abort(c(
-      "Cannot decide the starting point for the given glycan(s).",
-      "i" = "The reducing-end residue is not a supported starting point."
-    ))
+    graph <- glyrepr::get_structure_graphs(glycan)
+    root <- which(igraph::degree(graph, mode = "in") == 0L)
+
+    if (length(root) != 1L) {
+      cli::cli_abort(c(
+        "Cannot decide the starting point for the given glycan(s).",
+        "i" = "The reducing-end residue is ambiguous."
+      ))
+    }
+
+    root_mono <- igraph::vertex_attr(graph, "mono", index = root)
+    root_anomer <- unname(c(
+      GalNAc = "a1",
+      GlcNAc = "b1",
+      Man = "a1",
+      Fuc = "a1",
+      Glc = "b1",
+      Gal = "b1"
+    )[root_mono])
+
+    if (is.na(root_anomer)) {
+      root_anomer <- igraph::graph_attr(graph, "anomer")
+    }
+
+    start <- glyparse::parse_iupac_condensed(
+      paste0(root_mono, "(", root_anomer, "-")
+    )
   }
   start
 }

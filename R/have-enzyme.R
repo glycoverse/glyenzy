@@ -65,6 +65,8 @@
 #' - For O-Man glycans, the starting structure is assumed to be "Man(a1-".
 #' - For O-Fuc glycans, the starting structure is assumed to be "Fuc(a1-".
 #' - For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
+#' - For GlcCer glycans, the starting structure is assumed to be "Glc(b1-",
+#' - For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
 #'
 #' # Algorithm
 #'
@@ -116,11 +118,17 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   method <- match.arg(method)
   glycans <- .process_glycans_arg(glycans)
   enzyme <- .process_enzyme_arg(enzyme)
-  switch(
+  compatible <- .enzyme_glycan_type_mask(glycans, enzyme)
+  result <- rep(FALSE, length(glycans))
+  if (!any(compatible)) {
+    return(result)
+  }
+  result[compatible] <- switch(
     method,
-    motif = .have_enzyme_motif(glycans, enzyme),
-    path = .have_enzyme_path(glycans, enzyme)
+    motif = .have_enzyme_motif(glycans[compatible], enzyme),
+    path = .have_enzyme_path(glycans[compatible], enzyme)
   )
+  result
 }
 
 #' Is a Glycan Synthesized by an Enzyme? (Internal)

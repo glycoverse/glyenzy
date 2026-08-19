@@ -1047,6 +1047,9 @@
 #' @returns `TRUE` when the enzyme can synthesize `target`; otherwise `FALSE`.
 #' @noRd
 .enzyme_contributes_to_target <- function(target, enzyme) {
+  if (!.enzyme_glycan_type_mask(target, enzyme)) {
+    return(FALSE)
+  }
   tryCatch(
     .have_enzyme_motif(target, enzyme),
     error = function(e) FALSE

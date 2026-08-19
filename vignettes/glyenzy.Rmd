@@ -228,6 +228,8 @@ glyenzy uses specific starting points for biosynthetic reconstruction:
 - **O-Man glycans**: Start with Man(a1-
 - **O-Fuc glycans**: Start with Fuc(a1-
 - **O-Glc glycans**: Start with Glc(b1-
+- **GlcCer glycans**: Start with Glc(b1-
+- **GalCer glycans**: Start with Gal(b1-
 
 ## Technical Notes
 

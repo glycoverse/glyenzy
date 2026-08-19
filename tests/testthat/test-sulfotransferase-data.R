@@ -54,6 +54,11 @@ test_that("each context-free sulfotransferase rule creates its exact product", {
       single_rule_enzyme <- enzymes[[symbol]]
       single_rule_enzyme$rules <- list(rule)
 
+      if (!all(.enzyme_glycan_type_mask(rule$acceptor, single_rule_enzyme))) {
+        expect_length(apply_enzyme(rule$acceptor, single_rule_enzyme), 0L)
+        next
+      }
+
       expect_identical(
         as.character(apply_enzyme(rule$acceptor, single_rule_enzyme)),
         as.character(rule$product),

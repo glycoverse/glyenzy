@@ -391,6 +391,9 @@ BfsSynthesisSearch <- R6::R6Class(
           curr_key <- chunk_keys[[i]]
           for (enzyme_idx in seq_along(self$enzymes)) {
             ez <- self$enzymes[[enzyme_idx]]
+            if (!.enzyme_supports_glycan_graph(chunk_graphs[[i]], ez)) {
+              next
+            }
             plan_id <- private$rule_plan$enzyme_plan_ids[[enzyme_idx]]
             expansion_result <- private$integrate_products(
               curr_key,

@@ -4,7 +4,7 @@
 \alias{make_enzyme}
 \title{Make a Custom Enzyme}
 \usage{
-make_enzyme(name, rules, type, species)
+make_enzyme(name, rules, type, species, glycan_type = NULL)
 }
 \arguments{
 \item{name}{The name of the enzyme.}
@@ -29,6 +29,9 @@ and \code{alignment}. Defaults to an empty list.
 \item{species}{The species of the enzyme. Default is "human".
 Currently no validation is done on the species.
 This field is only used for information purposes.}
+
+\item{glycan_type}{\code{NULL} for an enzyme that can act on all glycan classes,
+or one or more of \code{"N"}, \code{"O"}, and \code{"lipid"} for class-specific enzymes.}
 }
 \value{
 A \code{glyenzy_enzyme} object.
