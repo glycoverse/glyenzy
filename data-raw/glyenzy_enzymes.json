@@ -1311,7 +1311,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["lipid", "O"]
     },
     {
         "name": "ST3GAL3",
