@@ -17,6 +17,22 @@ test_that("N-glycan starting structures depend on the tracing function", {
   )
 })
 
+test_that("non-N-glycan starting structures use the reducing-end core", {
+  glycans <- glyparse::auto_parse(c(
+    "Gal(b1-3)GalNAc(a1-",
+    "GlcNAc(b1-3)GalNAc(a1-",
+    "Glc(a1-2)Gal(?1-",
+    "Man(a1-3)GlcNAc(b1-"
+  ))
+
+  starts <- purrr::map_chr(glycans, ~ as.character(.decide_starting_glycan(.x)))
+
+  expect_identical(
+    starts,
+    c("GalNAc(a1-", "GalNAc(a1-", "Gal(b1-", "GlcNAc(b1-")
+  )
+})
+
 test_that("trace_biosynthesis infers max steps from target sizes", {
   n_glycans <- glyparse::auto_parse(c(
     "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
