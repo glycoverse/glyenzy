@@ -121,10 +121,10 @@ For known-enzyme path inference:
 glycan <- glyrepr::as_glycan_structure("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
 match_enzyme(glycan, "ST3GAL3")
 #> [[1]]
-#> [1] 1
+#> integer(0)
 #> 
 match_enzyme(glycan, "ST3GAL3", method = "path")
 #> [[1]]
-#> [1] 1
+#> integer(0)
 #> 
 ```

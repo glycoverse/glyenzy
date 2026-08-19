@@ -97,6 +97,7 @@ interdependence in glycomics by accounting for glycan biosynthesis.
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/real_experiment2.html" class="external-link">real_experiment2</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’</span>
 <span class="r-in"><span><span class="fu">product_substrate_ratio</span><span class="op">(</span><span class="va">exp</span>, <span class="st">"ST6GAL1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 1 3 </span>

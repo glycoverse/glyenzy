@@ -68,7 +68,7 @@ enzymes_from_rnaseq(tpm)
 #> ── Enzyme: ST3GAL3 ─────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
-#> ℹ Glycan type: "N" and "O"
+#> ℹ Glycan type: "lipid"
 #> 
 #> ── Rules (3) ──
 #> 
