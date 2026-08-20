@@ -8,10 +8,10 @@
   }
 
   graphs <- glyrepr::get_structure_graphs(glycans, return_list = TRUE)
-  purrr::map_chr(graphs, .glycan_type_graph)
+  purrr::map2_chr(graphs, as.character(glycans), .glycan_type_graph)
 }
 
-.glycan_type_graph <- function(graph) {
+.glycan_type_graph <- function(graph, structure = NULL) {
   if (is.null(graph) || igraph::vcount(graph) == 0L) {
     return(NA_character_)
   }
@@ -38,6 +38,15 @@
   }
 
   root_mono <- mono[[roots[[1]]]]
+  if (
+    identical(root_mono, "Man") &&
+      ((!is.null(structure) && grepl("Man\\(b[0-9?]+-$", structure)) ||
+        (is.null(structure) &&
+          (.graph_has_glycan_type_core(graph, "Man(a1-3)Man(?1-") ||
+            .graph_has_glycan_type_core(graph, "Man(a1-6)Man(?1-"))))
+  ) {
+    return(NA_character_)
+  }
   if (root_mono %in% c("GalNAc", "Man", "Fuc", "GlcNAc", "Xyl")) {
     return("O")
   }

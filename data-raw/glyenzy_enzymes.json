@@ -541,7 +541,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT2",
@@ -573,7 +573,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT3",
@@ -617,7 +617,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT4B",
@@ -644,7 +644,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N"]
     },
     {
         "name": "MGAT5",
@@ -715,7 +715,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O", "free"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B3GNT3",

@@ -10,6 +10,7 @@ test_that("glycan types are classified from reducing-end structures", {
     o_gal = "Glc(a1-2)Gal(?1-",
     lipid_glc = "Gal(b1-4)Glc(b1-",
     lipid_gal = "Glc(b1-4)Gal(b1-",
+    incomplete_n = "Man(a1-3)Man(b1-",
     unknown = "Neu5Ac(a2-3)Neu5Ac(?1-"
   ))
 
@@ -26,9 +27,28 @@ test_that("glycan types are classified from reducing-end structures", {
       o_gal = "O",
       lipid_glc = "lipid/free",
       lipid_gal = "lipid/free",
+      incomplete_n = NA_character_,
       unknown = NA_character_
     )
   )
+})
+
+test_that("beta-Man reducing ends retain incomplete N-glycan context", {
+  fragments <- glyparse::auto_parse(c(
+    mgat1 = "Man(a1-3)[Man(a1-6)]Man(a1-6)[Man(a1-3)]Man(b1-",
+    mgat2 = "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-"
+  ))
+
+  expect_identical(
+    .glycan_types(fragments),
+    c(mgat1 = NA_character_, mgat2 = NA_character_)
+  )
+  expect_true(all(.enzyme_glycan_type_mask(fragments, enzyme("MGAT1"))))
+  expect_true(all(.enzyme_glycan_type_mask(fragments, enzyme("MGAT2"))))
+
+  o_mannose <- glyparse::auto_parse("Man(a1-3)Man(a1-")
+  expect_identical(.glycan_types(o_mannose), "O")
+  expect_false(.enzyme_glycan_type_mask(o_mannose, enzyme("MGAT1")))
 })
 
 test_that("enzyme glycan types are validated and normalized", {

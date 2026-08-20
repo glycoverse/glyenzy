@@ -65,6 +65,30 @@ test_that("ambiguous lipid/free acceptors are enabled explicitly", {
   expect_equal(missing_free, character())
 })
 
+test_that("B3GNT2 retains literature-supported N-glycan activity", {
+  # PMID 15620693, Table 2 reports direct activity on bi-, tri-, and
+  # tetra-antennary N-glycans, both with and without core fucose.
+  expect_identical(enzyme("B3GNT2")$glycan_type, c("N", "O", "free"))
+
+  acceptor <- paste0(
+    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)",
+    "[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expect_gt(length(suppressWarnings(apply_enzyme(acceptor, "B3GNT2"))), 0L)
+})
+
+test_that("MGAT branching enzymes remain N-glycan-specific", {
+  genes <- c("MGAT1", "MGAT2", "MGAT4A", "MGAT4B")
+  types <- lapply(genes, function(gene) enzyme(gene)$glycan_type)
+
+  expect_true(all(vapply(types, identical, logical(1), "N")))
+  expect_length(
+    suppressWarnings(apply_enzyme("Man(a1-3)Man(a1-", "MGAT1")),
+    0L
+  )
+})
+
 test_that("generalized rules retain curated context boundaries", {
   cases <- data.frame(
     gene = c(
