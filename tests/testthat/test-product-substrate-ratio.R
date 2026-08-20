@@ -71,14 +71,14 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
   expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(exp))
 })
 
-test_that("product_substrate_ratio uses lenient matching for topological data", {
+test_that("product_substrate_ratio uses lenient matching for non-intact data", {
   exp <- glyexp::real_experiment2
-  expect_identical(
-    unique(glyrepr::get_structure_level(
+  structure_levels <- unique(
+    glyrepr::get_structure_level(
       SummarizedExperiment::rowData(exp)$glycan_structure
-    )),
-    "topological"
+    )
   )
+  expect_true(all(structure_levels %in% c("partial", "topological")))
 
   by_name <- product_substrate_ratio(exp, c("MGAT3", "FUT8"))
   by_object <- product_substrate_ratio(
