@@ -20,7 +20,7 @@ test_that("built-in glycolipid enzymes have stable types and rule counts", {
   )
   expect_identical(
     unname(vapply(enzymes, \(x) length(x$rules), integer(1))),
-    c(1L, 1L, 1L, 1L, 2L, 4L, 4L, 2L, 3L, 2L)
+    c(1L, 1L, 2L, 1L, 2L, 4L, 6L, 2L, 4L, 4L)
   )
 })
 
@@ -61,12 +61,12 @@ test_that("each context-free glycolipid rule creates its exact product", {
   }
 })
 
-test_that("B4GALT6 synthesizes the LacCer headgroup", {
+test_that("B4GALT5 and B4GALT6 synthesize the LacCer headgroup", {
   acceptor <- "Glc(b1-"
   product <- "Gal(b1-4)Glc(b1-"
 
+  expect_identical(as.character(apply_enzyme(acceptor, "B4GALT5")), product)
   expect_identical(as.character(apply_enzyme(acceptor, "B4GALT6")), product)
-  expect_length(apply_enzyme(acceptor, "B4GALT5"), 0L)
 })
 
 test_that("ST3GAL5 supports the GM3 and GM4 headgroup routes", {

@@ -31,7 +31,10 @@ Currently no validation is done on the species.
 This field is only used for information purposes.}
 
 \item{glycan_type}{\code{NULL} for an enzyme that can act on all glycan classes,
-or one or more of \code{"N"}, \code{"O"}, and \code{"lipid"} for class-specific enzymes.}
+or one or more of \code{"N"}, \code{"O"}, \code{"lipid"}, and \code{"free"} for
+class-specific enzymes. Structures ending in Glc or Gal without a
+represented carrier are treated as compatible with both \code{"lipid"} and
+\code{"free"} enzymes.}
 }
 \value{
 A \code{glyenzy_enzyme} object.

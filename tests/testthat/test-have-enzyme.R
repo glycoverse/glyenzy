@@ -2,13 +2,13 @@
 test_that("have_enzyme works for `glyrepr_structure` and `glyenzy_enzyme`", {
   glycan <- glyparse::parse_iupac_condensed("Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-")
   enzyme <- enzyme("ST3GAL3")
-  expect_false(have_enzyme(glycan, enzyme))
+  expect_true(have_enzyme(glycan, enzyme))
 })
 
 test_that("have_enzyme works for characters", {
   glycan <- "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-"
   enzyme <- "ST3GAL3"
-  expect_false(have_enzyme(glycan, enzyme))
+  expect_true(have_enzyme(glycan, enzyme))
 })
 
 test_that("have_enzyme works vectorizedly", {
@@ -16,7 +16,7 @@ test_that("have_enzyme works vectorizedly", {
     "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-",
     "Gal(b1-3)GlcNAc(b1-"
   )
-  expect_equal(have_enzyme(glycans, "ST3GAL3"), c(FALSE, FALSE))
+  expect_equal(have_enzyme(glycans, "ST3GAL3"), c(TRUE, FALSE))
 })
 
 test_that("have_enzyme uses lenient matching for non-intact glycans", {

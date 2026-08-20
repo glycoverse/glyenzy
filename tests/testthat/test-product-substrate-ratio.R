@@ -71,13 +71,13 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
   expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(exp))
 })
 
-test_that("product_substrate_ratio uses lenient matching for partial data", {
+test_that("product_substrate_ratio uses lenient matching for topological data", {
   exp <- glyexp::real_experiment2
   expect_identical(
     unique(glyrepr::get_structure_level(
       SummarizedExperiment::rowData(exp)$glycan_structure
     )),
-    "partial"
+    "topological"
   )
 
   by_name <- product_substrate_ratio(exp, c("MGAT3", "FUT8"))

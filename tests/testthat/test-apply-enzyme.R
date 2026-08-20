@@ -556,7 +556,10 @@ test_that("fucosylation of poly-LacNAc", {
     "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
   )
   expect_equal(as.character(res[["FUT7"]]), character(0))
-  expect_equal(as.character(res[["FUT9"]]), character(0))
+  expect_equal(
+    as.character(res[["FUT9"]]),
+    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+  )
 })
 
 test_that("fucosylation of sialyl-LacNAc", {
