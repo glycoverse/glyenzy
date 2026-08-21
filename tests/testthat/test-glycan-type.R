@@ -98,6 +98,7 @@ test_that("enzyme glycan types are validated and normalized", {
 
 test_that("built-in enzyme metadata comes from broad pathway classes", {
   expect_identical(enzyme("MGAT5B")$glycan_type, c("N", "O"))
+  expect_identical(enzyme("ST3GAL3")$glycan_type, c("lipid", "free"))
   expect_identical(enzyme("ST3GAL5")$glycan_type, "lipid")
   expect_null(enzyme("FUT1")$glycan_type)
   expect_identical(enzyme("DPAGT1")$glycan_type, "N")

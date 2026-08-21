@@ -7,7 +7,7 @@
       -- Enzyme: ST3GAL3 -------------------------------------------------------------
       i Type: "GT" (Glycosyltransferase)
       i Species: "human"
-      i Glycan type: "O", "lipid", and "free"
+      i Glycan type: "lipid" and "free"
       
       -- Rules (4) --
       

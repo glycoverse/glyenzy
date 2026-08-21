@@ -1539,7 +1539,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O", "lipid", "free"]
+        "glycan_type": ["lipid", "free"]
     },
     {
         "name": "ST3GAL4",

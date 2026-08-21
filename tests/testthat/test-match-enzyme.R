@@ -4,7 +4,7 @@ test_that("match_enzyme works for glyrepr_structure and glyenzy_enzyme", {
   )
   enzyme <- enzyme("ST3GAL3")
 
-  expect_equal(match_enzyme(glycan, enzyme), list(1L))
+  expect_equal(match_enzyme(glycan, enzyme), list(integer()))
 })
 
 test_that("match_enzyme doesn't work for characters", {
@@ -20,7 +20,7 @@ test_that("match_enzyme works vectorizedly and preserves names", {
 
   expect_equal(
     match_enzyme(glycans, "ST3GAL3"),
-    list(sialylated = 1L, unsialylated = integer())
+    list(sialylated = integer(), unsialylated = integer())
   )
 })
 
