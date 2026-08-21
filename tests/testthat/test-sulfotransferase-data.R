@@ -14,7 +14,7 @@ test_that("built-in sulfotransferases have stable order and rule counts", {
     "GAL3ST4"
   )
   enzymes <- db_enzymes()
-  expected_counts <- c(4L, 4L, 2L, 2L, 3L, 3L, 1L, 1L, 1L, 6L, 2L, 2L)
+  expected_counts <- c(4L, 4L, 2L, 2L, 3L, 3L, 1L, 1L, 1L, 4L, 2L, 2L)
 
   expect_identical(tail(names(enzymes), length(st_symbols)), st_symbols)
   expect_identical(
@@ -25,7 +25,7 @@ test_that("built-in sulfotransferases have stable order and rule counts", {
     unname(vapply(enzymes[st_symbols], \(x) x$type, character(1))),
     rep("ST", length(st_symbols))
   )
-  expect_identical(sum(expected_counts), 31L)
+  expect_identical(sum(expected_counts), 29L)
 })
 
 test_that("each context-free sulfotransferase rule creates its exact product", {

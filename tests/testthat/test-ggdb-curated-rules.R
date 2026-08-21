@@ -4,7 +4,7 @@ test_that("built-in enzymes reproduce curated human GGDB reactions", {
     stringsAsFactors = FALSE
   )
 
-  expect_equal(nrow(cases), 119L)
+  expect_equal(nrow(cases), 125L)
   expect_equal(sum(startsWith(cases$gene_symbol, "ALG")), 0L)
 
   actual <- lapply(seq_len(nrow(cases)), function(i) {
@@ -65,17 +65,32 @@ test_that("ambiguous lipid/free acceptors are enabled explicitly", {
   expect_equal(missing_free, character())
 })
 
-test_that("B3GNT2 retains literature-supported N-glycan activity", {
-  # PMID 15620693, Table 2 reports direct activity on bi-, tri-, and
-  # tetra-antennary N-glycans, both with and without core fucose.
-  expect_identical(enzyme("B3GNT2")$glycan_type, c("N", "O", "free"))
+test_that("B3GNT2 excludes curated N-glycan acceptors", {
+  expect_identical(enzyme("B3GNT2")$glycan_type, c("O", "free"))
 
-  acceptor <- paste0(
-    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)",
-    "[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]",
-    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  acceptors <- c(
+    paste0(
+      "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)",
+      "[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]",
+      "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+    ),
+    paste0(
+      "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)",
+      "[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]",
+      "Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+    ),
+    paste0(
+      "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)",
+      "[Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-6)]Man(a1-6)]",
+      "Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-"
+    )
   )
-  expect_gt(length(suppressWarnings(apply_enzyme(acceptor, "B3GNT2"))), 0L)
+  products <- lapply(
+    acceptors,
+    function(acceptor) suppressWarnings(apply_enzyme(acceptor, "B3GNT2"))
+  )
+
+  expect_identical(lengths(products), rep(0L, length(acceptors)))
 })
 
 test_that("MGAT branching enzymes remain N-glycan-specific", {
@@ -108,7 +123,7 @@ test_that("MGAT2 requires the complete N-glycan core context", {
   )
 })
 
-test_that("B3GALT2 only extends terminal GlcNAc", {
+test_that("B3GALT2 supports curated low-activity acceptors", {
   expect_length(
     suppressWarnings(apply_enzyme("Gal(b1-4)Glc(b1-", "B3GALT2")),
     0L
@@ -119,6 +134,70 @@ test_that("B3GALT2 only extends terminal GlcNAc", {
       "B3GALT2"
     ))),
     "Gal(b1-3)GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
+  )
+
+  acceptors <- c("Gal(b1-4)GlcNAc(b1-", "Gal(b1-", "Glc(b1-")
+  expected <- c(
+    "Gal(b1-3)Gal(b1-4)GlcNAc(b1-",
+    "Gal(b1-3)Gal(b1-",
+    "Gal(b1-3)Glc(b1-"
+  )
+  products <- Map(
+    function(acceptor) {
+      as.character(suppressWarnings(apply_enzyme(acceptor, "B3GALT2")))
+    },
+    acceptors
+  )
+
+  expect_identical(unlist(products, use.names = FALSE), expected)
+})
+
+test_that("GAL3ST2 excludes Lewis a and Lewis x acceptors", {
+  acceptors <- c(
+    "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-3)Gal(b1-4)Glc(b1-",
+    "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-",
+    "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
+  )
+  products <- lapply(
+    acceptors,
+    function(acceptor) suppressWarnings(apply_enzyme(acceptor, "GAL3ST2"))
+  )
+
+  expect_identical(lengths(products), rep(0L, length(acceptors)))
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(
+      "Gal(b1-4)GlcNAc(b1-3)GalNAc(a1-",
+      "GAL3ST2"
+    ))),
+    "Gal3S(b1-4)GlcNAc(b1-3)GalNAc(a1-"
+  )
+})
+
+test_that("B3GNT4 excludes long type-2 poly-LacNAc acceptors", {
+  acceptors <- c(
+    "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-",
+    paste0(
+      "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-3)",
+      "Gal(b1-4)GlcNAc(b1-"
+    ),
+    paste0(
+      "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-3)",
+      "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-3)",
+      "Gal(b1-4)GlcNAc(b1-"
+    )
+  )
+  products <- lapply(
+    acceptors,
+    function(acceptor) suppressWarnings(apply_enzyme(acceptor, "B3GNT4"))
+  )
+
+  expect_identical(lengths(products), rep(0L, length(acceptors)))
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(
+      "Gal(b1-4)GlcNAc(b1-",
+      "B3GNT4"
+    ))),
+    "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
   )
 })
 
