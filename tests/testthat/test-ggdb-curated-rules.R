@@ -108,6 +108,48 @@ test_that("MGAT2 requires the complete N-glycan core context", {
   )
 })
 
+test_that("B3GALT2 only extends terminal GlcNAc", {
+  expect_length(
+    suppressWarnings(apply_enzyme("Gal(b1-4)Glc(b1-", "B3GALT2")),
+    0L
+  )
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(
+      "GlcNAc(b1-3)Gal(b1-4)Glc(b1-",
+      "B3GALT2"
+    ))),
+    "Gal(b1-3)GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
+  )
+})
+
+test_that("B4GALNT2 requires alpha2-3-sialylated Gal", {
+  expect_length(
+    suppressWarnings(apply_enzyme("Gal(b1-3)GlcNAc(b1-", "B4GALNT2")),
+    0L
+  )
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(
+      "Neu5Ac(a2-3)Gal(b1-3)GlcNAc(b1-",
+      "B4GALNT2"
+    ))),
+    "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-3)GlcNAc(b1-"
+  )
+})
+
+test_that("GCNT1 distinguishes core-1 from core-3", {
+  expect_length(
+    suppressWarnings(apply_enzyme("GlcNAc(b1-3)GalNAc(a1-", "GCNT1")),
+    0L
+  )
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(
+      "Gal(b1-3)GalNAc(a1-",
+      "GCNT1"
+    ))),
+    "Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+  )
+})
+
 test_that("generalized rules retain curated context boundaries", {
   cases <- data.frame(
     gene = c(
