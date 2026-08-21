@@ -89,6 +89,25 @@ test_that("MGAT branching enzymes remain N-glycan-specific", {
   )
 })
 
+test_that("MGAT2 requires the complete N-glycan core context", {
+  truncated <- "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-"
+  expect_length(suppressWarnings(apply_enzyme(truncated, "MGAT2")), 0L)
+
+  acceptor <- paste0(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  expected <- paste0(
+    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(acceptor, "MGAT2"))),
+    expected
+  )
+})
+
 test_that("generalized rules retain curated context boundaries", {
   cases <- data.frame(
     gene = c(
