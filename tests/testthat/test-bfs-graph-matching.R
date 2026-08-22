@@ -405,17 +405,18 @@ test_that("BFS rule plans share only equivalent standard rules", {
   )
   plan <- .prepare_bfs_rule_plan(enzymes)
 
-  expect_length(plan$rules, 2L)
+  expect_length(plan$rules, 3L)
   expect_true(all(vapply(enzymes, .can_batch_bfs_enzyme, logical(1))))
   expect_equal(plan$enzyme_rule_ids[[1]], plan$enzyme_rule_ids[[2]])
-  expect_equal(plan$enzyme_rule_ids[[3]], plan$enzyme_rule_ids[[4]])
-  expect_equal(plan$enzyme_plan_ids, c(1L, 1L, 2L, 2L))
+  expect_equal(plan$enzyme_rule_ids[[3]], 2L)
+  expect_equal(plan$enzyme_rule_ids[[4]], c(2L, 3L))
+  expect_equal(plan$enzyme_plan_ids, c(1L, 1L, 2L, 3L))
 
   custom <- enzyme("B4GALT3")
   class(custom) <- c("custom_gt_enzyme", class(custom))
   private_plan <- .prepare_bfs_rule_plan(list(enzyme("B4GALT2"), custom))
 
-  expect_length(private_plan$rules, 2L)
+  expect_length(private_plan$rules, 3L)
   expect_false(.can_batch_bfs_enzyme(custom))
   expect_equal(private_plan$enzyme_plan_ids, c(1L, 2L))
 

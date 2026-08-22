@@ -531,6 +531,12 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Man(a1-3)Man(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "GlcNAc(b1-2)Man(a1-3)Man(b1-"
             }
         ],
         "type": "GT",
@@ -565,8 +571,7 @@
                 "acceptor_alignment": "core",
                 "rejects": [
                     "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                    "Gal(b1-4)GlcNAc(b1-4)[GlcNAc(b1-2)]Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-                    "GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+                    "Gal(b1-4)GlcNAc(b1-4)[GlcNAc(b1-2)]Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
                 ],
                 "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
             }
@@ -586,6 +591,16 @@
                     "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
                 ],
                 "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)Man(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [
+                    "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)Man(b1-",
+                    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-",
+                    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)]Man(b1-"
+                ],
+                "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)Man(b1-"
             }
         ],
         "type": "GT",
@@ -603,6 +618,16 @@
                     "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
                 ],
                 "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-2)Man(a1-3)Man(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [
+                    "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)Man(b1-",
+                    "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-",
+                    "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)]Man(b1-"
+                ],
+                "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)Man(b1-"
             }
         ],
         "type": "GT",
@@ -655,13 +680,30 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
+                ],
                 "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-",
+                    "Gal(b1-3)GlcNAc(b1-3)[Neu5Ac(a2-6)]GalNAc(a1-"
+                ],
+                "product": "GlcNAc(b1-3)Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": null
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "B3GNT3",
@@ -677,11 +719,33 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "GlcNAc(b1-3)Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+                ],
+                "product": "GlcNAc(b1-3)Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-3)Gal(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [
+                    "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-"
+                ],
+                "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "B3GNT4",
@@ -689,8 +753,24 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
+                ],
                 "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+                ],
+                "product": "GlcNAc(b1-3)Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
@@ -705,11 +785,17 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["lipid", "free"]
     },
     {
         "name": "B3GNT6",
@@ -755,15 +841,15 @@
         "name": "B3GNT8",
         "rules": [
             {
-                "acceptor": "Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
+                "acceptor": "Gal(b1-4)GlcNAc(b1-6)Man(a1-6)Man(b1-",
+                "acceptor_alignment": "substructure",
                 "rejects": [],
-                "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
+                "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-6)Man(a1-6)Man(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": null
+        "glycan_type": ["N"]
     },
     {
         "name": "LFNG",
@@ -815,11 +901,27 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-4)Glc(b1-",
+                    "Gal(b1-4)GlcNAc(b1-",
+                    "Gal(b1-3)GalNAc(b1-"
+                ],
+                "product": "Gal(b1-3)Gal(b1-"
+            },
+            {
+                "acceptor": "Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal(b1-3)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B3GALT2",
@@ -829,11 +931,29 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)Gal(b1-"
+            },
+            {
+                "acceptor": "Glc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Gal(b1-3)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B3GALT4",
@@ -873,7 +993,10 @@
             {
                 "acceptor": "GlcNAc(b1-3)GalNAc(a1-",
                 "acceptor_alignment": "core",
-                "rejects": [],
+                "rejects": [
+                    "Gal(b1-4)GlcNAc(b1-3)GalNAc(a1-",
+                    "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)GalNAc(a1-"
+                ],
                 "product": "Gal(b1-3)GlcNAc(b1-3)GalNAc(a1-"
             },
             {
@@ -887,25 +1010,41 @@
                 "acceptor_alignment": "core",
                 "rejects": [],
                 "product": "Gal(b1-3)GlcNAc(b1-3)Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-4)GlcNAc(b1-"
+                ],
+                "product": "Gal(b1-3)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal(b1-3)GalNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["O", "lipid", "free"]
     },
     {
         "name": "B3GALT6",
         "rules": [
             {
-                "acceptor": "Gal(b1-4)Xyl2P(b1-",
-                "acceptor_alignment": "whole",
-                "rejects": [],
-                "product": "Gal(b1-3)Gal(b1-4)Xyl2P(b1-"
+                "acceptor": "Gal(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-3)GlcNAc(b1-"
+                ],
+                "product": "Gal(b1-3)Gal(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "B4GALT1",
@@ -921,11 +1060,17 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "whole",
+                "rejects": [],
+                "product": "Glc(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B4GALT2",
@@ -949,11 +1094,17 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B4GALT4",
@@ -973,21 +1124,27 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B4GALT5",
         "rules": [
             {
                 "acceptor": "Glc(b1-",
-                "acceptor_alignment": "whole",
+                "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Gal(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "B4GALT6",
@@ -1099,6 +1256,12 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Fuc(a1-2)Gal(b1-3)Glc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Fuc(a1-2)Gal(b1-"
             }
         ],
         "type": "GT",
@@ -1158,8 +1321,7 @@
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "substructure",
                 "rejects": [
-                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-",
-                    "Gal(a1-?)Gal(b1-4)GlcNAc(b1-"
+                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-"
                 ],
                 "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             },
@@ -1171,6 +1333,12 @@
                     "Gal(a1-?)Gal(b1-3)GlcNAc(b1-"
                 ],
                 "product": "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "core",
+                "rejects": [],
+                "product": "Fuc(a1-3)[Gal(b1-4)]Glc(b1-"
             }
         ],
         "type": "GT",
@@ -1184,8 +1352,7 @@
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "substructure",
                 "rejects": [
-                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-",
-                    "Gal(a1-?)Gal(b1-4)GlcNAc(b1-"
+                    "GalNAc(a1-?)Gal(b1-4)GlcNAc(b1-"
                 ],
                 "product": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
@@ -1239,6 +1406,12 @@
                     "Gal(a1-?)[Fuc(a1-2)]Gal(b1-4)GlcNAc(b1-"
                 ],
                 "product": "Fuc(a1-2)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -1253,11 +1426,17 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-6)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "ST6GAL2",
@@ -1277,7 +1456,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "ST3GAL1",
@@ -1287,11 +1466,17 @@
                 "acceptor_alignment": "core",
                 "rejects": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GalNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "ST3GAL2",
@@ -1337,11 +1522,17 @@
                 "acceptor_alignment": "core",
                 "rejects": [],
                 "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["lipid", "free"]
     },
     {
         "name": "ST3GAL4",
@@ -1353,11 +1544,23 @@
                     "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
                 ],
                 "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)GalNAc(a1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "ST3GAL5",
@@ -1393,7 +1596,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "O"]
+        "glycan_type": ["N", "O", "free"]
     },
     {
         "name": "ST6GALNAC1",
@@ -1473,7 +1676,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O", "lipid"]
+        "glycan_type": ["O"]
     },
     {
         "name": "ST6GALNAC5",
@@ -1529,11 +1732,17 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["lipid", "free"]
     },
     {
         "name": "ST8SIA2",
@@ -1561,7 +1770,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["N", "lipid"]
+        "glycan_type": ["N", "O", "lipid"]
     },
     {
         "name": "ST8SIA4",
@@ -1591,11 +1800,29 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Neu5Ac(a2-8)Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "requires": [
+                    {
+                        "motif": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-",
+                        "alignment": "substructure"
+                    }
+                ],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["lipid", "free"]
     },
     {
         "name": "ST8SIA6",
@@ -1611,31 +1838,53 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "Neu5Ac(a2-8)Neu5Ac(a2-6)GalNAc(a1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Gal(b1-3)GalNAc(b1-4)[Neu5Ac(a2-3)]Gal(b1-4)Glc(b1-"
+                ],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-4)Gal(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-4)Gal(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-2)Man(a1-"
+                ],
+                "product": "Neu5Ac(a2-8)Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "A4GNT",
         "rules": [
             {
-                "acceptor": "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-",
-                "acceptor_alignment": "core",
+                "acceptor": "Gal(b1-",
+                "acceptor_alignment": "terminal",
                 "rejects": [],
-                "product": "GlcNAc(a1-4)Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
-            },
-            {
-                "acceptor": "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-",
-                "acceptor_alignment": "core",
-                "rejects": [],
-                "product": "GlcNAc(a1-4)Gal(b1-3)[Gal(b1-4)GlcNAc(b1-6)]GalNAc(a1-"
+                "product": "GlcNAc(a1-4)Gal(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "C1GALT1",
@@ -1673,6 +1922,12 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal(b1-4)GlcNAc(b1-3)[GlcNAc(b1-6)]Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "GlcNAc(b1-3)Gal(b1-4)Glc(b1-",
+                "acceptor_alignment": "substructure",
+                "rejects": [],
+                "product": "GlcNAc(b1-3)[GlcNAc(b1-6)]Gal(b1-4)Glc(b1-"
             }
         ],
         "type": "GT",
@@ -1696,7 +1951,7 @@
             },
             {
                 "acceptor": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
+                "acceptor_alignment": "substructure",
                 "rejects": [],
                 "product": "GlcNAc(b1-3)[GlcNAc(b1-6)]Gal(b1-4)GlcNAc(b1-"
             }
@@ -1745,7 +2000,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["N", "O"]
     },
     {
         "name": "B4GALNT1",
@@ -1773,26 +2028,42 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "GalNAc(b1-4)[Neu5Ac(a2-8)Neu5Ac(a2-8)Neu5Ac(a2-3)]Gal(b1-4)Glc(b1-"
+            },
+            {
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Neu5Ac(a2-3)Gal(b1-3)GalNAc(b1-"
+                ],
+                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-"
+            },
+            {
+                "acceptor": "Neu5Gc(a2-3)Gal(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [
+                    "Neu5Gc(a2-3)Gal(b1-4)GlcNAc(b1-"
+                ],
+                "product": "Neu5Gc(a2-3)[GalNAc(b1-4)]Gal(b1-"
             }
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["lipid"]
+        "glycan_type": ["lipid", "free"]
     },
     {
         "name": "B4GALNT2",
         "rules": [
             {
-                "acceptor": "Neu5Ac(a2-3)Gal(b1-?)GlcNAc(b1-",
+                "acceptor": "Neu5Ac(a2-3)Gal(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
-                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-?)GlcNAc(b1-"
+                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-"
             },
             {
-                "acceptor": "Neu5Ac(a2-3)Gal(b1-?)GalNAc(a1-",
+                "acceptor": "Neu5Gc(a2-3)Gal(b1-",
                 "acceptor_alignment": "terminal",
                 "rejects": [],
-                "product": "Neu5Ac(a2-3)[GalNAc(b1-4)]Gal(b1-?)GalNAc(a1-"
+                "product": "Neu5Gc(a2-3)[GalNAc(b1-4)]Gal(b1-"
             }
         ],
         "type": "GT",
@@ -1903,6 +2174,12 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl2P(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)Gal(b1-4)Xyl(b1-",
+                "acceptor_alignment": "core",
+                "rejects": [],
+                "product": "GlcA(b1-3)Gal(b1-3)Gal(b1-4)Xyl(b1-"
             }
         ],
         "type": "GT",
@@ -2145,6 +2422,18 @@
                 "acceptor_alignment": "whole",
                 "rejects": [],
                 "product": "Glc(b1-3)Fuc(a1-"
+            },
+            {
+                "acceptor": "Fuc(a1-2)Gal(b1-4)GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Glc(b1-3)Fuc(a1-2)Gal(b1-4)GlcNAc(b1-"
+            },
+            {
+                "acceptor": "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-",
+                "acceptor_alignment": "terminal",
+                "rejects": [],
+                "product": "Glc(b1-3)Fuc(a1-4)[Gal(b1-3)]GlcNAc(b1-"
             }
         ],
         "type": "GT",
@@ -2231,7 +2520,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "GXYLT2",
@@ -2245,7 +2534,7 @@
         ],
         "type": "GT",
         "species": "human",
-        "glycan_type": ["O"]
+        "glycan_type": ["O", "free"]
     },
     {
         "name": "LARGE1",
@@ -2845,7 +3134,9 @@
             {
                 "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+                ],
                 "product": "Neu5Ac(a2-3)Gal6S(b1-4)GlcNAc(b1-"
             }
         ],
@@ -2891,7 +3182,9 @@
             {
                 "acceptor": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+                ],
                 "product": "Neu5Ac(a2-3)Gal6S(b1-4)GlcNAc(b1-"
             },
             {
@@ -3045,7 +3338,9 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
+                ],
                 "product": "Gal3S(b1-4)GlcNAc(b1-"
             },
             {
@@ -3053,12 +3348,6 @@
                 "acceptor_alignment": "terminal",
                 "rejects": [],
                 "product": "Gal3S6S(b1-4)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal3S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
@@ -3069,14 +3358,10 @@
             {
                 "acceptor": "Gal(b1-3)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
+                ],
                 "product": "Gal3S(b1-3)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-3)[Fuc(a1-4)]GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal3S(b1-3)[Fuc(a1-4)]GlcNAc(b1-"
             }
         ],
         "type": "ST",
@@ -3089,26 +3374,18 @@
             {
                 "acceptor": "Gal(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
+                ],
                 "product": "Gal3S(b1-4)GlcNAc(b1-"
             },
             {
                 "acceptor": "Gal6S(b1-4)GlcNAc(b1-",
                 "acceptor_alignment": "terminal",
-                "rejects": [],
+                "rejects": [
+                    "Fuc(a1-3)[Gal6S(b1-4)]GlcNAc(b1-"
+                ],
                 "product": "Gal3S6S(b1-4)GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal3S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
-            },
-            {
-                "acceptor": "Gal6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-",
-                "acceptor_alignment": "terminal",
-                "rejects": [],
-                "product": "Gal3S6S(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
             }
         ],
         "type": "ST",

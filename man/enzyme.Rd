@@ -68,7 +68,9 @@ other enzyme types.
 Starter GTs are encoded as \code{type = "GT"}.
 \item \code{species}: the species of the enzyme, e.g. "human" or "mouse".
 \item \code{glycan_type}: \code{NULL} for enzymes that can act on all glycan classes, or
-one or more of \code{"N"}, \code{"O"}, and \code{"lipid"} for class-specific enzymes.
+one or more of \code{"N"}, \code{"O"}, \code{"lipid"}, and \code{"free"} for
+class-specific enzymes. Structures ending in Glc or Gal without a
+represented carrier are compatible with both \code{"lipid"} and \code{"free"}.
 }
 
 You can see all these information by printing the enzyme object.

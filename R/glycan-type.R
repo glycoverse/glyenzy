@@ -8,10 +8,10 @@
   }
 
   graphs <- glyrepr::get_structure_graphs(glycans, return_list = TRUE)
-  purrr::map_chr(graphs, .glycan_type_graph)
+  purrr::map2_chr(graphs, as.character(glycans), .glycan_type_graph)
 }
 
-.glycan_type_graph <- function(graph) {
+.glycan_type_graph <- function(graph, structure = NULL) {
   if (is.null(graph) || igraph::vcount(graph) == 0L) {
     return(NA_character_)
   }
@@ -38,11 +38,20 @@
   }
 
   root_mono <- mono[[roots[[1]]]]
+  if (
+    identical(root_mono, "Man") &&
+      ((!is.null(structure) && grepl("Man\\(b[0-9?]+-$", structure)) ||
+        (is.null(structure) &&
+          (.graph_has_glycan_type_core(graph, "Man(a1-3)Man(?1-") ||
+            .graph_has_glycan_type_core(graph, "Man(a1-6)Man(?1-"))))
+  ) {
+    return(NA_character_)
+  }
   if (root_mono %in% c("GalNAc", "Man", "Fuc", "GlcNAc", "Xyl")) {
     return("O")
   }
   if (root_mono %in% c("Glc", "Gal")) {
-    return("lipid")
+    return("lipid/free")
   }
 
   NA_character_
@@ -68,7 +77,12 @@
   }
 
   types <- .glycan_types(glycans)
-  is.na(types) | types %in% enzyme$glycan_type
+  vapply(
+    types,
+    .glycan_type_is_compatible,
+    logical(1),
+    supported_types = enzyme$glycan_type
+  )
 }
 
 .enzyme_supports_glycan_graph <- function(graph, enzyme) {
@@ -76,7 +90,17 @@
     return(TRUE)
   }
   type <- .glycan_type_graph(graph)
-  is.na(type) || type %in% enzyme$glycan_type
+  .glycan_type_is_compatible(type, enzyme$glycan_type)
+}
+
+.glycan_type_is_compatible <- function(type, supported_types) {
+  if (is.na(type)) {
+    return(TRUE)
+  }
+  if (identical(type, "lipid/free")) {
+    return(any(c("lipid", "free") %in% supported_types))
+  }
+  type %in% supported_types
 }
 
 .validate_glycan_type <- function(glycan_type) {
@@ -85,6 +109,6 @@
   }
 
   checkmate::assert_character(glycan_type, min.len = 1L, any.missing = FALSE)
-  checkmate::assert_subset(glycan_type, c("N", "O", "lipid"))
-  unique(intersect(c("N", "O", "lipid"), glycan_type))
+  checkmate::assert_subset(glycan_type, c("N", "O", "lipid", "free"))
+  unique(intersect(c("N", "O", "lipid", "free"), glycan_type))
 }

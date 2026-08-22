@@ -99,7 +99,10 @@
 #'   Currently no validation is done on the species.
 #'   This field is only used for information purposes.
 #' @param glycan_type `NULL` for an enzyme that can act on all glycan classes,
-#'   or one or more of `"N"`, `"O"`, and `"lipid"` for class-specific enzymes.
+#'   or one or more of `"N"`, `"O"`, `"lipid"`, and `"free"` for
+#'   class-specific enzymes. Structures ending in Glc or Gal without a
+#'   represented carrier are treated as compatible with both `"lipid"` and
+#'   `"free"` enzymes.
 #'
 #' @returns A `glyenzy_enzyme` object.
 #' @seealso [enzyme()]

@@ -15,7 +15,7 @@
 #   or "ST" for sulfotransferase
 # - "species": species of the enzyme
 # - "glycan_type": null for all glycan classes, or a list containing one or
-#   more of "N", "O", and "lipid"
+#   more of "N", "O", "lipid", and "free"
 devtools::load_all()
 
 # Load required packages
