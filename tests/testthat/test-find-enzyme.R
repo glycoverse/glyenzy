@@ -20,6 +20,29 @@ test_that("find_enzyme works for vectorized inputs", {
   expect_true("MGAT2" %in% find_enzyme(glycans)[[2]])
 })
 
+test_that("find_enzyme batched motif matching agrees with enzyme-wise matching", {
+  glycans <- glyparse::auto_parse(c(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    "Neu5Ac(a2-8)Neu5Ac(a2-3)Gal(b1-4)Glc(b1-",
+    "Gal3S6S(b1-4)GlcNAc(b1-"
+  ))
+  enzymes <- c("B4GALT1", "ST8SIA5", "GAL3ST2", "MGAT1", "MAN1A1", "ALG10")
+
+  found <- find_enzyme(glycans, return_list = TRUE)
+  observed <- vapply(
+    enzymes,
+    \(enzyme) vapply(found, \(x) enzyme %in% x, logical(1)),
+    logical(length(glycans))
+  )
+  expected <- vapply(
+    enzymes,
+    \(enzyme) have_enzyme(glycans, enzyme),
+    logical(length(glycans))
+  )
+
+  expect_identical(observed, expected)
+})
+
 test_that("find_enzyme rejects invalid inputs", {
   expect_error(find_enzyme(123), "`glycans` must be")
 })
