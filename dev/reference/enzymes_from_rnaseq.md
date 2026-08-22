@@ -68,9 +68,9 @@ enzymes_from_rnaseq(tpm)
 #> ── Enzyme: ST3GAL3 ─────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
-#> ℹ Glycan type: "lipid"
+#> ℹ Glycan type: "lipid" and "free"
 #> 
-#> ── Rules (3) ──
+#> ── Rules (4) ──
 #> 
 #> → Rule 1: terminal alignment
 #> Acceptor: "Gal(b1-3)GlcNAc(b1-"
@@ -85,5 +85,8 @@ enzymes_from_rnaseq(tpm)
 #> → Rule 3: core alignment
 #> Acceptor: "Gal(b1-3)GalNAc(a1-"
 #> Product: "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+#> → Rule 4: terminal alignment
+#> Acceptor: "Gal(b1-4)Glc(b1-"
+#> Product: "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
 #> 
 ```

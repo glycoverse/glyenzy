@@ -32,9 +32,9 @@ To build its biosynthesis network, call
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 2b25a7e DN-- 4 8 -- 
+#> IGRAPH b80659b DN-- 4 9 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from 2b25a7e (vertex names):
+#> + edges from b80659b (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -224,7 +224,7 @@ glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 path <- trace_biosynthesis_virtual(glycan, annotate_enzymes = TRUE)
 igraph::edge_attr(path, "concrete_enzymes")
 #> [[1]]
-#> [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4"
+#> [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5"
 #> 
 #> [[2]]
 #> character(0)
@@ -236,7 +236,7 @@ igraph::edge_attr(path, "concrete_enzymes")
 #> [1] "GCNT1" "GCNT3" "GCNT4"
 #> 
 #> [[5]]
-#> [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4"
+#> [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5"
 #> 
 #> [[6]]
 #> character(0)

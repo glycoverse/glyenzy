@@ -2,6 +2,11 @@
 
 ## glyenzy (development version)
 
+- Built-in human enzyme rules now cover broader literature-supported
+  acceptors with context-specific exclusions and requirements; Glc- or
+  Gal-reducing structures without a represented carrier can be matched
+  explicitly as free glycans or glycolipids. (#46)
+
 - Enzyme objects now carry broad `glycan_type` compatibility metadata
   for N-glycans, O-glycans, and glycolipids. Enzyme actions and
   biosynthesis searches use this metadata to avoid applying

@@ -71,7 +71,9 @@ make_enzyme(name, rules, type, species, glycan_type = NULL)
 - glycan_type:
 
   `NULL` for an enzyme that can act on all glycan classes, or one or
-  more of `"N"`, `"O"`, and `"lipid"` for class-specific enzymes.
+  more of `"N"`, `"O"`, `"lipid"`, and `"free"` for class-specific
+  enzymes. Structures ending in Glc or Gal without a represented carrier
+  are treated as compatible with both `"lipid"` and `"free"` enzymes.
 
 ## Value
 

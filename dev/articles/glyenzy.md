@@ -56,10 +56,10 @@ returns the enzymes that may be involved in building a glycan:
 ``` r
 
 find_enzyme(glycan)
-#>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "C1GALT1" "GCNT1"   "GCNT3"  
-#>  [8] "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4"  "GALNT5"  "GALNT6" 
-#> [15] "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11" "GALNT12" "GALNT13"
-#> [22] "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18" "GALNT19"
+#>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "C1GALT1" "GCNT1"  
+#>  [8] "GCNT3"   "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4"  "GALNT5" 
+#> [15] "GALNT6"  "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11" "GALNT12"
+#> [22] "GALNT13" "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18" "GALNT19"
 ```
 
 This includes the enzymes shown in the diagram, along with B4GALT1/2/3/4
@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 5c8c4f5 DN-- 4 8 -- 
+#> IGRAPH dc0a18d DN-- 4 9 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from 5c8c4f5 (vertex names):
+#> + edges from dc0a18d (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         

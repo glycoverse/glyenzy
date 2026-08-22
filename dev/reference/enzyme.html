@@ -129,7 +129,9 @@ other enzyme types.</p></li>
 Starter GTs are encoded as <code>type = "GT"</code>.</p></li>
 <li><p><code>species</code>: the species of the enzyme, e.g. "human" or "mouse".</p></li>
 <li><p><code>glycan_type</code>: <code>NULL</code> for enzymes that can act on all glycan classes, or
-one or more of <code>"N"</code>, <code>"O"</code>, and <code>"lipid"</code> for class-specific enzymes.</p></li>
+one or more of <code>"N"</code>, <code>"O"</code>, <code>"lipid"</code>, and <code>"free"</code> for
+class-specific enzymes. Structures ending in Glc or Gal without a
+represented carrier are compatible with both <code>"lipid"</code> and <code>"free"</code>.</p></li>
 </ol><p>You can see all these information by printing the enzyme object.</p>
     </div>
 
@@ -142,9 +144,9 @@ one or more of <code>"N"</code>, <code>"O"</code>, and <code>"lipid"</code> for 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Enzyme: </span><span style="color: #00BB00; font-weight: bold;">ST3GAL3</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Type: <span style="color: #0000BB;">"GT"</span> (<span style="font-style: italic;">Glycosyltransferase</span>)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Species: <span style="color: #0000BB;">"human"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: <span style="color: #0000BB;">"lipid"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycan type: <span style="color: #0000BB;">"lipid"</span> and <span style="color: #0000BB;">"free"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Rules (</span><span style="color: #0000BB; font-weight: bold;">3</span><span style="font-weight: bold;">)</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Rules (</span><span style="color: #0000BB; font-weight: bold;">4</span><span style="font-weight: bold;">)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Rule <span style="color: #0000BB;">1</span>: <span style="color: #00BB00;">terminal</span> alignment</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Acceptor: <span style="color: #0000BB;">"Gal(b1-3)GlcNAc(b1-"</span></span>
@@ -159,6 +161,9 @@ one or more of <code>"N"</code>, <code>"O"</code>, and <code>"lipid"</code> for 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → Rule <span style="color: #0000BB;">3</span>: <span style="color: #00BB00;">core</span> alignment</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Acceptor: <span style="color: #0000BB;">"Gal(b1-3)GalNAc(a1-"</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Product: <span style="color: #0000BB;">"Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Rule <span style="color: #0000BB;">4</span>: <span style="color: #00BB00;">terminal</span> alignment</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Acceptor: <span style="color: #0000BB;">"Gal(b1-4)Glc(b1-"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Product: <span style="color: #0000BB;">"Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
