@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* `find_enzyme()` now batches product-motif matching across built-in enzyme rules, substantially improving performance while preserving special-case, substituent, requirement, and glycan-type handling. (#47)
+
 * Built-in human enzyme rules now cover broader literature-supported acceptors with context-specific exclusions and requirements; Glc- or Gal-reducing structures without a represented carrier can be matched explicitly as free glycans or glycolipids. (#46)
 
 * Enzyme objects now carry broad `glycan_type` compatibility metadata for
