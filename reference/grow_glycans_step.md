@@ -65,9 +65,12 @@ package.
 ### Applicability
 
 Known-enzyme algorithms and enzyme information in glyenzy are applicable
-only to humans, and specifically to N-glycans and O-glycans. Results may
-be inaccurate for other types of glycans (e.g., GAGs, glycolipids) or
-for glycans in other species (e.g., plants, insects).
+only to humans. Curated coverage is strongest for N-glycans and
+O-glycans and also includes selected glycosphingolipid headgroups and
+other glycan contexts. Lipid and protein aglycones are not represented,
+so glycolipid rules model the carbohydrate headgroup with ceramide
+omitted. Results may be inaccurate for unsupported glycan contexts or
+other species (e.g., plants, insects).
 
 ### Inclusiveness
 
@@ -83,10 +86,9 @@ might be active, depending on factors such as tissue specificity.
 
 Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`). Reduced-level inputs with generic
+residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic or mixed
 residues are supported where explicitly documented, such as
-`apply_enzyme(structure_level = "basic")`,
-[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md),
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
 and
 [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md).
 
@@ -97,13 +99,15 @@ phosphorylation and methylation, are not supported. Use
 [`glyrepr::remove_substituents()`](https://glycoverse.github.io/glyrepr/reference/remove_substituents.html)
 when unsupported substituents are present.
 
-### Incomplete glycan structures
+### Incomplete or non-concrete glycan structures
 
-If the glycan structure is incomplete or partially degraded, the result
-may be misleading. Glycans with a
+If the glycan structure is incomplete, partially degraded, or contains
+generic or mixed residues, the result may be misleading. Glycans with a
 [`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
-other than `"intact"` are matched with the lenient motif matching mode
-in glymotif, and a warning is raised because enzyme predictions may be
+other than `"intact"`, or with a
+[`glyrepr::get_mono_type()`](https://glycoverse.github.io/glyrepr/reference/get_mono_type.html)
+other than `"concrete"`, are matched with the lenient motif matching
+mode in glymotif. A warning is raised because enzyme predictions may be
 less reliable.
 
 ### Starting points
@@ -126,6 +130,10 @@ For known-enzyme path inference:
 
 - For O-Glc glycans, the starting structure is assumed to be "Glc(b1-".
 
+- For GlcCer glycans, the starting structure is assumed to be "Glc(b1-",
+
+- For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
+
 ## Examples
 
 ``` r
@@ -135,10 +143,8 @@ glycan |>
   grow_glycans_step("MGAT2") |>
   grow_glycans_step("B4GALT1") |>
   grow_glycans_step("ST3GAL3")
-#> <glycan_structure[2]>
-#> [1] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [2] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> # Unique structures: 2
+#> <glycan_structure[0]>
+#> # Unique structures: 0
 
 # Use `grow_glycans()` to simulate a primordial soup
 glycans <- c(
@@ -147,32 +153,22 @@ glycans <- c(
 )
 enzymes <- c("B4GALT1", "ST3GAL3")
 grow_glycans(glycans, enzymes, n_steps = 5)
-#> <glycan_structure[12]>
+#> <glycan_structure[6]>
 #> [1] GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [2] GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [3] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [4] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [5] Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [6] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [7] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [8] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [9] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [10] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> ... (2 more not shown)
-#> # Unique structures: 12
+#> # Unique structures: 6
 
 # Use `filter` to prune the results after each round
 # Here we keep only glycans that are synthesized by MGAT2
 grow_glycans(glycans, enzymes, n_steps = 5, filter = ~ have_enzyme(.x, "MGAT2"))
-#> <glycan_structure[9]>
+#> <glycan_structure[4]>
 #> [1] GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [2] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [3] Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [4] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [5] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [6] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [7] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [8] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[Gal(b1-4)GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [9] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> # Unique structures: 9
+#> # Unique structures: 4
 ```

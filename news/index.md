@@ -1,5 +1,62 @@
 # Changelog
 
+## glyenzy 0.9.0
+
+### Breaking changes
+
+- [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/reference/apply_enzyme.md)
+  no longer accepts `structure_level = "basic"`; calls now error during
+  argument validation. Use `structure_level = "topological"` to remove
+  linkages while preserving concrete residue identities, and convert
+  residues separately with
+  [`glyrepr::convert_to_generic()`](https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html)
+  when generic output is required.
+
+### New features
+
+- Built-in human enzyme rules now cover broader literature-supported
+  acceptors with context-specific exclusions and requirements; Glc- or
+  Gal-reducing structures without a represented carrier can be matched
+  explicitly as free glycans or glycolipids. (#46)
+- Enzyme objects now carry broad `glycan_type` compatibility metadata
+  for N-glycans, O-glycans, and glycolipids. Enzyme actions and
+  biosynthesis searches use this metadata to avoid applying
+  class-specific enzymes to incompatible glycan structures. (#45)
+- Human glycolipid coverage now includes `UGCG`, `UGT8`, `B4GALT5`,
+  `B4GALT6`, and `ST3GAL5`, complete ganglioside rules for `B3GALT4`,
+  `B4GALNT1`, and `ST8SIA1`, and corrected rules for `ST6GALNAC3` and
+  `ST8SIA5`. Glycolipid rules model carbohydrate headgroups with
+  ceramide omitted. (#42)
+- New
+  [`enzymes_from_rnaseq()`](https://glycoverse.github.io/glyenzy/reference/enzymes_from_rnaseq.md)
+  selects built-in enzymes whose genes meet a configurable mean TPM
+  threshold, using the GlycoMaple cutoff of TPM = 1 by default. (#43)
+- New
+  [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/reference/product_substrate_ratio.md)
+  calculates glycosyltransferase and sulfotransferase
+  product-to-substrate motif quantification ratios from glycomics or
+  site-specific glycoproteomics data, using lenient motif matching for
+  partial or reduced structures. (#44)
+
+### Minor improvements and bug fixes
+
+- Built-in reaction rules now use reviewed acceptor and linkage
+  specificity and include documented secondary activities for 15
+  glycosyltransferases. (#41)
+- [`apply_enzyme()`](https://glycoverse.github.io/glyenzy/reference/apply_enzyme.md)
+  with `structure_level = "topological"` now removes linkages while
+  preserving residue identities; `structure_level = "basic"` is no
+  longer supported.
+- [`find_enzyme()`](https://glycoverse.github.io/glyenzy/reference/find_enzyme.md)
+  now batches product-motif matching across built-in enzyme rules,
+  substantially improving performance while preserving special-case,
+  substituent, requirement, and glycan-type handling. (#47)
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  now handle input vectors containing mixed generic and concrete
+  residues element-wise and use lenient matching when needed.
+
 ## glyenzy 0.8.1
 
 ### Minor improvements and fixes

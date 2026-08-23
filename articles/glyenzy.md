@@ -56,10 +56,10 @@ returns the enzymes that may be involved in building a glycan:
 ``` r
 
 find_enzyme(glycan)
-#>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "C1GALT1" "GCNT1"   "GCNT3"  
-#>  [8] "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4"  "GALNT5"  "GALNT6" 
-#> [15] "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11" "GALNT12" "GALNT13"
-#> [22] "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18" "GALNT19"
+#>  [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5" "C1GALT1" "GCNT1"  
+#>  [8] "GCNT3"   "GCNT4"   "GALNT1"  "GALNT2"  "GALNT3"  "GALNT4"  "GALNT5" 
+#> [15] "GALNT6"  "GALNT7"  "GALNT8"  "GALNT9"  "GALNT10" "GALNT11" "GALNT12"
+#> [22] "GALNT13" "GALNT14" "GALNT15" "GALNT16" "GALNT17" "GALNT18" "GALNT19"
 ```
 
 This includes the enzymes shown in the diagram, along with B4GALT1/2/3/4
@@ -102,7 +102,7 @@ For an existing glycan, `glyenzy` can help answer four common questions:
   enzymes?
   ([`match_enzyme()`](https://glycoverse.github.io/glyenzy/reference/match_enzyme.md))
 
-Behind the scenes, glyenzy has catalogued the reaction rules of 158
+Behind the scenes, glyenzy has catalogued the reaction rules of 163
 enzymes in its enzyme database. Use `enzyme("MGAT3")` to inspect a
 specific enzyme rule.
 
@@ -136,9 +136,9 @@ reconstructs a plausible biosynthetic path:
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 086ab16 DN-- 4 8 -- 
+#> IGRAPH e679e7e DN-- 4 9 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from 086ab16 (vertex names):
+#> + edges from e679e7e (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
@@ -239,7 +239,7 @@ if you want one reaction step at a time:
 
 # A bi-antennary N-glycan with three enzymes
 grow_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
-#> <glycan_structure[32]>
+#> <glycan_structure[12]>
 #> [1] GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [2] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [3] Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
@@ -248,10 +248,10 @@ grow_glycans(glycan, c("B4GALT1", "ST3GAL3", "MGAT3"))
 #> [6] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [7] GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [8] Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)][GlcNAc(b1-4)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [9] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> [10] Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-6)[GlcNAc(b1-2)Man(a1-3)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
-#> ... (22 more not shown)
-#> # Unique structures: 32
+#> [9] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Gal(b1-4)GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
+#> [10] Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
+#> ... (2 more not shown)
+#> # Unique structures: 12
 ```
 
 In this example, each enzyme contributes a different reaction:
@@ -269,12 +269,14 @@ Here are the main caveats to keep in mind when using `glyenzy`:
 
 ### Species and Scope
 
-glyenzy is currently a human-centric package, focusing specifically on
-N-glycans and O-glycans. Its sulfotransferase rules likewise cover
-canonical N- and O-glycan contexts, not glycosaminoglycans, O-Xyl
-glycans, glycolipids, or protein sulfation. If you’re working with these
-contexts, or with glycans from mouse, plants, or insects, the results
-might not be accurate.
+glyenzy is currently a human-centric package. Its coverage is strongest
+for N-glycans and O-glycans, with selected glycosphingolipid headgroups
+and other glycan contexts also represented. Lipid and protein aglycones
+are not encoded, so glycolipid rules operate on carbohydrate headgroups
+with ceramide omitted. The sulfotransferase rules cover canonical N- and
+O-glycan contexts, not glycosaminoglycans, O-Xyl glycans, glycolipids,
+or protein sulfation. Results for unsupported contexts, or for mouse,
+plants, or insects, might not be accurate.
 
 ### Inclusive Candidate Calls
 
@@ -306,6 +308,8 @@ glyenzy uses specific starting points for biosynthetic reconstruction:
 - **O-Man glycans**: Start with Man(a1-
 - **O-Fuc glycans**: Start with Fuc(a1-
 - **O-Glc glycans**: Start with Glc(b1-
+- **GlcCer glycans**: Start with Glc(b1-
+- **GalCer glycans**: Start with Gal(b1-
 
 ## Technical Notes
 

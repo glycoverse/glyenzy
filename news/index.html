@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,32 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.0" id="glyenzy-090">glyenzy 0.9.0<a class="anchor" aria-label="anchor" href="#glyenzy-090"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-9-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-9-0"></a></h3>
+<ul><li>
+<code><a href="../reference/apply_enzyme.html">apply_enzyme()</a></code> no longer accepts <code>structure_level = "basic"</code>; calls now error during argument validation. Use <code>structure_level = "topological"</code> to remove linkages while preserving concrete residue identities, and convert residues separately with <code><a href="https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html" class="external-link">glyrepr::convert_to_generic()</a></code> when generic output is required.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-9-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-0"></a></h3>
+<ul><li>Built-in human enzyme rules now cover broader literature-supported acceptors with context-specific exclusions and requirements; Glc- or Gal-reducing structures without a represented carrier can be matched explicitly as free glycans or glycolipids. (#46)</li>
+<li>Enzyme objects now carry broad <code>glycan_type</code> compatibility metadata for N-glycans, O-glycans, and glycolipids. Enzyme actions and biosynthesis searches use this metadata to avoid applying class-specific enzymes to incompatible glycan structures. (#45)</li>
+<li>Human glycolipid coverage now includes <code>UGCG</code>, <code>UGT8</code>, <code>B4GALT5</code>, <code>B4GALT6</code>, and <code>ST3GAL5</code>, complete ganglioside rules for <code>B3GALT4</code>, <code>B4GALNT1</code>, and <code>ST8SIA1</code>, and corrected rules for <code>ST6GALNAC3</code> and <code>ST8SIA5</code>. Glycolipid rules model carbohydrate headgroups with ceramide omitted. (#42)</li>
+<li>New <code><a href="../reference/enzymes_from_rnaseq.html">enzymes_from_rnaseq()</a></code> selects built-in enzymes whose genes meet a configurable mean TPM threshold, using the GlycoMaple cutoff of TPM = 1 by default. (#43)</li>
+<li>New <code><a href="../reference/product_substrate_ratio.html">product_substrate_ratio()</a></code> calculates glycosyltransferase and sulfotransferase product-to-substrate motif quantification ratios from glycomics or site-specific glycoproteomics data, using lenient motif matching for partial or reduced structures. (#44)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-9-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-9-0"></a></h3>
+<ul><li>Built-in reaction rules now use reviewed acceptor and linkage specificity and include documented secondary activities for 15 glycosyltransferases. (#41)</li>
+<li>
+<code><a href="../reference/apply_enzyme.html">apply_enzyme()</a></code> with <code>structure_level = "topological"</code> now removes linkages while preserving residue identities; <code>structure_level = "basic"</code> is no longer supported.</li>
+<li>
+<code><a href="../reference/find_enzyme.html">find_enzyme()</a></code> now batches product-motif matching across built-in enzyme rules, substantially improving performance while preserving special-case, substituent, requirement, and glycan-type handling. (#47)</li>
+<li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> and <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> now handle input vectors containing mixed generic and concrete residues element-wise and use lenient matching when needed.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.1" id="glyenzy-081">glyenzy 0.8.1<a class="anchor" aria-label="anchor" href="#glyenzy-081"></a></h2>
 <div class="section level3">

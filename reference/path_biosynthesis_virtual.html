@@ -11,7 +11,7 @@ Unlike path_biosynthesis(), this does not require known enzyme rules."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,8 +92,8 @@ concrete enzyme for each transition.</p>
 <p>Each edge is named for the residue added by that step. Intact glycans include
 the linkage anomer and acceptor position, so a beta-1,4-linked GlcNAc is
 labeled <code>"b4GlcNAcT"</code>. Partial and topological glycans omit linkage
-information and use <code>"GlcNAcT"</code>; basic glycans use the generic residue name,
-such as <code>"HexNAcT"</code>.</p>
+information and use <code>"GlcNAcT"</code>. Generic or mixed topological glycans use
+their preserved generic residue names, such as <code>"HexNAcT"</code>.</p>
 <p>Sulfation is represented as its own atomic transition. Sulfate additions at
 positions 3 and 6 use <code>"3SulfoT"</code> and <code>"6SulfoT"</code>; an unknown or other
 position uses <code>"?SulfoT"</code>. A sulfated terminal residue is therefore
@@ -105,10 +105,10 @@ explicit <code>from</code> glycan is always the virtual starting structure, incl
 any sulfate groups it contains; those sulfates must also occur in <code>to</code>.
 These networks represent structural possibilities rather than biological
 feasibility.</p>
-<p>Basic structures do not retain glycan-class metadata. A basic structure
-matching the generic N-glycan-core topology is therefore assumed to be an
-N-glycan; use <code>path_biosynthesis_virtual()</code> with an explicit <code>from</code> when
-that topology belongs to another glycan class.</p>
+<p>Generic structures do not retain glycan-class metadata. A generic structure
+matching the N-glycan-core topology is therefore assumed to be an N-glycan;
+use <code>path_biosynthesis_virtual()</code> with an explicit <code>from</code> when that topology
+belongs to another glycan class.</p>
     </div>
 
     <div class="section level2">

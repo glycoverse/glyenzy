@@ -90,6 +90,11 @@ An `enzyme()` is a list with the following elements:
 
 4.  `species`: the species of the enzyme, e.g. "human" or "mouse".
 
+5.  `glycan_type`: `NULL` for enzymes that can act on all glycan
+    classes, or one or more of `"N"`, `"O"`, `"lipid"`, and `"free"` for
+    class-specific enzymes. Structures ending in Glc or Gal without a
+    represented carrier are compatible with both `"lipid"` and `"free"`.
+
 You can see all these information by printing the enzyme object.
 
 ## Examples
@@ -102,8 +107,9 @@ enzyme("ST3GAL3")
 #> ── Enzyme: ST3GAL3 ─────────────────────────────────────────────────────────────
 #> ℹ Type: "GT" (Glycosyltransferase)
 #> ℹ Species: "human"
+#> ℹ Glycan type: "lipid" and "free"
 #> 
-#> ── Rules (2) ──
+#> ── Rules (4) ──
 #> 
 #> → Rule 1: terminal alignment
 #> Acceptor: "Gal(b1-3)GlcNAc(b1-"
@@ -115,4 +121,10 @@ enzyme("ST3GAL3")
 #> Product: "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-"
 #> Rejects:
 #> "Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-"
+#> → Rule 3: core alignment
+#> Acceptor: "Gal(b1-3)GalNAc(a1-"
+#> Product: "Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-"
+#> → Rule 4: terminal alignment
+#> Acceptor: "Gal(b1-4)Glc(b1-"
+#> Product: "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
 ```
