@@ -35,8 +35,8 @@ Imports:
     cli,
     glydraw (>= 0.8.0),
     glyexp (>= 0.15.0),
-    glymotif (>= 0.18.1.9000),
-    glyrepr (>= 0.14.0.9000),
+    glymotif (>= 0.19.0),
+    glyrepr (>= 1.0.0),
     glyparse (>= 0.5.3),
     igraph,
     purrr,
@@ -54,6 +54,3 @@ LazyData: true
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
 RoxygenNote: 7.3.3
-Remotes:
-    glycoverse/glyrepr,
-    glycoverse/glymotif
