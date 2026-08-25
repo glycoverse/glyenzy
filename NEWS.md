@@ -1,5 +1,9 @@
 # glyenzy (development version)
 
+## Breaking changes
+
+* `path_biosynthesis()`, `path_biosynthesis_virtual()`, `trace_biosynthesis()`, and `trace_biosynthesis_virtual()` now error unless all supplied glycans use the same concrete or generic monosaccharide type and the same intact or topological structure level; standardize inputs with `glyrepr::convert_to_generic()` or `glyrepr::remove_linkages()`, and replace mixed-residue, partial, or missing structures before tracing. (#48)
+
 # glyenzy 0.9.0
 
 ## Breaking changes

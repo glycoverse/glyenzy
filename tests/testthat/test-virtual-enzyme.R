@@ -173,15 +173,9 @@ test_that("virtual enzyme names follow the target structure level", {
   generic_topological <- glyrepr::remove_linkages(
     glyrepr::convert_to_generic(intact)
   )
-  partial <- glyparse::auto_parse(
-    "Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-"
-  )
 
   topological_path <- suppressWarnings(
     trace_biosynthesis_virtual(topological)
-  )
-  partial_path <- suppressWarnings(
-    trace_biosynthesis_virtual(partial)
   )
   generic_topological_path <- suppressWarnings(
     trace_biosynthesis_virtual(generic_topological)
@@ -189,10 +183,6 @@ test_that("virtual enzyme names follow the target structure level", {
 
   expect_setequal(
     igraph::E(topological_path)$enzyme,
-    c("GalT", "GlcNAcT")
-  )
-  expect_setequal(
-    igraph::E(partial_path)$enzyme,
     c("GalT", "GlcNAcT")
   )
   expect_setequal(
@@ -207,7 +197,6 @@ test_that("virtual sulfate labels support reduced structures", {
   generic_topological <- glyrepr::remove_linkages(
     glyrepr::convert_to_generic(intact)
   )
-  partial <- glyparse::auto_parse("Gal?S(b1-?)GalNAc(a1-")
 
   paths <- list(
     topological = suppressWarnings(
@@ -215,16 +204,14 @@ test_that("virtual sulfate labels support reduced structures", {
     ),
     generic_topological = suppressWarnings(
       trace_biosynthesis_virtual(generic_topological)
-    ),
-    partial = suppressWarnings(trace_biosynthesis_virtual(partial))
+    )
   )
 
   expect_equal(
     unname(lapply(paths, \(path) sort(igraph::E(path)$enzyme))),
     list(
       c("6SulfoT", "GalT"),
-      c("6SulfoT", "HexT"),
-      c("?SulfoT", "GalT")
+      c("6SulfoT", "HexT")
     )
   )
 })
@@ -264,9 +251,6 @@ test_that("virtual N-glycan labels follow reduced structure levels", {
   intact <- glyparse::auto_parse(
     "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
-  partial <- glyparse::auto_parse(
-    "GlcNAc(b1-?)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-  )
   topological <- glyrepr::remove_linkages(intact)
   generic_topological <- glyrepr::remove_linkages(
     glyrepr::convert_to_generic(intact)
@@ -274,9 +258,6 @@ test_that("virtual N-glycan labels follow reduced structure levels", {
 
   paths <- list(
     intact = trace_biosynthesis_virtual(intact),
-    partial = suppressWarnings(
-      trace_biosynthesis_virtual(partial)
-    ),
     topological = suppressWarnings(
       trace_biosynthesis_virtual(topological)
     ),
@@ -286,7 +267,6 @@ test_that("virtual N-glycan labels follow reduced structure levels", {
   )
 
   expect_equal(igraph::E(paths$intact)$enzyme, "b2GlcNAcT")
-  expect_equal(igraph::E(paths$partial)$enzyme, "GlcNAcT")
   expect_equal(igraph::E(paths$topological)$enzyme, "GlcNAcT")
   expect_equal(igraph::E(paths$generic_topological)$enzyme, "HexNAcT")
 })
@@ -303,58 +283,6 @@ test_that("virtual path tracing trims to the requested starting glycan", {
   expect_equal(edges$to, to)
   expect_equal(edges$enzyme, "b4GlcNAcT")
   expect_equal(edges$step, 1L)
-})
-
-test_that("virtual paths map partial precursors to the requested start", {
-  from <- "Gal(b1-3)GalNAc(a1-"
-  to <- "Gal(b1-?)[GlcNAc(b1-6)]GalNAc(a1-"
-
-  path <- suppressWarnings(path_biosynthesis_virtual(
-    from,
-    to
-  ))
-  edges <- igraph::as_data_frame(path, what = "edges")
-
-  expect_equal(nrow(edges), 1L)
-  expect_equal(edges$from, from)
-  expect_equal(edges$to, as.character(glyparse::auto_parse(to)))
-  expect_equal(edges$enzyme, "GlcNAcT")
-})
-
-test_that("virtual tracing shares a root across partial targets", {
-  targets <- glyparse::auto_parse(c(
-    "GalNAc(a1-",
-    "Gal(b1-3)GalNAc(?1-"
-  ))
-
-  path <- suppressWarnings(trace_biosynthesis_virtual(
-    targets
-  ))
-  edges <- igraph::as_data_frame(path, what = "edges")
-
-  expect_equal(igraph::vcount(path), 2L)
-  expect_equal(edges$from, "GalNAc(a1-")
-  expect_equal(edges$to, as.character(targets[[2]]))
-  expect_equal(edges$enzyme, "GalT")
-})
-
-test_that("virtual tracing flags leniently matched partial targets", {
-  targets <- glyparse::auto_parse(c(
-    "Gal(b1-3)GalNAc(?1-",
-    "GalNAc(a?-"
-  ))
-
-  path <- suppressWarnings(trace_biosynthesis_virtual(targets))
-  vertices <- igraph::as_data_frame(path, what = "vertices")
-
-  expect_setequal(
-    vertices$name,
-    c(
-      "GalNAc(?1-",
-      "Gal(b1-3)GalNAc(?1-"
-    )
-  )
-  expect_identical(vertices$target, rep(TRUE, 2L))
 })
 
 test_that("virtual paths handle a trivial starting target", {
@@ -491,17 +419,7 @@ test_that("virtual tracing annotates reduced-level transitions", {
   generic_topological_to <- glyrepr::remove_linkages(
     glyrepr::convert_to_generic(intact_to)
   )
-  partial_to <- glyparse::auto_parse(
-    "Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-"
-  )
-
   paths <- list(
-    partial = suppressWarnings(path_biosynthesis_virtual(
-      intact_from,
-      partial_to,
-      enzymes = "GCNT1",
-      annotate_enzymes = TRUE
-    )),
     topological = suppressWarnings(path_biosynthesis_virtual(
       topological_from,
       topological_to,
@@ -518,7 +436,7 @@ test_that("virtual tracing annotates reduced-level transitions", {
 
   expect_equal(
     unname(purrr::map(paths, ~ igraph::E(.x)$concrete_enzymes)),
-    rep(list(list("GCNT1")), 3L)
+    rep(list(list("GCNT1")), 2L)
   )
 })
 

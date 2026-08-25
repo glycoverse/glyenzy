@@ -36,7 +36,7 @@
 #' Most functions only work for glycans containing **concrete** residues
 #' (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
 #' residues (e.g., `"Hex"`, `"HexNAc"`).
-#' Inputs with generic or mixed residues are supported where explicitly
+#' Inputs with generic residues are supported where explicitly
 #' documented, such as `trace_biosynthesis()` and `path_biosynthesis()`.
 #'
 #' ## Substituents
@@ -47,8 +47,8 @@
 #'
 #' ## Incomplete or non-concrete glycan structures
 #'
-#' If the glycan structure is incomplete, partially degraded, or contains
-#' generic or mixed residues, the result may be misleading. Glycans with a
+#' Some functions accept glycan structures that are incomplete, partially
+#' degraded, or contain generic residues. When accepted, glycans with a
 #' [glyrepr::get_structure_level()] other than `"intact"`, or with a
 #' [glyrepr::get_mono_type()] other than `"concrete"`, are matched with the
 #' lenient motif matching mode in glymotif. A warning is raised because enzyme

@@ -37,8 +37,8 @@ Unlike \code{\link[=path_biosynthesis]{path_biosynthesis()}}, this does not requ
 
 Each edge is named for the residue added by that step. Intact glycans include
 the linkage anomer and acceptor position, so a beta-1,4-linked GlcNAc is
-labeled \code{"b4GlcNAcT"}. Partial and topological glycans omit linkage
-information and use \code{"GlcNAcT"}. Generic or mixed topological glycans use
+labeled \code{"b4GlcNAcT"}. Topological glycans omit linkage
+information and use \code{"GlcNAcT"}. Generic topological glycans use
 their preserved generic residue names, such as \code{"HexNAcT"}.
 
 Sulfation is represented as its own atomic transition. Sulfate additions at
@@ -58,6 +58,21 @@ Generic structures do not retain glycan-class metadata. A generic structure
 matching the N-glycan-core topology is therefore assumed to be an N-glycan;
 use \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} with an explicit \code{from} when that topology
 belongs to another glycan class.
+}
+
+\section{Input compatibility}{
+
+\code{trace_biosynthesis()}, \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}},
+\code{\link[=path_biosynthesis]{path_biosynthesis()}}, and \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} accept only
+glycans that share one monosaccharide type (\code{"concrete"} or \code{"generic"})
+and one structure level (\code{"intact"} or \code{"topological"}). Structures with
+mixed generic and concrete residues, partial structures, and missing
+structures are not supported. In the \verb{path_*()} functions, \code{from} and \code{to}
+must have the same monosaccharide type and structure level.
+
+Use \code{\link[glyrepr:convert_to_generic]{glyrepr::convert_to_generic()}} to standardize monosaccharide types or
+\code{\link[glyrepr:remove_linkages]{glyrepr::remove_linkages()}} to standardize structures at the topological
+level.
 }
 
 \examples{

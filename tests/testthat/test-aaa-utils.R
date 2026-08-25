@@ -49,7 +49,10 @@ test_that("structure levels and monosaccharide types are element-wise", {
       missing = NA_character_
     )
   )
-  expect_identical(.glycan_structure_level(glycans), "partial")
+  expect_identical(
+    .glycan_structure_level(glycans[c("concrete", "generic")]),
+    "intact"
+  )
   expect_identical(.glymotif_mode(glycans["concrete"]), "strict")
   expect_identical(.glymotif_mode(glycans[c("concrete", "generic")]), "lenient")
 })

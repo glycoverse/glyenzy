@@ -54,7 +54,7 @@ on factors such as tissue specificity.
 Most functions only work for glycans containing \strong{concrete} residues
 (e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
-Inputs with generic or mixed residues are supported where explicitly
+Inputs with generic residues are supported where explicitly
 documented, such as \code{trace_biosynthesis()} and \code{path_biosynthesis()}.
 }
 
@@ -67,8 +67,8 @@ phosphorylation and methylation, are not supported. Use
 
 \subsection{Incomplete or non-concrete glycan structures}{
 
-If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 \code{\link[glyrepr:get_structure_level]{glyrepr::get_structure_level()}} other than \code{"intact"}, or with a
 \code{\link[glyrepr:get_mono_type]{glyrepr::get_mono_type()}} other than \code{"concrete"}, are matched with the
 lenient motif matching mode in glymotif. A warning is raised because enzyme

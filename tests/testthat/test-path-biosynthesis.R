@@ -54,27 +54,6 @@ test_that("path_biosynthesis reaches topological target glycans", {
   ))
 })
 
-test_that("path_biosynthesis reaches partial target glycans", {
-  from <- glyrepr::o_glycan_core_1()
-  to <- glyparse::auto_parse("Gal(b1-3)[GlcNAc(b1-?)]GalNAc(a1-")
-
-  g <- suppressWarnings(path_biosynthesis(
-    from,
-    to,
-    enzymes = "GCNT1",
-    max_steps = 1
-  ))
-
-  end_node <- igraph::V(g)[igraph::degree(g, mode = "out") == 0]
-  end_glycans <- glyparse::auto_parse(end_node$name)
-  expect_true(any(glymotif::have_motif(
-    end_glycans,
-    to,
-    alignment = "whole",
-    mode = "lenient"
-  )))
-})
-
 test_that("path_biosynthesis raises error when from equals to", {
   from <- "Gal(b1-3)GalNAc(a1-"
   to <- "Gal(b1-3)GalNAc(a1-"

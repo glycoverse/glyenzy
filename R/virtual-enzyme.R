@@ -1,17 +1,5 @@
 # Backward biosynthesis search for virtual enzymes -------------------------
 
-.prepare_virtual_start <- function(from, to) {
-  from_level <- .glycan_structure_level(from)
-  to_level <- .glycan_structure_level(to)
-  if (
-    identical(to_level, "topological") &&
-      .structure_level_rank(from_level) > .structure_level_rank(to_level)
-  ) {
-    return(.remove_linkages_for_level(from, to_level))
-  }
-  from
-}
-
 .perform_virtual_synthesis <- function(
   from_g,
   to_gs
@@ -125,8 +113,7 @@
       function(i) {
         .hybrid_products_match(
           cached_products[[cache_ids[[i]]]],
-          products[i],
-          product_levels[[i]]
+          products[i]
         )
       },
       logical(1)
@@ -178,13 +165,14 @@
   products
 }
 
-.hybrid_products_match <- function(products, target, target_level) {
+.hybrid_products_match <- function(products, target) {
   if (length(products) == 0L) {
     return(FALSE)
   }
-  target_mono_type <- glyrepr::get_mono_type(target)
-  use_whole_match <- identical(target_level, "partial") ||
-    any(!is.na(target_mono_type) & target_mono_type != "concrete")
+  use_whole_match <- !identical(
+    glyrepr::get_mono_type(target),
+    "concrete"
+  )
   if (use_whole_match) {
     target_size <- .virtual_glycan_size(target)
     matching_size <- vapply(

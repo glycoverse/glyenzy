@@ -37,8 +37,8 @@ glycans by trimming terminal residues and sulfate groups backward. Unlike
 
 Each edge is named for the residue added by that step. Intact glycans include
 the linkage anomer and acceptor position, so a beta-1,4-linked GlcNAc is
-labeled \code{"b4GlcNAcT"}. Partial and topological glycans omit linkage
-information and use \code{"GlcNAcT"}. Generic or mixed topological glycans use
+labeled \code{"b4GlcNAcT"}. Topological glycans omit linkage
+information and use \code{"GlcNAcT"}. Generic topological glycans use
 their preserved generic residue names, such as \code{"HexNAcT"}.
 
 Sulfation is represented as its own atomic transition. Sulfate additions at
@@ -89,7 +89,7 @@ on factors such as tissue specificity.
 Most functions only work for glycans containing \strong{concrete} residues
 (e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
-Inputs with generic or mixed residues are supported where explicitly
+Inputs with generic residues are supported where explicitly
 documented, such as \code{trace_biosynthesis()} and \code{path_biosynthesis()}.
 }
 
@@ -102,8 +102,8 @@ phosphorylation and methylation, are not supported. Use
 
 \subsection{Incomplete or non-concrete glycan structures}{
 
-If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 \code{\link[glyrepr:get_structure_level]{glyrepr::get_structure_level()}} other than \code{"intact"}, or with a
 \code{\link[glyrepr:get_mono_type]{glyrepr::get_mono_type()}} other than \code{"concrete"}, are matched with the
 lenient motif matching mode in glymotif. A warning is raised because enzyme
@@ -125,6 +125,21 @@ the N-glycan precursor transferred to Asn by OST.
 \item For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
 }
 }
+}
+
+\section{Input compatibility}{
+
+\code{trace_biosynthesis()}, \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}},
+\code{\link[=path_biosynthesis]{path_biosynthesis()}}, and \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} accept only
+glycans that share one monosaccharide type (\code{"concrete"} or \code{"generic"})
+and one structure level (\code{"intact"} or \code{"topological"}). Structures with
+mixed generic and concrete residues, partial structures, and missing
+structures are not supported. In the \verb{path_*()} functions, \code{from} and \code{to}
+must have the same monosaccharide type and structure level.
+
+Use \code{\link[glyrepr:convert_to_generic]{glyrepr::convert_to_generic()}} to standardize monosaccharide types or
+\code{\link[glyrepr:remove_linkages]{glyrepr::remove_linkages()}} to standardize structures at the topological
+level.
 }
 
 \examples{

@@ -32,9 +32,17 @@
   )
 }
 
-.process_glycan_arg <- function(x, allow_generic = FALSE) {
+.process_glycan_arg <- function(
+  x,
+  allow_generic = FALSE,
+  warn_non_intact = TRUE
+) {
   if (length(x) == 1L) {
-    .process_glycans_arg(x, allow_generic = allow_generic)
+    .process_glycans_arg(
+      x,
+      allow_generic = allow_generic,
+      warn_non_intact = warn_non_intact
+    )
   } else {
     cli::cli_abort(c(
       "{.arg x} must have length 1.",
@@ -43,7 +51,11 @@
   }
 }
 
-.process_glycans_arg <- function(x, allow_generic = FALSE) {
+.process_glycans_arg <- function(
+  x,
+  allow_generic = FALSE,
+  warn_non_intact = TRUE
+) {
   if (is.character(x)) {
     x <- glyparse::auto_parse(x)
   } else if (!glyrepr::is_glycan_structure(x)) {
@@ -64,6 +76,7 @@
   }
 
   has_unsupported_substituents <- .has_unsupported_substituents(x)
+  has_unsupported_substituents[is.na(has_unsupported_substituents)] <- FALSE
   if (any(has_unsupported_substituents)) {
     cli::cli_abort(c(
       "Only sulfate substituents are supported.",
@@ -72,8 +85,100 @@
     ))
   }
 
+  if (warn_non_intact) {
+    .warn_non_intact_glycans(x)
+  }
+  x
+}
+
+#' Process glycans supplied to a biosynthesis tracing function
+#'
+#' @param x Glycan structures or parseable glycan strings.
+#' @param call The calling environment for validation errors.
+#' @returns A validated `glyrepr_structure` vector.
+#' @noRd
+.process_biosynthesis_glycans_arg <- function(
+  x,
+  call = rlang::caller_env()
+) {
+  x <- .process_glycans_arg(
+    x,
+    allow_generic = TRUE,
+    warn_non_intact = FALSE
+  )
+  .validate_biosynthesis_glycans(x, call = call)
   .warn_non_intact_glycans(x)
   x
+}
+
+#' Process a biosynthesis path's starting and target glycans
+#'
+#' @param from Starting glycan structure or parseable glycan string.
+#' @param to Target glycan structure or parseable glycan string.
+#' @param call The calling environment for validation errors.
+#' @returns A list containing validated `from` and `to` structures.
+#' @noRd
+.process_biosynthesis_path_args <- function(
+  from,
+  to,
+  call = rlang::caller_env()
+) {
+  from <- .process_glycan_arg(
+    from,
+    allow_generic = TRUE,
+    warn_non_intact = FALSE
+  )
+  to <- .process_glycan_arg(
+    to,
+    allow_generic = TRUE,
+    warn_non_intact = FALSE
+  )
+  glycans <- c(from, to)
+  .validate_biosynthesis_glycans(glycans, call = call)
+  .warn_non_intact_glycans(glycans)
+  list(from = from, to = to)
+}
+
+#' Validate glycans used in biosynthesis tracing
+#'
+#' @param glycans A `glyrepr_structure` vector.
+#' @param call The calling environment for validation errors.
+#' @returns `glycans`, invisibly.
+#' @noRd
+.validate_biosynthesis_glycans <- function(
+  glycans,
+  call = rlang::caller_env()
+) {
+  mono_types <- unique(glyrepr::get_mono_type(glycans))
+  structure_levels <- unique(.glycan_structure_levels(glycans))
+  valid_mono_type <- length(mono_types) == 1L &&
+    !is.na(mono_types) &&
+    mono_types %in% c("concrete", "generic")
+  valid_structure_level <- length(structure_levels) == 1L &&
+    !is.na(structure_levels) &&
+    structure_levels %in% c("intact", "topological")
+
+  if (valid_mono_type && valid_structure_level) {
+    return(invisible(glycans))
+  }
+
+  displayed_mono_types <- ifelse(is.na(mono_types), "NA", mono_types)
+  displayed_structure_levels <- ifelse(
+    is.na(structure_levels),
+    "NA",
+    structure_levels
+  )
+  cli::cli_abort(
+    c(
+      "Biosynthesis glycans must share one monosaccharide type and one structure level.",
+      "x" = "Detected monosaccharide type(s): {.val {displayed_mono_types}}.",
+      "x" = "Detected structure level(s): {.val {displayed_structure_levels}}.",
+      "i" = "Supported monosaccharide types are {.val concrete} and {.val generic}; mixed-residue and missing glycans are not supported.",
+      "i" = "Supported structure levels are {.val intact} and {.val topological}; partial structures are not supported.",
+      "i" = "Use {.fn glyrepr::convert_to_generic} or {.fn glyrepr::remove_linkages} to standardize inputs."
+    ),
+    call = call
+  )
 }
 
 .is_concrete_glycan <- function(x) {
@@ -558,18 +663,32 @@
 #' @returns A scalar structure level, or `NA_character_`.
 #' @noRd
 .glycan_structure_level <- function(x) {
-  levels <- .glycan_structure_levels(x)
+  levels <- unique(.glycan_structure_levels(x))
   levels <- levels[!is.na(levels)]
   if (length(levels) == 0L) {
     return(NA_character_)
   }
-  if (all(levels == "intact")) {
-    return("intact")
+  if (length(levels) > 1L) {
+    cli::cli_abort("Glycans must have the same structure level.")
   }
-  if (all(levels == "topological")) {
-    return("topological")
+  levels[[1]]
+}
+
+#' Get the shared monosaccharide type of a glycan vector
+#'
+#' @param x A `glyrepr_structure` vector.
+#' @returns A scalar monosaccharide type, or `NA_character_`.
+#' @noRd
+.glycan_mono_type <- function(x) {
+  mono_types <- unique(glyrepr::get_mono_type(x))
+  mono_types <- mono_types[!is.na(mono_types)]
+  if (length(mono_types) == 0L) {
+    return(NA_character_)
   }
-  "partial"
+  if (length(mono_types) > 1L) {
+    cli::cli_abort("Glycans must have the same monosaccharide type.")
+  }
+  mono_types[[1]]
 }
 
 #' Check whether a structure level is intact
@@ -631,10 +750,10 @@
         .structure_level_rank(input_structure_levels)
     )
   ) {
-    input_structure_level <- .glycan_structure_level(glycans)
+    input_structure_level <- unique(input_structure_levels)
     cli::cli_abort(c(
       "{.arg structure_level} cannot be lower than the input glycan structure level.",
-      "x" = "Input level is {.val {input_structure_level}}, but requested {.val {structure_level}}."
+      "x" = "Input level(s): {.val {input_structure_level}}; requested: {.val {structure_level}}."
     ))
   }
 
@@ -1150,7 +1269,7 @@
 ) {
   target_structure_level <- .glycan_structure_level(to_gs)
   search_structure_level <- .bfs_search_structure_level(target_structure_level)
-  target_match <- .bfs_target_match(target_structure_level, to_gs)
+  target_match <- .bfs_target_match(to_gs)
 
   from_g <- .remove_linkages_for_level(from_g, search_structure_level)
   to_gs <- .remove_linkages_for_level(to_gs, search_structure_level)
@@ -1210,18 +1329,12 @@
 
 #' Choose the BFS target matching strategy from target structures
 #'
-#' @param target_structure_level Target glycan structure level.
+#' @param target_glycans Target glycan structures.
 #' @returns A target matching strategy.
 #' @noRd
-.bfs_target_match <- function(target_structure_level, target_glycans = NULL) {
-  if (identical(target_structure_level, "partial")) {
+.bfs_target_match <- function(target_glycans) {
+  if (!identical(.glycan_mono_type(target_glycans), "concrete")) {
     return("whole")
-  }
-  if (!is.null(target_glycans)) {
-    mono_types <- glyrepr::get_mono_type(target_glycans)
-    if (any(!is.na(mono_types) & mono_types != "concrete")) {
-      return("whole")
-    }
   }
   "key"
 }
@@ -1230,7 +1343,7 @@
 .bfs_targets_requiring_synthesis <- function(from_g, to_gs) {
   target_structure_level <- .glycan_structure_level(to_gs)
   search_structure_level <- .bfs_search_structure_level(target_structure_level)
-  target_match <- .bfs_target_match(target_structure_level, to_gs)
+  target_match <- .bfs_target_match(to_gs)
 
   from_g <- .remove_linkages_for_level(from_g, search_structure_level)
   to_gs <- .remove_linkages_for_level(to_gs, search_structure_level)
