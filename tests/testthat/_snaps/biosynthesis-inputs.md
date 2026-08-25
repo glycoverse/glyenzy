@@ -10,6 +10,7 @@
       i Supported monosaccharide types are "concrete" and "generic"; mixed-residue and missing glycans are not supported.
       i Supported structure levels are "intact" and "topological"; partial structures are not supported.
       i Use `glyrepr::convert_to_generic()` or `glyrepr::remove_linkages()` to standardize inputs.
+
 ---
 
     Code
