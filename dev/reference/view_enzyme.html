@@ -104,7 +104,7 @@ on factors such as tissue specificity.</p>
 <p>Most functions only work for glycans containing <strong>concrete</strong> residues
 (e.g., <code>"Glc"</code>, <code>"GalNAc"</code>), and not for glycans with <strong>generic</strong>
 residues (e.g., <code>"Hex"</code>, <code>"HexNAc"</code>).
-Inputs with generic or mixed residues are supported where explicitly
+Inputs with generic residues are supported where explicitly
 documented, such as <code><a href="trace_biosynthesis.html">trace_biosynthesis()</a></code> and <code><a href="path_biosynthesis.html">path_biosynthesis()</a></code>.</p>
 </div>
 
@@ -121,8 +121,8 @@ phosphorylation and methylation, are not supported. Use
 <h3 id="incomplete-or-non-concrete-glycan-structures">Incomplete or non-concrete glycan structures<a class="anchor" aria-label="anchor" href="#incomplete-or-non-concrete-glycan-structures"></a></h3>
 
 
-<p>If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+<p>Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 <code><a href="https://glycoverse.github.io/glyrepr/reference/get_structure_level.html" class="external-link">glyrepr::get_structure_level()</a></code> other than <code>"intact"</code>, or with a
 <code><a href="https://glycoverse.github.io/glyrepr/reference/get_mono_type.html" class="external-link">glyrepr::get_mono_type()</a></code> other than <code>"concrete"</code>, are matched with the
 lenient motif matching mode in glymotif. A warning is raised because enzyme

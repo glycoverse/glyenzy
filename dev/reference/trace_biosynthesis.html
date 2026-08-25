@@ -114,6 +114,21 @@ attribute; virtual edges use the structural virtual-enzyme name in
 reach every target glycan.</p>
     </div>
     <div class="section level2">
+    <h2 id="input-compatibility">Input compatibility<a class="anchor" aria-label="anchor" href="#input-compatibility"></a></h2>
+
+
+<p><code>trace_biosynthesis()</code>, <code><a href="trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code>,
+<code><a href="path_biosynthesis.html">path_biosynthesis()</a></code>, and <code><a href="path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code> accept only
+glycans that share one monosaccharide type (<code>"concrete"</code> or <code>"generic"</code>)
+and one structure level (<code>"intact"</code> or <code>"topological"</code>). Structures with
+mixed generic and concrete residues, partial structures, and missing
+structures are not supported. In the <code>path_*()</code> functions, <code>from</code> and <code>to</code>
+must have the same monosaccharide type and structure level.</p>
+<p>Use <code><a href="https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html" class="external-link">glyrepr::convert_to_generic()</a></code> to standardize monosaccharide types or
+<code><a href="https://glycoverse.github.io/glyrepr/reference/remove_linkages.html" class="external-link">glyrepr::remove_linkages()</a></code> to standardize structures at the topological
+level.</p>
+    </div>
+    <div class="section level2">
     <h2 id="virtual-fallback">Virtual fallback<a class="anchor" aria-label="anchor" href="#virtual-fallback"></a></h2>
 
 
@@ -165,7 +180,7 @@ on factors such as tissue specificity.</p>
 <p>Most functions only work for glycans containing <strong>concrete</strong> residues
 (e.g., <code>"Glc"</code>, <code>"GalNAc"</code>), and not for glycans with <strong>generic</strong>
 residues (e.g., <code>"Hex"</code>, <code>"HexNAc"</code>).
-Inputs with generic or mixed residues are supported where explicitly
+Inputs with generic residues are supported where explicitly
 documented, such as <code>trace_biosynthesis()</code> and <code><a href="path_biosynthesis.html">path_biosynthesis()</a></code>.</p>
 </div>
 
@@ -182,8 +197,8 @@ phosphorylation and methylation, are not supported. Use
 <h3 id="incomplete-or-non-concrete-glycan-structures">Incomplete or non-concrete glycan structures<a class="anchor" aria-label="anchor" href="#incomplete-or-non-concrete-glycan-structures"></a></h3>
 
 
-<p>If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+<p>Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 <code><a href="https://glycoverse.github.io/glyrepr/reference/get_structure_level.html" class="external-link">glyrepr::get_structure_level()</a></code> other than <code>"intact"</code>, or with a
 <code><a href="https://glycoverse.github.io/glyrepr/reference/get_mono_type.html" class="external-link">glyrepr::get_mono_type()</a></code> other than <code>"concrete"</code>, are matched with the
 lenient motif matching mode in glymotif. A warning is raised because enzyme

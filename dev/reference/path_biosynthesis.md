@@ -103,8 +103,8 @@ might be active, depending on factors such as tissue specificity.
 
 Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic or mixed
-residues are supported where explicitly documented, such as
+residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic residues are
+supported where explicitly documented, such as
 [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
 and `path_biosynthesis()`.
 
@@ -117,8 +117,8 @@ when unsupported substituents are present.
 
 ### Incomplete or non-concrete glycan structures
 
-If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 [`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
 other than `"intact"`, or with a
 [`glyrepr::get_mono_type()`](https://glycoverse.github.io/glyrepr/reference/get_mono_type.html)
@@ -149,6 +149,25 @@ For known-enzyme path inference:
 - For GlcCer glycans, the starting structure is assumed to be "Glc(b1-",
 
 - For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
+
+## Input compatibility
+
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+[`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md),
+`path_biosynthesis()`, and
+[`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)
+accept only glycans that share one monosaccharide type (`"concrete"` or
+`"generic"`) and one structure level (`"intact"` or `"topological"`).
+Structures with mixed generic and concrete residues, partial structures,
+and missing structures are not supported. In the `path_*()` functions,
+`from` and `to` must have the same monosaccharide type and structure
+level.
+
+Use
+[`glyrepr::convert_to_generic()`](https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html)
+to standardize monosaccharide types or
+[`glyrepr::remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html)
+to standardize structures at the topological level.
 
 ## Virtual fallback
 

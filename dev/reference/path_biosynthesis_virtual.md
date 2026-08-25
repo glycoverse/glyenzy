@@ -56,9 +56,9 @@ every candidate concrete enzyme for each transition.
 
 Each edge is named for the residue added by that step. Intact glycans
 include the linkage anomer and acceptor position, so a beta-1,4-linked
-GlcNAc is labeled `"b4GlcNAcT"`. Partial and topological glycans omit
-linkage information and use `"GlcNAcT"`. Generic or mixed topological
-glycans use their preserved generic residue names, such as `"HexNAcT"`.
+GlcNAc is labeled `"b4GlcNAcT"`. Topological glycans omit linkage
+information and use `"GlcNAcT"`. Generic topological glycans use their
+preserved generic residue names, such as `"HexNAcT"`.
 
 Sulfation is represented as its own atomic transition. Sulfate additions
 at positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or
@@ -77,6 +77,24 @@ Generic structures do not retain glycan-class metadata. A generic
 structure matching the N-glycan-core topology is therefore assumed to be
 an N-glycan; use `path_biosynthesis_virtual()` with an explicit `from`
 when that topology belongs to another glycan class.
+
+## Input compatibility
+
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+[`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md),
+[`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md),
+and `path_biosynthesis_virtual()` accept only glycans that share one
+monosaccharide type (`"concrete"` or `"generic"`) and one structure
+level (`"intact"` or `"topological"`). Structures with mixed generic and
+concrete residues, partial structures, and missing structures are not
+supported. In the `path_*()` functions, `from` and `to` must have the
+same monosaccharide type and structure level.
+
+Use
+[`glyrepr::convert_to_generic()`](https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html)
+to standardize monosaccharide types or
+[`glyrepr::remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html)
+to standardize structures at the topological level.
 
 ## Examples
 

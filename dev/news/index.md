@@ -2,6 +2,22 @@
 
 ## glyenzy (development version)
 
+### Breaking changes
+
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md),
+  [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md),
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+  and
+  [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
+  now error unless all supplied glycans use the same concrete or generic
+  monosaccharide type and the same intact or topological structure
+  level; standardize inputs with
+  [`glyrepr::convert_to_generic()`](https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html)
+  or
+  [`glyrepr::remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html),
+  and replace mixed-residue, partial, or missing structures before
+  tracing. (#48)
+
 ## glyenzy 0.9.0
 
 ### Breaking changes

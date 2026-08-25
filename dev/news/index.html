@@ -37,6 +37,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyenzy-development-version">glyenzy (development version)<a class="anchor" aria-label="anchor" href="#glyenzy-development-version"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code>, <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>, <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> now error unless all supplied glycans use the same concrete or generic monosaccharide type and the same intact or topological structure level; standardize inputs with <code><a href="https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html" class="external-link">glyrepr::convert_to_generic()</a></code> or <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_linkages.html" class="external-link">glyrepr::remove_linkages()</a></code>, and replace mixed-residue, partial, or missing structures before tracing. (#48)</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="glyenzy-090">glyenzy 0.9.0<a class="anchor" aria-label="anchor" href="#glyenzy-090"></a></h2>
