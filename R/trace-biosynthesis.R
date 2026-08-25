@@ -25,6 +25,19 @@
 #'   Should take a [glyrepr::glycan_structure()] vector as input and return
 #'   a logical vector of the same length. It filters generated products.
 #'
+#' @section Input compatibility:
+#' `trace_biosynthesis()`, [trace_biosynthesis_virtual()],
+#' [path_biosynthesis()], and [path_biosynthesis_virtual()] accept only
+#' glycans that share one monosaccharide type (`"concrete"` or `"generic"`)
+#' and one structure level (`"intact"` or `"topological"`). Structures with
+#' mixed generic and concrete residues, partial structures, and missing
+#' structures are not supported. In the `path_*()` functions, `from` and `to`
+#' must have the same monosaccharide type and structure level.
+#'
+#' Use [glyrepr::convert_to_generic()] to standardize monosaccharide types or
+#' [glyrepr::remove_linkages()] to standardize structures at the topological
+#' level.
+#'
 #' @section Virtual fallback:
 #' Sometimes the biosynthesis network of a glycan cannot be fully resolved;
 #' i.e., some enzymatic steps are not inferred to be catalyzed by any known
@@ -85,7 +98,7 @@ trace_biosynthesis <- function(
   max_virtual_steps = 0L
 ) {
   # Parse and validate inputs first
-  glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
+  glycans <- .process_biosynthesis_glycans_arg(glycans)
   if (is.null(max_steps)) {
     max_steps <- .infer_trace_max_steps(glycans)
   } else {
@@ -118,7 +131,7 @@ trace_biosynthesis <- function(
   ) |>
     .set_biosynthesis_targets(
       glycans,
-      match = .bfs_target_match(.glycan_structure_level(glycans), glycans)
+      match = .bfs_target_match(glycans)
     )
   .new_biosynthesis_network(
     path
@@ -198,7 +211,7 @@ trace_biosynthesis <- function(
   method <- match.arg(method)
   checkmate::assert_choice(
     structure_level,
-    c("intact", "partial", "topological")
+    c("intact", "topological")
   )
 
   if (identical(method, "enzymatic")) {

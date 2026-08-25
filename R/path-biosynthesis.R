@@ -6,6 +6,7 @@
 #' [path_biosynthesis_virtual()].
 #'
 #' @inheritSection trace_biosynthesis Important notes
+#' @inheritSection trace_biosynthesis Input compatibility
 #' @inheritSection trace_biosynthesis Virtual fallback
 #'
 #' @param from A [glyrepr::glycan_structure()] scalar, or a character string
@@ -57,8 +58,9 @@ path_biosynthesis <- function(
   max_virtual_steps = 0L
 ) {
   # Parse and validate inputs first
-  from <- .process_glycan_arg(from, allow_generic = TRUE)
-  to <- .process_glycan_arg(to, allow_generic = TRUE)
+  glycans <- .process_biosynthesis_path_args(from, to)
+  from <- glycans$from
+  to <- glycans$to
   checkmate::assert_int(max_steps, lower = 1)
   checkmate::assert_int(max_virtual_steps, lower = 0)
   if (!is.null(filter)) {

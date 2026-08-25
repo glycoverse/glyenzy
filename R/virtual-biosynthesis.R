@@ -5,13 +5,14 @@
 #' [trace_biosynthesis()], this does not require known enzyme rules.
 #'
 #' @inheritSection have_enzyme Important notes
+#' @inheritSection trace_biosynthesis Input compatibility
 #' @inheritParams trace_biosynthesis
 #'
 #' @section Virtual enzymes:
 #' Each edge is named for the residue added by that step. Intact glycans include
 #' the linkage anomer and acceptor position, so a beta-1,4-linked GlcNAc is
-#' labeled `"b4GlcNAcT"`. Partial and topological glycans omit linkage
-#' information and use `"GlcNAcT"`. Generic or mixed topological glycans use
+#' labeled `"b4GlcNAcT"`. Topological glycans omit linkage
+#' information and use `"GlcNAcT"`. Generic topological glycans use
 #' their preserved generic residue names, such as `"HexNAcT"`.
 #'
 #' Sulfation is represented as its own atomic transition. Sulfate additions at
@@ -65,7 +66,7 @@ trace_biosynthesis_virtual <- function(
   enzymes = NULL,
   annotate_enzymes = FALSE
 ) {
-  glycans <- .process_glycans_arg(glycans, allow_generic = TRUE)
+  glycans <- .process_biosynthesis_glycans_arg(glycans)
   checkmate::assert_flag(annotate_enzymes)
 
   if (annotate_enzymes) {
@@ -84,7 +85,7 @@ trace_biosynthesis_virtual <- function(
   path <- .set_biosynthesis_targets(
     path,
     glycans,
-    match = .bfs_target_match(.glycan_structure_level(glycans), glycans)
+    match = .bfs_target_match(glycans)
   )
   .new_biosynthesis_network(path, virtual = TRUE)
 }
@@ -96,6 +97,7 @@ trace_biosynthesis_virtual <- function(
 #' Unlike [path_biosynthesis()], this does not require known enzyme rules.
 #'
 #' @inheritSection trace_biosynthesis_virtual Virtual enzymes
+#' @inheritSection trace_biosynthesis Input compatibility
 #' @inheritParams path_biosynthesis
 #'
 #' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
@@ -130,8 +132,9 @@ path_biosynthesis_virtual <- function(
   enzymes = NULL,
   annotate_enzymes = FALSE
 ) {
-  from <- .process_glycan_arg(from, allow_generic = TRUE)
-  to <- .process_glycan_arg(to, allow_generic = TRUE)
+  glycans <- .process_biosynthesis_path_args(from, to)
+  from <- glycans$from
+  to <- glycans$to
   checkmate::assert_flag(annotate_enzymes)
 
   if (annotate_enzymes) {
@@ -141,7 +144,7 @@ path_biosynthesis_virtual <- function(
   }
 
   path <- .perform_virtual_synthesis(
-    .prepare_virtual_start(from, to),
+    from,
     to
   )
   if (annotate_enzymes) {

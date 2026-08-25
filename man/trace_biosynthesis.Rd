@@ -58,6 +58,21 @@ method uses known enzyme rules in a forward, multi-target breadth-first
 search. To infer structure-driven paths without enzyme specificity, use
 \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}}.
 }
+\section{Input compatibility}{
+
+\code{trace_biosynthesis()}, \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}},
+\code{\link[=path_biosynthesis]{path_biosynthesis()}}, and \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} accept only
+glycans that share one monosaccharide type (\code{"concrete"} or \code{"generic"})
+and one structure level (\code{"intact"} or \code{"topological"}). Structures with
+mixed generic and concrete residues, partial structures, and missing
+structures are not supported. In the \verb{path_*()} functions, \code{from} and \code{to}
+must have the same monosaccharide type and structure level.
+
+Use \code{\link[glyrepr:convert_to_generic]{glyrepr::convert_to_generic()}} to standardize monosaccharide types or
+\code{\link[glyrepr:remove_linkages]{glyrepr::remove_linkages()}} to standardize structures at the topological
+level.
+}
+
 \section{Virtual fallback}{
 
 Sometimes the biosynthesis network of a glycan cannot be fully resolved;
@@ -106,7 +121,7 @@ on factors such as tissue specificity.
 Most functions only work for glycans containing \strong{concrete} residues
 (e.g., \code{"Glc"}, \code{"GalNAc"}), and not for glycans with \strong{generic}
 residues (e.g., \code{"Hex"}, \code{"HexNAc"}).
-Inputs with generic or mixed residues are supported where explicitly
+Inputs with generic residues are supported where explicitly
 documented, such as \code{trace_biosynthesis()} and \code{path_biosynthesis()}.
 }
 
@@ -119,8 +134,8 @@ phosphorylation and methylation, are not supported. Use
 
 \subsection{Incomplete or non-concrete glycan structures}{
 
-If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 \code{\link[glyrepr:get_structure_level]{glyrepr::get_structure_level()}} other than \code{"intact"}, or with a
 \code{\link[glyrepr:get_mono_type]{glyrepr::get_mono_type()}} other than \code{"concrete"}, are matched with the
 lenient motif matching mode in glymotif. A warning is raised because enzyme
