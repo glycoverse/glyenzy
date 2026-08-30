@@ -3,13 +3,13 @@
 by trace_biosynthesis(), trace_biosynthesis_virtual(),
 path_biosynthesis(), and path_biosynthesis_virtual(). A layered DAG
 layout determines the node positions while accounting for converging
-biosynthesis routes. Parallel enzyme names are combined on one reaction
-edge."><meta property="og:description" content="autoplot.glyenzy_biosynthesis_network() draws the typed networks returned
+biosynthesis routes. Candidate enzyme names stored on each reaction edge
+are combined into one label."><meta property="og:description" content="autoplot.glyenzy_biosynthesis_network() draws the typed networks returned
 by trace_biosynthesis(), trace_biosynthesis_virtual(),
 path_biosynthesis(), and path_biosynthesis_virtual(). A layered DAG
 layout determines the node positions while accounting for converging
-biosynthesis routes. Parallel enzyme names are combined on one reaction
-edge."><meta property="og:image" content="https://glycoverse.github.io/glyenzy/logo.png"><meta name="robots" content="noindex"></head><body>
+biosynthesis routes. Candidate enzyme names stored on each reaction edge
+are combined into one label."><meta property="og:image" content="https://glycoverse.github.io/glyenzy/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,8 +51,8 @@ edge."><meta property="og:image" content="https://glycoverse.github.io/glyenzy/l
 by <code><a href="trace_biosynthesis.html">trace_biosynthesis()</a></code>, <code><a href="trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code>,
 <code><a href="path_biosynthesis.html">path_biosynthesis()</a></code>, and <code><a href="path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>. A layered DAG
 layout determines the node positions while accounting for converging
-biosynthesis routes. Parallel enzyme names are combined on one reaction
-edge.</p>
+biosynthesis routes. Candidate enzyme names stored on each reaction edge
+are combined into one label.</p>
     </div>
 
     <div class="section level2">
@@ -137,7 +137,7 @@ unambiguous added residue remain dark grey.</p></dd>
 
 
 <dt id="arg-enzyme-label-style">enzyme_label_style<a class="anchor" aria-label="anchor" href="#arg-enzyme-label-style"></a></dt>
-<dd><p>How parallel enzymes on one reaction edge are
+<dd><p>How candidate enzymes on one reaction edge are
 labeled. <code>"condensed"</code> (the default) groups names with the same prefix and
 terminal number, for example, <code>"B4GALT1/2/3, B3GALT3/4"</code>. <code>"full"</code> keeps
 complete names separated by <code>" / "</code>.</p></dd>

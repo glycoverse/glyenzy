@@ -9,6 +9,16 @@
   [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
   and
   [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
+  now return one edge per substrate-product transition with a shared
+  schema: logical vertex `target`; scalar edge `enzyme`; list-valued
+  edge `enzymes`; logical edge `is_virtual`; and integer edge `step`.
+  Replace uses of parallel `enzyme` edges or `concrete_enzymes` with the
+  `enzymes` list attribute. (#49)
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md),
+  [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md),
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md),
+  and
+  [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
   now error unless all supplied glycans use the same concrete or generic
   monosaccharide type and the same intact or topological structure
   level; standardize inputs with
@@ -17,6 +27,13 @@
   [`glyrepr::remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html),
   and replace mixed-residue, partial, or missing structures before
   tracing. (#48)
+
+### Minor improvements and fixes
+
+- Biosynthesis networks now mark targets consistently and contain at
+  most one directed edge between each substrate-product pair; concrete
+  isoenzymes are retained in the list-valued `enzymes` edge attribute.
+  (#49)
 
 ## glyenzy 0.9.0
 

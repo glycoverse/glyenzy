@@ -42,10 +42,12 @@ A `glyenzy_virtual_biosynthesis_network` object inheriting from
 `glyenzy_biosynthesis_network` and
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html).
 Vertices contain IUPAC-condensed strings in `name` and a logical
-`target` attribute indicating whether each vertex is a target glycan;
-edges have a forward `step` and virtual-enzyme `enzyme` attribute. When
-`annotate_enzymes` is `TRUE`, `concrete_enzymes` is a list of character
-vectors containing every candidate concrete enzyme for each transition.
+`target` attribute indicating whether each vertex is a target glycan. At
+most one directed edge connects each substrate and product. Edges have a
+forward `step`, `is_virtual = TRUE`, a virtual-enzyme `enzyme` label,
+and a list-valued `enzymes` attribute. When `annotate_enzymes` is
+`TRUE`, `enzymes` contains every candidate concrete enzyme for each
+transition; otherwise each element is empty.
 
 ## Virtual enzymes
 

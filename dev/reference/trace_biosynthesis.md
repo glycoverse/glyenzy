@@ -64,12 +64,13 @@ A `glyenzy_biosynthesis_network` object inheriting from
 and representing the synthesis path(s). Vertices represent glycan
 structures, with IUPAC-condensed strings in the `name` attribute and a
 logical `target` attribute indicating whether each vertex is a target
-glycan. Every edge has a `step` attribute indicating the forward
-synthesis step and an `enzyme` attribute containing its gene symbol.
-Multiple enzymes catalysing the same substrate-to-product transition are
-represented by parallel edges. When virtual fallback is required, every
-edge also has an `is_virtual` attribute; virtual edges use the
-structural virtual-enzyme name in `enzyme`.
+glycan. At most one directed edge connects each substrate and product.
+Every edge has an integer `step`, a logical `is_virtual`, a scalar
+display label in `enzyme`, and a list-valued `enzymes` attribute
+containing concrete enzyme candidates. For known reactions, `enzyme`
+combines the candidates with `" / "`; for virtual reactions, it contains
+the structural virtual-enzyme name and `enzymes` is empty unless
+concrete candidates were annotated.
 
 For multiple targets, the graph includes all synthesis paths needed to
 reach every target glycan.
@@ -206,40 +207,25 @@ path <- trace_biosynthesis(glycans)
 
 # View the path
 igraph::as_data_frame(path, what = "edges")
-#>                                                    from
-#> 1                                            GalNAc(a1-
-#> 2                                   Gal(b1-3)GalNAc(a1-
-#> 3                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 4                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 5                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 6                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 7                       GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 8              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 9              Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 10             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 11             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 12             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 13             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 14             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 15 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 16 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#> 17 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
-#>                                                                 to  enzyme step
-#> 1                                              Gal(b1-3)GalNAc(a1- C1GALT1    1
-#> 2                                  GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-  B3GNT3    2
-#> 3                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT1    3
-#> 4                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT2    3
-#> 5                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT3    3
-#> 6                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT4    3
-#> 7                         Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- B4GALT5    3
-#> 8              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT3    4
-#> 9              Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT4    4
-#> 10             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    4
-#> 11             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    4
-#> 12             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT9    4
-#> 13            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL4    4
-#> 14            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1- ST3GAL6    4
-#> 15 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT5    5
-#> 16 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT6    5
-#> 17 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-    FUT7    5
+#>                                                   from
+#> 1                                           GalNAc(a1-
+#> 2                                  Gal(b1-3)GalNAc(a1-
+#> 3                      GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 4             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 5             Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 6 Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#>                                                                to
+#> 1                                             Gal(b1-3)GalNAc(a1-
+#> 2                                 GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 3                        Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 4             Fuc(a1-3)[Gal(b1-4)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 5            Neu5Ac(a2-3)Gal(b1-4)GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#> 6 Neu5Ac(a2-3)Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-3)Gal(b1-3)GalNAc(a1-
+#>                                            enzyme is_virtual step      enzymes
+#> 1                                         C1GALT1      FALSE    1      C1GALT1
+#> 2                                          B3GNT3      FALSE    2       B3GNT3
+#> 3 B4GALT1 / B4GALT2 / B4GALT3 / B4GALT4 / B4GALT5      FALSE    3 B4GALT1,....
+#> 4                FUT3 / FUT4 / FUT5 / FUT6 / FUT9      FALSE    4 FUT3, FU....
+#> 5                               ST3GAL4 / ST3GAL6      FALSE    4 ST3GAL4,....
+#> 6                              FUT5 / FUT6 / FUT7      FALSE    5 FUT5, FU....
 ```

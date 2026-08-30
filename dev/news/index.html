@@ -40,7 +40,13 @@
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code>, <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>, <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> now return one edge per substrate-product transition with a shared schema: logical vertex <code>target</code>; scalar edge <code>enzyme</code>; list-valued edge <code>enzymes</code>; logical edge <code>is_virtual</code>; and integer edge <code>step</code>. Replace uses of parallel <code>enzyme</code> edges or <code>concrete_enzymes</code> with the <code>enzymes</code> list attribute. (#49)</li>
+<li>
 <code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code>, <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>, <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> now error unless all supplied glycans use the same concrete or generic monosaccharide type and the same intact or topological structure level; standardize inputs with <code><a href="https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html" class="external-link">glyrepr::convert_to_generic()</a></code> or <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_linkages.html" class="external-link">glyrepr::remove_linkages()</a></code>, and replace mixed-residue, partial, or missing structures before tracing. (#48)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-fixes-development-version">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-development-version"></a></h3>
+<ul><li>Biosynthesis networks now mark targets consistently and contain at most one directed edge between each substrate-product pair; concrete isoenzymes are retained in the list-valued <code>enzymes</code> edge attribute. (#49)</li>
 </ul></div>
 </div>
     <div class="section level2">

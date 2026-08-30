@@ -32,17 +32,13 @@ To build its biosynthesis network, call
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH d036b48 DN-- 4 9 -- 
-#> + attr: name (v/c), target (v/l), enzyme (e/c), step (e/n)
-#> + edges from d036b48 (vertex names):
+#> IGRAPH 61158a3 DN-- 4 3 -- 
+#> + attr: name (v/c), target (v/l), enzyme (e/c), is_virtual (e/l), step
+#> | (e/n), enzymes (e/x)
+#> + edges from 61158a3 (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
-#> [3] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
-#> [4] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
-#> [5] Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-->Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-
-#> [6] Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-->Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-
-#> [7] Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-->Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-
-#> + ... omitted several edges
+#> [3] Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-->Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-
 ```
 
 `path` is an `igraph` object representing the biosynthesis network. It
@@ -214,15 +210,15 @@ structure, the algorithm defers it as much as possible to avoid
 over-inference.
 
 [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
-also has an `annotate_enzymes` argument. Setting it to `TRUE` adds a
-`concrete_enzyme` edge attribute to the resulting network. Let’s try it
-with the first O-GalNAc glycan:
+also has an `annotate_enzymes` argument. Setting it to `TRUE` populates
+the shared `enzymes` edge attribute with candidate concrete enzymes.
+Let’s try it with the first O-GalNAc glycan:
 
 ``` r
 
 glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 path <- trace_biosynthesis_virtual(glycan, annotate_enzymes = TRUE)
-igraph::edge_attr(path, "concrete_enzymes")
+igraph::edge_attr(path, "enzymes")
 #> [[1]]
 #> [1] "B4GALT1" "B4GALT2" "B4GALT3" "B4GALT4" "B4GALT5"
 #> 

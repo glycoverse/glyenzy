@@ -8,8 +8,8 @@ returned by
 and
 [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md).
 A layered DAG layout determines the node positions while accounting for
-converging biosynthesis routes. Parallel enzyme names are combined on
-one reaction edge.
+converging biosynthesis routes. Candidate enzyme names stored on each
+reaction edge are combined into one label.
 
 ## Usage
 
@@ -95,7 +95,7 @@ autoplot(
 
 - enzyme_label_style:
 
-  How parallel enzymes on one reaction edge are labeled. `"condensed"`
+  How candidate enzymes on one reaction edge are labeled. `"condensed"`
   (the default) groups names with the same prefix and terminal number,
   for example, `"B4GALT1/2/3, B3GALT3/4"`. `"full"` keeps complete names
   separated by `" / "`.

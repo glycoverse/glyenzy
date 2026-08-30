@@ -80,10 +80,12 @@ concrete enzymes whose rules can perform it. Defaults to <code>FALSE</code>.</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>glyenzy_virtual_biosynthesis_network</code> object inheriting from
 <code>glyenzy_biosynthesis_network</code> and <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph::igraph()</a></code>. Vertices contain
-IUPAC-condensed strings in <code>name</code>; edges have a forward <code>step</code> and
-virtual-enzyme <code>enzyme</code> attribute. When <code>annotate_enzymes</code> is <code>TRUE</code>,
-<code>concrete_enzymes</code> is a list of character vectors containing every candidate
-concrete enzyme for each transition.</p>
+IUPAC-condensed strings in <code>name</code> and a logical <code>target</code> attribute indicating
+the target glycan. At most one directed edge connects each substrate and
+product. Edges have a forward <code>step</code>, <code>is_virtual = TRUE</code>, a virtual-enzyme
+<code>enzyme</code> label, and a list-valued <code>enzymes</code> attribute. When
+<code>annotate_enzymes</code> is <code>TRUE</code>, <code>enzymes</code> contains every candidate concrete
+enzyme for each transition; otherwise each element is empty.</p>
     </div>
     <div class="section level2">
     <h2 id="virtual-enzymes">Virtual enzymes<a class="anchor" aria-label="anchor" href="#virtual-enzymes"></a></h2>
