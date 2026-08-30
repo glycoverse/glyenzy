@@ -1,19 +1,3 @@
-# target highlighting explains unsupported path networks
-
-    Code
-      ggplot2::autoplot(networks$concrete, highlight_target = TRUE)
-    Condition
-      Error in `ggplot2::autoplot()`:
-      ! `highlight_target` cannot be `TRUE` for networks returned by `path_biosynthesis()` or `path_biosynthesis_virtual()`.
-
----
-
-    Code
-      ggplot2::autoplot(networks$virtual, highlight_target = TRUE)
-    Condition
-      Error in `ggplot2::autoplot()`:
-      ! `highlight_target` cannot be `TRUE` for networks returned by `path_biosynthesis()` or `path_biosynthesis_virtual()`.
-
 # figure dimensions are validated
 
     Code

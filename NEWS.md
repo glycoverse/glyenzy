@@ -2,7 +2,12 @@
 
 ## Breaking changes
 
+* `path_biosynthesis()`, `path_biosynthesis_virtual()`, `trace_biosynthesis()`, and `trace_biosynthesis_virtual()` now return one edge per substrate-product transition with a shared schema: logical vertex `target`; scalar edge `enzyme`; list-valued edge `enzymes`; logical edge `is_virtual`; and integer edge `step`. Replace uses of parallel `enzyme` edges or `concrete_enzymes` with the `enzymes` list attribute.
 * `path_biosynthesis()`, `path_biosynthesis_virtual()`, `trace_biosynthesis()`, and `trace_biosynthesis_virtual()` now error unless all supplied glycans use the same concrete or generic monosaccharide type and the same intact or topological structure level; standardize inputs with `glyrepr::convert_to_generic()` or `glyrepr::remove_linkages()`, and replace mixed-residue, partial, or missing structures before tracing. (#48)
+
+## Minor improvements and fixes
+
+* Biosynthesis networks now mark targets consistently and contain at most one directed edge between each substrate-product pair; concrete isoenzymes are retained in the list-valued `enzymes` edge attribute.
 
 # glyenzy 0.9.0
 

@@ -23,10 +23,12 @@ concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}
 \value{
 A \code{glyenzy_virtual_biosynthesis_network} object inheriting from
 \code{glyenzy_biosynthesis_network} and \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}}. Vertices contain
-IUPAC-condensed strings in \code{name}; edges have a forward \code{step} and
-virtual-enzyme \code{enzyme} attribute. When \code{annotate_enzymes} is \code{TRUE},
-\code{concrete_enzymes} is a list of character vectors containing every candidate
-concrete enzyme for each transition.
+IUPAC-condensed strings in \code{name} and a logical \code{target} attribute indicating
+the target glycan. At most one directed edge connects each substrate and
+product. Edges have a forward \code{step}, \code{is_virtual = TRUE}, a virtual-enzyme
+\code{enzyme} label, and a list-valued \code{enzymes} attribute. When
+\code{annotate_enzymes} is \code{TRUE}, \code{enzymes} contains every candidate concrete
+enzyme for each transition; otherwise each element is empty.
 }
 \description{
 Infer every structure-driven biosynthetic path from \code{from} to \code{to} by

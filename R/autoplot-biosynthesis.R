@@ -28,8 +28,8 @@
 #' by [trace_biosynthesis()], [trace_biosynthesis_virtual()],
 #' [path_biosynthesis()], and [path_biosynthesis_virtual()]. A layered DAG
 #' layout determines the node positions while accounting for converging
-#' biosynthesis routes. Parallel enzyme names are combined on one reaction
-#' edge.
+#' biosynthesis routes. Candidate enzyme names stored on each reaction edge
+#' are combined into one label.
 #'
 #' Glycan dimensions are measured before the network is laid out. Nodes at the
 #' same rank are separated by their rendered bounds, while rectangular edge
@@ -67,7 +67,7 @@
 #'   which draws them in dark grey. Concrete and virtual reactions use solid
 #'   and dashed lines, respectively, in both modes. Reactions without one
 #'   unambiguous added residue remain dark grey.
-#' @param enzyme_label_style How parallel enzymes on one reaction edge are
+#' @param enzyme_label_style How candidate enzymes on one reaction edge are
 #'   labeled. `"condensed"` (the default) groups names with the same prefix and
 #'   terminal number, for example, `"B4GALT1/2/3, B3GALT3/4"`. `"full"` keeps
 #'   complete names separated by `" / "`.
@@ -382,7 +382,7 @@ autoplot.glyenzy_biosynthesis_network <- function(
   if (is.null(targets)) {
     if (identical(highlight_target, TRUE)) {
       cli::cli_abort(
-        "{.arg highlight_target} cannot be {.code TRUE} for networks returned by {.fn path_biosynthesis} or {.fn path_biosynthesis_virtual}.",
+        "The network does not have a {.field target} vertex attribute.",
         call = rlang::caller_env()
       )
     }
@@ -511,7 +511,9 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
     ))
   }
 
-  virtual <- if (
+  virtual <- if ("is_virtual" %in% names(edges)) {
+    igraph::edge_attr(graph, "is_virtual")
+  } else if (
     inherits(
       graph,
       "glyenzy_virtual_biosynthesis_network"
@@ -519,12 +521,15 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
   ) {
     rep(TRUE, nrow(edges))
   } else {
-    igraph::edge_attr(graph, "is_virtual")
-  }
-  if (is.null(virtual)) {
-    virtual <- rep(FALSE, nrow(edges))
+    rep(FALSE, nrow(edges))
   }
   virtual[is.na(virtual)] <- FALSE
+
+  candidates <- if ("enzymes" %in% names(edges)) {
+    lapply(edges$enzymes, .valid_biosynthesis_enzyme_names)
+  } else {
+    rep(list(character()), nrow(edges))
+  }
 
   keys <- paste(edges$from, edges$to, sep = "\r")
   groups <- split(
@@ -532,8 +537,17 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
     factor(keys, levels = unique(keys))
   )
   collapsed <- purrr::map_dfr(groups, function(indices) {
-    enzymes <- unique(as.character(edges$enzyme[indices]))
-    reaction_type <- if (any(virtual[indices])) {
+    reaction_is_virtual <- all(virtual[indices])
+    enzymes <- if (reaction_is_virtual) {
+      unique(as.character(edges$enzyme[indices]))
+    } else {
+      unique(c(
+        unlist(candidates[indices], use.names = FALSE),
+        as.character(edges$enzyme[indices[!virtual[indices]]])
+      ))
+    }
+    enzymes <- .valid_biosynthesis_enzyme_names(enzymes)
+    reaction_type <- if (reaction_is_virtual) {
       "Virtual enzyme"
     } else {
       "Enzyme"

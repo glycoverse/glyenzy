@@ -98,7 +98,12 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 .match_enzyme_path_single <- function(glycan, enzyme_name, enzymes) {
   path <- trace_biosynthesis(glycan, enzymes = enzymes)
   edges <- igraph::as_data_frame(path, what = "edges")
-  edges <- edges[edges$enzyme == enzyme_name, , drop = FALSE]
+  has_enzyme <- vapply(
+    edges$enzymes,
+    \(edge_enzymes) enzyme_name %in% edge_enzymes,
+    logical(1)
+  )
+  edges <- edges[has_enzyme, , drop = FALSE]
   if (nrow(edges) == 0L) {
     return(integer())
   }
@@ -165,7 +170,12 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
 .match_st_enzyme_path_single <- function(glycan, enzyme_name, enzymes) {
   path <- trace_biosynthesis(glycan, enzymes = enzymes)
   edges <- igraph::as_data_frame(path, what = "edges")
-  edges <- edges[edges$enzyme == enzyme_name, , drop = FALSE]
+  has_enzyme <- vapply(
+    edges$enzymes,
+    \(edge_enzymes) enzyme_name %in% edge_enzymes,
+    logical(1)
+  )
+  edges <- edges[has_enzyme, , drop = FALSE]
   if (nrow(edges) == 0L) {
     return(integer())
   }

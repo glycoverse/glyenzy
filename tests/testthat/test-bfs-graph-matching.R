@@ -341,7 +341,8 @@ test_that("BFS keys only promising shared graph products", {
   edges <- igraph::as_data_frame(path, what = "edges")
 
   expect_equal(canonicalized, 1L)
-  expect_equal(edges$enzyme, c("E1", "E2"))
+  expect_equal(edges$enzyme, "E1 / E2")
+  expect_equal(edges$enzymes, list(c("E1", "E2")))
 })
 
 test_that("BFS caches identical products from distinct rule jobs", {
@@ -544,7 +545,7 @@ test_that("batched rule jobs preserve reduced-level products", {
   }
 })
 
-test_that("shared rule jobs retain distinct enzyme edges", {
+test_that("shared rule jobs retain enzyme candidates on one edge", {
   make_core1_enzyme <- function(name) {
     make_enzyme(
       name = name,
@@ -565,8 +566,9 @@ test_that("shared rule jobs retain distinct enzyme edges", {
   )
   edges <- igraph::as_data_frame(path, what = "edges")
 
-  expect_equal(edges$enzyme, c("E1", "E2"))
-  expect_equal(edges$to, rep("Gal(b1-3)GalNAc(a1-", 2L))
+  expect_equal(edges$enzyme, "E1 / E2")
+  expect_equal(edges$enzymes, list(c("E1", "E2")))
+  expect_equal(edges$to, "Gal(b1-3)GalNAc(a1-")
 })
 
 test_that("batched expansion rejects occupied acceptor positions", {

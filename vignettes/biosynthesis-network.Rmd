@@ -170,11 +170,12 @@ Although core fucosylation may occur on any intermediate glycan structure,
 the algorithm defers it as much as possible to avoid over-inference.
 
 `trace_biosynthesis_virtual()` also has an `annotate_enzymes` argument.
-Setting it to `TRUE` adds a `concrete_enzyme` edge attribute to the resulting network.
+Setting it to `TRUE` populates the shared `enzymes` edge attribute with
+candidate concrete enzymes.
 Let's try it with the first O-GalNAc glycan:
 
 ```{r}
 glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 path <- trace_biosynthesis_virtual(glycan, annotate_enzymes = TRUE)
-igraph::edge_attr(path, "concrete_enzymes")
+igraph::edge_attr(path, "enzymes")
 ```

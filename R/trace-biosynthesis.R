@@ -59,14 +59,13 @@
 #'   [igraph::igraph()] and representing the synthesis path(s). Vertices
 #'   represent glycan structures, with IUPAC-condensed strings in the `name`
 #'   attribute and a logical `target` attribute indicating whether each vertex
-#'   is a target glycan. Every edge has a `step` attribute indicating the
-#'   forward synthesis step and an `enzyme` attribute containing its gene
-#'   symbol.
-#'   Multiple enzymes catalysing the same substrate-to-product transition are
-#'   represented by parallel edges.
-#'   When virtual fallback is required, every edge also has an `is_virtual`
-#'   attribute; virtual edges use the structural virtual-enzyme name in
-#'   `enzyme`.
+#'   is a target glycan. At most one directed edge connects each substrate and
+#'   product. Every edge has an integer `step`, a logical `is_virtual`, a
+#'   scalar display label in `enzyme`, and a list-valued `enzymes` attribute
+#'   containing concrete enzyme candidates. For known reactions, `enzyme`
+#'   combines the candidates with `" / "`; for virtual reactions, it contains
+#'   the structural virtual-enzyme name and `enzymes` is empty unless concrete
+#'   candidates were annotated.
 #'
 #'   For multiple targets, the graph includes all synthesis paths needed to
 #'   reach every target glycan.
@@ -121,7 +120,7 @@ trace_biosynthesis <- function(
   )
 
   # Find all possible paths using unified BFS logic
-  path <- .perform_bfs_synthesis(
+  .perform_bfs_synthesis(
     starting_glycan,
     glycans,
     enzymes,
@@ -129,13 +128,10 @@ trace_biosynthesis <- function(
     filter,
     max_virtual_steps
   ) |>
-    .set_biosynthesis_targets(
+    .finalize_biosynthesis_network(
       glycans,
       match = .bfs_target_match(glycans)
     )
-  .new_biosynthesis_network(
-    path
-  )
 }
 
 .infer_trace_max_steps <- function(glycans) {

@@ -42,10 +42,11 @@
 #' @returns A `glyenzy_virtual_biosynthesis_network` object inheriting from
 #' `glyenzy_biosynthesis_network` and [igraph::igraph()]. Vertices contain
 #' IUPAC-condensed strings in `name` and a logical `target` attribute indicating
-#' whether each vertex is a target glycan; edges have a forward `step` and
-#' virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is `TRUE`,
-#' `concrete_enzymes` is a list of character vectors containing every candidate
-#' concrete enzyme for each transition.
+#' whether each vertex is a target glycan. At most one directed edge connects
+#' each substrate and product. Edges have a forward `step`, `is_virtual = TRUE`,
+#' a virtual-enzyme `enzyme` label, and a list-valued `enzymes` attribute. When
+#' `annotate_enzymes` is `TRUE`, `enzymes` contains every candidate concrete
+#' enzyme for each transition; otherwise each element is empty.
 #'
 #' @examples
 #' library(glyrepr)
@@ -82,12 +83,12 @@ trace_biosynthesis_virtual <- function(
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)
   }
-  path <- .set_biosynthesis_targets(
+  .finalize_biosynthesis_network(
     path,
     glycans,
-    match = .bfs_target_match(glycans)
+    match = .bfs_target_match(glycans),
+    virtual = TRUE
   )
-  .new_biosynthesis_network(path, virtual = TRUE)
 }
 
 #' Find a Virtual Biosynthesis Path Between Glycan Structures
@@ -108,10 +109,12 @@ trace_biosynthesis_virtual <- function(
 #'
 #' @returns A `glyenzy_virtual_biosynthesis_network` object inheriting from
 #' `glyenzy_biosynthesis_network` and [igraph::igraph()]. Vertices contain
-#' IUPAC-condensed strings in `name`; edges have a forward `step` and
-#' virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is `TRUE`,
-#' `concrete_enzymes` is a list of character vectors containing every candidate
-#' concrete enzyme for each transition.
+#' IUPAC-condensed strings in `name` and a logical `target` attribute indicating
+#' the target glycan. At most one directed edge connects each substrate and
+#' product. Edges have a forward `step`, `is_virtual = TRUE`, a virtual-enzyme
+#' `enzyme` label, and a list-valued `enzymes` attribute. When
+#' `annotate_enzymes` is `TRUE`, `enzymes` contains every candidate concrete
+#' enzyme for each transition; otherwise each element is empty.
 #'
 #' @examples
 #' virtual_path <- path_biosynthesis_virtual(
@@ -150,5 +153,10 @@ path_biosynthesis_virtual <- function(
   if (annotate_enzymes) {
     path <- .amplify_virtual_edges(path, enzymes)
   }
-  .new_biosynthesis_network(path, virtual = TRUE)
+  .finalize_biosynthesis_network(
+    path,
+    to,
+    match = .bfs_target_match(to),
+    virtual = TRUE
+  )
 }

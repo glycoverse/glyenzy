@@ -40,14 +40,13 @@ A \code{glyenzy_biosynthesis_network} object inheriting from
 \code{\link[igraph:aaa-igraph-package]{igraph::igraph()}} and representing the synthesis path(s). Vertices
 represent glycan structures, with IUPAC-condensed strings in the \code{name}
 attribute and a logical \code{target} attribute indicating whether each vertex
-is a target glycan. Every edge has a \code{step} attribute indicating the
-forward synthesis step and an \code{enzyme} attribute containing its gene
-symbol.
-Multiple enzymes catalysing the same substrate-to-product transition are
-represented by parallel edges.
-When virtual fallback is required, every edge also has an \code{is_virtual}
-attribute; virtual edges use the structural virtual-enzyme name in
-\code{enzyme}.
+is a target glycan. At most one directed edge connects each substrate and
+product. Every edge has an integer \code{step}, a logical \code{is_virtual}, a
+scalar display label in \code{enzyme}, and a list-valued \code{enzymes} attribute
+containing concrete enzyme candidates. For known reactions, \code{enzyme}
+combines the candidates with \code{" / "}; for virtual reactions, it contains
+the structural virtual-enzyme name and \code{enzymes} is empty unless concrete
+candidates were annotated.
 
 For multiple targets, the graph includes all synthesis paths needed to
 reach every target glycan.
