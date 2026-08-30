@@ -351,7 +351,7 @@ test_that("virtual tracing annotates exact transitions in candidate order", {
 
   expect_equal(edges$enzyme, c("b4GalT", "a6Neu5AcT"))
   expect_equal(
-    edges$concrete_enzymes,
+    edges$enzymes,
     list(c("B4GALT2", "B4GALT1"), c("ST6GAL2", "ST6GAL1"))
   )
 
@@ -361,7 +361,7 @@ test_that("virtual tracing annotates exact transitions in candidate order", {
     annotate_enzymes = TRUE
   )
   expect_equal(
-    igraph::E(default_path)$concrete_enzymes,
+    igraph::E(default_path)$enzymes,
     list(c("ST6GAL1", "ST6GAL2"))
   )
 })
@@ -388,7 +388,7 @@ test_that("virtual tracing annotates sulfate transitions", {
   edges <- igraph::as_data_frame(path, what = "edges")
 
   expect_equal(edges$enzyme, "3SulfoT")
-  expect_equal(edges$concrete_enzymes, list("CUSTOM_ST"))
+  expect_equal(edges$enzymes, list("CUSTOM_ST"))
 })
 
 test_that("virtual tracing retains unsupported annotated transitions", {
@@ -404,8 +404,8 @@ test_that("virtual tracing retains unsupported annotated transitions", {
   after_branch <- edges$from == "GlcNAc(b1-6)GalNAc(a1-" &
     edges$enzyme == "b3GalT"
 
-  expect_equal(edges$concrete_enzymes[before_branch], list("C1GALT1"))
-  expect_equal(edges$concrete_enzymes[after_branch], list(character()))
+  expect_equal(edges$enzymes[before_branch], list("C1GALT1"))
+  expect_equal(edges$enzymes[after_branch], list(character()))
 })
 
 test_that("virtual tracing annotates reduced-level transitions", {
@@ -435,7 +435,7 @@ test_that("virtual tracing annotates reduced-level transitions", {
   )
 
   expect_equal(
-    unname(purrr::map(paths, ~ igraph::E(.x)$concrete_enzymes)),
+    unname(purrr::map(paths, ~ igraph::E(.x)$enzymes)),
     rep(list(list("GCNT1")), 2L)
   )
 })
@@ -474,7 +474,7 @@ test_that("virtual tracing annotation retains custom enzyme S3 dispatch", {
   )
 
   expect_equal(calls, 1L)
-  expect_equal(igraph::E(path)$concrete_enzymes, list("CUSTOM"))
+  expect_equal(igraph::E(path)$enzymes, list("CUSTOM"))
 })
 
 test_that("virtual annotation preserves topology and trivial paths", {
@@ -491,11 +491,12 @@ test_that("virtual annotation preserves topology and trivial paths", {
   virtual_edges <- igraph::as_data_frame(virtual, what = "edges")
   hybrid_edges <- igraph::as_data_frame(hybrid, what = "edges")
 
+  network_columns <- c("from", "to", "enzyme", "is_virtual", "step")
   expect_equal(
-    hybrid_edges[c("from", "to", "enzyme", "step")],
-    virtual_edges
+    hybrid_edges[network_columns],
+    virtual_edges[network_columns]
   )
-  expect_length(hybrid_edges$concrete_enzymes, nrow(virtual_edges))
+  expect_length(hybrid_edges$enzymes, nrow(virtual_edges))
 
   glycan <- "Gal(b1-3)GalNAc(a1-"
   trivial <- path_biosynthesis_virtual(
@@ -506,5 +507,5 @@ test_that("virtual annotation preserves topology and trivial paths", {
   )
 
   expect_equal(igraph::ecount(trivial), 0L)
-  expect_equal(igraph::edge_attr(trivial, "concrete_enzymes"), list())
+  expect_equal(igraph::edge_attr(trivial, "enzymes"), list())
 })

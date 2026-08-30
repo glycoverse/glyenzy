@@ -167,7 +167,7 @@ test_that("free-compatible enzymes work in known and virtual biosynthesis", {
     annotate_enzymes = TRUE
   )
   expect_identical(
-    igraph::E(virtual)$concrete_enzymes[[1]],
+    igraph::E(virtual)$enzymes[[1]],
     c("B4GALT5", "B4GALT6")
   )
 })

@@ -143,7 +143,7 @@ test_that("target highlighting defaults off for single-target networks", {
   )
 })
 
-test_that("target highlighting explains unsupported path networks", {
+test_that("target highlighting supports path networks", {
   skip_if_not_installed("ggraph")
   target <- "Gal(b1-3)GalNAc(a1-"
   networks <- list(
@@ -159,24 +159,19 @@ test_that("target highlighting explains unsupported path networks", {
   expect_equal(
     vapply(
       networks,
-      \(network) is.null(igraph::vertex_attr(network, "target")),
-      logical(1)
+      \(network) sum(igraph::vertex_attr(network, "target")),
+      integer(1)
     ),
-    c(concrete = TRUE, virtual = TRUE)
+    c(concrete = 1, virtual = 1)
   )
-  expect_snapshot(
-    error = TRUE,
-    ggplot2::autoplot(
-      networks$concrete,
-      highlight_target = TRUE
-    )
+  plots <- lapply(
+    networks,
+    ggplot2::autoplot,
+    highlight_target = TRUE
   )
-  expect_snapshot(
-    error = TRUE,
-    ggplot2::autoplot(
-      networks$virtual,
-      highlight_target = TRUE
-    )
+  expect_equal(
+    vapply(plots, \(plot) length(plot$layers), integer(1)),
+    c(concrete = 5L, virtual = 5L)
   )
 })
 
@@ -295,6 +290,28 @@ test_that("biosynthesis enzyme labels support full and condensed styles", {
     ),
     "b3GalT, B4GALT1/2, 3SulfoT"
   )
+})
+
+test_that("canonical candidate lists do not repeat display labels", {
+  candidates <- c("B4GALT1", "B4GALT2", "B4GALT3")
+  graph <- path_biosynthesis(
+    "GlcNAc(b1-",
+    "Gal(b1-4)GlcNAc(b1-",
+    enzymes = candidates,
+    max_steps = 1
+  )
+
+  full <- .collapse_biosynthesis_reactions(
+    graph,
+    enzyme_label_style = "full"
+  )
+  condensed <- .collapse_biosynthesis_reactions(graph)
+
+  expect_identical(
+    igraph::E(full)$enzyme,
+    paste(candidates, collapse = " / ")
+  )
+  expect_identical(igraph::E(condensed)$enzyme, "B4GALT1/2/3")
 })
 
 test_that("biosynthesis autoplot uses condensed multi-enzyme labels", {

@@ -338,7 +338,7 @@ test_that("fully enzymatic paths are unchanged when fallback is enabled", {
     igraph::as_data_frame(fallback, what = "edges"),
     igraph::as_data_frame(strict, what = "edges")
   )
-  expect_null(igraph::edge_attr(fallback, "is_virtual"))
+  expect_identical(igraph::edge_attr(fallback, "is_virtual"), FALSE)
 })
 
 test_that("max_virtual_steps is appended to preserve positional filters", {

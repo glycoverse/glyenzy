@@ -58,7 +58,7 @@ which draws them in dark grey. Concrete and virtual reactions use solid
 and dashed lines, respectively, in both modes. Reactions without one
 unambiguous added residue remain dark grey.}
 
-\item{enzyme_label_style}{How parallel enzymes on one reaction edge are
+\item{enzyme_label_style}{How candidate enzymes on one reaction edge are
 labeled. \code{"condensed"} (the default) groups names with the same prefix and
 terminal number, for example, \code{"B4GALT1/2/3, B3GALT3/4"}. \code{"full"} keeps
 complete names separated by \code{" / "}.}
@@ -82,8 +82,8 @@ panel centered in the requested figure dimensions.
 by \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}, \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}},
 \code{\link[=path_biosynthesis]{path_biosynthesis()}}, and \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}}. A layered DAG
 layout determines the node positions while accounting for converging
-biosynthesis routes. Parallel enzyme names are combined on one reaction
-edge.
+biosynthesis routes. Candidate enzyme names stored on each reaction edge
+are combined into one label.
 }
 \details{
 Glycan dimensions are measured before the network is laid out. Nodes at the

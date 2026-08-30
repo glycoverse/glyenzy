@@ -119,7 +119,7 @@ test_that("path_biosynthesis works with NULL enzymes (uses all)", {
   edges <- igraph::as_data_frame(g, what = "edges")
   expect_gte(nrow(edges), 1L)
   # Should find ST6GAL1 among all enzymes
-  expect_true(all(edges$enzyme %in% names(glyenzy_enzymes)))
+  expect_true(all(unlist(edges$enzymes) %in% names(glyenzy_enzymes)))
 })
 
 test_that("path_biosynthesis includes multiple paths", {

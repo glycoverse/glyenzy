@@ -1215,7 +1215,7 @@
 #' @noRd
 .trace_enzyme_edges_single <- function(glycan, enzymes = NULL) {
   path <- trace_biosynthesis(glycan, enzymes = enzymes)
-  igraph::E(path)$enzyme
+  unlist(igraph::E(path)$enzymes, use.names = FALSE)
 }
 
 #' Extract trace-derived enzyme names for each glycan independently

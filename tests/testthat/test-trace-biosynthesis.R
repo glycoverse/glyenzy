@@ -130,8 +130,7 @@ test_that("trace_biosynthesis works for an O-GalNAc glycan", {
   expect_equal(length(end_node), 1L)
   expect_equal(end_node$name, glycan)
 
-  # More than one possible routes are found
-  expect_gt(igraph::ecount(path), igraph::vcount(path) - 1)
+  expect_equal(igraph::any_multiple(path), FALSE)
 })
 
 test_that("trace_biosynthesis reaches topological target glycans", {
