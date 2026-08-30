@@ -292,6 +292,28 @@ test_that("biosynthesis enzyme labels support full and condensed styles", {
   )
 })
 
+test_that("canonical candidate lists do not repeat display labels", {
+  candidates <- c("B4GALT1", "B4GALT2", "B4GALT3")
+  graph <- path_biosynthesis(
+    "GlcNAc(b1-",
+    "Gal(b1-4)GlcNAc(b1-",
+    enzymes = candidates,
+    max_steps = 1
+  )
+
+  full <- .collapse_biosynthesis_reactions(
+    graph,
+    enzyme_label_style = "full"
+  )
+  condensed <- .collapse_biosynthesis_reactions(graph)
+
+  expect_identical(
+    igraph::E(full)$enzyme,
+    paste(candidates, collapse = " / ")
+  )
+  expect_identical(igraph::E(condensed)$enzyme, "B4GALT1/2/3")
+})
+
 test_that("biosynthesis autoplot uses condensed multi-enzyme labels", {
   skip_if_not_installed("ggraph")
   enzymes <- c(

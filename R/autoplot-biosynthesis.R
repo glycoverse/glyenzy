@@ -541,10 +541,15 @@ plot.glyenzy_biosynthesis_network <- function(x, ...) {
     enzymes <- if (reaction_is_virtual) {
       unique(as.character(edges$enzyme[indices]))
     } else {
-      unique(c(
-        unlist(candidates[indices], use.names = FALSE),
-        as.character(edges$enzyme[indices[!virtual[indices]]])
+      candidate_enzymes <- unique(unlist(
+        candidates[indices],
+        use.names = FALSE
       ))
+      if (length(candidate_enzymes) > 0L) {
+        candidate_enzymes
+      } else {
+        unique(as.character(edges$enzyme[indices[!virtual[indices]]]))
+      }
     }
     enzymes <- .valid_biosynthesis_enzyme_names(enzymes)
     reaction_type <- if (reaction_is_virtual) {
