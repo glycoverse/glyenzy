@@ -71,8 +71,8 @@ https://doi.org/10.1016/j.crbiot.2020.01.001
 These are independently encoded reaction facts, not a reproduction of the
 table image or article text. The supplied table takes precedence over
 differences in published versions, including the beta1-2 GnTI product.
-Original abbreviated reaction strings are retained alongside the translated
-IUPAC rules in data-raw/glyenzy_abstract_enzymes.json. The trimming rules are
+The rules are stored in IUPAC format in
+data-raw/glyenzy_abstract_enzymes.json. The trimming rules are
 updated to match the ordinary database: ManI contains the 16 distinct
 whole-glycan reactions of MAN1B1/MAN1A1/MAN1A2/MAN1C1; ManII contains the shared
 MAN2A1/MAN2A2 rule with its core alignment and rejects. This replaces the
