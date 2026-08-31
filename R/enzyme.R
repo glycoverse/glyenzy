@@ -2,14 +2,14 @@
 #'
 #' @description
 #' Use `enzyme()` with a gene symbol or an abstract name to load a predefined enzyme.
-#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3, 
+#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3,
 #' and `enzyme("ManII")` for a general ManII (possibly MAN2A1 or MAN2A2).
 #' It returns an enzyme object that can be passed to any `enzyme` argument
 #' of all functions in this package.
 #' As a shortcut, passing a name is also valid, e.g. `have_enzyme(glycan, "ST3GAL3")`.
 #'
 #' @details
-#' 
+#'
 #' # Enzyme types (biological)
 #'
 #' Enzymes can be classified by their biological rules.
@@ -34,7 +34,7 @@
 #'
 #' Abstract enzymes are conventional enzymes without considering isoenzymes.
 #' For example, the above enzymes are described as b4GalT.
-#' Other examples include ManI, ManII, GnT1, etc.
+#' Other examples include ManI, ManII, GnTI, etc.
 #' Currently only abstract enzymes for N-glycan biosynthesis are supported.
 #'
 #' Both concrete and abstract enzymes can be used in `enzyme` or `enzymes` arguments throughout this package.

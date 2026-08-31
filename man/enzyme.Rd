@@ -46,7 +46,7 @@ For example, B4GALT1/2/3/4/5 are all isoenzymes with similar substrate specifici
 
 Abstract enzymes are conventional enzymes without considering isoenzymes.
 For example, the above enzymes are described as b4GalT.
-Other examples include ManI, ManII, GnT1, etc.
+Other examples include ManI, ManII, GnTI, etc.
 Currently only abstract enzymes for N-glycan biosynthesis are supported.
 
 Both concrete and abstract enzymes can be used in \code{enzyme} or \code{enzymes} arguments throughout this package.
