@@ -17,7 +17,7 @@ test_that("abstract enzymes have an independent collection and subclass", {
 
   expect_named(enzymes, expected)
   expect_identical(abstract_enzymes(TRUE), expected)
-  expect_identical(sum(lengths(lapply(enzymes, `[[`, "rules"))), 14L)
+  expect_identical(sum(lengths(lapply(enzymes, `[[`, "rules"))), 28L)
   expect_identical(
     unname(vapply(enzymes, `[[`, character(1), "localization")),
     c("cis", "cis", rep("medial", 4), rep("trans", 4), "ER")
@@ -93,7 +93,7 @@ test_that("printing abstract enzymes includes localization and rejects", {
 test_that("each abstract reaction produces its independently specified product", {
   cases <- utils::read.csv(test_path("fixtures", "abstract-reactions.csv"))
   enzymes <- abstract_enzymes()
-  expect_equal(nrow(cases), 14L)
+  expect_equal(nrow(cases), 31L)
   for (i in seq_len(nrow(cases))) {
     expected <- as.character(glyparse::auto_parse(cases$product[[i]]))
     actual <- as.character(apply_enzyme(
@@ -104,31 +104,32 @@ test_that("each abstract reaction produces its independently specified product",
   }
 })
 
-test_that("ManII trims in order and requires an exposed alpha3-arm GlcNAc", {
+test_that("ManII permits both trimming orders with concrete context restrictions", {
   cases <- utils::read.csv(test_path("fixtures", "abstract-reactions.csv"))
   cases <- cases[cases$enzyme == "ManII", ]
   enzyme <- abstract_enzymes()$ManII
-  for (i in 1:2) {
-    expect_identical(
-      as.character(apply_enzyme(cases$substrate[[i]], enzyme)),
-      as.character(glyparse::auto_parse(cases$product[[i]]))
+  for (substrate in unique(cases$substrate)) {
+    expect_setequal(
+      as.character(apply_enzyme(substrate, enzyme)),
+      as.character(glyparse::auto_parse(cases$product[
+        cases$substrate == substrate
+      ]))
     )
   }
   substrates <- c(
     sub("GlcNAc(b1-2)", "", cases$substrate[[1]], fixed = TRUE),
-    paste0("Gal(b1-4)", cases$substrate[[1]])
+    paste0("Gal(b1-4)", cases$substrate[[1]]),
+    sub(
+      "Man(b1-4)",
+      "[GlcNAc(b1-4)]Man(b1-4)",
+      cases$substrate[[1]],
+      fixed = TRUE
+    )
   )
-  expect_identical(lengths(apply_enzyme(substrates, enzyme)), c(0L, 0L))
-  second_step <- enzyme
-  second_step$rules <- enzyme$rules[2]
-  expect_length(apply_enzyme(cases$substrate[[1]], second_step), 0L)
-  expect_identical(
-    as.character(apply_enzyme(cases$substrate[[2]], second_step)),
-    as.character(glyparse::auto_parse(cases$product[[2]]))
-  )
+  expect_identical(lengths(apply_enzyme(substrates, enzyme)), rep(0L, 3))
 })
 
-test_that("ManII terminal rejects can allow an external extended extra branch", {
+test_that("ManII can remove a terminal mannose beside an extended extra branch", {
   substrate <- paste0(
     "GlcNAc(b1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]",
     "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
@@ -138,7 +139,6 @@ test_that("ManII terminal rejects can allow an external extended extra branch", 
     "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   )
   enzyme <- abstract_enzymes()$ManII
-  enzyme$rules <- enzyme$rules[2]
   expect_identical(
     as.character(apply_enzyme(substrate, enzyme)),
     as.character(glyparse::auto_parse(product))
@@ -305,14 +305,14 @@ test_that("direct, prepared and batched actions agree for all abstract rules", {
   }
 })
 
-test_that("terminal rejects agree across direct, prepared and frontier actions", {
+test_that("rejects agree across direct, prepared and frontier actions", {
   reactions <- utils::read.csv(test_path("fixtures", "abstract-reactions.csv"))
   manii <- reactions[reactions$enzyme == "ManII", ]
   core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   alpha6 <- "[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]"
   substrates <- list(
     ManII = c(
-      manii$substrate,
+      unique(manii$substrate),
       paste0(
         "GlcNAc(b1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]",
         core
@@ -332,9 +332,8 @@ test_that("terminal rejects agree across direct, prepared and frontier actions",
       )
     )
   )
-  expected_counts <- list(ManII = c(0L, 1L, 1L), iGnT = c(1L, 1L, 2L))
+  expected_counts <- list(ManII = c(2L, 1L, 1L, 1L), iGnT = c(1L, 1L, 2L))
   enzymes <- abstract_enzymes()[names(substrates)]
-  enzymes$ManII$rules <- enzymes$ManII$rules[2]
   for (name in names(substrates)) {
     enzyme <- enzymes[[name]]
     glycans <- glyparse::auto_parse(substrates[[name]])

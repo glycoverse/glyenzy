@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* New `abstract_enzymes()` provides 11 simplified N-glycan enzymes, including a three-step glucose-removal enzyme, as `glyenzy_abstract_enzyme` objects for explicit use in reactions and biosynthesis tracing. These enzymes remain separate from the ordinary database and all default enzyme selections.
+* New `abstract_enzymes()` provides 11 simplified N-glycan enzymes, including a three-step glucose-removal enzyme, as `glyenzy_abstract_enzyme` objects for explicit use in reactions and biosynthesis tracing. Trimming uses the corresponding concrete enzyme rules. These enzymes remain separate from the ordinary database and all default enzyme selections.
 
 ## Breaking changes
 

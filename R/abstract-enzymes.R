@@ -15,15 +15,21 @@
 #'
 #' @details
 #' The collection contains ManI, GnTI, ManII, GnTII, a6FucT, GnTIV, GnTV,
-#' b4GalT, iGnT, a3SiaT, and GlcH: 11 enzymes with 14 reaction rules.
+#' b4GalT, iGnT, a3SiaT, and GlcH: 11 enzymes with 28 reaction rules.
 #' All have `glycan_type = "N"` and `species = "unspecified"`. The additional
 #' `localization` field records `"cis"`, `"medial"`, `"trans"`, or `"ER"`;
 #' it is descriptive and does not impose compartment order during tracing.
 #'
-#' The rules use ordinary, site-specific `rejects` motifs. In networks
-#' generated from the default precursor, ManII removes the alpha1-3 mannose
-#' before the alpha1-6 mannose. Its GlcNAc prerequisite must be terminal,
-#' whereas the corresponding a6FucT prerequisite can be extended.
+#' The trimming activities follow the corresponding concrete enzymes in
+#' the ordinary database. ManI combines the 16 distinct whole-glycan rules
+#' of MAN1B1, MAN1A1, MAN1A2, and MAN1C1. ManII uses the shared MAN2A1/MAN2A2
+#' rule, including its core alignment and rejection of bisecting GlcNAc or
+#' a galactosylated alpha1-3-arm GlcNAc. It removes either the alpha1-3 or
+#' alpha1-6 mannose first, preserving both Man4 intermediates. These rules
+#' give the same trimming reactions and network topology as their concrete
+#' counterparts; enzyme labels remain abstract. Other glycosyltransferase
+#' activities retain the simplified table rules, so complete networks that
+#' also include antenna extension need not be identical.
 #'
 #' iGnT rejects the first LacNAc extension on both the beta1-2 and beta1-4
 #' antennae of the alpha1-3 arm, without excluding sites on another arm.
@@ -31,9 +37,8 @@
 #' remains unextended in networks generated from the default precursor.
 #' The alpha1-6 arm can undergo repeated extensions.
 #'
-#' These fixed terminal motifs do not enforce arbitrary ancestor paths or
-#' node degrees on external inputs. A pre-extended alpha1-3 arm can escape
-#' the iGnT rejects; an extended extra branch can escape the ManII reject.
+#' The fixed terminal iGnT rejects do not enforce arbitrary ancestor paths
+#' on external inputs. A pre-extended alpha1-3 arm can escape these rejects.
 #' Ambiguous linkages use the existing motif-matching semantics, including
 #' potentially compatible reject matches. Product-motif statistics do not
 #' apply substrate rejects and do not establish that a product is reachable.
@@ -55,7 +60,9 @@
 #' The simplified Golgi rules follow the user-supplied reaction table based
 #' on the N-glycosylation model of Spahn et al. (2016), with branch notation
 #' described by Liang et al. (2020). The supplied table takes precedence over
-#' differences in published versions. See the bundled rule-data attribution.
+#' differences in published versions, except that the trimming activities
+#' use the concrete database rules described above. See the bundled
+#' rule-data attribution.
 #'
 #' Spahn et al. (2016). A Markov chain model for N-linked protein
 #' glycosylation. \doi{10.1016/j.ymben.2015.10.007}.

@@ -32,19 +32,14 @@
       i Species: "unspecified"
       i Glycan type: "N"
       i Abstract enzyme; localization: "medial"
-      -- Rules (2) --
-      > Rule 1: terminal alignment
-      Acceptor: "Man(a1-3)[Man(a1-6)]Man(a1-6)Man(b1-"
-      Product: "Man(a1-6)Man(a1-6)Man(b1-"
-      Requires (any):
-      "GlcNAc(b1-2)Man(a1-3)Man(b1-" (terminal alignment)
-      > Rule 2: terminal alignment
-      Acceptor: "Man(a1-6)Man(a1-6)Man(b1-"
-      Product: "Man(a1-6)Man(b1-"
+      -- Rules (1) --
+      > Rule 1: core alignment
+      Acceptor:
+      "GlcNAc(b1-2)Man(a1-3)[Man(a1-3/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+      Product: "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
       Rejects:
-      "Man(a1-3)[Man(a1-6)]Man(a1-6)Man(b1-"
-      Requires (any):
-      "GlcNAc(b1-2)Man(a1-3)Man(b1-" (terminal alignment)
+      "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-3/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+      "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-3/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 
 ---
 
