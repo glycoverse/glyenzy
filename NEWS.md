@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* New `abstract_enzymes()` provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc activity GnTIII and a three-step glucose-removal enzyme, as `glyenzy_abstract_enzyme` objects for explicit use in reactions and biosynthesis tracing. Individual activities are also available by name through `enzyme()`, for example `enzyme("ManII")`. Trimming and core transferases use concrete enzyme rules; terminal transferases retain the corresponding N-glycan rejects. These enzymes remain separate from the ordinary database and all default enzyme selections.
+* New `abstract_enzymes()` provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc activity GnTIII and a three-step glucose-removal enzyme, as `glyenzy_abstract_enzyme` objects for explicit use in reactions and biosynthesis tracing. Individual activities are also available by name through `enzyme()`, for example `enzyme("ManII")`. Trimming and core transferases use concrete enzyme rules; terminal transferases retain the corresponding N-glycan rejects. These enzymes remain separate from the ordinary database and all default enzyme selections. (#50)
 
 ## Breaking changes
 
