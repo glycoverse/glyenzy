@@ -22,7 +22,7 @@
       Error in `abstract_enzymes()`:
       ! Assertion on 'return_str' failed: May not be NA.
 
-# printing abstract enzymes includes localization and site conditions
+# printing abstract enzymes includes localization and rejects
 
     Code
       print(abstract_enzymes()$ManII)
@@ -36,13 +36,13 @@
       > Rule 1: terminal alignment
       Acceptor: "Man(a1-3)[Man(a1-6)]Man(a1-6)Man(b1-"
       Product: "Man(a1-6)Man(a1-6)Man(b1-"
-      Acceptor node 3: exactly 2 child residue(s)
       Requires (any):
       "GlcNAc(b1-2)Man(a1-3)Man(b1-" (terminal alignment)
       > Rule 2: terminal alignment
       Acceptor: "Man(a1-6)Man(a1-6)Man(b1-"
       Product: "Man(a1-6)Man(b1-"
-      Acceptor node 2: exactly 1 child residue(s)
+      Rejects:
+      "Man(a1-3)[Man(a1-6)]Man(a1-6)Man(b1-"
       Requires (any):
       "GlcNAc(b1-2)Man(a1-3)Man(b1-" (terminal alignment)
 
@@ -60,13 +60,15 @@
       > Rule 1: terminal alignment
       Acceptor: "Gal(b1-4)GlcNAc(?1-"
       Product: "GlcNAc(b1-3)Gal(b1-4)GlcNAc(?1-"
-      Excludes sites downstream of Man(a1-3)
+      Rejects:
+      "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-"
+      "Gal(b1-4)GlcNAc(b1-4)Man(a1-3)Man(b1-"
 
 # abstract tracing retains precursor enzymes and rejects impossible routes
 
     Code
       trace_biosynthesis(cases$glycan[cases$name == "Man5"], enzymes = enzymes[names(
-        enzymes) != "GlcH"])
+        enzymes) != "GlcH"], max_virtual_steps = 0L)
     Condition
       Error in `engine$run()`:
       ! No synthesis path found for 1 target(s) within 11 steps.
@@ -74,7 +76,7 @@
 ---
 
     Code
-      trace_biosynthesis(wrong_arm, enzymes = enzymes)
+      trace_biosynthesis(wrong_arm, enzymes = enzymes, max_virtual_steps = 0L)
     Condition
       Error in `engine$run()`:
       ! No synthesis path found for 1 target(s) within 15 steps.

@@ -798,16 +798,6 @@ print.glyenzy_enzyme <- function(x, ...) {
       )
       cli::cli_text("  Acceptor: {.val {as.character(rule$acceptor)}}")
       cli::cli_text("  Product:  {.val {as.character(rule$product)}}")
-      for (condition in rule$site_constraints$acceptor_out_degree) {
-        cli::cli_text(
-          "  Acceptor node {condition$node}: exactly {condition$degree} child residue(s)"
-        )
-      }
-      for (condition in rule$site_constraints$reject_ancestors) {
-        cli::cli_text(
-          "  Excludes sites downstream of {condition$mono}({condition$linkage})"
-        )
-      }
 
       # Show rejects for this rule
       if (length(rule$rejects) > 0) {

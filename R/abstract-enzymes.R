@@ -20,13 +20,23 @@
 #' `localization` field records `"cis"`, `"medial"`, `"trans"`, or `"ER"`;
 #' it is descriptive and does not impose compartment order during tracing.
 #'
-#' ManII removes the alpha1-3 mannose before the alpha1-6 mannose. Its
-#' GlcNAc prerequisite must be terminal, whereas the corresponding a6FucT
-#' prerequisite can be extended. iGnT excludes reaction sites downstream of
-#' an alpha1-3-linked mannose, without excluding sites on another arm of the
-#' same glycan. This exclusion requires a definite mannose and alpha1-3
-#' linkage; ambiguous or topological structures retain potentially
-#' compatible sites rather than being assigned to an arm.
+#' The rules use ordinary, site-specific `rejects` motifs. In networks
+#' generated from the default precursor, ManII removes the alpha1-3 mannose
+#' before the alpha1-6 mannose. Its GlcNAc prerequisite must be terminal,
+#' whereas the corresponding a6FucT prerequisite can be extended.
+#'
+#' iGnT rejects the first LacNAc extension on both the beta1-2 and beta1-4
+#' antennae of the alpha1-3 arm, without excluding sites on another arm.
+#' Because only iGnT initiates LacNAc extension in this collection, that arm
+#' remains unextended in networks generated from the default precursor.
+#' The alpha1-6 arm can undergo repeated extensions.
+#'
+#' These fixed terminal motifs do not enforce arbitrary ancestor paths or
+#' node degrees on external inputs. A pre-extended alpha1-3 arm can escape
+#' the iGnT rejects; an extended extra branch can escape the ManII reject.
+#' Ambiguous linkages use the existing motif-matching semantics, including
+#' potentially compatible reject matches. Product-motif statistics do not
+#' apply substrate rejects and do not establish that a product is reachable.
 #'
 #' GlcH combines the three glucose-removal steps represented by MOGS and
 #' GANAB in the ordinary database. It removes one residue per step from the
@@ -63,65 +73,10 @@
 #'   "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 #' )
 #' apply_enzyme(man5, abstract_enzymes()[["GnTI"]])
-#' trace_biosynthesis(man5, enzymes = abstract_enzymes())
+#' trace_biosynthesis(man5, enzymes = abstract_enzymes(), max_virtual_steps = 0L)
 #'
 #' @export
 abstract_enzymes <- function(return_str = FALSE) {
   checkmate::assert_flag(return_str)
   if (return_str) names(glyenzy_abstract_enzymes) else glyenzy_abstract_enzymes
-}
-
-# Optional private conditions used by the bundled abstract rules. Ordinary
-# rules have no conditions and retain their existing matching behavior.
-.filter_rule_sites <- function(glycans, matches, rule, product = FALSE) {
-  if (length(rule$site_constraints) == 0L) {
-    return(matches)
-  }
-  graphs <- glyrepr::get_structure_graphs(glycans, return_list = TRUE)
-  purrr::map2(
-    graphs,
-    matches,
-    ~ .filter_rule_sites_graph(.x, .y, rule, product = product)
-  )
-}
-
-.filter_rule_sites_graph <- function(graph, matches, rule, product = FALSE) {
-  constraints <- rule$site_constraints
-  if (length(constraints) == 0L || length(matches) == 0L) {
-    return(matches)
-  }
-
-  if (!product && length(constraints$acceptor_out_degree) > 0L) {
-    out_degree <- igraph::degree(graph, mode = "out")
-    for (condition in constraints$acceptor_out_degree) {
-      matches <- Filter(
-        function(mapping) {
-          out_degree[[mapping[[condition$node]]]] == condition$degree
-        },
-        matches
-      )
-    }
-  }
-  if (length(matches) == 0L || length(constraints$reject_ancestors) == 0L) {
-    return(matches)
-  }
-
-  edges <- igraph::as_edgelist(graph, names = FALSE)
-  mono <- igraph::vertex_attr(graph, "mono")
-  linkage <- igraph::edge_attr(graph, "linkage")
-  rejected <- integer()
-  for (condition in constraints$reject_ancestors) {
-    roots <- edges[
-      which(mono[edges[, 2L]] == condition$mono & linkage == condition$linkage),
-      2L
-    ]
-    for (root in roots) {
-      rejected <- c(
-        rejected,
-        as.integer(igraph::subcomponent(graph, root, mode = "out"))
-      )
-    }
-  }
-  site <- if (product) rule$product_idx else rule$acceptor_idx
-  Filter(\(mapping) !mapping[[site]] %in% rejected, matches)
 }

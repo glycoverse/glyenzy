@@ -78,7 +78,7 @@ test_that("abstract enzymes remain absent from existing discovery interfaces", {
   expect_snapshot(error = TRUE, abstract_enzymes(NA))
 })
 
-test_that("printing abstract enzymes includes localization and site conditions", {
+test_that("printing abstract enzymes includes localization and rejects", {
   without_blank_lines <- function(lines) lines[nzchar(trimws(lines))]
   expect_snapshot(
     print(abstract_enzymes()$ManII),
@@ -116,13 +116,33 @@ test_that("ManII trims in order and requires an exposed alpha3-arm GlcNAc", {
   }
   substrates <- c(
     sub("GlcNAc(b1-2)", "", cases$substrate[[1]], fixed = TRUE),
-    paste0("Gal(b1-4)", cases$substrate[[1]]),
-    sub("[Man(a1-3)", "[Man(a1-2)Man(a1-3)", cases$substrate[[1]], fixed = TRUE)
+    paste0("Gal(b1-4)", cases$substrate[[1]])
   )
-  expect_identical(lengths(apply_enzyme(substrates, enzyme)), rep(0L, 3))
+  expect_identical(lengths(apply_enzyme(substrates, enzyme)), c(0L, 0L))
   second_step <- enzyme
   second_step$rules <- enzyme$rules[2]
   expect_length(apply_enzyme(cases$substrate[[1]], second_step), 0L)
+  expect_identical(
+    as.character(apply_enzyme(cases$substrate[[2]], second_step)),
+    as.character(glyparse::auto_parse(cases$product[[2]]))
+  )
+})
+
+test_that("ManII terminal rejects can allow an external extended extra branch", {
+  substrate <- paste0(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  product <- paste0(
+    "GlcNAc(b1-2)Man(a1-3)[Man(a1-2)Man(a1-3)Man(a1-6)]",
+    "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  )
+  enzyme <- abstract_enzymes()$ManII
+  enzyme$rules <- enzyme$rules[2]
+  expect_identical(
+    as.character(apply_enzyme(substrate, enzyme)),
+    as.character(glyparse::auto_parse(product))
+  )
 })
 
 test_that("a6FucT accepts an extended prerequisite and cannot fucosylate twice", {
@@ -140,16 +160,17 @@ test_that("a6FucT accepts an extended prerequisite and cannot fucosylate twice",
   expect_length(apply_enzyme(missing, enzyme), 0L)
 })
 
-test_that("iGnT filters individual arms through arbitrary LacNAc extensions", {
+test_that("iGnT blocks the first alpha3 extension and permits repeated alpha6 extension", {
   core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   enzyme <- abstract_enzymes()$iGnT
+  alpha3 <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)"
   for (repeats in c(1L, 3L)) {
     arm <- paste0(
       paste(rep("Gal(b1-4)GlcNAc(b1-3)", repeats - 1L), collapse = ""),
       "Gal(b1-4)GlcNAc(b1-2)"
     )
-    substrate <- paste0(arm, "Man(a1-3)[", arm, "Man(a1-6)]", core)
-    expected <- paste0(arm, "Man(a1-3)[GlcNAc(b1-3)", arm, "Man(a1-6)]", core)
+    substrate <- paste0(alpha3, "[", arm, "Man(a1-6)]", core)
+    expected <- paste0(alpha3, "[GlcNAc(b1-3)", arm, "Man(a1-6)]", core)
     expect_identical(
       as.character(apply_enzyme(substrate, enzyme)),
       as.character(glyparse::auto_parse(expected))
@@ -157,7 +178,34 @@ test_that("iGnT filters individual arms through arbitrary LacNAc extensions", {
   }
 })
 
-test_that("iGnT product matching uses the same arm restriction", {
+test_that("iGnT rejects both alpha3 antennae without disabling the alpha6 arm", {
+  alpha3 <- "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)"
+  alpha6 <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-6)"
+  core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  substrate <- paste0(alpha3, "[", alpha6, "]", core)
+  product <- paste0(alpha3, "[GlcNAc(b1-3)", alpha6, "]", core)
+  expect_identical(
+    as.character(apply_enzyme(substrate, abstract_enzymes()$iGnT)),
+    as.character(glyparse::auto_parse(product))
+  )
+})
+
+test_that("iGnT can extend an externally pre-extended alpha3 arm", {
+  alpha3 <- "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)"
+  alpha6 <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-6)"
+  core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  substrate <- paste0(alpha3, "[", alpha6, "]", core)
+  products <- c(
+    paste0("GlcNAc(b1-3)", alpha3, "[", alpha6, "]", core),
+    paste0(alpha3, "[GlcNAc(b1-3)", alpha6, "]", core)
+  )
+  expect_setequal(
+    as.character(apply_enzyme(substrate, abstract_enzymes()$iGnT)),
+    as.character(glyparse::auto_parse(products))
+  )
+})
+
+test_that("iGnT product statistics retain ordinary motif semantics", {
   arm <- "Gal(b1-4)GlcNAc(b1-2)"
   extended <- paste0("GlcNAc(b1-3)", arm)
   core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
@@ -167,33 +215,37 @@ test_that("iGnT product matching uses the same arm restriction", {
     paste0(extended, "Man(a1-3)[", extended, "Man(a1-6)]", core)
   ))
   enzyme <- abstract_enzymes()$iGnT
-  expect_identical(have_enzyme(glycans, enzyme), c(FALSE, TRUE, TRUE))
-  expect_equal(count_enzyme(glycans, enzyme), c(0L, 1L, 1L))
-  expect_identical(lengths(match_enzyme(glycans, enzyme)), c(0L, 1L, 1L))
+  expect_identical(have_enzyme(glycans, enzyme), c(TRUE, TRUE, TRUE))
+  expect_equal(count_enzyme(glycans, enzyme), c(1L, 1L, 2L))
+  expect_identical(lengths(match_enzyme(glycans, enzyme)), c(1L, 1L, 2L))
 })
 
-test_that("unknown arm linkages are not treated as definite alpha3 arms", {
+test_that("abstract rejects inherit lenient motif matching for unknown linkages", {
   substrate <- glyparse::auto_parse(paste0(
     "Gal(b1-4)GlcNAc(b1-2)Man(a1-?)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]",
     "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   ))
   enzyme <- abstract_enzymes()$iGnT
-  expect_length(suppressWarnings(apply_enzyme(substrate, enzyme)), 2L)
+  ordinary <- enzyme
+  class(ordinary) <- class(enzyme)[-1]
+  expect_identical(
+    as.character(suppressWarnings(apply_enzyme(substrate, enzyme))),
+    as.character(suppressWarnings(apply_enzyme(substrate, ordinary)))
+  )
   graph <- glyrepr::get_structure_graphs(substrate)
   rule <- enzyme$rules[[1]]
-  expect_length(
+  expect_equal(
     .match_rule_graph(
       graph,
       rule,
       .prepare_rule_graphs(rule),
       mode = "lenient"
     ),
-    2L
+    .match_rule(substrate, rule)[[1]]
   )
 
   topological <- glyrepr::remove_linkages(substrate)
   rule_matches <- .match_rule(topological, rule)[[1]]
-  expect_length(rule_matches, 2L)
   expect_equal(
     .match_rule_graph(
       glyrepr::get_structure_graphs(topological),
@@ -253,11 +305,70 @@ test_that("direct, prepared and batched actions agree for all abstract rules", {
   }
 })
 
-test_that("BFS never shares a site-restricted rule with an unrestricted rule", {
+test_that("terminal rejects agree across direct, prepared and frontier actions", {
+  reactions <- utils::read.csv(test_path("fixtures", "abstract-reactions.csv"))
+  manii <- reactions[reactions$enzyme == "ManII", ]
+  core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+  alpha6 <- "[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]"
+  substrates <- list(
+    ManII = c(
+      manii$substrate,
+      paste0(
+        "GlcNAc(b1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-6)]Man(a1-6)]",
+        core
+      )
+    ),
+    iGnT = c(
+      paste0("Gal(b1-4)GlcNAc(b1-2)Man(a1-3)", alpha6, core),
+      paste0(
+        "Gal(b1-4)GlcNAc(b1-2)[Gal(b1-4)GlcNAc(b1-4)]Man(a1-3)",
+        alpha6,
+        core
+      ),
+      paste0(
+        "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)",
+        alpha6,
+        core
+      )
+    )
+  )
+  expected_counts <- list(ManII = c(0L, 1L, 1L), iGnT = c(1L, 1L, 2L))
+  enzymes <- abstract_enzymes()[names(substrates)]
+  enzymes$ManII$rules <- enzymes$ManII$rules[2]
+  for (name in names(substrates)) {
+    enzyme <- enzymes[[name]]
+    glycans <- glyparse::auto_parse(substrates[[name]])
+    graphs <- glyrepr::get_structure_graphs(glycans, return_list = TRUE)
+    direct <- apply_enzyme(glycans, enzyme)
+    expect_identical(lengths(direct), expected_counts[[name]])
+    plan <- .prepare_bfs_rule_plan(list(enzyme))
+    products <- .apply_bfs_rule_frontier(
+      graphs,
+      rep("strict", length(graphs)),
+      plan,
+      "intact"
+    )
+    for (i in seq_along(graphs)) {
+      prepared <- .apply_enzyme_prepared(
+        graphs[[i]],
+        enzyme,
+        lapply(enzyme$rules, .prepare_rule_graphs),
+        "intact",
+        "strict"
+      )
+      raw <- .collect_bfs_rule_products(products, plan$enzyme_rule_ids[[1]], i)
+      batched <- .materialize_product_graphs(raw, enzyme)
+      expect_setequal(as.character(prepared), as.character(direct[[i]]))
+      expect_setequal(as.character(batched), as.character(direct[[i]]))
+    }
+  }
+})
+
+test_that("BFS never shares a rule with rejects with an unrestricted rule", {
   enzyme <- abstract_enzymes()$iGnT
   unrestricted <- enzyme
   unrestricted$name <- "unrestricted"
-  unrestricted$rules[[1]]$site_constraints <- NULL
+  unrestricted$rules[[1]]$rejects <- glyrepr::glycan_structure()
   plan <- .prepare_bfs_rule_plan(list(enzyme, unrestricted))
   expect_length(plan$rules, 2L)
   substrate <- glyparse::auto_parse(paste0(
@@ -359,7 +470,8 @@ test_that("abstract tracing retains precursor enzymes and rejects impossible rou
     error = TRUE,
     trace_biosynthesis(
       cases$glycan[cases$name == "Man5"],
-      enzymes = enzymes[names(enzymes) != "GlcH"]
+      enzymes = enzymes[names(enzymes) != "GlcH"],
+      max_virtual_steps = 0L
     )
   )
   wrong_arm <- paste0(
@@ -368,6 +480,6 @@ test_that("abstract tracing retains precursor enzymes and rejects impossible rou
   )
   expect_snapshot(
     error = TRUE,
-    trace_biosynthesis(wrong_arm, enzymes = enzymes)
+    trace_biosynthesis(wrong_arm, enzymes = enzymes, max_virtual_steps = 0L)
   )
 })

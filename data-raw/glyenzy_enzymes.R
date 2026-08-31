@@ -66,32 +66,13 @@ if (any(duplicated(enzyme_names))) {
     )
   })
 
-  rule <- glyenzy:::new_enzyme_rule(
+  glyenzy:::new_enzyme_rule(
     acceptor,
     product,
     acceptor_alignment,
     rejects,
     requires
   )
-  if (length(rule_data$site_constraints) > 0L) {
-    # Private conditions are indices in the parsed acceptor motif, or exact
-    # ancestor residue/linkage pairs. They are not make_enzyme() arguments.
-    constraints <- rule_data$site_constraints
-    for (condition in constraints$acceptor_out_degree) {
-      checkmate::assert_int(
-        condition$node,
-        lower = 1L,
-        upper = igraph::vcount(glyrepr::get_structure_graphs(acceptor))
-      )
-      checkmate::assert_int(condition$degree, lower = 0L)
-    }
-    for (condition in constraints$reject_ancestors) {
-      checkmate::assert_string(condition$mono)
-      checkmate::assert_string(condition$linkage)
-    }
-    rule$site_constraints <- constraints
-  }
-  rule
 }
 
 # Helper function to create enzyme from JSON data

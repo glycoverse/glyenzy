@@ -197,9 +197,6 @@ have_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
   have_products <- purrr::map(
     enzyme$rules,
     function(rule) {
-      if (length(rule$site_constraints) > 0L) {
-        return(lengths(.match_enzyme_rule(glycans, rule)) > 0L)
-      }
       .have_motif_substituent_subset(
         glycans,
         rule$product,

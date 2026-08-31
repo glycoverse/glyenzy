@@ -193,11 +193,6 @@ apply_enzyme <- function(
     alignment = rule$acceptor_alignment,
     mode = mode
   )
-  acceptor_matches <- .filter_rule_sites_graph(
-    glycan_graph,
-    acceptor_matches,
-    rule
-  )
   if (!.rule_graph_requirements_met(glycan_graph, prepared_rule, mode)) {
     return(list())
   }
@@ -224,14 +219,12 @@ apply_enzyme <- function(
   prepared_rule,
   mode,
   acceptor_matches,
-  reject_matches,
-  rule
+  reject_matches
 ) {
   if (!.rule_graph_requirements_met(glycan_graph, prepared_rule, mode)) {
     return(list())
   }
-  matches <- .filter_rule_reject_matches(acceptor_matches, reject_matches)
-  .filter_rule_sites_graph(glycan_graph, matches, rule)
+  .filter_rule_reject_matches(acceptor_matches, reject_matches)
 }
 
 .rule_graph_requirements_met <- function(glycan_graph, prepared_rule, mode) {
@@ -540,7 +533,6 @@ apply_enzyme <- function(
     acceptor = unname(as.character(rule$acceptor)),
     alignment = rule$acceptor_alignment,
     rejects = unname(as.character(rule$rejects)),
-    site_constraints = rule$site_constraints,
     requires = purrr::map(rule$requires, function(requirement) {
       list(
         motif = unname(as.character(requirement$motif)),
@@ -620,8 +612,7 @@ apply_enzyme <- function(
             job$prepared_rule,
             match_modes[[frontier_id]],
             acceptor_matches,
-            reject_matches,
-            job$rule
+            reject_matches
           )
           products <- .apply_rule_graphs(
             glycan_graph,
@@ -883,7 +874,7 @@ apply_enzyme <- function(
   }
   requirements_met <- .rule_requirements_met(glycans, rule)
   res[!requirements_met] <- rep(list(list()), sum(!requirements_met))
-  .filter_rule_sites(glycans, res, rule)
+  res
 }
 
 #' Update the match results of the acceptor to exclude the reject matches

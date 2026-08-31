@@ -29,13 +29,23 @@ All have \code{glycan_type = "N"} and \code{species = "unspecified"}. The additi
 \code{localization} field records \code{"cis"}, \code{"medial"}, \code{"trans"}, or \code{"ER"};
 it is descriptive and does not impose compartment order during tracing.
 
-ManII removes the alpha1-3 mannose before the alpha1-6 mannose. Its
-GlcNAc prerequisite must be terminal, whereas the corresponding a6FucT
-prerequisite can be extended. iGnT excludes reaction sites downstream of
-an alpha1-3-linked mannose, without excluding sites on another arm of the
-same glycan. This exclusion requires a definite mannose and alpha1-3
-linkage; ambiguous or topological structures retain potentially
-compatible sites rather than being assigned to an arm.
+The rules use ordinary, site-specific \code{rejects} motifs. In networks
+generated from the default precursor, ManII removes the alpha1-3 mannose
+before the alpha1-6 mannose. Its GlcNAc prerequisite must be terminal,
+whereas the corresponding a6FucT prerequisite can be extended.
+
+iGnT rejects the first LacNAc extension on both the beta1-2 and beta1-4
+antennae of the alpha1-3 arm, without excluding sites on another arm.
+Because only iGnT initiates LacNAc extension in this collection, that arm
+remains unextended in networks generated from the default precursor.
+The alpha1-6 arm can undergo repeated extensions.
+
+These fixed terminal motifs do not enforce arbitrary ancestor paths or
+node degrees on external inputs. A pre-extended alpha1-3 arm can escape
+the iGnT rejects; an extended extra branch can escape the ManII reject.
+Ambiguous linkages use the existing motif-matching semantics, including
+potentially compatible reject matches. Product-motif statistics do not
+apply substrate rejects and do not establish that a product is reachable.
 
 GlcH combines the three glucose-removal steps represented by MOGS and
 GANAB in the ordinary database. It removes one residue per step from the
@@ -59,7 +69,7 @@ man5 <- paste0(
   "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 )
 apply_enzyme(man5, abstract_enzymes()[["GnTI"]])
-trace_biosynthesis(man5, enzymes = abstract_enzymes())
+trace_biosynthesis(man5, enzymes = abstract_enzymes(), max_virtual_steps = 0L)
 
 }
 \references{
