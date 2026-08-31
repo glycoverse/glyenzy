@@ -15,7 +15,16 @@ A \code{glyenzy_enzyme} object. Abstract activities additionally inherit
 from \code{glyenzy_abstract_enzyme}.
 }
 \description{
-Three types of enzymes are represented: glycosyltransferases (GTs),
+Use \code{enzyme()} with a gene symbol or an abstract name to load a predefined enzyme.
+For example, use \code{enzyme("ST3GAL3")} to load the enzyme ST3GAL3,
+and \code{enzyme("ManII")} for a general ManII (possibly MAN2A1 or MAN2A2).
+It returns an enzyme object that can be passed to any \code{enzyme} argument
+of all functions in this package.
+As a shortcut, passing a name is also valid, e.g. \code{have_enzyme(glycan, "ST3GAL3")}.
+}
+\section{Enzyme types (biological)}{
+Enzymes can be classified by their biological rules.
+Three types of enzymes can be represented: glycosyltransferases (GTs),
 glycoside hydrolases (GHs), and sulfotransferases (STs).
 \itemize{
 \item GTs catalyze the transfer of a sugar residue from a donor to an acceptor, thus building up glycan structures.
@@ -25,18 +34,29 @@ glycoside hydrolases (GHs), and sulfotransferases (STs).
 
 One special subtype of GTs are starter GTs (or initiating GTs),
 which catalyze the addition of the first sugar residue onto a non-glycan substrate, thus initiating glycosylation.
-
-Use \code{enzyme()} with a gene symbol to load a predefined enzyme.
-For example, use \code{enzyme("ST3GAL3")} to load the enzyme ST3GAL3.
-Abstract activity names are also accepted, for example \code{enzyme("ManII")}.
-These return the same objects as \code{\link[=abstract_enzymes]{abstract_enzymes()}} and remain separate
-from \code{\link[=db_enzymes]{db_enzymes()}} and default enzyme selections.
-
-For a single \code{enzyme} argument, pass either an enzyme object or a name
-accepted by \code{enzyme()}. For an \code{enzymes} argument that takes a collection,
-pass abstract enzymes as a list of objects, such as \code{list(enzyme("ManII"))},
-or use \code{\link[=abstract_enzymes]{abstract_enzymes()}} for the complete abstract collection.
 }
+
+\section{Enzyme types (computational)}{
+There're also three types of enzymes you'll encounter in this package depending on how we define them,
+they are concrete enzymes, abstract enzymes, and virtual enzymes.
+
+Concrete enzymes are the enzymes represented by gene symbols, e.g. B4GALT1.
+There can be many isoenzymes on this level.
+For example, B4GALT1/2/3/4/5 are all isoenzymes with similar substrate specificity.
+
+Abstract enzymes are conventional enzymes without considering isoenzymes.
+For example, the above enzymes are described as b4GalT.
+Other examples include ManI, ManII, GnT1, etc.
+Currently only abstract enzymes for N-glycan biosynthesis are supported.
+
+Both concrete and abstract enzymes can be used in \code{enzyme} or \code{enzymes} arguments throughout this package.
+They are also supported by the \code{enzyme()} function.
+
+Another type of enzymes is called the virtual enzymes.
+You'll see them in the results of \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} and \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}}.
+Find out more in the documentation of these two functions.
+}
+
 \section{Explanation about \code{glyenzy_enzyme}}{
 An \code{enzyme()} is a list with the following elements:
 \enumerate{

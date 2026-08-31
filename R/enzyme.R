@@ -1,8 +1,21 @@
 #' Enzymes
 #'
 #' @description
-#' Three types of enzymes are represented: glycosyltransferases (GTs),
+#' Use `enzyme()` with a gene symbol or an abstract name to load a predefined enzyme.
+#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3, 
+#' and `enzyme("ManII")` for a general ManII (possibly MAN2A1 or MAN2A2).
+#' It returns an enzyme object that can be passed to any `enzyme` argument
+#' of all functions in this package.
+#' As a shortcut, passing a name is also valid, e.g. `have_enzyme(glycan, "ST3GAL3")`.
+#'
+#' @details
+#' 
+#' # Enzyme types (biological)
+#'
+#' Enzymes can be classified by their biological rules.
+#' Three types of enzymes can be represented: glycosyltransferases (GTs),
 #' glycoside hydrolases (GHs), and sulfotransferases (STs).
+#'
 #' - GTs catalyze the transfer of a sugar residue from a donor to an acceptor, thus building up glycan structures.
 #' - GHs catalyze the removal of a sugar residue from a substrate, thus breaking down glycan structures.
 #' - STs add a sulfate substituent to an existing glycan residue.
@@ -10,18 +23,26 @@
 #' One special subtype of GTs are starter GTs (or initiating GTs),
 #' which catalyze the addition of the first sugar residue onto a non-glycan substrate, thus initiating glycosylation.
 #'
-#' Use `enzyme()` with a gene symbol to load a predefined enzyme.
-#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3.
-#' Abstract activity names are also accepted, for example `enzyme("ManII")`.
-#' These return the same objects as [abstract_enzymes()] and remain separate
-#' from [db_enzymes()] and default enzyme selections.
+#' # Enzyme types (computational)
 #'
-#' For a single `enzyme` argument, pass either an enzyme object or a name
-#' accepted by `enzyme()`. For an `enzymes` argument that takes a collection,
-#' pass abstract enzymes as a list of objects, such as `list(enzyme("ManII"))`,
-#' or use [abstract_enzymes()] for the complete abstract collection.
+#' There're also three types of enzymes you'll encounter in this package depending on how we define them,
+#' they are concrete enzymes, abstract enzymes, and virtual enzymes.
 #'
-#' @details
+#' Concrete enzymes are the enzymes represented by gene symbols, e.g. B4GALT1.
+#' There can be many isoenzymes on this level.
+#' For example, B4GALT1/2/3/4/5 are all isoenzymes with similar substrate specificity.
+#'
+#' Abstract enzymes are conventional enzymes without considering isoenzymes.
+#' For example, the above enzymes are described as b4GalT.
+#' Other examples include ManI, ManII, GnT1, etc.
+#' Currently only abstract enzymes for N-glycan biosynthesis are supported.
+#'
+#' Both concrete and abstract enzymes can be used in `enzyme` or `enzymes` arguments throughout this package.
+#' They are also supported by the `enzyme()` function.
+#'
+#' Another type of enzymes is called the virtual enzymes.
+#' You'll see them in the results of [path_biosynthesis_virtual()] and [trace_biosynthesis_virtual()].
+#' Find out more in the documentation of these two functions.
 #'
 #' # Explanation about `glyenzy_enzyme`
 #'
