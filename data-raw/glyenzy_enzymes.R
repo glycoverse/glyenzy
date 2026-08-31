@@ -66,13 +66,32 @@ if (any(duplicated(enzyme_names))) {
     )
   })
 
-  glyenzy:::new_enzyme_rule(
+  rule <- glyenzy:::new_enzyme_rule(
     acceptor,
     product,
     acceptor_alignment,
     rejects,
     requires
   )
+  if (length(rule_data$site_constraints) > 0L) {
+    # Private conditions are indices in the parsed acceptor motif, or exact
+    # ancestor residue/linkage pairs. They are not make_enzyme() arguments.
+    constraints <- rule_data$site_constraints
+    for (condition in constraints$acceptor_out_degree) {
+      checkmate::assert_int(
+        condition$node,
+        lower = 1L,
+        upper = igraph::vcount(glyrepr::get_structure_graphs(acceptor))
+      )
+      checkmate::assert_int(condition$degree, lower = 0L)
+    }
+    for (condition in constraints$reject_ancestors) {
+      checkmate::assert_string(condition$mono)
+      checkmate::assert_string(condition$linkage)
+    }
+    rule$site_constraints <- constraints
+  }
+  rule
 }
 
 # Helper function to create enzyme from JSON data
@@ -113,5 +132,30 @@ glyenzy_enzymes <- purrr::map(json_data, .make_enzyme_from_json)
 # Set names to gene symbols
 names(glyenzy_enzymes) <- enzyme_names
 
-# Save the data
-usethis::use_data(glyenzy_enzymes, overwrite = TRUE, internal = TRUE)
+# Build the independent abstract collection; never append it to ordinary data.
+abstract_data <- jsonlite::fromJSON(
+  "data-raw/glyenzy_abstract_enzymes.json",
+  simplifyVector = FALSE
+)
+abstract_names <- purrr::map_chr(abstract_data, "name")
+checkmate::assert_names(abstract_names, type = "unique")
+stopifnot(length(intersect(abstract_names, enzyme_names)) == 0L)
+glyenzy_abstract_enzymes <- purrr::map(abstract_data, function(enzyme_data) {
+  enzyme <- .make_enzyme_from_json(enzyme_data)
+  class(enzyme) <- c("glyenzy_abstract_enzyme", class(enzyme))
+  checkmate::assert_choice(
+    enzyme_data$localization,
+    c("ER", "cis", "medial", "trans")
+  )
+  enzyme$localization <- enzyme_data$localization
+  enzyme
+})
+names(glyenzy_abstract_enzymes) <- abstract_names
+
+# Save both lists together so regeneration cannot discard either collection.
+usethis::use_data(
+  glyenzy_enzymes,
+  glyenzy_abstract_enzymes,
+  overwrite = TRUE,
+  internal = TRUE
+)

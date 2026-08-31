@@ -193,6 +193,11 @@ apply_enzyme <- function(
     alignment = rule$acceptor_alignment,
     mode = mode
   )
+  acceptor_matches <- .filter_rule_sites_graph(
+    glycan_graph,
+    acceptor_matches,
+    rule
+  )
   if (!.rule_graph_requirements_met(glycan_graph, prepared_rule, mode)) {
     return(list())
   }
@@ -219,12 +224,14 @@ apply_enzyme <- function(
   prepared_rule,
   mode,
   acceptor_matches,
-  reject_matches
+  reject_matches,
+  rule
 ) {
   if (!.rule_graph_requirements_met(glycan_graph, prepared_rule, mode)) {
     return(list())
   }
-  .filter_rule_reject_matches(acceptor_matches, reject_matches)
+  matches <- .filter_rule_reject_matches(acceptor_matches, reject_matches)
+  .filter_rule_sites_graph(glycan_graph, matches, rule)
 }
 
 .rule_graph_requirements_met <- function(glycan_graph, prepared_rule, mode) {
@@ -456,10 +463,26 @@ apply_enzyme <- function(
 # Standard graph actions inherit validity and mono-type compatibility from the
 # validated input structure and enzyme rule.
 .uses_standard_graph_action <- function(enzyme) {
-  enzyme_class <- class(enzyme)
+  enzyme_class <- .standard_action_classes(enzyme)
   identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
     identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme")) ||
     identical(enzyme_class, c("glyenzy_st_enzyme", "glyenzy_enzyme"))
+}
+
+# Only the two bundled abstract class combinations inherit trusted actions.
+# Additional custom subclasses retain their existing private dispatch path.
+.standard_action_classes <- function(enzyme) {
+  enzyme_class <- class(enzyme)
+  if (!identical(enzyme_class[[1L]], "glyenzy_abstract_enzyme")) {
+    return(enzyme_class)
+  }
+  for (type in c("gt", "gh")) {
+    standard <- c(paste0("glyenzy_", type, "_enzyme"), "glyenzy_enzyme")
+    if (identical(enzyme_class, c("glyenzy_abstract_enzyme", standard))) {
+      return(standard)
+    }
+  }
+  enzyme_class
 }
 
 # Stateful custom S3 actions must retain scalar frontier execution order.
@@ -495,7 +518,7 @@ apply_enzyme <- function(
 
 # Build a graph-independent signature for one prepared enzyme action.
 .bfs_rule_signature <- function(rule, enzyme, nonce) {
-  enzyme_class <- class(enzyme)
+  enzyme_class <- .standard_action_classes(enzyme)
   dispatch <- if (
     identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme"))
   ) {
@@ -517,6 +540,7 @@ apply_enzyme <- function(
     acceptor = unname(as.character(rule$acceptor)),
     alignment = rule$acceptor_alignment,
     rejects = unname(as.character(rule$rejects)),
+    site_constraints = rule$site_constraints,
     requires = purrr::map(rule$requires, function(requirement) {
       list(
         motif = unname(as.character(requirement$motif)),
@@ -596,7 +620,8 @@ apply_enzyme <- function(
             job$prepared_rule,
             match_modes[[frontier_id]],
             acceptor_matches,
-            reject_matches
+            reject_matches,
+            job$rule
           )
           products <- .apply_rule_graphs(
             glycan_graph,
@@ -858,7 +883,7 @@ apply_enzyme <- function(
   }
   requirements_met <- .rule_requirements_met(glycans, rule)
   res[!requirements_met] <- rep(list(list()), sum(!requirements_met))
-  res
+  .filter_rule_sites(glycans, res, rule)
 }
 
 #' Update the match results of the acceptor to exclude the reject matches

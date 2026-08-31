@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* New `abstract_enzymes()` provides 11 simplified N-glycan enzymes, including a three-step glucose-removal enzyme, as `glyenzy_abstract_enzyme` objects for explicit use in reactions and biosynthesis tracing. These enzymes remain separate from the ordinary database and all default enzyme selections.
+
 ## Breaking changes
 
 * `path_biosynthesis()`, `path_biosynthesis_virtual()`, `trace_biosynthesis()`, and `trace_biosynthesis_virtual()` now return one edge per substrate-product transition with a shared schema: logical vertex `target`; scalar edge `enzyme`; list-valued edge `enzymes`; logical edge `is_virtual`; and integer edge `step`. Replace uses of parallel `enzyme` edges or `concrete_enzymes` with the `enzymes` list attribute. (#49)

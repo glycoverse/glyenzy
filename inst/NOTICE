@@ -4,8 +4,9 @@ Enzyme rule data attribution
 GlycoEnzDB-derived rules
 ------------------------
 
-The enzyme rules distributed with glyenzy, other than the sulfotransferase
-rules described below, were selected and translated from GlycoEnzDB:
+The ordinary enzyme rules distributed with glyenzy, other than the
+sulfotransferase rules described below, were selected and translated from
+GlycoEnzDB:
 
 https://virtualglycome.org/glycoenzdb/
 
@@ -49,3 +50,31 @@ format, expanded from compact alternatives into explicit rules, and supplied
 with explicit context requirements where needed. Reactions limited to
 glycosaminoglycans or O-Xyl glycans, glycolipids, protein sulfation, sulfate
 removal, donor synthesis, or transport were excluded.
+
+Abstract N-glycan reaction rules
+--------------------------------
+
+The separate abstract_enzymes() collection translates the simplified Golgi
+reaction table supplied by the user on 2026-08-31. The model and its branch
+notation are described in:
+
+Spahn et al. (2016), "A Markov chain model for N-linked protein
+glycosylation - towards a low-parameter tool for model-driven
+glycoengineering", Metabolic Engineering.
+https://doi.org/10.1016/j.ymben.2015.10.007
+
+Liang et al. (2020), "A Markov model of glycosylation elucidates isozyme
+specificity and glycosyltransferase interactions for glycoengineering",
+Current Research in Biotechnology.
+https://doi.org/10.1016/j.crbiot.2020.01.001
+
+These are independently encoded reaction facts, not a reproduction of the
+table image or article text. The supplied table takes precedence over
+differences in published versions, including the beta1-2 GnTI product.
+Original abbreviated reaction strings are retained alongside the translated
+IUPAC rules in data-raw/glyenzy_abstract_enzymes.json. Graph conditions preserve
+the ordered ManII steps and the site-specific iGnT branch exclusion.
+
+GlcH is an added abstract activity combining the three existing MOGS/GANAB
+precursor glucose-removal rules attributed to GlycoEnzDB above. It retains
+one-residue reaction steps rather than introducing a lumped transformation.

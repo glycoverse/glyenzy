@@ -1144,6 +1144,10 @@
 
 # Check all targets together so vectorized motif preparation is shared.
 .enzyme_contributes_to_targets <- function(enzyme, targets) {
+  if (inherits(enzyme, "glyenzy_abstract_enzyme")) {
+    # Precursor motifs may be trimmed away before reaching the final target.
+    return(any(.enzyme_glycan_type_mask(targets, enzyme)))
+  }
   vectorized <- tryCatch(
     .have_enzyme_motif(targets, enzyme),
     error = function(e) NULL

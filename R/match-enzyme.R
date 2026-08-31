@@ -338,6 +338,12 @@ match_enzyme <- function(glycans, enzyme, method = c("motif", "path")) {
     rule$product,
     alignment = product_alignment
   )
+  product_matches <- .filter_rule_sites(
+    glycans,
+    product_matches,
+    rule,
+    product = TRUE
+  )
   acceptor_matches <- .match_product_acceptor_motifs(
     glycans,
     rule,
