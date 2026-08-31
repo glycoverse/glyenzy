@@ -200,11 +200,24 @@
     "name": "GnTI",
     "rules": [
       {
-        "acceptor": "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-",
-        "acceptor_alignment": "terminal",
+        "acceptor": "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "acceptor_alignment": "whole",
         "rejects": [],
-        "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-",
-        "source_rule": "(Ma3(Ma3(Ma6)Ma6) -> (GNb2Ma3(Ma3(Ma6)Ma6)"
+        "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "source_rule": "(Ma3(Ma3(Ma6)Ma6) -> (GNb2Ma3(Ma3(Ma6)Ma6)",
+        "source_enzymes": [
+          "MGAT1"
+        ]
+      },
+      {
+        "acceptor": "Man(a1-3)Man(b1-",
+        "acceptor_alignment": "substructure",
+        "rejects": [],
+        "product": "GlcNAc(b1-2)Man(a1-3)Man(b1-",
+        "source_rule": "(Ma3(Ma3(Ma6)Ma6) -> (GNb2Ma3(Ma3(Ma6)Ma6)",
+        "source_enzymes": [
+          "MGAT1"
+        ]
       }
     ],
     "type": "GT",
@@ -243,11 +256,48 @@
     "name": "GnTII",
     "rules": [
       {
-        "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-",
-        "acceptor_alignment": "terminal",
+        "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "acceptor_alignment": "whole",
         "rejects": [],
-        "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-",
-        "source_rule": "(Gnb2|Ma3(Ma6) -> (GNb2|Ma3(GNb2Ma6)"
+        "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "source_rule": "(Gnb2|Ma3(Ma6) -> (GNb2|Ma3(GNb2Ma6)",
+        "source_enzymes": [
+          "MGAT2"
+        ]
+      },
+      {
+        "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-?)]GlcNAc(b1-",
+        "acceptor_alignment": "whole",
+        "rejects": [],
+        "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-?)]GlcNAc(b1-",
+        "source_rule": "(Gnb2|Ma3(Ma6) -> (GNb2|Ma3(GNb2Ma6)",
+        "source_enzymes": [
+          "MGAT2"
+        ]
+      }
+    ],
+    "type": "GT",
+    "species": "unspecified",
+    "glycan_type": [
+      "N"
+    ],
+    "localization": "medial"
+  },
+  {
+    "name": "GnTIII",
+    "rules": [
+      {
+        "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "acceptor_alignment": "core",
+        "rejects": [
+          "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+          "Gal(b1-4)GlcNAc(b1-4)[GlcNAc(b1-2)]Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+        ],
+        "product": "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "source_enzymes": [
+          "MGAT3"
+        ],
+        "source_rule": "Added bisecting GlcNAc activity from concrete MGAT3"
       }
     ],
     "type": "GT",
@@ -261,17 +311,14 @@
     "name": "a6FucT",
     "rules": [
       {
-        "acceptor": "GlcNAc(b1-4)GlcNAc(?1-",
+        "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
         "acceptor_alignment": "core",
         "rejects": [],
-        "product": "GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(?1-",
-        "requires": [
-          {
-            "motif": "GlcNAc(b1-2)Man(a1-3)Man(b1-",
-            "alignment": "substructure"
-          }
-        ],
-        "source_rule": "GNb4GN -> GNb4(Fa6)GN; requires GNb2|Ma3"
+        "product": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)[Fuc(a1-6)]GlcNAc(b1-",
+        "source_rule": "GNb4GN -> GNb4(Fa6)GN; requires GNb2|Ma3",
+        "source_enzymes": [
+          "FUT8"
+        ]
       }
     ],
     "type": "GT",
@@ -285,11 +332,33 @@
     "name": "GnTIV",
     "rules": [
       {
+        "acceptor": "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "acceptor_alignment": "core",
+        "rejects": [
+          "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+          "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+        ],
+        "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "source_rule": "(GNb2Ma3 -> (GNb2(GNb4)Ma3",
+        "source_enzymes": [
+          "MGAT4A",
+          "MGAT4B"
+        ]
+      },
+      {
         "acceptor": "GlcNAc(b1-2)Man(a1-3)Man(b1-",
-        "acceptor_alignment": "terminal",
-        "rejects": [],
+        "acceptor_alignment": "substructure",
+        "rejects": [
+          "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)Man(b1-",
+          "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-",
+          "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)]Man(b1-"
+        ],
         "product": "GlcNAc(b1-2)[GlcNAc(b1-4)]Man(a1-3)Man(b1-",
-        "source_rule": "(GNb2Ma3 -> (GNb2(GNb4)Ma3"
+        "source_rule": "(GNb2Ma3 -> (GNb2(GNb4)Ma3",
+        "source_enzymes": [
+          "MGAT4A",
+          "MGAT4B"
+        ]
       }
     ],
     "type": "GT",
@@ -303,11 +372,18 @@
     "name": "GnTV",
     "rules": [
       {
-        "acceptor": "GlcNAc(b1-2)Man(a1-6)Man(b1-",
-        "acceptor_alignment": "terminal",
-        "rejects": [],
-        "product": "GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)Man(b1-",
-        "source_rule": "(GNb2Ma6 -> (GNb2(GNb6)Ma6"
+        "acceptor": "Man(a1-3)[GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "acceptor_alignment": "core",
+        "rejects": [
+          "Man(a1-3)[GlcNAc(b1-4)][GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+          "Man(a1-3)[Gal(b1-4)GlcNAc(b1-2)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+        ],
+        "product": "Man(a1-3)[GlcNAc(b1-2)[GlcNAc(b1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+        "source_rule": "(GNb2Ma6 -> (GNb2(GNb6)Ma6",
+        "source_enzymes": [
+          "MGAT5",
+          "MGAT5B"
+        ]
       }
     ],
     "type": "GT",
@@ -343,10 +419,14 @@
         "acceptor_alignment": "terminal",
         "rejects": [
           "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-",
-          "Gal(b1-4)GlcNAc(b1-4)Man(a1-3)Man(b1-"
+          "Gal(b1-4)GlcNAc(b1-4)Man(a1-3)Man(b1-",
+          "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
         ],
         "product": "GlcNAc(b1-3)Gal(b1-4)GlcNAc(?1-",
-        "source_rule": "(Ab4GN -> (GNb3Ab4GN; excludes *...Ma3"
+        "source_rule": "(Ab4GN -> (GNb3Ab4GN; excludes *...Ma3",
+        "source_enzymes": [
+          "B3GNT4"
+        ]
       }
     ],
     "type": "GT",
@@ -362,9 +442,15 @@
       {
         "acceptor": "Gal(b1-4)GlcNAc(?1-",
         "acceptor_alignment": "terminal",
-        "rejects": [],
+        "rejects": [
+          "Gal(b1-4)[Fuc(a1-3)]GlcNAc(b1-"
+        ],
         "product": "Neu5Ac(a2-3)Gal(b1-4)GlcNAc(?1-",
-        "source_rule": "(Ab4GN -> (NNa3Ab4GN"
+        "source_rule": "(Ab4GN -> (NNa3Ab4GN",
+        "source_enzymes": [
+          "ST3GAL4",
+          "ST3GAL6"
+        ]
       }
     ],
     "type": "GT",

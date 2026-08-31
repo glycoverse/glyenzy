@@ -6,6 +6,7 @@ test_that("abstract enzymes have an independent collection and subclass", {
     "GnTI",
     "ManII",
     "GnTII",
+    "GnTIII",
     "a6FucT",
     "GnTIV",
     "GnTV",
@@ -17,10 +18,10 @@ test_that("abstract enzymes have an independent collection and subclass", {
 
   expect_named(enzymes, expected)
   expect_identical(abstract_enzymes(TRUE), expected)
-  expect_identical(sum(lengths(lapply(enzymes, `[[`, "rules"))), 28L)
+  expect_identical(sum(lengths(lapply(enzymes, `[[`, "rules"))), 32L)
   expect_identical(
     unname(vapply(enzymes, `[[`, character(1), "localization")),
-    c("cis", "cis", rep("medial", 4), rep("trans", 4), "ER")
+    c("cis", "cis", rep("medial", 5), rep("trans", 4), "ER")
   )
   for (enzyme in enzymes) {
     subtype <- if (enzyme$name %in% c("ManI", "ManII", "GlcH")) "gh" else "gt"
@@ -93,7 +94,7 @@ test_that("printing abstract enzymes includes localization and rejects", {
 test_that("each abstract reaction produces its independently specified product", {
   cases <- utils::read.csv(test_path("fixtures", "abstract-reactions.csv"))
   enzymes <- abstract_enzymes()
-  expect_equal(nrow(cases), 31L)
+  expect_equal(nrow(cases), 32L)
   for (i in seq_len(nrow(cases))) {
     expected <- as.character(glyparse::auto_parse(cases$product[[i]]))
     actual <- as.character(apply_enzyme(
@@ -160,21 +161,25 @@ test_that("a6FucT accepts an extended prerequisite and cannot fucosylate twice",
   expect_length(apply_enzyme(missing, enzyme), 0L)
 })
 
-test_that("iGnT blocks the first alpha3 extension and permits repeated alpha6 extension", {
+test_that("iGnT permits one alpha6 extension but rejects further LacNAc extension", {
   core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   enzyme <- abstract_enzymes()$iGnT
   alpha3 <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)"
-  for (repeats in c(1L, 3L)) {
+  for (repeats in 1:3) {
     arm <- paste0(
       paste(rep("Gal(b1-4)GlcNAc(b1-3)", repeats - 1L), collapse = ""),
       "Gal(b1-4)GlcNAc(b1-2)"
     )
     substrate <- paste0(alpha3, "[", arm, "Man(a1-6)]", core)
     expected <- paste0(alpha3, "[GlcNAc(b1-3)", arm, "Man(a1-6)]", core)
-    expect_identical(
-      as.character(apply_enzyme(substrate, enzyme)),
-      as.character(glyparse::auto_parse(expected))
-    )
+    if (repeats == 1L) {
+      expect_identical(
+        as.character(apply_enzyme(substrate, enzyme)),
+        as.character(glyparse::auto_parse(expected))
+      )
+    } else {
+      expect_length(apply_enzyme(substrate, enzyme), 0L)
+    }
   }
 })
 
@@ -190,15 +195,12 @@ test_that("iGnT rejects both alpha3 antennae without disabling the alpha6 arm", 
   )
 })
 
-test_that("iGnT can extend an externally pre-extended alpha3 arm", {
+test_that("iGnT excludes an external LacNAc extension without blocking the other arm", {
   alpha3 <- "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-2)Man(a1-3)"
   alpha6 <- "Gal(b1-4)GlcNAc(b1-2)Man(a1-6)"
   core <- "Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
   substrate <- paste0(alpha3, "[", alpha6, "]", core)
-  products <- c(
-    paste0("GlcNAc(b1-3)", alpha3, "[", alpha6, "]", core),
-    paste0(alpha3, "[GlcNAc(b1-3)", alpha6, "]", core)
-  )
+  products <- paste0(alpha3, "[GlcNAc(b1-3)", alpha6, "]", core)
   expect_setequal(
     as.character(apply_enzyme(substrate, abstract_enzymes()$iGnT)),
     as.character(glyparse::auto_parse(products))
@@ -332,7 +334,7 @@ test_that("rejects agree across direct, prepared and frontier actions", {
       )
     )
   )
-  expected_counts <- list(ManII = c(2L, 1L, 1L, 1L), iGnT = c(1L, 1L, 2L))
+  expected_counts <- list(ManII = c(2L, 1L, 1L, 1L), iGnT = c(1L, 1L, 1L))
   enzymes <- abstract_enzymes()[names(substrates)]
   for (name in names(substrates)) {
     enzyme <- enzymes[[name]]
@@ -399,7 +401,7 @@ test_that("abstract-only tracing reconstructs typical N-glycans with valid edges
   intermediates <- as.character(glyparse::auto_parse(glucoses$product))
   cache <- new.env(parent = emptyenv())
 
-  expect_equal(nrow(cases), 7L)
+  expect_equal(nrow(cases), 8L)
   for (i in seq_len(nrow(cases))) {
     target <- as.character(glyparse::auto_parse(cases$glycan[[i]]))
     path <- trace_biosynthesis(

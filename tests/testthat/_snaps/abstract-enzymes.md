@@ -12,7 +12,7 @@
       .enzymes_from_arg(abstract_names)
     Condition
       Error in `.check_known_enzyme_names()`:
-      ! Unknown enzymes: "ManI", "GnTI", "ManII", "GnTII", "a6FucT", "GnTIV", "GnTV", "b4GalT", "iGnT", "a3SiaT", and "GlcH".
+      ! Unknown enzymes: "ManI", "GnTI", "ManII", "GnTII", "GnTIII", "a6FucT", "GnTIV", "GnTV", "b4GalT", "iGnT", "a3SiaT", and "GlcH".
 
 ---
 
@@ -58,6 +58,7 @@
       Rejects:
       "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)Man(b1-"
       "Gal(b1-4)GlcNAc(b1-4)Man(a1-3)Man(b1-"
+      "Gal(b1-4)GlcNAc(b1-3)Gal(b1-4)GlcNAc(b1-"
 
 # abstract tracing retains precursor enzymes and rejects impossible routes
 
