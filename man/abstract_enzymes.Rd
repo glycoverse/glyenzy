@@ -8,8 +8,10 @@ abstract_enzymes(return_str = FALSE)
 }
 \arguments{
 \item{return_str}{If \code{FALSE} (default), return a named list of enzyme
-objects. If \code{TRUE}, return their names. These names are labels, not gene
-symbols accepted by \code{\link[=enzyme]{enzyme()}} or other character enzyme arguments.}
+objects. If \code{TRUE}, return their activity names, which are accepted by
+\code{\link[=enzyme]{enzyme()}} and single \code{enzyme} arguments. For an \code{enzymes} argument that
+takes a collection, pass a list of abstract enzyme objects instead of
+a character vector of their names.}
 }
 \value{
 A named list of \code{glyenzy_abstract_enzyme} objects, or a character
@@ -19,8 +21,9 @@ vector when \code{return_str = TRUE}. Each object also inherits from
 \description{
 Return a separate collection of simplified N-glycan reaction rules. These
 enzymes represent reaction activities rather than individual genes. They
-are never included in \code{\link[=db_enzymes]{db_enzymes()}}, \code{\link[=enzyme]{enzyme()}}, \code{\link[=enzymes_from_rnaseq]{enzymes_from_rnaseq()}},
-or the default enzyme sets of other functions.
+are never included in \code{\link[=db_enzymes]{db_enzymes()}}, \code{\link[=enzymes_from_rnaseq]{enzymes_from_rnaseq()}}, or the
+default enzyme sets of other functions. Individual activities can also be
+retrieved by name with \code{\link[=enzyme]{enzyme()}}, for example \code{enzyme("ManII")}.
 }
 \details{
 The collection contains ManI, GnTI, ManII, GnTII, GnTIII, a6FucT, GnTIV,
@@ -76,16 +79,16 @@ complete Glc3Man9GlcNAc2 precursor, retaining Glc2 and Glc1 intermediates.
 Thus the collection can trace from the usual \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}
 starting structure without adding ordinary enzymes or changing the start.
 
-Pass objects explicitly, for example \code{abstract_enzymes()[["ManI"]]} to
-\code{\link[=apply_enzyme]{apply_enzyme()}}, or the whole list to \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}. Abstract
-reactions are explicit enzyme rules and have \code{is_virtual = FALSE} in
+Pass objects explicitly, for example \code{enzyme("ManI")} to \code{\link[=apply_enzyme]{apply_enzyme()}},
+or the whole list from \code{abstract_enzymes()} to \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}.
+Abstract reactions are explicit enzyme rules and have \code{is_virtual = FALSE} in
 biosynthesis networks. Existing restrictions on GH involvement statistics
 and residue matching still apply; this collection does not add GH support
 to those interfaces.
 }
 \examples{
 abstract_enzymes(return_str = TRUE)
-abstract_enzymes()[["ManII"]]
+enzyme("ManII")
 
 man5 <- paste0(
   "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]",

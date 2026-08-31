@@ -7,10 +7,12 @@
 enzyme(symbol)
 }
 \arguments{
-\item{symbol}{The gene symbol of the enzyme.}
+\item{symbol}{The gene symbol of an ordinary enzyme or the name of an
+abstract activity listed by \code{\link[=abstract_enzymes]{abstract_enzymes()}}.}
 }
 \value{
-A \code{glyenzy_enzyme} object.
+A \code{glyenzy_enzyme} object. Abstract activities additionally inherit
+from \code{glyenzy_abstract_enzyme}.
 }
 \description{
 Three types of enzymes are represented: glycosyltransferases (GTs),
@@ -26,11 +28,14 @@ which catalyze the addition of the first sugar residue onto a non-glycan substra
 
 Use \code{enzyme()} with a gene symbol to load a predefined enzyme.
 For example, use \code{enzyme("ST3GAL3")} to load the enzyme ST3GAL3.
+Abstract activity names are also accepted, for example \code{enzyme("ManII")}.
+These return the same objects as \code{\link[=abstract_enzymes]{abstract_enzymes()}} and remain separate
+from \code{\link[=db_enzymes]{db_enzymes()}} and default enzyme selections.
 
-Throughout the package, you can use \code{enzyme()}s for any \code{enzyme} argument,
-or just use the gene symbol directly.
-For example, \code{involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", "ST3GAL3")} and
-\code{involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enzyme("ST3GAL3"))} are equivalent.
+For a single \code{enzyme} argument, pass either an enzyme object or a name
+accepted by \code{enzyme()}. For an \code{enzymes} argument that takes a collection,
+pass abstract enzymes as a list of objects, such as \code{list(enzyme("ManII"))},
+or use \code{\link[=abstract_enzymes]{abstract_enzymes()}} for the complete abstract collection.
 }
 \section{Explanation about \code{glyenzy_enzyme}}{
 An \code{enzyme()} is a list with the following elements:
@@ -80,5 +85,6 @@ You can see all these information by printing the enzyme object.
 library(glyrepr)
 
 enzyme("ST3GAL3")
+enzyme("ManII")
 
 }

@@ -25,8 +25,9 @@ These GTs are responsible for building the N-glycan precursor before it is trans
 A list of \code{\link[=enzyme]{enzyme()}}s or a character vector.
 }
 \description{
-Return a named list of all built-in enzymes,
+Return a named list of ordinary built-in enzymes,
 or a character vector of gene symbols if \code{return_str} is \code{TRUE}.
+Abstract activities are available separately through \code{\link[=abstract_enzymes]{abstract_enzymes()}}.
 }
 \examples{
 db_enzymes(return_str = TRUE)

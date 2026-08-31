@@ -3,6 +3,31 @@ test_that("enzyme() returns a glyenzy_enzyme object", {
   expect_s3_class(enzyme("FUT8"), "glyenzy_enzyme")
 })
 
+test_that("enzyme() retrieves every abstract activity without changing ordinary lookup", {
+  abstract <- abstract_enzymes()
+  for (name in names(abstract)) {
+    expect_identical(enzyme(name), abstract[[name]])
+  }
+  expect_identical(enzyme("FUT8"), db_enzymes()$FUT8)
+  expect_identical(enzyme("MAN2A1"), db_enzymes()$MAN2A1)
+})
+
+test_that("single enzyme arguments resolve abstract names", {
+  cases <- utils::read.csv(test_path("fixtures", "abstract-reactions.csv"))
+  trimming <- cases[cases$enzyme == "ManII", ]
+  substrate <- trimming$substrate[[1]]
+  expected <- trimming$product[trimming$substrate == substrate]
+  expect_setequal(
+    as.character(apply_enzyme(substrate, "ManII")),
+    as.character(glyparse::auto_parse(expected))
+  )
+
+  bisected <- glyparse::auto_parse(cases$product[cases$enzyme == "GnTIII"])
+  expect_identical(have_enzyme(bisected, "GnTIII"), TRUE)
+  expect_equal(count_enzyme(bisected, "GnTIII"), 1)
+  expect_length(match_enzyme(bisected, "GnTIII")[[1]], 1L)
+})
+
 test_that("enzyme objects carry type-specific S3 classes", {
   expect_s3_class(enzyme("ST3GAL3"), "glyenzy_gt_enzyme")
   expect_false(inherits(enzyme("ST3GAL3"), "glyenzy_starter_gt_enzyme"))

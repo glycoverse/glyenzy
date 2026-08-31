@@ -2,12 +2,15 @@
 #'
 #' Return a separate collection of simplified N-glycan reaction rules. These
 #' enzymes represent reaction activities rather than individual genes. They
-#' are never included in [db_enzymes()], [enzyme()], [enzymes_from_rnaseq()],
-#' or the default enzyme sets of other functions.
+#' are never included in [db_enzymes()], [enzymes_from_rnaseq()], or the
+#' default enzyme sets of other functions. Individual activities can also be
+#' retrieved by name with [enzyme()], for example `enzyme("ManII")`.
 #'
 #' @param return_str If `FALSE` (default), return a named list of enzyme
-#'   objects. If `TRUE`, return their names. These names are labels, not gene
-#'   symbols accepted by [enzyme()] or other character enzyme arguments.
+#'   objects. If `TRUE`, return their activity names, which are accepted by
+#'   [enzyme()] and single `enzyme` arguments. For an `enzymes` argument that
+#'   takes a collection, pass a list of abstract enzyme objects instead of
+#'   a character vector of their names.
 #'
 #' @returns A named list of `glyenzy_abstract_enzyme` objects, or a character
 #'   vector when `return_str = TRUE`. Each object also inherits from
@@ -67,9 +70,9 @@
 #' Thus the collection can trace from the usual [trace_biosynthesis()]
 #' starting structure without adding ordinary enzymes or changing the start.
 #'
-#' Pass objects explicitly, for example `abstract_enzymes()[["ManI"]]` to
-#' [apply_enzyme()], or the whole list to [trace_biosynthesis()]. Abstract
-#' reactions are explicit enzyme rules and have `is_virtual = FALSE` in
+#' Pass objects explicitly, for example `enzyme("ManI")` to [apply_enzyme()],
+#' or the whole list from `abstract_enzymes()` to [trace_biosynthesis()].
+#' Abstract reactions are explicit enzyme rules and have `is_virtual = FALSE` in
 #' biosynthesis networks. Existing restrictions on GH involvement statistics
 #' and residue matching still apply; this collection does not add GH support
 #' to those interfaces.
@@ -91,7 +94,7 @@
 #'
 #' @examples
 #' abstract_enzymes(return_str = TRUE)
-#' abstract_enzymes()[["ManII"]]
+#' enzyme("ManII")
 #'
 #' man5 <- paste0(
 #'   "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]",

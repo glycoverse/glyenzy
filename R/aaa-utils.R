@@ -1002,7 +1002,7 @@
     x <- enzyme(x)
   } else if (!inherits(x, "glyenzy_enzyme")) {
     cli::cli_abort(c(
-      "{.arg enzyme} must be a {.cls glyenzy_enzyme} object or a character string of gene symbol.",
+      "{.arg enzyme} must be a {.cls glyenzy_enzyme} object or an enzyme name.",
       "x" = "Got {.cls {class(x)}}."
     ))
   }

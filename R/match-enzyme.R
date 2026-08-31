@@ -7,7 +7,7 @@
 #'
 #' @param glycans A [glyrepr::glycan_structure()] vector.
 #' @param enzyme A glycosyltransferase or sulfotransferase [enzyme()], or a
-#'   gene symbol for one. Glycoside hydrolases are not supported.
+#'   name accepted by [enzyme()]. Glycoside hydrolases are not supported.
 #' @param method Method used to decide whether the enzyme is involved.
 #'   `"motif"` matches product motifs directly in each glycan.
 #'   `"path"` matches substrates and products from [trace_biosynthesis()]

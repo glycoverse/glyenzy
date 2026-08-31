@@ -1,12 +1,4 @@
-# abstract enzymes remain absent from existing discovery interfaces
-
-    Code
-      enzyme("ManI")
-    Condition
-      Error in `enzyme()`:
-      ! Unknown enzyme: "ManI".
-
----
+# abstract enzymes remain absent from default selections and collection name lookup
 
     Code
       .enzymes_from_arg(abstract_names)

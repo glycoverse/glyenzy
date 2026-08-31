@@ -10,7 +10,7 @@ match_enzyme(glycans, enzyme, method = c("motif", "path"))
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} vector.}
 
 \item{enzyme}{A glycosyltransferase or sulfotransferase \code{\link[=enzyme]{enzyme()}}, or a
-gene symbol for one. Glycoside hydrolases are not supported.}
+name accepted by \code{\link[=enzyme]{enzyme()}}. Glycoside hydrolases are not supported.}
 
 \item{method}{Method used to decide whether the enzyme is involved.
 \code{"motif"} matches product motifs directly in each glycan.

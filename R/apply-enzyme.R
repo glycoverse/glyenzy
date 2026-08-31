@@ -7,7 +7,7 @@
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
-#' @param enzyme An [enzyme()] or a gene symbol.
+#' @param enzyme An enzyme object or a name accepted by [enzyme()].
 #' @param return_list If `NULL` (default),
 #'   return a list of [glyrepr::glycan_structure()] when `glycans` has length greater than 1,
 #'   and a single [glyrepr::glycan_structure()] when `glycans` has length 1.

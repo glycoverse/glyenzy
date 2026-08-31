@@ -12,11 +12,14 @@
 #'
 #' Use `enzyme()` with a gene symbol to load a predefined enzyme.
 #' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3.
+#' Abstract activity names are also accepted, for example `enzyme("ManII")`.
+#' These return the same objects as [abstract_enzymes()] and remain separate
+#' from [db_enzymes()] and default enzyme selections.
 #'
-#' Throughout the package, you can use `enzyme()`s for any `enzyme` argument,
-#' or just use the gene symbol directly.
-#' For example, `involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", "ST3GAL3")` and
-#' `involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enzyme("ST3GAL3"))` are equivalent.
+#' For a single `enzyme` argument, pass either an enzyme object or a name
+#' accepted by `enzyme()`. For an `enzymes` argument that takes a collection,
+#' pass abstract enzymes as a list of objects, such as `list(enzyme("ManII"))`,
+#' or use [abstract_enzymes()] for the complete abstract collection.
 #'
 #' @details
 #'
@@ -61,20 +64,25 @@
 #'
 #' You can see all these information by printing the enzyme object.
 #'
-#' @param symbol The gene symbol of the enzyme.
+#' @param symbol The gene symbol of an ordinary enzyme or the name of an
+#'   abstract activity listed by [abstract_enzymes()].
 #'
-#' @return A `glyenzy_enzyme` object.
+#' @return A `glyenzy_enzyme` object. Abstract activities additionally inherit
+#'   from `glyenzy_abstract_enzyme`.
 #'
 #' @examples
 #' library(glyrepr)
 #'
 #' enzyme("ST3GAL3")
+#' enzyme("ManII")
 #'
 #' @export
 enzyme <- function(symbol) {
   checkmate::assert_string(symbol)
   if (symbol %in% names(glyenzy_enzymes)) {
     glyenzy_enzymes[[symbol]]
+  } else if (symbol %in% names(glyenzy_abstract_enzymes)) {
+    glyenzy_abstract_enzymes[[symbol]]
   } else {
     cli::cli_abort("Unknown enzyme: {.val {symbol}}.")
   }
@@ -82,8 +90,9 @@ enzyme <- function(symbol) {
 
 #' Get all enzymes
 #'
-#' Return a named list of all built-in enzymes,
+#' Return a named list of ordinary built-in enzymes,
 #' or a character vector of gene symbols if `return_str` is `TRUE`.
+#' Abstract activities are available separately through [abstract_enzymes()].
 #'
 #' @param return_str If `FALSE` (default), returns the enzyme list.
 #'   Otherwise returns a character vector of gene symbols.

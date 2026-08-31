@@ -42,7 +42,7 @@ test_that("abstract enzymes have an independent collection and subclass", {
   expect_identical(abstract_enzymes()$ManI$name, "ManI")
 })
 
-test_that("abstract enzymes remain absent from existing discovery interfaces", {
+test_that("abstract enzymes remain absent from default selections and collection name lookup", {
   abstract_names <- abstract_enzymes(TRUE)
   for (starter in c(FALSE, TRUE)) {
     for (precursor in c(FALSE, TRUE)) {
@@ -74,7 +74,6 @@ test_that("abstract enzymes remain absent from existing discovery interfaces", {
     intersect(unlist(igraph::E(network)$enzymes), abstract_names),
     0L
   )
-  expect_snapshot(error = TRUE, enzyme("ManI"))
   expect_snapshot(error = TRUE, .enzymes_from_arg(abstract_names))
   expect_snapshot(error = TRUE, abstract_enzymes(NA))
 })
