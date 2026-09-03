@@ -1,12 +1,4 @@
-# abstract enzymes remain absent from default selections and collection name lookup
-
-    Code
-      .enzymes_from_arg(abstract_names)
-    Condition
-      Error in `.check_known_enzyme_names()`:
-      ! Unknown enzymes: "ManI", "GnTI", "ManII", "GnTII", "GnTIII", "a6FucT", "GnTIV", "GnTV", "b4GalT", "iGnT", "a3SiaT", and "GlcH".
-
----
+# abstract enzymes remain absent from default selections
 
     Code
       abstract_enzymes(NA)

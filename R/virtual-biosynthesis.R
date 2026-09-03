@@ -33,9 +33,10 @@
 #' use [path_biosynthesis_virtual()] with an explicit `from` when that topology
 #' belongs to another glycan class.
 #'
-#' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
-#'   objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
-#'   available enzymes are considered.
+#' @param enzymes A character vector of concrete gene symbols or abstract
+#'   activity names, or a list of [enzyme()] objects. Concrete and abstract
+#'   enzymes cannot be mixed. Used only when `annotate_enzymes` is `TRUE`; if
+#'   `NULL`, all available concrete enzymes are considered.
 #' @param annotate_enzymes Whether to annotate each virtual transition with
 #'   concrete enzymes whose rules can perform it. Defaults to `FALSE`.
 #'
@@ -101,9 +102,10 @@ trace_biosynthesis_virtual <- function(
 #' @inheritSection trace_biosynthesis Input compatibility
 #' @inheritParams path_biosynthesis
 #'
-#' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
-#'   objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
-#'   available enzymes are considered.
+#' @param enzymes A character vector of concrete gene symbols or abstract
+#'   activity names, or a list of [enzyme()] objects. Concrete and abstract
+#'   enzymes cannot be mixed. Used only when `annotate_enzymes` is `TRUE`; if
+#'   `NULL`, all available concrete enzymes are considered.
 #' @param annotate_enzymes Whether to annotate each virtual transition with
 #'   concrete enzymes whose rules can perform it. Defaults to `FALSE`.
 #'

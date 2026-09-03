@@ -109,6 +109,13 @@ test_that("ManII has the same two-route trimming network as MAN2A1 and MAN2A2", 
       max_steps = 2L,
       max_virtual_steps = 0L
     )
+    abstract_by_name <- path_biosynthesis(
+      glycans[[1]],
+      glycans[[2]],
+      enzymes = "ManII",
+      max_steps = 2L,
+      max_virtual_steps = 0L
+    )
     concrete <- path_biosynthesis(
       glycans[[1]],
       glycans[[2]],
@@ -117,12 +124,16 @@ test_that("ManII has the same two-route trimming network as MAN2A1 and MAN2A2", 
       max_virtual_steps = 0L
     )
     expect_setequal(igraph::V(abstract)$name, glycans)
+    expect_setequal(igraph::V(abstract_by_name)$name, glycans)
+    expect_s3_class(abstract_by_name, "glyenzy_biosynthesis_network")
     expect_setequal(igraph::V(abstract)$name, igraph::V(concrete)$name)
     expect_equal(igraph::ecount(abstract), 4L)
     edge_keys <- function(network) {
       edges <- igraph::as_data_frame(network, what = "edges")
       paste(edges$from, edges$to, sep = " -> ")
     }
+    expect_setequal(edge_keys(abstract_by_name), edge_keys(abstract))
+    expect_setequal(unlist(igraph::E(abstract_by_name)$enzymes), "ManII")
     expect_setequal(edge_keys(abstract), edge_keys(concrete))
     expect_setequal(
       igraph::V(abstract)$name[igraph::V(abstract)$target],

@@ -49,8 +49,10 @@ For example, the above enzymes are described as b4GalT.
 Other examples include ManI, ManII, GnTI, etc.
 Currently only abstract enzymes for N-glycan biosynthesis are supported.
 
-Both concrete and abstract enzymes can be used in \code{enzyme} or \code{enzymes} arguments throughout this package.
-They are also supported by the \code{enzyme()} function.
+Both concrete and abstract enzymes can be used in \code{enzyme} or \code{enzymes}
+arguments throughout this package. A single \code{enzymes} collection must
+contain only concrete enzymes or only abstract enzymes; the two types cannot
+be mixed. Both types are also supported by the \code{enzyme()} function.
 
 Another type of enzymes is called the virtual enzymes.
 You'll see them in the results of \code{\link[=path_biosynthesis_virtual]{path_biosynthesis_virtual()}} and \code{\link[=trace_biosynthesis_virtual]{trace_biosynthesis_virtual()}}.

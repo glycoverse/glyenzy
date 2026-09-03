@@ -37,8 +37,10 @@
 #' Other examples include ManI, ManII, GnTI, etc.
 #' Currently only abstract enzymes for N-glycan biosynthesis are supported.
 #'
-#' Both concrete and abstract enzymes can be used in `enzyme` or `enzymes` arguments throughout this package.
-#' They are also supported by the `enzyme()` function.
+#' Both concrete and abstract enzymes can be used in `enzyme` or `enzymes`
+#' arguments throughout this package. A single `enzymes` collection must
+#' contain only concrete enzymes or only abstract enzymes; the two types cannot
+#' be mixed. Both types are also supported by the `enzyme()` function.
 #'
 #' Another type of enzymes is called the virtual enzymes.
 #' You'll see them in the results of [path_biosynthesis_virtual()] and [trace_biosynthesis_virtual()].

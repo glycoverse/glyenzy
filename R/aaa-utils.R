@@ -1064,19 +1064,20 @@
 
   if (is.character(enzymes)) {
     .check_known_enzyme_names(enzymes)
-    return(glyenzy_enzymes[enzymes])
+    enzymes <- purrr::map(enzymes, enzyme)
   }
 
   .enzymes_from_list(enzymes)
 }
 
-#' Validate enzyme names against the built-in enzyme table
+#' Validate enzyme names against the predefined enzyme collections
 #'
 #' @param enzyme_names A character vector of enzyme names.
 #' @returns The input `enzyme_names`, invisibly.
 #' @noRd
 .check_known_enzyme_names <- function(enzyme_names) {
-  unknown <- setdiff(enzyme_names, names(glyenzy_enzymes))
+  known <- c(names(glyenzy_enzymes), names(glyenzy_abstract_enzymes))
+  unknown <- setdiff(enzyme_names, known)
   if (length(unknown) > 0) {
     cli::cli_abort("Unknown enzymes: {.val {unknown}}.")
   }
@@ -1091,6 +1092,15 @@
 #' @noRd
 .enzymes_from_list <- function(enzymes) {
   checkmate::assert_list(enzymes, types = "glyenzy_enzyme")
+  is_abstract <- purrr::map_lgl(
+    enzymes,
+    ~ inherits(.x, "glyenzy_abstract_enzyme")
+  )
+  if (any(is_abstract) && any(!is_abstract)) {
+    cli::cli_abort(
+      "Concrete and abstract enzymes cannot be mixed in {.arg enzymes}."
+    )
+  }
   names(enzymes) <- purrr::map_chr(enzymes, "name")
   enzymes
 }

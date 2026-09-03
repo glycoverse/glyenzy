@@ -9,9 +9,9 @@ abstract_enzymes(return_str = FALSE)
 \arguments{
 \item{return_str}{If \code{FALSE} (default), return a named list of enzyme
 objects. If \code{TRUE}, return their activity names, which are accepted by
-\code{\link[=enzyme]{enzyme()}} and single \code{enzyme} arguments. For an \code{enzymes} argument that
-takes a collection, pass a list of abstract enzyme objects instead of
-a character vector of their names.}
+\code{\link[=enzyme]{enzyme()}} and by \code{enzyme} or \code{enzymes} arguments. An \code{enzymes} collection
+can use activity names or objects, but cannot mix abstract and concrete
+enzymes.}
 }
 \value{
 A named list of \code{glyenzy_abstract_enzyme} objects, or a character
@@ -79,8 +79,9 @@ complete Glc3Man9GlcNAc2 precursor, retaining Glc2 and Glc1 intermediates.
 Thus the collection can trace from the usual \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}
 starting structure without adding ordinary enzymes or changing the start.
 
-Pass objects explicitly, for example \code{enzyme("ManI")} to \code{\link[=apply_enzyme]{apply_enzyme()}},
-or the whole list from \code{abstract_enzymes()} to \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}.
+Pass activities explicitly, for example \code{enzyme("ManI")} to
+\code{\link[=apply_enzyme]{apply_enzyme()}}, or activity names or the whole list from
+\code{abstract_enzymes()} to \code{\link[=trace_biosynthesis]{trace_biosynthesis()}}.
 Abstract reactions are explicit enzyme rules and have \code{is_virtual = FALSE} in
 biosynthesis networks. Existing restrictions on GH involvement statistics
 and residue matching still apply; this collection does not add GH support

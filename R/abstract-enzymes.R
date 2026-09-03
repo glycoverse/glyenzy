@@ -8,9 +8,9 @@
 #'
 #' @param return_str If `FALSE` (default), return a named list of enzyme
 #'   objects. If `TRUE`, return their activity names, which are accepted by
-#'   [enzyme()] and single `enzyme` arguments. For an `enzymes` argument that
-#'   takes a collection, pass a list of abstract enzyme objects instead of
-#'   a character vector of their names.
+#'   [enzyme()] and by `enzyme` or `enzymes` arguments. An `enzymes` collection
+#'   can use activity names or objects, but cannot mix abstract and concrete
+#'   enzymes.
 #'
 #' @returns A named list of `glyenzy_abstract_enzyme` objects, or a character
 #'   vector when `return_str = TRUE`. Each object also inherits from
@@ -70,8 +70,9 @@
 #' Thus the collection can trace from the usual [trace_biosynthesis()]
 #' starting structure without adding ordinary enzymes or changing the start.
 #'
-#' Pass objects explicitly, for example `enzyme("ManI")` to [apply_enzyme()],
-#' or the whole list from `abstract_enzymes()` to [trace_biosynthesis()].
+#' Pass activities explicitly, for example `enzyme("ManI")` to
+#' [apply_enzyme()], or activity names or the whole list from
+#' `abstract_enzymes()` to [trace_biosynthesis()].
 #' Abstract reactions are explicit enzyme rules and have `is_virtual = FALSE` in
 #' biosynthesis networks. Existing restrictions on GH involvement statistics
 #' and residue matching still apply; this collection does not add GH support

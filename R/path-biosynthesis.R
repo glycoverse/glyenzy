@@ -13,8 +13,10 @@
 #'   supported by [glyparse::auto_parse()]. The starting glycan structure.
 #' @param to A [glyrepr::glycan_structure()] scalar, or a character string
 #'   supported by [glyparse::auto_parse()]. The target glycan structure.
-#' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
-#'   objects. If `NULL` (default), all available enzymes will be used.
+#' @param enzymes A character vector of concrete gene symbols or abstract
+#'   activity names, or a list of [enzyme()] objects. Concrete and abstract
+#'   enzymes cannot be mixed. If `NULL` (default), all available concrete
+#'   enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search.
 #'   Default is 10.
 #' @param max_virtual_steps Integer, maximum number of target-directed virtual

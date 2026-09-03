@@ -12,9 +12,10 @@ of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}
 If multiple glycans are provided, the starting structure will be decided by the first glycan.
 Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 
-\item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
-objects. Used only when \code{annotate_enzymes} is \code{TRUE}; if \code{NULL}, all
-available enzymes are considered.}
+\item{enzymes}{A character vector of concrete gene symbols or abstract
+activity names, or a list of \code{\link[=enzyme]{enzyme()}} objects. Concrete and abstract
+enzymes cannot be mixed. Used only when \code{annotate_enzymes} is \code{TRUE}; if
+\code{NULL}, all available concrete enzymes are considered.}
 
 \item{annotate_enzymes}{Whether to annotate each virtual transition with
 concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}

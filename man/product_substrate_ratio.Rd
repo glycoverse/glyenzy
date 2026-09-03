@@ -9,10 +9,11 @@ product_substrate_ratio(exp, enzymes)
 \arguments{
 \item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
 
-\item{enzymes}{A character vector of glycosyltransferase or sulfotransferase
-names, or a list of their \code{\link[=enzyme]{enzyme()}} objects. Starter
-glycosyltransferases are not supported because their substrates are not
-glycans.}
+\item{enzymes}{A character vector of concrete gene symbols or abstract
+activity names for glycosyltransferases or sulfotransferases, or a list of
+their \code{\link[=enzyme]{enzyme()}} objects. Concrete and abstract enzymes cannot be mixed.
+Starter glycosyltransferases are not supported because their substrates
+are not glycans.}
 }
 \value{
 A plain \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} with a

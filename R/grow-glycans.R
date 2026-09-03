@@ -21,8 +21,9 @@
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
-#' @param enzymes A character vector of gene symbols,
-#'   or a list of [enzyme()] objects.
+#' @param enzymes A character vector of concrete gene symbols or abstract
+#'   activity names, or a list of [enzyme()] objects. Concrete and abstract
+#'   enzymes cannot be mixed.
 #' @param n_steps The maximum number of rounds to perform.
 #'   The actual number of rounds may be less if no new glycans can be generated.
 #' @param filter A function to filter the generated glycans.
