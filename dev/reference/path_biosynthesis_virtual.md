@@ -32,10 +32,12 @@ path_biosynthesis_virtual(from, to, enzymes = NULL, annotate_enzymes = FALSE)
 
 - enzymes:
 
-  A character vector of gene symbols, or a list of
+  A character vector of concrete gene symbols or abstract activity
+  names, or a list of
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
-  available enzymes are considered.
+  objects. Concrete and abstract enzymes cannot be mixed. Used only when
+  `annotate_enzymes` is `TRUE`; if `NULL`, all available concrete
+  enzymes are considered.
 
 - annotate_enzymes:
 

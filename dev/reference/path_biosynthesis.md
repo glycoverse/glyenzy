@@ -38,9 +38,11 @@ path_biosynthesis(
 
 - enzymes:
 
-  A character vector of gene symbols, or a list of
+  A character vector of concrete gene symbols or abstract activity
+  names, or a list of
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  objects. If `NULL` (default), all available enzymes will be used.
+  objects. Concrete and abstract enzymes cannot be mixed. If `NULL`
+  (default), all available concrete enzymes will be used.
 
 - max_steps:
 

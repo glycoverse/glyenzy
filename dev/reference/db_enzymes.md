@@ -1,7 +1,9 @@
 # Get all enzymes
 
-Return a named list of all built-in enzymes, or a character vector of
-gene symbols if `return_str` is `TRUE`.
+Return a named list of ordinary built-in enzymes, or a character vector
+of gene symbols if `return_str` is `TRUE`. Abstract activities are
+available separately through
+[`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md).
 
 ## Usage
 

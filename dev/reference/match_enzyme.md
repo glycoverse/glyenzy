@@ -22,7 +22,9 @@ match_enzyme(glycans, enzyme, method = c("motif", "path"))
 
   A glycosyltransferase or sulfotransferase
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
-  or a gene symbol for one. Glycoside hydrolases are not supported.
+  or a name accepted by
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md).
+  Glycoside hydrolases are not supported.
 
 - method:
 

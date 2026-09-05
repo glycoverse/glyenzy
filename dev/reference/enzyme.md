@@ -1,7 +1,36 @@
 # Enzymes
 
-Three types of enzymes are represented: glycosyltransferases (GTs),
-glycoside hydrolases (GHs), and sulfotransferases (STs).
+Use `enzyme()` with a gene symbol or an abstract name to load a
+predefined enzyme. For example, use `enzyme("ST3GAL3")` to load the
+enzyme ST3GAL3, and `enzyme("ManII")` for a general ManII (possibly
+MAN2A1 or MAN2A2). It returns an enzyme object that can be passed to any
+`enzyme` argument of all functions in this package. As a shortcut,
+passing a name is also valid, e.g. `have_enzyme(glycan, "ST3GAL3")`.
+
+## Usage
+
+``` r
+enzyme(symbol)
+```
+
+## Arguments
+
+- symbol:
+
+  The gene symbol of an ordinary enzyme or the name of an abstract
+  activity listed by
+  [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md).
+
+## Value
+
+A `glyenzy_enzyme` object. Abstract activities additionally inherit from
+`glyenzy_abstract_enzyme`.
+
+## Enzyme types (biological)
+
+Enzymes can be classified by their biological rules. Three types of
+enzymes can be represented: glycosyltransferases (GTs), glycoside
+hydrolases (GHs), and sulfotransferases (STs).
 
 - GTs catalyze the transfer of a sugar residue from a donor to an
   acceptor, thus building up glycan structures.
@@ -15,30 +44,33 @@ One special subtype of GTs are starter GTs (or initiating GTs), which
 catalyze the addition of the first sugar residue onto a non-glycan
 substrate, thus initiating glycosylation.
 
-Use `enzyme()` with a gene symbol to load a predefined enzyme. For
-example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3.
+## Enzyme types (computational)
 
-Throughout the package, you can use `enzyme()`s for any `enzyme`
-argument, or just use the gene symbol directly. For example,
-`involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", "ST3GAL3")` and
-`involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enzyme("ST3GAL3"))` are
-equivalent.
+There're also three types of enzymes you'll encounter in this package
+depending on how we define them, they are concrete enzymes, abstract
+enzymes, and virtual enzymes.
 
-## Usage
+Concrete enzymes are the enzymes represented by gene symbols, e.g.
+B4GALT1. There can be many isoenzymes on this level. For example,
+B4GALT1/2/3/4/5 are all isoenzymes with similar substrate specificity.
 
-``` r
-enzyme(symbol)
-```
+Abstract enzymes are conventional enzymes without considering
+isoenzymes. For example, the above enzymes are described as b4GalT.
+Other examples include ManI, ManII, GnTI, etc. Currently only abstract
+enzymes for N-glycan biosynthesis are supported.
 
-## Arguments
+Both concrete and abstract enzymes can be used in `enzyme` or `enzymes`
+arguments throughout this package. A single `enzymes` collection must
+contain only concrete enzymes or only abstract enzymes; the two types
+cannot be mixed. Both types are also supported by the `enzyme()`
+function.
 
-- symbol:
-
-  The gene symbol of the enzyme.
-
-## Value
-
-A `glyenzy_enzyme` object.
+Another type of enzymes is called the virtual enzymes. You'll see them
+in the results of
+[`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)
+and
+[`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md).
+Find out more in the documentation of these two functions.
 
 ## Explanation about `glyenzy_enzyme`
 
@@ -127,4 +159,21 @@ enzyme("ST3GAL3")
 #> → Rule 4: terminal alignment
 #> Acceptor: "Gal(b1-4)Glc(b1-"
 #> Product: "Neu5Ac(a2-3)Gal(b1-4)Glc(b1-"
+enzyme("ManII")
+#> 
+#> ── Enzyme: ManII ───────────────────────────────────────────────────────────────
+#> ℹ Type: "GH" (Glycoside hydrolase)
+#> ℹ Species: "unspecified"
+#> ℹ Glycan type: "N"
+#> ℹ Abstract enzyme; localization: "medial"
+#> 
+#> ── Rules (1) ──
+#> 
+#> → Rule 1: core alignment
+#> Acceptor:
+#> "GlcNAc(b1-2)Man(a1-3)[Man(a1-3/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+#> Product: "GlcNAc(b1-2)Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+#> Rejects:
+#> "GlcNAc(b1-2)Man(a1-3)[GlcNAc(b1-4)][Man(a1-3/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
+#> "Gal(b1-4)GlcNAc(b1-2)Man(a1-3)[Man(a1-3/6)Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
 ```

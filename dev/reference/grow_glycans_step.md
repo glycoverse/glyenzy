@@ -35,9 +35,10 @@ grow_glycans(glycans, enzymes, n_steps = 5, filter = NULL)
 
 - enzymes:
 
-  A character vector of gene symbols, or a list of
+  A character vector of concrete gene symbols or abstract activity
+  names, or a list of
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  objects.
+  objects. Concrete and abstract enzymes cannot be mixed.
 
 - n_steps:
 

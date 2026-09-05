@@ -6,6 +6,8 @@
   : Enzymes
 - [`db_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/db_enzymes.md)
   : Get all enzymes
+- [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md)
+  : Abstract enzymes for N-glycan biosynthesis
 - [`enzymes_from_rnaseq()`](https://glycoverse.github.io/glyenzy/dev/reference/enzymes_from_rnaseq.md)
   : Filter enzymes using RNA-seq expression
 - [`make_enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/make_enzyme.md)

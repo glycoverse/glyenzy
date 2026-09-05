@@ -22,7 +22,9 @@ view_enzyme(glycan, enzyme)
 
   A glycosyltransferase or sulfotransferase
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
-  or a gene symbol for one. Glycoside hydrolases are not supported.
+  or a name accepted by
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md).
+  Glycoside hydrolases are not supported.
 
 ## Value
 

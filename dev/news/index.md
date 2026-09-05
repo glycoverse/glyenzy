@@ -2,6 +2,21 @@
 
 ## glyenzy (development version)
 
+- New
+  [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md)
+  provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc
+  activity GnTIII and a three-step glucose-removal enzyme, as
+  `glyenzy_abstract_enzyme` objects for explicit use in reactions and
+  biosynthesis tracing. Individual activities are available by name
+  through
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
+  and homogeneous abstract collections can be supplied by name or object
+  to `enzymes` arguments; concrete and abstract enzymes cannot be mixed
+  in one collection. Trimming and core transferases use concrete enzyme
+  rules; terminal transferases retain the corresponding N-glycan
+  rejects. These enzymes remain separate from the ordinary database and
+  all default enzyme selections. (#50)
+
 ### Breaking changes
 
 - [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md),

@@ -20,9 +20,8 @@ apply_enzyme(glycans, enzyme, return_list = NULL, structure_level = "intact")
 
 - enzyme:
 
-  An
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  or a gene symbol.
+  An enzyme object or a name accepted by
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md).
 
 - return_list:
 

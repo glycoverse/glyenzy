@@ -23,11 +23,12 @@ product_substrate_ratio(exp, enzymes)
 
 - enzymes:
 
-  A character vector of glycosyltransferase or sulfotransferase names,
-  or a list of their
+  A character vector of concrete gene symbols or abstract activity names
+  for glycosyltransferases or sulfotransferases, or a list of their
   [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  objects. Starter glycosyltransferases are not supported because their
-  substrates are not glycans.
+  objects. Concrete and abstract enzymes cannot be mixed. Starter
+  glycosyltransferases are not supported because their substrates are
+  not glycans.
 
 ## Value
 

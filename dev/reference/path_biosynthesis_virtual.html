@@ -66,9 +66,10 @@ supported by <code><a href="https://glycoverse.github.io/glyparse/reference/auto
 
 
 <dt id="arg-enzymes">enzymes<a class="anchor" aria-label="anchor" href="#arg-enzymes"></a></dt>
-<dd><p>A character vector of gene symbols, or a list of <code><a href="enzyme.html">enzyme()</a></code>
-objects. Used only when <code>annotate_enzymes</code> is <code>TRUE</code>; if <code>NULL</code>, all
-available enzymes are considered.</p></dd>
+<dd><p>A character vector of concrete gene symbols or abstract
+activity names, or a list of <code><a href="enzyme.html">enzyme()</a></code> objects. Concrete and abstract
+enzymes cannot be mixed. Used only when <code>annotate_enzymes</code> is <code>TRUE</code>; if
+<code>NULL</code>, all available concrete enzymes are considered.</p></dd>
 
 
 <dt id="arg-annotate-enzymes">annotate_enzymes<a class="anchor" aria-label="anchor" href="#arg-annotate-enzymes"></a></dt>

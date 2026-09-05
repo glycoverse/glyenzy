@@ -20,9 +20,8 @@ count_enzyme(glycans, enzyme, method = c("motif", "path"))
 
 - enzyme:
 
-  An
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md)
-  or a gene symbol.
+  An enzyme object or a name accepted by
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md).
 
 - method:
 

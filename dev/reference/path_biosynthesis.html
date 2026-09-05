@@ -76,8 +76,10 @@ supported by <code><a href="https://glycoverse.github.io/glyparse/reference/auto
 
 
 <dt id="arg-enzymes">enzymes<a class="anchor" aria-label="anchor" href="#arg-enzymes"></a></dt>
-<dd><p>A character vector of gene symbols, or a list of <code><a href="enzyme.html">enzyme()</a></code>
-objects. If <code>NULL</code> (default), all available enzymes will be used.</p></dd>
+<dd><p>A character vector of concrete gene symbols or abstract
+activity names, or a list of <code><a href="enzyme.html">enzyme()</a></code> objects. Concrete and abstract
+enzymes cannot be mixed. If <code>NULL</code> (default), all available concrete
+enzymes will be used.</p></dd>
 
 
 <dt id="arg-max-steps">max_steps<a class="anchor" aria-label="anchor" href="#arg-max-steps"></a></dt>
