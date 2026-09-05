@@ -25,6 +25,7 @@ reference:
   - product_substrate_ratio
 - title: Biosynthesis
   contents:
+  - normalize_n_glycan
   - grow_glycans
   - grow_glycans_step
   - path_biosynthesis
