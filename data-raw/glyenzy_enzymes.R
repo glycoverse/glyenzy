@@ -113,5 +113,30 @@ glyenzy_enzymes <- purrr::map(json_data, .make_enzyme_from_json)
 # Set names to gene symbols
 names(glyenzy_enzymes) <- enzyme_names
 
-# Save the data
-usethis::use_data(glyenzy_enzymes, overwrite = TRUE, internal = TRUE)
+# Build the independent abstract collection; never append it to ordinary data.
+abstract_data <- jsonlite::fromJSON(
+  "data-raw/glyenzy_abstract_enzymes.json",
+  simplifyVector = FALSE
+)
+abstract_names <- purrr::map_chr(abstract_data, "name")
+checkmate::assert_names(abstract_names, type = "unique")
+stopifnot(length(intersect(abstract_names, enzyme_names)) == 0L)
+glyenzy_abstract_enzymes <- purrr::map(abstract_data, function(enzyme_data) {
+  enzyme <- .make_enzyme_from_json(enzyme_data)
+  class(enzyme) <- c("glyenzy_abstract_enzyme", class(enzyme))
+  checkmate::assert_choice(
+    enzyme_data$localization,
+    c("ER", "cis", "medial", "trans")
+  )
+  enzyme$localization <- enzyme_data$localization
+  enzyme
+})
+names(glyenzy_abstract_enzymes) <- abstract_names
+
+# Save both lists together so regeneration cannot discard either collection.
+usethis::use_data(
+  glyenzy_enzymes,
+  glyenzy_abstract_enzymes,
+  overwrite = TRUE,
+  internal = TRUE
+)

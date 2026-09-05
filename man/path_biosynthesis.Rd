@@ -20,8 +20,10 @@ supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. The star
 \item{to}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} scalar, or a character string
 supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. The target glycan structure.}
 
-\item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
-objects. If \code{NULL} (default), all available enzymes will be used.}
+\item{enzymes}{A character vector of concrete gene symbols or abstract
+activity names, or a list of \code{\link[=enzyme]{enzyme()}} objects. Concrete and abstract
+enzymes cannot be mixed. If \code{NULL} (default), all available concrete
+enzymes will be used.}
 
 \item{max_steps}{Integer, maximum number of enzymatic steps to search.
 Default is 10.}

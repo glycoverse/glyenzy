@@ -10,7 +10,7 @@ apply_enzyme(glycans, enzyme, return_list = NULL, structure_level = "intact")
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
 glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
-\item{enzyme}{An \code{\link[=enzyme]{enzyme()}} or a gene symbol.}
+\item{enzyme}{An enzyme object or a name accepted by \code{\link[=enzyme]{enzyme()}}.}
 
 \item{return_list}{If \code{NULL} (default),
 return a list of \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} when \code{glycans} has length greater than 1,

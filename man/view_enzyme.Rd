@@ -10,8 +10,8 @@ view_enzyme(glycan, enzyme)
 \item{glycan}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a glycan structure string
 supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
-\item{enzyme}{A glycosyltransferase or sulfotransferase \code{\link[=enzyme]{enzyme()}}, or a gene
-symbol for one. Glycoside hydrolases are not supported.}
+\item{enzyme}{A glycosyltransferase or sulfotransferase \code{\link[=enzyme]{enzyme()}}, or a
+name accepted by \code{\link[=enzyme]{enzyme()}}. Glycoside hydrolases are not supported.}
 }
 \value{
 A \code{ggplot} object returned by \code{\link[glydraw:draw_cartoon]{glydraw::draw_cartoon()}}. If no match is found,

@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* New `abstract_enzymes()` provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc activity GnTIII and a three-step glucose-removal enzyme, as `glyenzy_abstract_enzyme` objects for explicit use in reactions and biosynthesis tracing. Individual activities are available by name through `enzyme()`, and homogeneous abstract collections can be supplied by name or object to `enzymes` arguments; concrete and abstract enzymes cannot be mixed in one collection. Trimming and core transferases use concrete enzyme rules; terminal transferases retain the corresponding N-glycan rejects. These enzymes remain separate from the ordinary database and all default enzyme selections. (#50)
+
 ## Breaking changes
 
 * `path_biosynthesis()`, `path_biosynthesis_virtual()`, `trace_biosynthesis()`, and `trace_biosynthesis_virtual()` now return one edge per substrate-product transition with a shared schema: logical vertex `target`; scalar edge `enzyme`; list-valued edge `enzymes`; logical edge `is_virtual`; and integer edge `step`. Replace uses of parallel `enzyme` edges or `concrete_enzymes` with the `enzymes` list attribute. (#49)

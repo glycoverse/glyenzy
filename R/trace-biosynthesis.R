@@ -11,8 +11,10 @@
 #'   of strings supported by [glyparse::auto_parse()]. Can also be a single glycan.
 #'   If multiple glycans are provided, the starting structure will be decided by the first glycan.
 #'   Therefore, please make sure `glycans` are not of mixed glycan types.
-#' @param enzymes A character vector of gene symbols, or a list of [enzyme()]
-#'   objects. If `NULL` (default), all available enzymes will be used.
+#' @param enzymes A character vector of concrete gene symbols or abstract
+#'   activity names, or a list of [enzyme()] objects. Concrete and abstract
+#'   enzymes cannot be mixed. If `NULL` (default), all available concrete
+#'   enzymes will be used.
 #' @param max_steps Integer, maximum number of enzymatic steps to search, or
 #'   `NULL` to infer it from the largest target glycan. The inferred value is
 #'   the maximum monosaccharide and substituent count plus 4 for N-glycans,

@@ -7,7 +7,7 @@
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
-#' @param enzyme An [enzyme()] or a gene symbol.
+#' @param enzyme An enzyme object or a name accepted by [enzyme()].
 #' @param return_list If `NULL` (default),
 #'   return a list of [glyrepr::glycan_structure()] when `glycans` has length greater than 1,
 #'   and a single [glyrepr::glycan_structure()] when `glycans` has length 1.
@@ -456,10 +456,26 @@ apply_enzyme <- function(
 # Standard graph actions inherit validity and mono-type compatibility from the
 # validated input structure and enzyme rule.
 .uses_standard_graph_action <- function(enzyme) {
-  enzyme_class <- class(enzyme)
+  enzyme_class <- .standard_action_classes(enzyme)
   identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme")) ||
     identical(enzyme_class, c("glyenzy_gh_enzyme", "glyenzy_enzyme")) ||
     identical(enzyme_class, c("glyenzy_st_enzyme", "glyenzy_enzyme"))
+}
+
+# Only the two bundled abstract class combinations inherit trusted actions.
+# Additional custom subclasses retain their existing private dispatch path.
+.standard_action_classes <- function(enzyme) {
+  enzyme_class <- class(enzyme)
+  if (!identical(enzyme_class[[1L]], "glyenzy_abstract_enzyme")) {
+    return(enzyme_class)
+  }
+  for (type in c("gt", "gh")) {
+    standard <- c(paste0("glyenzy_", type, "_enzyme"), "glyenzy_enzyme")
+    if (identical(enzyme_class, c("glyenzy_abstract_enzyme", standard))) {
+      return(standard)
+    }
+  }
+  enzyme_class
 }
 
 # Stateful custom S3 actions must retain scalar frontier execution order.
@@ -495,7 +511,7 @@ apply_enzyme <- function(
 
 # Build a graph-independent signature for one prepared enzyme action.
 .bfs_rule_signature <- function(rule, enzyme, nonce) {
-  enzyme_class <- class(enzyme)
+  enzyme_class <- .standard_action_classes(enzyme)
   dispatch <- if (
     identical(enzyme_class, c("glyenzy_gt_enzyme", "glyenzy_enzyme"))
   ) {

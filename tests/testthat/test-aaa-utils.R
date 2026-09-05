@@ -137,6 +137,33 @@ test_that("enzyme list processing accepts supported input forms", {
     purrr::map_chr(by_object, "name"),
     enzyme_names
   )
+
+  abstract_names <- c("ManII", "GnTI")
+  abstract_by_name <- .process_enzymes_arg(abstract_names)
+  expect_equal(
+    purrr::map_chr(abstract_by_name, "name"),
+    abstract_names
+  )
+  expect_true(all(purrr::map_lgl(
+    abstract_by_name,
+    ~ inherits(.x, "glyenzy_abstract_enzyme")
+  )))
+
+  abstract_by_object <- .process_enzymes_arg(
+    purrr::map(abstract_names, enzyme)
+  )
+  expect_identical(abstract_by_object, abstract_by_name)
+})
+
+test_that("enzyme list processing rejects mixed concrete and abstract enzymes", {
+  expect_snapshot(
+    error = TRUE,
+    .process_enzymes_arg(c("MAN2A1", "ManII"))
+  )
+  expect_snapshot(
+    error = TRUE,
+    .process_enzymes_arg(list(enzyme("MAN2A1"), enzyme("ManII")))
+  )
 })
 
 test_that("enzyme list processing rejects unknown enzyme names", {

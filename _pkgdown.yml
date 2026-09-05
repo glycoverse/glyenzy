@@ -10,6 +10,7 @@ reference:
   contents:
   - enzyme
   - db_enzymes
+  - abstract_enzymes
   - enzymes_from_rnaseq
   - make_enzyme
   - print.glyenzy_enzyme

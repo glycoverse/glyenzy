@@ -10,8 +10,8 @@
 #'
 #' @param glycan A [glyrepr::glycan_structure()], or a glycan structure string
 #'   supported by [glyparse::auto_parse()].
-#' @param enzyme A glycosyltransferase or sulfotransferase [enzyme()], or a gene
-#'   symbol for one. Glycoside hydrolases are not supported.
+#' @param enzyme A glycosyltransferase or sulfotransferase [enzyme()], or a
+#'   name accepted by [enzyme()]. Glycoside hydrolases are not supported.
 #'
 #' @returns
 #' A `ggplot` object returned by [glydraw::draw_cartoon()]. If no match is found,

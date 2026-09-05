@@ -15,10 +15,11 @@
 #' functions.
 #'
 #' @param exp A [glyexp::GlycomicSE()] or [glyexp::GlycoproteomicSE()] object.
-#' @param enzymes A character vector of glycosyltransferase or sulfotransferase
-#'   names, or a list of their [enzyme()] objects. Starter
-#'   glycosyltransferases are not supported because their substrates are not
-#'   glycans.
+#' @param enzymes A character vector of concrete gene symbols or abstract
+#'   activity names for glycosyltransferases or sulfotransferases, or a list of
+#'   their [enzyme()] objects. Concrete and abstract enzymes cannot be mixed.
+#'   Starter glycosyltransferases are not supported because their substrates
+#'   are not glycans.
 #'
 #' @returns A plain [SummarizedExperiment::SummarizedExperiment()] with a
 #'   `product_substrate_ratio` assay. For glycomics data, `rowData()` contains

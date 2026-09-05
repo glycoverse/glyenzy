@@ -13,8 +13,9 @@ grow_glycans(glycans, enzymes, n_steps = 5, filter = NULL)
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
 glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
-\item{enzymes}{A character vector of gene symbols,
-or a list of \code{\link[=enzyme]{enzyme()}} objects.}
+\item{enzymes}{A character vector of concrete gene symbols or abstract
+activity names, or a list of \code{\link[=enzyme]{enzyme()}} objects. Concrete and abstract
+enzymes cannot be mixed.}
 
 \item{n_steps}{The maximum number of rounds to perform.
 The actual number of rounds may be less if no new glycans can be generated.}

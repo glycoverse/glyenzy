@@ -18,8 +18,10 @@ of strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}
 If multiple glycans are provided, the starting structure will be decided by the first glycan.
 Therefore, please make sure \code{glycans} are not of mixed glycan types.}
 
-\item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
-objects. If \code{NULL} (default), all available enzymes will be used.}
+\item{enzymes}{A character vector of concrete gene symbols or abstract
+activity names, or a list of \code{\link[=enzyme]{enzyme()}} objects. Concrete and abstract
+enzymes cannot be mixed. If \code{NULL} (default), all available concrete
+enzymes will be used.}
 
 \item{max_steps}{Integer, maximum number of enzymatic steps to search, or
 \code{NULL} to infer it from the largest target glycan. The inferred value is

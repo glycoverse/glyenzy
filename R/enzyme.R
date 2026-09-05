@@ -1,8 +1,21 @@
 #' Enzymes
 #'
 #' @description
-#' Three types of enzymes are represented: glycosyltransferases (GTs),
+#' Use `enzyme()` with a gene symbol or an abstract name to load a predefined enzyme.
+#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3,
+#' and `enzyme("ManII")` for a general ManII (possibly MAN2A1 or MAN2A2).
+#' It returns an enzyme object that can be passed to any `enzyme` argument
+#' of all functions in this package.
+#' As a shortcut, passing a name is also valid, e.g. `have_enzyme(glycan, "ST3GAL3")`.
+#'
+#' @details
+#'
+#' # Enzyme types (biological)
+#'
+#' Enzymes can be classified by their biological rules.
+#' Three types of enzymes can be represented: glycosyltransferases (GTs),
 #' glycoside hydrolases (GHs), and sulfotransferases (STs).
+#'
 #' - GTs catalyze the transfer of a sugar residue from a donor to an acceptor, thus building up glycan structures.
 #' - GHs catalyze the removal of a sugar residue from a substrate, thus breaking down glycan structures.
 #' - STs add a sulfate substituent to an existing glycan residue.
@@ -10,15 +23,28 @@
 #' One special subtype of GTs are starter GTs (or initiating GTs),
 #' which catalyze the addition of the first sugar residue onto a non-glycan substrate, thus initiating glycosylation.
 #'
-#' Use `enzyme()` with a gene symbol to load a predefined enzyme.
-#' For example, use `enzyme("ST3GAL3")` to load the enzyme ST3GAL3.
+#' # Enzyme types (computational)
 #'
-#' Throughout the package, you can use `enzyme()`s for any `enzyme` argument,
-#' or just use the gene symbol directly.
-#' For example, `involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", "ST3GAL3")` and
-#' `involve("Neu5Ac(a2-3)Gal(b1-3)GalNAc(a1-", enzyme("ST3GAL3"))` are equivalent.
+#' There're also three types of enzymes you'll encounter in this package depending on how we define them,
+#' they are concrete enzymes, abstract enzymes, and virtual enzymes.
 #'
-#' @details
+#' Concrete enzymes are the enzymes represented by gene symbols, e.g. B4GALT1.
+#' There can be many isoenzymes on this level.
+#' For example, B4GALT1/2/3/4/5 are all isoenzymes with similar substrate specificity.
+#'
+#' Abstract enzymes are conventional enzymes without considering isoenzymes.
+#' For example, the above enzymes are described as b4GalT.
+#' Other examples include ManI, ManII, GnTI, etc.
+#' Currently only abstract enzymes for N-glycan biosynthesis are supported.
+#'
+#' Both concrete and abstract enzymes can be used in `enzyme` or `enzymes`
+#' arguments throughout this package. A single `enzymes` collection must
+#' contain only concrete enzymes or only abstract enzymes; the two types cannot
+#' be mixed. Both types are also supported by the `enzyme()` function.
+#'
+#' Another type of enzymes is called the virtual enzymes.
+#' You'll see them in the results of [path_biosynthesis_virtual()] and [trace_biosynthesis_virtual()].
+#' Find out more in the documentation of these two functions.
 #'
 #' # Explanation about `glyenzy_enzyme`
 #'
@@ -61,20 +87,25 @@
 #'
 #' You can see all these information by printing the enzyme object.
 #'
-#' @param symbol The gene symbol of the enzyme.
+#' @param symbol The gene symbol of an ordinary enzyme or the name of an
+#'   abstract activity listed by [abstract_enzymes()].
 #'
-#' @return A `glyenzy_enzyme` object.
+#' @return A `glyenzy_enzyme` object. Abstract activities additionally inherit
+#'   from `glyenzy_abstract_enzyme`.
 #'
 #' @examples
 #' library(glyrepr)
 #'
 #' enzyme("ST3GAL3")
+#' enzyme("ManII")
 #'
 #' @export
 enzyme <- function(symbol) {
   checkmate::assert_string(symbol)
   if (symbol %in% names(glyenzy_enzymes)) {
     glyenzy_enzymes[[symbol]]
+  } else if (symbol %in% names(glyenzy_abstract_enzymes)) {
+    glyenzy_abstract_enzymes[[symbol]]
   } else {
     cli::cli_abort("Unknown enzyme: {.val {symbol}}.")
   }
@@ -82,8 +113,9 @@ enzyme <- function(symbol) {
 
 #' Get all enzymes
 #'
-#' Return a named list of all built-in enzymes,
+#' Return a named list of ordinary built-in enzymes,
 #' or a character vector of gene symbols if `return_str` is `TRUE`.
+#' Abstract activities are available separately through [abstract_enzymes()].
 #'
 #' @param return_str If `FALSE` (default), returns the enzyme list.
 #'   Otherwise returns a character vector of gene symbols.
@@ -783,6 +815,11 @@ print.glyenzy_enzyme <- function(x, ...) {
   cli::cli_alert_info("Species: {.val {x$species}}")
   glycan_type <- if (is.null(x$glycan_type)) "all" else x$glycan_type
   cli::cli_alert_info("Glycan type: {.val {glycan_type}}")
+  if (inherits(x, "glyenzy_abstract_enzyme")) {
+    cli::cli_alert_info(
+      "Abstract enzyme; localization: {.val {x$localization}}"
+    )
+  }
 
   # Rules section
   cli::cli_h2("Rules ({.val {length(x$rules)}})")

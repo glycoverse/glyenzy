@@ -10,7 +10,7 @@ have_enzyme(glycans, enzyme, method = c("motif", "path"))
 \item{glycans}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}}, or a character vector of
 glycan structure strings supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}.}
 
-\item{enzyme}{An \code{\link[=enzyme]{enzyme()}} or a gene symbol.}
+\item{enzyme}{An enzyme object or a name accepted by \code{\link[=enzyme]{enzyme()}}.}
 
 \item{method}{Method used to infer enzyme involvement.
 \code{"motif"} checks product motifs directly in each glycan.

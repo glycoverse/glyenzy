@@ -13,9 +13,10 @@ supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. The star
 \item{to}{A \code{\link[glyrepr:glycan_structure]{glyrepr::glycan_structure()}} scalar, or a character string
 supported by \code{\link[glyparse:auto_parse]{glyparse::auto_parse()}}. The target glycan structure.}
 
-\item{enzymes}{A character vector of gene symbols, or a list of \code{\link[=enzyme]{enzyme()}}
-objects. Used only when \code{annotate_enzymes} is \code{TRUE}; if \code{NULL}, all
-available enzymes are considered.}
+\item{enzymes}{A character vector of concrete gene symbols or abstract
+activity names, or a list of \code{\link[=enzyme]{enzyme()}} objects. Concrete and abstract
+enzymes cannot be mixed. Used only when \code{annotate_enzymes} is \code{TRUE}; if
+\code{NULL}, all available concrete enzymes are considered.}
 
 \item{annotate_enzymes}{Whether to annotate each virtual transition with
 concrete enzymes whose rules can perform it. Defaults to \code{FALSE}.}

@@ -84,7 +84,7 @@
 #'
 #' @param glycans A [glyrepr::glycan_structure()], or a character vector of
 #'   glycan structure strings supported by [glyparse::auto_parse()].
-#' @param enzyme An [enzyme()] or a gene symbol.
+#' @param enzyme An enzyme object or a name accepted by [enzyme()].
 #' @param method Method used to infer enzyme involvement.
 #'   `"motif"` checks product motifs directly in each glycan.
 #'   `"path"` extracts enzymes from [trace_biosynthesis()] results, which is
