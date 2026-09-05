@@ -34,6 +34,8 @@
 
 ## Biosynthesis
 
+- [`normalize_n_glycan()`](https://glycoverse.github.io/glyenzy/dev/reference/normalize_n_glycan.md)
+  : Normalize Topological N-Glycans
 - [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
   [`grow_glycans()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
   : Grow Glycans with Enzymes

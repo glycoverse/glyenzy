@@ -3,6 +3,12 @@
 ## glyenzy (development version)
 
 - New
+  [`normalize_n_glycan()`](https://glycoverse.github.io/glyenzy/dev/reference/normalize_n_glycan.md)
+  standardizes selected Gal and Neu5Ac distributions on simple three-
+  and four-antennary topological N-glycans while preserving core fucose
+  and bisecting GlcNAc. (#51)
+
+- New
   [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md)
   provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc
   activity GnTIII and a three-step glucose-removal enzyme, as
