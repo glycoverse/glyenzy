@@ -389,10 +389,16 @@ BfsSynthesisSearch <- R6::R6Class(
 
         for (i in seq_along(chunk_graphs)) {
           curr_key <- chunk_keys[[i]]
+          glycan_type <- NULL
           for (enzyme_idx in seq_along(self$enzymes)) {
             ez <- self$enzymes[[enzyme_idx]]
-            if (!.enzyme_supports_glycan_graph(chunk_graphs[[i]], ez)) {
-              next
+            if (!is.null(ez$glycan_type)) {
+              if (is.null(glycan_type)) {
+                glycan_type <- .glycan_type_graph(chunk_graphs[[i]])
+              }
+              if (!.glycan_type_is_compatible(glycan_type, ez$glycan_type)) {
+                next
+              }
             }
             plan_id <- private$rule_plan$enzyme_plan_ids[[enzyme_idx]]
             expansion_result <- private$integrate_products(
