@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* `path_biosynthesis()` and `trace_biosynthesis()` use a native breadth-first search engine to reduce graph conversion and search overhead, including for sulfated, generic, and topological glycans; custom enzymes and filters retain their R callbacks. Building from source now requires a C++17 compiler.
+
 * `trace_biosynthesis()` and `path_biosynthesis()` run faster when searching with enzymes that specify glycan types.
 
 * New `normalize_n_glycan()` standardizes selected Gal and Neu5Ac distributions on simple three- and four-antennary topological N-glycans while preserving core fucose and bisecting GlcNAc. (#51)

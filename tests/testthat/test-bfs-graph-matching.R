@@ -340,7 +340,7 @@ test_that("BFS keys only promising shared graph products", {
   )
   edges <- igraph::as_data_frame(path, what = "edges")
 
-  expect_equal(canonicalized, 1L)
+  expect_identical(canonicalized, 0L)
   expect_equal(edges$enzyme, "E1 / E2")
   expect_equal(edges$enzymes, list(c("E1", "E2")))
 })
@@ -389,11 +389,12 @@ test_that("BFS caches identical products from distinct rule jobs", {
     "enzyme"
   )
 
-  expect_equal(canonicalized, 1L)
+  expect_identical(canonicalized, 0L)
   expect_equal(
-    engine$.__enclos_env__$private$product_cache$size(),
+    engine$native_stats$canonicalized,
     1L
   )
+  expect_identical(engine$native_stats$cache_hits, 1L)
   expect_equal(edge_enzymes, c("E_CORE", "E_WHOLE"))
 })
 

@@ -25,12 +25,18 @@ Suggests:
     ggraph,
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    withr
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 URL: https://glycoverse.github.io/glyenzy/
+LinkingTo:
+    Rcpp,
+    BH
+SystemRequirements: C++17
 Imports:
+    Rcpp,
     checkmate,
     cli,
     glydraw (>= 0.8.0),
