@@ -1,5 +1,7 @@
 library(glyenzy)
 ns <- asNamespace("glyenzy")
+reference_env <- new.env(parent = ns)
+sys.source("tests/testthat/fixtures/bfs-reference.R", envir = reference_env)
 internal <- function(name) get(name, ns)
 base_dir <- "data-raw/bfs-native"
 Rcpp::sourceCpp(file.path(base_dir, "native.cpp"))
@@ -123,7 +125,7 @@ decode <- function(z, w) {
   )
 }
 reference <- function(w) {
-  internal("bfs_synthesis_search")(
+  reference_env$bfs_synthesis_search(
     w$from,
     w$to,
     w$enzymes,

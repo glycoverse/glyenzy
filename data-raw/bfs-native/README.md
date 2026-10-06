@@ -1,7 +1,9 @@
 # Fused native BFS experiment (2026-10-06)
 
-This is an isolated feasibility experiment. Package code, public APIs,
-dependencies, and the default BFS backend are unchanged.
+This records the original isolated feasibility experiment before production
+integration. The package now defaults to native BFS; see [INTEGRATION.md](INTEGRATION.md)
+for execution-path coverage and the separate installed-build benchmark. The
+prototype measurements below are historical and use a different timing boundary.
 
 ## Results
 
