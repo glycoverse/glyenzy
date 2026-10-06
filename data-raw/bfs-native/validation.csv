@@ -1,0 +1,10 @@
+"case","edges","edge_order","found","found_order","parent","parent_enzyme","parent_step","missing"
+"o_branched",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"n_complex",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"n_precursor",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"n_multi",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"zero_steps",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"initial_target",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"unreachable",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"duplicate_targets",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
+"partial",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE
