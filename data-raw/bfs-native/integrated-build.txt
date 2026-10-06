@@ -1,8 +1,0 @@
-Git revision: f87c263214cc9e5545cd19e9adf2ad96d314547e
-DESCRIPTION f5c4c14f1ba1e06698ddde18a77e71bd
-R/bfs-native.R 70dd1128fc64d51b2cb8a6b4e99cee66
-R/bfs-path.R 01fca77e65300ae63042ebeadedd8936
-src/bfs-search.cpp 78e02f44af3df700e380ac9c57f0c9c0
-src/bfs-matcher.h 3e66372c4aebb58d6e273cc37936d6f0
-src/bfs-vf2.h 27b5eb1ca377a996bfaa11b0b4ac0d7e
-/private/tmp/glyenzy-native-lib/glyenzy/libs/glyenzy.so fcba867c8d5dddd21897bff8ab083c6f
