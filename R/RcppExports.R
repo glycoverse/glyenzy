@@ -4,4 +4,3 @@
 cpp_bfs_search <- function(config, callbacks) {
     .Call(`_glyenzy_cpp_bfs_search`, config, callbacks)
 }
-

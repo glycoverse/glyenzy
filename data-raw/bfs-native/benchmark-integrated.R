@@ -80,9 +80,9 @@ write.csv(
   "data-raw/bfs-native/integrated-summary.csv",
   row.names = FALSE
 )
-capture.output(
-  sessionInfo(),
-  file = "data-raw/bfs-native/integrated-session.txt"
+writeLines(
+  trimws(capture.output(sessionInfo()), which = "right"),
+  "data-raw/bfs-native/integrated-session.txt"
 )
 print(summary, row.names = FALSE)
 
