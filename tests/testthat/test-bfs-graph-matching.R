@@ -340,7 +340,7 @@ test_that("BFS keys only promising shared graph products", {
   )
   edges <- igraph::as_data_frame(path, what = "edges")
 
-  expect_equal(canonicalized, 1L)
+  expect_identical(canonicalized, 0L)
   expect_equal(edges$enzyme, "E1 / E2")
   expect_equal(edges$enzymes, list(c("E1", "E2")))
 })
@@ -389,11 +389,12 @@ test_that("BFS caches identical products from distinct rule jobs", {
     "enzyme"
   )
 
-  expect_equal(canonicalized, 1L)
+  expect_identical(canonicalized, 0L)
   expect_equal(
-    engine$.__enclos_env__$private$product_cache$size(),
+    engine$native_stats$canonicalized,
     1L
   )
+  expect_identical(engine$native_stats$cache_hits, 1L)
   expect_equal(edge_enzymes, c("E_CORE", "E_WHOLE"))
 })
 
@@ -906,5 +907,84 @@ test_that("ST actions use batched BFS through sequential sulfation", {
   expect_equal(
     edges$to,
     c("Gal6S(b1-", "Gal3S6S(b1-")
+  )
+})
+
+test_that("batched type checks preserve enzyme candidates and unknown types", {
+  for (root in c("GalNAc(a1-", "Glc(b1-", "Neu5Ac(a2-")) {
+    from <- glyparse::auto_parse(root)
+    to <- glyparse::auto_parse(paste0("Gal(b1-3)", root))
+    types <- list(NULL, "N", "O", "lipid", "free")
+    enzymes <- lapply(seq_along(types), function(i) {
+      make_enzyme(
+        name = paste0("E", i),
+        type = "GT",
+        species = "human",
+        glycan_type = types[[i]],
+        rules = list(list(
+          acceptor = root,
+          acceptor_alignment = "whole",
+          product = as.character(to)
+        ))
+      )
+    })
+    batched <- bfs_synthesis_search(from, to, enzymes, max_steps = 1L)
+    scalar <- bfs_synthesis_search(
+      from,
+      to,
+      enzymes,
+      max_steps = 1L,
+      filter = function(x) rep(TRUE, length(x))
+    )
+    expect_identical(batched$all_edges, scalar$all_edges)
+    expect_identical(batched$found_keys, scalar$found_keys)
+    expected <- switch(
+      root,
+      "GalNAc(a1-" = c("E1", "E3"),
+      "Glc(b1-" = c("E1", "E4", "E5"),
+      "Neu5Ac(a2-" = paste0("E", 1:5)
+    )
+    expect_identical(vapply(batched$all_edges, `[[`, "", "enzyme"), expected)
+  }
+})
+
+test_that("batched type checks follow changes in reducing-end context", {
+  from <- glyparse::auto_parse("Glc(b1-")
+  intermediate <- "Xyl(a1-3)Glc(b1-"
+  target <- "Gal(b1-4)Xyl(a1-3)Glc(b1-"
+  enzymes <- list(
+    make_enzyme(
+      name = "LIPID_STEP",
+      type = "GT",
+      species = "human",
+      glycan_type = "lipid",
+      rules = list(list(
+        acceptor = as.character(from),
+        acceptor_alignment = "whole",
+        product = intermediate
+      ))
+    ),
+    make_enzyme(
+      name = "O_STEP",
+      type = "GT",
+      species = "human",
+      glycan_type = "O",
+      rules = list(list(
+        acceptor = intermediate,
+        acceptor_alignment = "whole",
+        product = target
+      ))
+    )
+  )
+  result <- bfs_synthesis_search(
+    from,
+    glyparse::auto_parse(target),
+    enzymes,
+    max_steps = 2L
+  )
+  expect_identical(result$found_keys, target)
+  expect_identical(
+    vapply(result$all_edges, `[[`, "", "enzyme"),
+    c("LIPID_STEP", "O_STEP")
   )
 })

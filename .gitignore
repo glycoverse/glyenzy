@@ -11,3 +11,6 @@ inst/doc
 /Meta/
 /diagnose/
 /pkgdown/
+/src/*.o
+/src/*.so
+/src/*.dll

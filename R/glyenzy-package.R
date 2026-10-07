@@ -1,3 +1,5 @@
+#' @useDynLib glyenzy, .registration = TRUE
+#' @importFrom Rcpp evalCpp
 #' @keywords internal
 #' @import glyrepr
 "_PACKAGE"
