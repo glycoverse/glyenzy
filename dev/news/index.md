@@ -2,6 +2,19 @@
 
 ## glyenzy (development version)
 
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  use a native breadth-first search engine to reduce graph conversion
+  and search overhead, including for sulfated, generic, and topological
+  glycans; custom enzymes and filters retain their R callbacks. Building
+  from source now requires a C++17 compiler.
+
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  and
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  run faster when searching with enzymes that specify glycan types.
+
 - New
   [`normalize_n_glycan()`](https://glycoverse.github.io/glyenzy/dev/reference/normalize_n_glycan.md)
   standardizes selected Gal and Neu5Ac distributions on simple three-
