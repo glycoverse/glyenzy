@@ -2,39 +2,7 @@
 
 ## glyenzy (development version)
 
-- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
-  and
-  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
-  use a native breadth-first search engine to reduce graph conversion
-  and search overhead, including for sulfated, generic, and topological
-  glycans; custom enzymes and filters retain their R callbacks. Building
-  from source now requires a C++17 compiler.
-
-- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
-  and
-  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
-  run faster when searching with enzymes that specify glycan types.
-
-- New
-  [`normalize_n_glycan()`](https://glycoverse.github.io/glyenzy/dev/reference/normalize_n_glycan.md)
-  standardizes selected Gal and Neu5Ac distributions on simple three-
-  and four-antennary topological N-glycans while preserving core fucose
-  and bisecting GlcNAc. (#51)
-
-- New
-  [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md)
-  provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc
-  activity GnTIII and a three-step glucose-removal enzyme, as
-  `glyenzy_abstract_enzyme` objects for explicit use in reactions and
-  biosynthesis tracing. Individual activities are available by name
-  through
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
-  and homogeneous abstract collections can be supplied by name or object
-  to `enzymes` arguments; concrete and abstract enzymes cannot be mixed
-  in one collection. Trimming and core transferases use concrete enzyme
-  rules; terminal transferases retain the corresponding N-glycan
-  rejects. These enzymes remain separate from the ordinary database and
-  all default enzyme selections. (#50)
+## glyenzy 0.10.0
 
 ### Breaking changes
 
@@ -62,12 +30,46 @@
   and replace mixed-residue, partial, or missing structures before
   tracing. (#48)
 
-### Minor improvements and fixes
+### New features
+
+- New
+  [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/dev/reference/abstract_enzymes.md)
+  provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc
+  activity GnTIII and a three-step glucose-removal enzyme, as
+  `glyenzy_abstract_enzyme` objects for explicit use in reactions and
+  biosynthesis tracing. Individual activities are available by name
+  through
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/dev/reference/enzyme.md),
+  and homogeneous abstract collections can be supplied by name or object
+  to `enzymes` arguments; concrete and abstract enzymes cannot be mixed
+  in one collection. Trimming and core transferases use concrete enzyme
+  rules; terminal transferases retain the corresponding N-glycan
+  rejects. These enzymes remain separate from the ordinary database and
+  all default enzyme selections. (#50)
+- New
+  [`normalize_n_glycan()`](https://glycoverse.github.io/glyenzy/dev/reference/normalize_n_glycan.md)
+  standardizes selected Gal and Neu5Ac distributions on simple three-
+  and four-antennary topological N-glycans while preserving core fucose
+  and bisecting GlcNAc. (#51)
+
+### Minor improvements and bug fixes
 
 - Biosynthesis networks now mark targets consistently and contain at
   most one directed edge between each substrate-product pair; concrete
   isoenzymes are retained in the list-valued `enzymes` edge attribute.
   (#49)
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  now require glycans with matching monosaccharide types and structure
+  levels; convert incompatible inputs before searching. (#48)
+- [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  and
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  search faster with a native breadth-first search engine, including for
+  sulfated, generic, and topological glycans and enzymes that specify
+  glycan types. Custom enzymes and filters retain their R callbacks.
+  Building from source now requires a C++17 compiler. (#52)
 
 ## glyenzy 0.9.0
 
