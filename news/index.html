@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,29 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.10.0" id="glyenzy-0100">glyenzy 0.10.0<a class="anchor" aria-label="anchor" href="#glyenzy-0100"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-10-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-10-0"></a></h3>
+<ul><li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code>, <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>, <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> now return one edge per substrate-product transition with a shared schema: logical vertex <code>target</code>; scalar edge <code>enzyme</code>; list-valued edge <code>enzymes</code>; logical edge <code>is_virtual</code>; and integer edge <code>step</code>. Replace uses of parallel <code>enzyme</code> edges or <code>concrete_enzymes</code> with the <code>enzymes</code> list attribute. (#49)</li>
+<li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code>, <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code>, <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code>, and <code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> now error unless all supplied glycans use the same concrete or generic monosaccharide type and the same intact or topological structure level; standardize inputs with <code><a href="https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html" class="external-link">glyrepr::convert_to_generic()</a></code> or <code><a href="https://glycoverse.github.io/glyrepr/reference/remove_linkages.html" class="external-link">glyrepr::remove_linkages()</a></code>, and replace mixed-residue, partial, or missing structures before tracing. (#48)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-10-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-10-0"></a></h3>
+<ul><li>New <code><a href="../reference/abstract_enzymes.html">abstract_enzymes()</a></code> provides 12 simplified N-glycan enzymes, including bisecting-GlcNAc activity GnTIII and a three-step glucose-removal enzyme, as <code>glyenzy_abstract_enzyme</code> objects for explicit use in reactions and biosynthesis tracing. Individual activities are available by name through <code><a href="../reference/enzyme.html">enzyme()</a></code>, and homogeneous abstract collections can be supplied by name or object to <code>enzymes</code> arguments; concrete and abstract enzymes cannot be mixed in one collection. Trimming and core transferases use concrete enzyme rules; terminal transferases retain the corresponding N-glycan rejects. These enzymes remain separate from the ordinary database and all default enzyme selections. (#50)</li>
+<li>New <code><a href="../reference/normalize_n_glycan.html">normalize_n_glycan()</a></code> standardizes selected Gal and Neu5Ac distributions on simple three- and four-antennary topological N-glycans while preserving core fucose and bisecting GlcNAc. (#51)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-10-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-10-0"></a></h3>
+<ul><li>Biosynthesis networks now mark targets consistently and contain at most one directed edge between each substrate-product pair; concrete isoenzymes are retained in the list-valued <code>enzymes</code> edge attribute. (#49)</li>
+<li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> and <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> now require glycans with matching monosaccharide types and structure levels; convert incompatible inputs before searching. (#48)</li>
+<li>
+<code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> and <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> search faster with a native breadth-first search engine, including for sulfated, generic, and topological glycans and enzymes that specify glycan types. Custom enzymes and filters retain their R callbacks. Building from source now requires a C++17 compiler. (#52)</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="glyenzy-090">glyenzy 0.9.0<a class="anchor" aria-label="anchor" href="#glyenzy-090"></a></h2>
 <div class="section level3">

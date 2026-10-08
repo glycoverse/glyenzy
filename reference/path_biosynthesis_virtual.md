@@ -32,10 +32,12 @@ path_biosynthesis_virtual(from, to, enzymes = NULL, annotate_enzymes = FALSE)
 
 - enzymes:
 
-  A character vector of gene symbols, or a list of
+  A character vector of concrete gene symbols or abstract activity
+  names, or a list of
   [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
-  objects. Used only when `annotate_enzymes` is `TRUE`; if `NULL`, all
-  available enzymes are considered.
+  objects. Concrete and abstract enzymes cannot be mixed. Used only when
+  `annotate_enzymes` is `TRUE`; if `NULL`, all available concrete
+  enzymes are considered.
 
 - annotate_enzymes:
 
@@ -47,18 +49,21 @@ path_biosynthesis_virtual(from, to, enzymes = NULL, annotate_enzymes = FALSE)
 A `glyenzy_virtual_biosynthesis_network` object inheriting from
 `glyenzy_biosynthesis_network` and
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html).
-Vertices contain IUPAC-condensed strings in `name`; edges have a forward
-`step` and virtual-enzyme `enzyme` attribute. When `annotate_enzymes` is
-`TRUE`, `concrete_enzymes` is a list of character vectors containing
-every candidate concrete enzyme for each transition.
+Vertices contain IUPAC-condensed strings in `name` and a logical
+`target` attribute indicating the target glycan. At most one directed
+edge connects each substrate and product. Edges have a forward `step`,
+`is_virtual = TRUE`, a virtual-enzyme `enzyme` label, and a list-valued
+`enzymes` attribute. When `annotate_enzymes` is `TRUE`, `enzymes`
+contains every candidate concrete enzyme for each transition; otherwise
+each element is empty.
 
 ## Virtual enzymes
 
 Each edge is named for the residue added by that step. Intact glycans
 include the linkage anomer and acceptor position, so a beta-1,4-linked
-GlcNAc is labeled `"b4GlcNAcT"`. Partial and topological glycans omit
-linkage information and use `"GlcNAcT"`. Generic or mixed topological
-glycans use their preserved generic residue names, such as `"HexNAcT"`.
+GlcNAc is labeled `"b4GlcNAcT"`. Topological glycans omit linkage
+information and use `"GlcNAcT"`. Generic topological glycans use their
+preserved generic residue names, such as `"HexNAcT"`.
 
 Sulfation is represented as its own atomic transition. Sulfate additions
 at positions 3 and 6 use `"3SulfoT"` and `"6SulfoT"`; an unknown or
@@ -77,6 +82,24 @@ Generic structures do not retain glycan-class metadata. A generic
 structure matching the N-glycan-core topology is therefore assumed to be
 an N-glycan; use `path_biosynthesis_virtual()` with an explicit `from`
 when that topology belongs to another glycan class.
+
+## Input compatibility
+
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md),
+[`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis_virtual.md),
+[`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md),
+and `path_biosynthesis_virtual()` accept only glycans that share one
+monosaccharide type (`"concrete"` or `"generic"`) and one structure
+level (`"intact"` or `"topological"`). Structures with mixed generic and
+concrete residues, partial structures, and missing structures are not
+supported. In the `path_*()` functions, `from` and `to` must have the
+same monosaccharide type and structure level.
+
+Use
+[`glyrepr::convert_to_generic()`](https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html)
+to standardize monosaccharide types or
+[`glyrepr::remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html)
+to standardize structures at the topological level.
 
 ## Examples
 

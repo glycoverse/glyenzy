@@ -21,9 +21,8 @@ have_enzyme(glycans, enzyme, method = c("motif", "path"))
 
 - enzyme:
 
-  An
-  [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
-  or a gene symbol.
+  An enzyme object or a name accepted by
+  [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md).
 
 - method:
 
@@ -65,8 +64,8 @@ might be active, depending on factors such as tissue specificity.
 
 Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic or mixed
-residues are supported where explicitly documented, such as
+residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic residues are
+supported where explicitly documented, such as
 [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
 and
 [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md).
@@ -80,8 +79,8 @@ when unsupported substituents are present.
 
 ### Incomplete or non-concrete glycan structures
 
-If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 [`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
 other than `"intact"`, or with a
 [`glyrepr::get_mono_type()`](https://glycoverse.github.io/glyrepr/reference/get_mono_type.html)

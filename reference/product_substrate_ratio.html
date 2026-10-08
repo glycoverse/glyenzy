@@ -13,7 +13,7 @@ glycosite."><meta property="og:image" content="https://glycoverse.github.io/glye
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,10 +63,11 @@ glycosite.</p>
 
 
 <dt id="arg-enzymes">enzymes<a class="anchor" aria-label="anchor" href="#arg-enzymes"></a></dt>
-<dd><p>A character vector of glycosyltransferase or sulfotransferase
-names, or a list of their <code><a href="enzyme.html">enzyme()</a></code> objects. Starter
-glycosyltransferases are not supported because their substrates are not
-glycans.</p></dd>
+<dd><p>A character vector of concrete gene symbols or abstract
+activity names for glycosyltransferases or sulfotransferases, or a list of
+their <code><a href="enzyme.html">enzyme()</a></code> objects. Concrete and abstract enzymes cannot be mixed.
+Starter glycosyltransferases are not supported because their substrates
+are not glycans.</p></dd>
 
 </dl></div>
     <div class="section level2">

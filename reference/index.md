@@ -6,6 +6,8 @@
   : Enzymes
 - [`db_enzymes()`](https://glycoverse.github.io/glyenzy/reference/db_enzymes.md)
   : Get all enzymes
+- [`abstract_enzymes()`](https://glycoverse.github.io/glyenzy/reference/abstract_enzymes.md)
+  : Abstract enzymes for N-glycan biosynthesis
 - [`enzymes_from_rnaseq()`](https://glycoverse.github.io/glyenzy/reference/enzymes_from_rnaseq.md)
   : Filter enzymes using RNA-seq expression
 - [`make_enzyme()`](https://glycoverse.github.io/glyenzy/reference/make_enzyme.md)
@@ -32,6 +34,8 @@
 
 ## Biosynthesis
 
+- [`normalize_n_glycan()`](https://glycoverse.github.io/glyenzy/reference/normalize_n_glycan.md)
+  : Normalize Topological N-Glycans
 - [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
   [`grow_glycans()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
   : Grow Glycans with Enzymes

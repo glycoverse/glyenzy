@@ -38,9 +38,11 @@ path_biosynthesis(
 
 - enzymes:
 
-  A character vector of gene symbols, or a list of
+  A character vector of concrete gene symbols or abstract activity
+  names, or a list of
   [`enzyme()`](https://glycoverse.github.io/glyenzy/reference/enzyme.md)
-  objects. If `NULL` (default), all available enzymes will be used.
+  objects. Concrete and abstract enzymes cannot be mixed. If `NULL`
+  (default), all available concrete enzymes will be used.
 
 - max_steps:
 
@@ -66,13 +68,15 @@ path_biosynthesis(
 A `glyenzy_biosynthesis_network` object inheriting from
 [`igraph::igraph()`](https://r.igraph.org/reference/aaa-igraph-package.html)
 and representing the synthesis path(s). Vertices represent glycan
-structures, with IUPAC-condensed strings in the `name` attribute. Every
-edge has a `step` attribute indicating the forward synthesis step and an
-`enzyme` attribute containing its gene symbol. Multiple enzymes
-catalysing the same substrate-to-product transition are represented by
-parallel edges. When virtual fallback is required, every edge also has
-an `is_virtual` attribute; virtual edges use the structural
-virtual-enzyme name in `enzyme`.
+structures, with IUPAC-condensed strings in the `name` attribute and a
+logical `target` attribute indicating the target glycan. At most one
+directed edge connects each substrate and product. Every edge has an
+integer `step`, a logical `is_virtual`, a scalar display label in
+`enzyme`, and a list-valued `enzymes` attribute containing concrete
+enzyme candidates. For known reactions, `enzyme` combines the candidates
+with `" / "`; for virtual reactions, it contains the structural
+virtual-enzyme name and `enzymes` is empty unless concrete candidates
+were annotated.
 
 ## Important notes
 
@@ -103,8 +107,8 @@ might be active, depending on factors such as tissue specificity.
 
 Most functions only work for glycans containing **concrete** residues
 (e.g., `"Glc"`, `"GalNAc"`), and not for glycans with **generic**
-residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic or mixed
-residues are supported where explicitly documented, such as
+residues (e.g., `"Hex"`, `"HexNAc"`). Inputs with generic residues are
+supported where explicitly documented, such as
 [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
 and `path_biosynthesis()`.
 
@@ -117,8 +121,8 @@ when unsupported substituents are present.
 
 ### Incomplete or non-concrete glycan structures
 
-If the glycan structure is incomplete, partially degraded, or contains
-generic or mixed residues, the result may be misleading. Glycans with a
+Some functions accept glycan structures that are incomplete, partially
+degraded, or contain generic residues. When accepted, glycans with a
 [`glyrepr::get_structure_level()`](https://glycoverse.github.io/glyrepr/reference/get_structure_level.html)
 other than `"intact"`, or with a
 [`glyrepr::get_mono_type()`](https://glycoverse.github.io/glyrepr/reference/get_mono_type.html)
@@ -150,6 +154,25 @@ For known-enzyme path inference:
 
 - For GalCer glycans, the starting structure is assumed to be "Gal(b1-"
 
+## Input compatibility
+
+[`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md),
+[`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis_virtual.md),
+`path_biosynthesis()`, and
+[`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis_virtual.md)
+accept only glycans that share one monosaccharide type (`"concrete"` or
+`"generic"`) and one structure level (`"intact"` or `"topological"`).
+Structures with mixed generic and concrete residues, partial structures,
+and missing structures are not supported. In the `path_*()` functions,
+`from` and `to` must have the same monosaccharide type and structure
+level.
+
+Use
+[`glyrepr::convert_to_generic()`](https://glycoverse.github.io/glyrepr/reference/convert_to_generic.html)
+to standardize monosaccharide types or
+[`glyrepr::remove_linkages()`](https://glycoverse.github.io/glyrepr/reference/remove_linkages.html)
+to standardize structures at the topological level.
+
 ## Virtual fallback
 
 Sometimes the biosynthesis network of a glycan cannot be fully resolved;
@@ -180,6 +203,8 @@ path <- path_biosynthesis(from, to, enzymes = "ST6GAL1", max_steps = 3)
 
 # View the path
 igraph::as_data_frame(path, what = "edges")
-#>                  from                              to  enzyme step
-#> 1 Gal(b1-4)GlcNAc(b1- Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1- ST6GAL1    1
+#>                  from                              to  enzyme is_virtual step
+#> 1 Gal(b1-4)GlcNAc(b1- Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1- ST6GAL1      FALSE    1
+#>   enzymes
+#> 1 ST6GAL1
 ```
