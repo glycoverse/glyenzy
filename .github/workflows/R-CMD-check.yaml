@@ -56,7 +56,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, glymotif=github::glycoverse/glymotif@48b010817c7cd7822cd5c90ba1cec5c15a48c667
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
