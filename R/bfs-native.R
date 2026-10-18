@@ -55,29 +55,10 @@
 
 .bfs_native_run <- function(self, private) {
   plan <- private$rule_plan
-  rules <- lapply(plan$rules, function(job) {
-    prepared <- job$prepared_rule
-    list(
-      acceptor = .bfs_native_graph(prepared$acceptor),
-      rejects = lapply(prepared$rejects, .bfs_native_graph),
-      requires = lapply(prepared$requires, function(x) {
-        list(motif = .bfs_native_graph(x$motif), alignment = x$alignment)
-      }),
-      alignment = job$rule$acceptor_alignment,
-      site = job$rule$acceptor_idx,
-      action = if (inherits(job$enzyme, "glyenzy_st_enzyme")) {
-        "ST"
-      } else if (inherits(job$enzyme, "glyenzy_gh_enzyme")) {
-        "GH"
-      } else {
-        "GT"
-      },
-      mono = job$rule$new_residue,
-      linkage = job$rule$new_linkage,
-      sulfate = job$rule$new_substituent,
-      product_sub = job$rule$product_sub
-    )
-  })
+  rules <- plan$native_rules
+  if (is.null(rules)) {
+    rules <- lapply(plan$rules, .bfs_native_rule)
+  }
   enzymes <- lapply(seq_along(self$enzymes), function(i) {
     e <- self$enzymes[[i]]
     list(
@@ -170,7 +151,6 @@
       if (length(self$queue) >= i) self$queue[[i]] else NULL
     )
   })
-  monos <- glyrepr::available_monosaccharides()
   type_motifs <- c(
     "GlcNAc(b1-4)GlcNAc(?1-",
     "Xyl(??-?)Glc(?1-",
@@ -204,10 +184,7 @@
       ),
       .bfs_native_graph
     ),
-    dictionary = data.frame(
-      concrete = monos,
-      generic = glyrepr::convert_to_generic(monos)
-    ),
+    dictionary = .bfs_native_dictionary(),
     byte_order = identical(Sys.getlocale("LC_COLLATE"), "C"),
     visited = self$visited,
     parent = self$parent,
@@ -253,5 +230,29 @@
     parent_enzyme = self$parent_enzyme,
     parent_step = self$parent_step,
     missing_target_keys = out$missing_target_keys
+  )
+}
+
+.bfs_native_rule <- function(job) {
+  prepared <- job$prepared_rule
+  list(
+    acceptor = .bfs_native_graph(prepared$acceptor),
+    rejects = lapply(prepared$rejects, .bfs_native_graph),
+    requires = lapply(prepared$requires, function(x) {
+      list(motif = .bfs_native_graph(x$motif), alignment = x$alignment)
+    }),
+    alignment = job$rule$acceptor_alignment,
+    site = job$rule$acceptor_idx,
+    action = if (inherits(job$enzyme, "glyenzy_st_enzyme")) {
+      "ST"
+    } else if (inherits(job$enzyme, "glyenzy_gh_enzyme")) {
+      "GH"
+    } else {
+      "GT"
+    },
+    mono = job$rule$new_residue,
+    linkage = job$rule$new_linkage,
+    sulfate = job$rule$new_substituent,
+    product_sub = job$rule$product_sub
   )
 }

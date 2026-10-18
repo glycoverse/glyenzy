@@ -247,7 +247,7 @@ BfsSynthesisSearch <- R6::R6Class(
         unique_target_graphs
       )
       private$product_match_mode <- .glymotif_mode(self$from_g)
-      private$rule_plan <- .prepare_bfs_rule_plan(self$enzymes)
+      private$rule_plan <- .bfs_search_rule_plan(self$enzymes)
       private$product_cache <- fastmap::fastmap()
       private$n_core_graph <- glyrepr::get_structure_graphs(
         .n_glycan_starting_glycan("virtual")
@@ -612,16 +612,13 @@ build_synthesis_result_graph <- function(
     ))
   }
 
-  edges_df <- do.call(
-    rbind,
-    purrr::map(
-      search_result$all_edges,
-      ~ tibble::tibble(
-        from = .x$from,
-        to = .x$to,
-        enzyme = .x$enzyme,
-        step = .x$step
-      )
+  edges_df <- tibble::tibble(
+    from = vapply(search_result$all_edges, `[[`, character(1), "from"),
+    to = vapply(search_result$all_edges, `[[`, character(1), "to"),
+    enzyme = vapply(search_result$all_edges, `[[`, character(1), "enzyme"),
+    step = unlist(
+      lapply(search_result$all_edges, `[[`, "step"),
+      use.names = FALSE
     )
   )
   edges_df <- unique(edges_df)

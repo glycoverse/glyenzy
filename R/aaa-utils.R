@@ -1141,11 +1141,21 @@
 #' @noRd
 .can_enzymes_contribute <- function(enzymes, glycans) {
   tryCatch(
-    purrr::map_lgl(
-      enzymes,
-      .enzyme_contributes_to_targets,
-      targets = glycans
-    ),
+    {
+      native <- tryCatch(
+        .bfs_prefilter(enzymes, glycans),
+        error = function(e) {
+          stats::setNames(rep(NA, length(enzymes)), names(enzymes))
+        }
+      )
+      fallback <- which(is.na(native))
+      native[fallback] <- purrr::map_lgl(
+        enzymes[fallback],
+        .enzyme_contributes_to_targets,
+        targets = glycans
+      )
+      native
+    },
     error = function(e) {
       rep(TRUE, length(enzymes))
     }

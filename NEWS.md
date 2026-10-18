@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* `trace_biosynthesis()` and `path_biosynthesis()` run faster with batched enzyme prefiltering, shared preparation of built-in rules, and more efficient result construction. Search results are recomputed for every call, and custom enzymes retain their existing dispatch.
+
 # glyenzy 0.10.0
 
 ## Breaking changes

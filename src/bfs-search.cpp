@@ -467,6 +467,8 @@ class Engine {
     List matches =
         glyenzy_bfs_matching::match(g, *r.acceptor, dictionary, r.alignment,
                                     false, true, lenient, R_NilValue, false);
+    if (matches.size() == 0)
+      return {};
     vector<vector<int>> rejected;
     for (const auto &m : r.rejects) {
       List rm =
@@ -694,4 +696,26 @@ public:
 // [[Rcpp::export]]
 Rcpp::List cpp_bfs_search(Rcpp::List config, Rcpp::List callbacks) {
   return glyenzy_bfs::Engine(config, callbacks).run();
+}
+
+// Prepare each target and motif once for all enzyme-product tests. The same
+// subset matcher is used by the search for requirements and pruning.
+// [[Rcpp::export]]
+Rcpp::LogicalMatrix cpp_bfs_have_motifs(Rcpp::List targets, Rcpp::List motifs,
+                                     Rcpp::CharacterVector alignments,
+                                     bool lenient, Rcpp::DataFrame dictionary) {
+  using namespace glyenzy_bfs;
+  Dictionary d(dictionary);
+  vector<glyenzy_bfs::Graph> prepared;
+  for (SEXP motif : motifs)
+    prepared.emplace_back(List(motif));
+  LogicalMatrix out(targets.size(), motifs.size());
+  for (int i = 0; i < targets.size(); ++i) {
+    Rcpp::checkUserInterrupt();
+    glyenzy_bfs::Graph target(as<List>(targets[i]));
+    for (int j = 0; j < motifs.size(); ++j)
+      out(i, j) = subset_match(target, prepared[j], d,
+                               as<string>(alignments[j]), lenient);
+  }
+  return out;
 }

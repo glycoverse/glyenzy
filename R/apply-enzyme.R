@@ -331,7 +331,7 @@ apply_enzyme <- function(
 }
 
 # Prepare shared rule jobs and the ordered enzyme plans that consume them.
-.prepare_bfs_rule_plan <- function(enzymes) {
+.prepare_bfs_rule_plan <- function(enzymes, prepare_strict = TRUE) {
   prepared_rules <- purrr::map(
     enzymes,
     function(enzyme) purrr::map(enzyme$rules, .prepare_rule_graphs)
@@ -391,7 +391,9 @@ apply_enzyme <- function(
     enzyme_rule_ids = enzyme_rule_ids,
     enzyme_plans = enzyme_plans,
     enzyme_plan_ids = enzyme_plan_ids,
-    strict_match_plan = .prepare_bfs_strict_match_plan(rule_jobs)
+    strict_match_plan = if (prepare_strict) {
+      .prepare_bfs_strict_match_plan(rule_jobs)
+    }
   )
 }
 
