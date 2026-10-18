@@ -59,6 +59,10 @@
   if (is.null(rules)) {
     rules <- lapply(plan$rules, .bfs_native_rule)
   }
+  prepared_rules <- plan$prepared_rules
+  if (is.null(prepared_rules)) {
+    prepared_rules <- vector("list", length(self$enzymes))
+  }
   enzymes <- lapply(seq_along(self$enzymes), function(i) {
     e <- self$enzymes[[i]]
     list(
@@ -85,14 +89,17 @@
   # This callback is for user S3 actions and attribute/floating graph operations,
   # never an alternative R BFS. Preserve each complete enzyme-cell call.
   expand <- function(node, enzyme_idx) {
-    e <- self$enzymes[[enzyme_idx]]
+    e <- .bfs_resolve_enzyme(self$enzymes[[enzyme_idx]])
     graph <- get_graph(node)
     structure <- get_structure(node)
     if (.uses_standard_graph_action(e)) {
+      if (is.null(prepared_rules[[enzyme_idx]])) {
+        prepared_rules[[enzyme_idx]] <<- lapply(e$rules, .prepare_rule_graphs)
+      }
       raw <- .apply_enzyme_prepared_graphs(
         graph,
         e,
-        plan$prepared_rules[[enzyme_idx]],
+        prepared_rules[[enzyme_idx]],
         self$structure_level,
         .glymotif_mode(structure)
       )
@@ -151,13 +158,6 @@
       if (length(self$queue) >= i) self$queue[[i]] else NULL
     )
   })
-  type_motifs <- c(
-    "GlcNAc(b1-4)GlcNAc(?1-",
-    "Xyl(??-?)Glc(?1-",
-    "Glc(a1-2)Gal(?1-",
-    "Man(a1-3)Man(?1-",
-    "Man(a1-6)Man(?1-"
-  )
   config <- list(
     source = .bfs_native_pack(private$source_graph, self$from_key, self$from_g),
     frontier = frontier,
@@ -177,13 +177,7 @@
     target_lenient = private$target_match_mode == "lenient",
     ncore = .bfs_native_graph(private$n_core_graph),
     pre = .bfs_native_graph(private$pre_mgat2_graph),
-    type_motifs = lapply(
-      glyrepr::get_structure_graphs(
-        glyrepr::as_glycan_structure(type_motifs),
-        return_list = TRUE
-      ),
-      .bfs_native_graph
-    ),
+    type_motifs = glyenzy_bfs_structures$type_motifs,
     dictionary = .bfs_native_dictionary(),
     byte_order = identical(Sys.getlocale("LC_COLLATE"), "C"),
     visited = self$visited,

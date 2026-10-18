@@ -133,10 +133,20 @@ glyenzy_abstract_enzymes <- purrr::map(abstract_data, function(enzyme_data) {
 })
 names(glyenzy_abstract_enzymes) <- abstract_names
 
-# Save both lists together so regeneration cannot discard either collection.
+# Prepare the fixed native rule records while generating package data, rather
+# than doing this during the first biosynthesis query. Records contain only
+# plain R values. Fixed starting structures are stored separately below.
+glyenzy_bfs_prefilter <- glyenzy:::.build_bfs_prefilter_plan(glyenzy_enzymes)
+glyenzy_bfs_rules <- glyenzy:::.build_bfs_builtin_rule_plan(glyenzy_enzymes)
+glyenzy_bfs_structures <- glyenzy:::.build_bfs_structures()
+
+# Keep both enzyme collections and their derived plans synchronized.
 usethis::use_data(
   glyenzy_enzymes,
   glyenzy_abstract_enzymes,
+  glyenzy_bfs_prefilter,
+  glyenzy_bfs_rules,
+  glyenzy_bfs_structures,
   overwrite = TRUE,
   internal = TRUE
 )

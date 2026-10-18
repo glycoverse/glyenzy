@@ -468,6 +468,9 @@ apply_enzyme <- function(
 # Additional custom subclasses retain their existing private dispatch path.
 .standard_action_classes <- function(enzyme) {
   enzyme_class <- class(enzyme)
+  if (identical(enzyme_class[[1L]], "glyenzy_bfs_enzyme")) {
+    enzyme_class <- enzyme_class[-1L]
+  }
   if (!identical(enzyme_class[[1L]], "glyenzy_abstract_enzyme")) {
     return(enzyme_class)
   }

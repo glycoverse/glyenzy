@@ -107,3 +107,21 @@ test_that("native prefilter failures retain the original per-enzyme fallback", {
     c(C1GALT1 = TRUE, B3GNT6 = FALSE)
   )
 })
+
+test_that("native N-core detection preserves vector names and lenient matching", {
+  strings <- c(
+    N = "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+    O = "Gal(b1-3)GalNAc(a1-"
+  )
+  targets <- glyparse::auto_parse(strings)
+  for (input in list(
+    targets,
+    glyrepr::convert_to_generic(targets),
+    glyrepr::remove_linkages(targets)
+  )) {
+    expect_identical(
+      .is_n_glycan(input),
+      .have_motif_substituent_subset(input, unname(strings[[1]]))
+    )
+  }
+})

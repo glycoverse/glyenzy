@@ -115,6 +115,9 @@ trace_biosynthesis <- function(
     starting_glycan,
     glycans
   )
+  if (is.null(enzymes) && max_virtual_steps == 0L && is.null(filter)) {
+    enzymes <- .bfs_default_enzymes(targets_requiring_synthesis)
+  }
   enzymes <- .process_enzymes_arg(
     enzymes,
     glycans = targets_requiring_synthesis,
@@ -172,7 +175,7 @@ trace_biosynthesis <- function(
       root_anomer <- igraph::graph_attr(graph, "anomer")
     }
 
-    start <- glyparse::parse_iupac_condensed(
+    start <- glyrepr::as_glycan_structure(
       paste0(root_mono, "(", root_anomer, "-")
     )
   }
@@ -213,15 +216,13 @@ trace_biosynthesis <- function(
   )
 
   if (identical(method, "enzymatic")) {
-    return(glyparse::parse_iupac_condensed(
-      "Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
-    ))
+    return(glyenzy_bfs_structures$precursor)
   }
 
   if (identical(structure_level, "topological")) {
-    return(glyrepr::n_glycan_core(linkage = FALSE))
+    return(glyenzy_bfs_structures$core_topological)
   }
-  glyrepr::n_glycan_core()
+  glyenzy_bfs_structures$core
 }
 
 .virtual_core_matches <- function(glycan, core) {

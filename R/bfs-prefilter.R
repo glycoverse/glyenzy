@@ -1,86 +1,82 @@
-# Cache only immutable, target-independent motif preparation. Custom enzymes
-# and graphs with additional metadata retain the R/S3 prefilter.
-.bfs_prefilter_plan <- local({
-  source <- NULL
-  plan <- NULL
-  function() {
-    if (!is.null(plan) && identical(source, glyenzy_enzymes)) {
-      return(plan)
+# Bundled target-independent motif preparation. Custom enzymes and graphs
+# with additional metadata retain the R/S3 prefilter.
+.bfs_prefilter_plan <- function() {
+  glyenzy_bfs_prefilter
+}
+
+# Regenerated with the enzyme database by data-raw/glyenzy_enzymes.R.
+.build_bfs_prefilter_plan <- function(enzymes) {
+  motifs <- list()
+  keys <- character()
+  alignments <- character()
+  add <- function(motif, alignment = "substructure") {
+    motif <- glyrepr::as_glycan_structure(motif)
+    key <- paste(alignment, as.character(motif), sep = "\r")
+    id <- match(key, keys)
+    if (is.na(id)) {
+      record <- .bfs_native_graph(glyrepr::get_structure_graphs(motif))
+      if (is.null(record)) {
+        return(NA_integer_)
+      }
+      id <- length(motifs) + 1L
+      motifs[[id]] <<- record
+      keys[[id]] <<- key
+      alignments[[id]] <<- alignment
     }
-    motifs <- list()
-    keys <- character()
-    alignments <- character()
-    add <- function(motif, alignment = "substructure") {
-      motif <- glyrepr::as_glycan_structure(motif)
-      key <- paste(alignment, as.character(motif), sep = "\r")
-      id <- match(key, keys)
-      if (is.na(id)) {
-        record <- .bfs_native_graph(glyrepr::get_structure_graphs(motif))
-        if (is.null(record)) {
-          return(NA_integer_)
-        }
-        id <- length(motifs) + 1L
-        motifs[[id]] <<- record
-        keys[[id]] <<- key
-        alignments[[id]] <<- alignment
-      }
-      id
-    }
-    special <- list(
-      ncore = add("Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"),
-      MGAT1 = add("GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"),
-      MOGS = add(glyenzy_enzymes$MOGS$rules[[1]]$acceptor),
-      MAN1B1 = add(
-        "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-        "core"
-      ),
-      MAN2A1 = add(
-        "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-        "core"
-      ),
-      GANAB = add(
-        "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-        "core"
-      ),
-      man_a = add("Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", "core"),
-      man_c = add(
-        "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
-        "core"
-      )
-    )
-    jobs <- lapply(glyenzy_enzymes, function(enzyme) {
-      if (inherits(enzyme, "glyenzy_npre_gt_enzyme")) {
-        return("npre")
-      }
-      if (enzyme$name == "MGAT1" || inherits(enzyme, "glyenzy_gh_enzyme")) {
-        return(enzyme$name)
-      }
-      if (!.uses_standard_graph_action(enzyme)) {
-        return(NULL)
-      }
-      lapply(enzyme$rules, function(rule) {
-        list(
-          product = add(rule$product, .product_alignment(rule)),
-          requires = vapply(
-            rule$requires,
-            function(requirement) {
-              add(requirement$motif, requirement$alignment)
-            },
-            integer(1)
-          )
-        )
-      })
-    })
-    plan <<- list(
-      motifs = motifs,
-      alignments = alignments,
-      jobs = jobs,
-      special = special
-    )
-    source <<- glyenzy_enzymes
-    plan
+    id
   }
-})
+  special <- list(
+    ncore = add("Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"),
+    MGAT1 = add("GlcNAc(b1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"),
+    MOGS = add(enzymes$MOGS$rules[[1]]$acceptor),
+    MAN1B1 = add(
+      "Man(a1-2)Man(a1-3)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+      "core"
+    ),
+    MAN2A1 = add(
+      "Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+      "core"
+    ),
+    GANAB = add(
+      "Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+      "core"
+    ),
+    man_a = add("Man(a1-2)Man(a1-3)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-", "core"),
+    man_c = add(
+      "Man(a1-2)Man(a1-6)Man(a1-6)Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-",
+      "core"
+    )
+  )
+  jobs <- lapply(enzymes, function(enzyme) {
+    if (inherits(enzyme, "glyenzy_npre_gt_enzyme")) {
+      return("npre")
+    }
+    if (enzyme$name == "MGAT1" || inherits(enzyme, "glyenzy_gh_enzyme")) {
+      return(enzyme$name)
+    }
+    if (!.uses_standard_graph_action(enzyme)) {
+      return(NULL)
+    }
+    lapply(enzyme$rules, function(rule) {
+      list(
+        product = add(rule$product, .product_alignment(rule)),
+        requires = vapply(
+          rule$requires,
+          function(requirement) {
+            add(requirement$motif, requirement$alignment)
+          },
+          integer(1)
+        )
+      )
+    })
+  })
+  list(
+    motifs = motifs,
+    alignments = alignments,
+    jobs = jobs,
+    special = special
+  )
+}
 
 .bfs_native_dictionary <- local({
   dictionary <- NULL
@@ -102,7 +98,7 @@
   builtin <- vapply(
     enzymes,
     function(enzyme) {
-      !is.null(enzyme$name) && identical(enzyme, glyenzy_enzymes[[enzyme$name]])
+      .bfs_is_builtin_enzyme(enzyme)
     },
     logical(1)
   )

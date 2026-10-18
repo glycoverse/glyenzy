@@ -2,7 +2,7 @@
 
 Tested on 2026-10-19 (Asia/Shanghai), using macOS Tahoe 26.5.2, ARM64, and R 4.6.1.
 
-Baseline: `e925d5f` (`glyenzy` 0.10.0.9000). Optimized: the implementation committed with this report. Both were installed into separate temporary libraries with the normal `-O2` build settings and the same dependencies.
+Baseline: `e925d5f` (`glyenzy` 0.10.0.9000). Optimized: `33a70cd`. Both were installed into separate temporary libraries with the normal `-O2` build settings and the same dependencies. These are the first-stage warm-session results; see [the cold-start follow-up](cold-start.md) for the subsequent first-call optimization.
 
 ## Results
 
