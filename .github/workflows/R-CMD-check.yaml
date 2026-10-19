@@ -56,7 +56,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          # glymotif 1.0.0 fails to compile with R 4.2's default C++14.
+          # Pin its upstream fix until a release containing #61 is available.
+          extra-packages: |
+            any::rcmdcheck
+            ${{ matrix.config.r == 'oldrel-4' && 'github::glycoverse/glymotif@b6a6767fc86f9ed88147013274ef23fd67101297' || '' }}
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2

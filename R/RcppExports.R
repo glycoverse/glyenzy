@@ -4,3 +4,7 @@
 cpp_bfs_search <- function(config, callbacks) {
     .Call(`_glyenzy_cpp_bfs_search`, config, callbacks)
 }
+
+cpp_bfs_have_motifs <- function(targets, motifs, alignments, lenient, dictionary) {
+    .Call(`_glyenzy_cpp_bfs_have_motifs`, targets, motifs, alignments, lenient, dictionary)
+}

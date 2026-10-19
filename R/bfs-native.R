@@ -55,29 +55,14 @@
 
 .bfs_native_run <- function(self, private) {
   plan <- private$rule_plan
-  rules <- lapply(plan$rules, function(job) {
-    prepared <- job$prepared_rule
-    list(
-      acceptor = .bfs_native_graph(prepared$acceptor),
-      rejects = lapply(prepared$rejects, .bfs_native_graph),
-      requires = lapply(prepared$requires, function(x) {
-        list(motif = .bfs_native_graph(x$motif), alignment = x$alignment)
-      }),
-      alignment = job$rule$acceptor_alignment,
-      site = job$rule$acceptor_idx,
-      action = if (inherits(job$enzyme, "glyenzy_st_enzyme")) {
-        "ST"
-      } else if (inherits(job$enzyme, "glyenzy_gh_enzyme")) {
-        "GH"
-      } else {
-        "GT"
-      },
-      mono = job$rule$new_residue,
-      linkage = job$rule$new_linkage,
-      sulfate = job$rule$new_substituent,
-      product_sub = job$rule$product_sub
-    )
-  })
+  rules <- plan$native_rules
+  if (is.null(rules)) {
+    rules <- lapply(plan$rules, .bfs_native_rule)
+  }
+  prepared_rules <- plan$prepared_rules
+  if (is.null(prepared_rules)) {
+    prepared_rules <- vector("list", length(self$enzymes))
+  }
   enzymes <- lapply(seq_along(self$enzymes), function(i) {
     e <- self$enzymes[[i]]
     list(
@@ -104,14 +89,17 @@
   # This callback is for user S3 actions and attribute/floating graph operations,
   # never an alternative R BFS. Preserve each complete enzyme-cell call.
   expand <- function(node, enzyme_idx) {
-    e <- self$enzymes[[enzyme_idx]]
+    e <- .bfs_resolve_enzyme(self$enzymes[[enzyme_idx]])
     graph <- get_graph(node)
     structure <- get_structure(node)
     if (.uses_standard_graph_action(e)) {
+      if (is.null(prepared_rules[[enzyme_idx]])) {
+        prepared_rules[[enzyme_idx]] <<- lapply(e$rules, .prepare_rule_graphs)
+      }
       raw <- .apply_enzyme_prepared_graphs(
         graph,
         e,
-        plan$prepared_rules[[enzyme_idx]],
+        prepared_rules[[enzyme_idx]],
         self$structure_level,
         .glymotif_mode(structure)
       )
@@ -170,14 +158,6 @@
       if (length(self$queue) >= i) self$queue[[i]] else NULL
     )
   })
-  monos <- glyrepr::available_monosaccharides()
-  type_motifs <- c(
-    "GlcNAc(b1-4)GlcNAc(?1-",
-    "Xyl(??-?)Glc(?1-",
-    "Glc(a1-2)Gal(?1-",
-    "Man(a1-3)Man(?1-",
-    "Man(a1-6)Man(?1-"
-  )
   config <- list(
     source = .bfs_native_pack(private$source_graph, self$from_key, self$from_g),
     frontier = frontier,
@@ -197,17 +177,8 @@
     target_lenient = private$target_match_mode == "lenient",
     ncore = .bfs_native_graph(private$n_core_graph),
     pre = .bfs_native_graph(private$pre_mgat2_graph),
-    type_motifs = lapply(
-      glyrepr::get_structure_graphs(
-        glyrepr::as_glycan_structure(type_motifs),
-        return_list = TRUE
-      ),
-      .bfs_native_graph
-    ),
-    dictionary = data.frame(
-      concrete = monos,
-      generic = glyrepr::convert_to_generic(monos)
-    ),
+    type_motifs = glyenzy_bfs_structures$type_motifs,
+    dictionary = .bfs_native_dictionary(),
     byte_order = identical(Sys.getlocale("LC_COLLATE"), "C"),
     visited = self$visited,
     parent = self$parent,
@@ -253,5 +224,29 @@
     parent_enzyme = self$parent_enzyme,
     parent_step = self$parent_step,
     missing_target_keys = out$missing_target_keys
+  )
+}
+
+.bfs_native_rule <- function(job) {
+  prepared <- job$prepared_rule
+  list(
+    acceptor = .bfs_native_graph(prepared$acceptor),
+    rejects = lapply(prepared$rejects, .bfs_native_graph),
+    requires = lapply(prepared$requires, function(x) {
+      list(motif = .bfs_native_graph(x$motif), alignment = x$alignment)
+    }),
+    alignment = job$rule$acceptor_alignment,
+    site = job$rule$acceptor_idx,
+    action = if (inherits(job$enzyme, "glyenzy_st_enzyme")) {
+      "ST"
+    } else if (inherits(job$enzyme, "glyenzy_gh_enzyme")) {
+      "GH"
+    } else {
+      "GT"
+    },
+    mono = job$rule$new_residue,
+    linkage = job$rule$new_linkage,
+    sulfate = job$rule$new_substituent,
+    product_sub = job$rule$product_sub
   )
 }

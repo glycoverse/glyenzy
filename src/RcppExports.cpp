@@ -22,9 +22,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_bfs_have_motifs
+Rcpp::LogicalMatrix cpp_bfs_have_motifs(Rcpp::List targets, Rcpp::List motifs, Rcpp::CharacterVector alignments, bool lenient, Rcpp::DataFrame dictionary);
+RcppExport SEXP _glyenzy_cpp_bfs_have_motifs(SEXP targetsSEXP, SEXP motifsSEXP, SEXP alignmentsSEXP, SEXP lenientSEXP, SEXP dictionarySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type motifs(motifsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type alignments(alignmentsSEXP);
+    Rcpp::traits::input_parameter< bool >::type lenient(lenientSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dictionary(dictionarySEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_bfs_have_motifs(targets, motifs, alignments, lenient, dictionary));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_glyenzy_cpp_bfs_search", (DL_FUNC) &_glyenzy_cpp_bfs_search, 2},
+    {"_glyenzy_cpp_bfs_have_motifs", (DL_FUNC) &_glyenzy_cpp_bfs_have_motifs, 5},
     {NULL, NULL, 0}
 };
 

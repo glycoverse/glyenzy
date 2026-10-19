@@ -31,7 +31,7 @@
   edges <- igraph::as_data_frame(graph, what = "edges")
   if (nrow(edges) == 0L) {
     graph <- igraph::graph_from_data_frame(
-      tibble::tibble(
+      data.frame(
         from = character(),
         to = character(),
         enzyme = character(),
@@ -114,7 +114,7 @@
     )
   })
 
-  edge_data <- tibble::tibble(
+  edge_data <- data.frame(
     from = vapply(collapsed, `[[`, character(1), "from"),
     to = vapply(collapsed, `[[`, character(1), "to"),
     enzyme = vapply(collapsed, `[[`, character(1), "enzyme"),

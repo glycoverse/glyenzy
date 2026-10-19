@@ -26,6 +26,31 @@
 }
 
 .is_n_glycan <- function(x) {
+  if (inherits(x, "glyrepr_structure")) {
+    native <- tryCatch(
+      {
+        records <- lapply(
+          glyrepr::get_structure_graphs(x, return_list = TRUE),
+          .bfs_native_graph
+        )
+        if (!any(vapply(records, is.null, logical(1)))) {
+          plan <- .bfs_prefilter_plan()
+          stats::setNames(
+            as.vector(cpp_bfs_have_motifs(
+              records,
+              plan$motifs[plan$special$ncore],
+              "substructure",
+              .glymotif_mode(x) == "lenient",
+              .bfs_native_dictionary()
+            )),
+            names(records)
+          )
+        }
+      },
+      error = function(e) NULL
+    )
+    if (!is.null(native)) return(native)
+  }
   .have_motif_substituent_subset(
     x,
     "Man(a1-3)[Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-"
@@ -101,6 +126,20 @@
   x,
   call = rlang::caller_env()
 ) {
+  # Canonical condensed input can use glyrepr's parser directly. Other
+  # formats and unsuccessful parses retain auto_parse's diagnostics.
+  if (
+    is.character(x) &&
+      length(x) > 0L &&
+      all(!is.na(x) & grepl("\\([ab?][12?]-$", x))
+  ) {
+    parsed <- tryCatch(
+      glyrepr::as_glycan_structure(x),
+      error = function(e) NULL,
+      warning = function(w) NULL
+    )
+    if (!is.null(parsed)) x <- parsed
+  }
   x <- .process_glycans_arg(
     x,
     allow_generic = TRUE,
@@ -654,6 +693,30 @@
 #' @returns A character vector with one level per structure.
 #' @noRd
 .glycan_structure_levels <- function(x) {
+  # Fully specified trees need no ambiguity classification. Keep the upstream
+  # classifier for floating parts, missing values, and ambiguous linkages.
+  if (inherits(x, "glyrepr_structure") && length(x) > 0L) {
+    graphs <- glyrepr::get_structure_graphs(x, return_list = TRUE)
+    intact <- vapply(
+      graphs,
+      function(graph) {
+        if (is.null(graph)) {
+          return(FALSE)
+        }
+        attrs <- igraph::graph_attr(graph)
+        linkages <- igraph::edge_attr(graph, "linkage")
+        values <- c(linkages, attrs$anomer)
+        length(attrs$floating_parts) == 0L &&
+          !anyNA(values) &&
+          !any(grepl("?", values, fixed = TRUE)) &&
+          !any(grepl("/", linkages, fixed = TRUE))
+      },
+      logical(1)
+    )
+    if (all(intact)) {
+      return(stats::setNames(rep("intact", length(x)), names(x)))
+    }
+  }
   suppressWarnings(glyrepr::get_structure_level(x))
 }
 
@@ -1055,11 +1118,7 @@
 #' @noRd
 .enzymes_from_arg <- function(enzymes) {
   if (is.null(enzymes)) {
-    to_keep <- !purrr::map_lgl(
-      glyenzy_enzymes,
-      ~ .is_starter_gt(.x) || .is_npre_gt(.x)
-    )
-    return(glyenzy_enzymes[to_keep])
+    return(glyenzy_enzymes[glyenzy_bfs_rules$default_indices])
   }
 
   if (is.character(enzymes)) {
@@ -1141,11 +1200,21 @@
 #' @noRd
 .can_enzymes_contribute <- function(enzymes, glycans) {
   tryCatch(
-    purrr::map_lgl(
-      enzymes,
-      .enzyme_contributes_to_targets,
-      targets = glycans
-    ),
+    {
+      native <- tryCatch(
+        .bfs_prefilter(enzymes, glycans),
+        error = function(e) {
+          stats::setNames(rep(NA, length(enzymes)), names(enzymes))
+        }
+      )
+      fallback <- which(is.na(native))
+      native[fallback] <- purrr::map_lgl(
+        lapply(enzymes[fallback], .bfs_resolve_enzyme),
+        .enzyme_contributes_to_targets,
+        targets = glycans
+      )
+      native
+    },
     error = function(e) {
       rep(TRUE, length(enzymes))
     }
