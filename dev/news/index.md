@@ -2,6 +2,21 @@
 
 ## glyenzy (development version)
 
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  and
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  run faster with batched enzyme prefiltering, shared preparation of
+  built-in rules, and more efficient result construction. Search results
+  are recomputed for every call, and custom enzymes retain their
+  existing dispatch. (#54)
+- The first
+  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  call is faster: built-in search rules and fixed structures are
+  prepared when the enzyme database is generated, and default tracing
+  loads full enzyme graphs only when needed. Canonical condensed inputs
+  and intact structures also avoid redundant parsing and classification.
+  (#54)
+
 ## glyenzy 0.10.0
 
 ### Breaking changes
