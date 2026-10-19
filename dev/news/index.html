@@ -37,9 +37,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glyenzy-development-version">glyenzy (development version)<a class="anchor" aria-label="anchor" href="#glyenzy-development-version"></a></h2>
-<ul><li>
-<code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> and <code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> run faster with batched enzyme prefiltering, shared preparation of built-in rules, and more efficient result construction. Search results are recomputed for every call, and custom enzymes retain their existing dispatch. (#54)</li>
-<li>The first <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> call is faster: built-in search rules and fixed structures are prepared when the enzyme database is generated, and default tracing loads full enzyme graphs only when needed. Canonical condensed inputs and intact structures also avoid redundant parsing and classification. (#54)</li>
+<ul><li><p><code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> and <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code> build fully specified concrete glycan networks and annotate built-in enzymes faster while preserving transition order and enzyme matches. (#55)</p></li>
+<li><p><code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> and <code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> run faster with batched enzyme prefiltering, shared preparation of built-in rules, and more efficient result construction. Search results are recomputed for every call, and custom enzymes retain their existing dispatch. (#54)</p></li>
+<li><p>The first <code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> call is faster: built-in search rules and fixed structures are prepared when the enzyme database is generated, and default tracing loads full enzyme graphs only when needed. Canonical condensed inputs and intact structures also avoid redundant parsing and classification. (#54)</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.10.0" id="glyenzy-0100">glyenzy 0.10.0<a class="anchor" aria-label="anchor" href="#glyenzy-0100"></a></h2>

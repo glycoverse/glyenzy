@@ -2,6 +2,13 @@
 
 ## glyenzy (development version)
 
+- [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
+  and
+  [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)
+  build fully specified concrete glycan networks and annotate built-in
+  enzymes faster while preserving transition order and enzyme matches.
+  (#55)
+
 - [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
   and
   [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
@@ -9,6 +16,7 @@
   built-in rules, and more efficient result construction. Search results
   are recomputed for every call, and custom enzymes retain their
   existing dispatch. (#54)
+
 - The first
   [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
   call is faster: built-in search rules and fixed structures are
