@@ -236,7 +236,7 @@ product_substrate_ratio <- function(exp, enzymes) {
   alignment
 ) {
   row_data <- SummarizedExperiment::rowData(exp)
-  motif_counts <- .count_motifs_substituent_subset(
+  motif_counts <- .product_substrate_counts(
     row_data$glycan_structure,
     motifs,
     alignments = rep(alignment, length(motifs))
@@ -263,6 +263,71 @@ product_substrate_ratio <- function(exp, enzymes) {
       rowsum(weighted_abundance, site_idx, reorder = FALSE, na.rm = TRUE)
     }),
     motif_names
+  )
+}
+
+.product_substrate_counts <- function(glycans, motifs, alignments) {
+  # Structure vectors store one graph per key. Match repeated glycans once,
+  # then restore every feature before site-specific abundance aggregation.
+  keys <- as.character(glycans)
+  unique_idx <- which(!duplicated(keys))
+  unique_glycans <- glycans[unique_idx]
+  counts <- .product_substrate_native_counts(unique_glycans, motifs, alignments)
+  if (is.null(counts)) {
+    counts <- .count_motifs_substituent_subset(
+      unique_glycans,
+      motifs,
+      alignments
+    )
+  }
+  counts <- counts[match(keys, keys[unique_idx]), , drop = FALSE]
+  colnames(counts) <- names(motifs)
+  rownames(counts) <- names(glycans)
+  counts
+}
+
+.product_substrate_native_counts <- function(glycans, motifs, alignments) {
+  # Metadata-bearing graphs and unsupported graph shapes retain the existing
+  # graph matcher. No input-dependent results persist between calls.
+  tryCatch(
+    {
+      targets <- lapply(
+        glyrepr::get_structure_graphs(glycans, return_list = TRUE),
+        .bfs_native_graph
+      )
+      patterns <- lapply(
+        glyrepr::get_structure_graphs(motifs, return_list = TRUE),
+        .bfs_native_graph
+      )
+      if (any(vapply(c(targets, patterns), is.null, logical(1)))) {
+        return(NULL)
+      }
+      # These records have no floating metadata. Their linkage strings and
+      # residue names determine the same shared mode without graph traversal.
+      linkages <- unlist(
+        lapply(targets, function(x) {
+          c(x$attributes$anomer, x$edge_attributes$linkage)
+        }),
+        use.names = FALSE
+      )
+      monos <- unique(unlist(
+        lapply(targets, function(x) {
+          x$vertices$mono
+        }),
+        use.names = FALSE
+      ))
+      lenient <- length(targets) == 0L ||
+        any(grepl("[?/]", linkages)) ||
+        any(glyrepr::get_mono_type(monos) != "concrete")
+      cpp_product_substrate_counts(
+        targets,
+        patterns,
+        rep_len(alignments, length(motifs)),
+        lenient,
+        .bfs_native_dictionary()
+      )
+    },
+    error = function(e) NULL
   )
 }
 

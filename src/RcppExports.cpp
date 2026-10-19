@@ -37,6 +37,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_product_substrate_counts
+Rcpp::IntegerMatrix cpp_product_substrate_counts(Rcpp::List targets, Rcpp::List motifs, Rcpp::CharacterVector alignments, bool lenient, Rcpp::DataFrame dictionary);
+RcppExport SEXP _glyenzy_cpp_product_substrate_counts(SEXP targetsSEXP, SEXP motifsSEXP, SEXP alignmentsSEXP, SEXP lenientSEXP, SEXP dictionarySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type motifs(motifsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type alignments(alignmentsSEXP);
+    Rcpp::traits::input_parameter< bool >::type lenient(lenientSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dictionary(dictionarySEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_product_substrate_counts(targets, motifs, alignments, lenient, dictionary));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_virtual_trim
 Rcpp::List cpp_virtual_trim(Rcpp::List source, Rcpp::List targets, Rcpp::DataFrame dictionary, Rcpp::Function order, bool byte_order);
 RcppExport SEXP _glyenzy_cpp_virtual_trim(SEXP sourceSEXP, SEXP targetsSEXP, SEXP dictionarySEXP, SEXP orderSEXP, SEXP byte_orderSEXP) {
@@ -71,6 +86,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_glyenzy_cpp_bfs_search", (DL_FUNC) &_glyenzy_cpp_bfs_search, 2},
     {"_glyenzy_cpp_bfs_have_motifs", (DL_FUNC) &_glyenzy_cpp_bfs_have_motifs, 5},
+    {"_glyenzy_cpp_product_substrate_counts", (DL_FUNC) &_glyenzy_cpp_product_substrate_counts, 5},
     {"_glyenzy_cpp_virtual_trim", (DL_FUNC) &_glyenzy_cpp_virtual_trim, 5},
     {"_glyenzy_cpp_virtual_annotate", (DL_FUNC) &_glyenzy_cpp_virtual_annotate, 5},
     {NULL, NULL, 0}

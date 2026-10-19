@@ -290,3 +290,75 @@ test_that("product_substrate_ratio validates its inputs", {
     product_substrate_ratio(exp, "GALNT1")
   })
 })
+
+test_that("batched ratio counts preserve graph matching semantics", {
+  glycans <- glyparse::auto_parse(c(
+    "Gal(b1-4)GlcNAc(b1-",
+    "Gal3S6S(b1-4)GlcNAc(b1-",
+    "Gal?S(b1-4)GlcNAc(b1-",
+    "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-",
+    "Gal(b1-3)[Gal(b1-6)]GalNAc(a1-",
+    "Gal(b1-3)[Gal(b1-6)]GalNAc-ol(a1-"
+  ))
+  motifs <- glyparse::auto_parse(c(
+    "Gal(b1-",
+    "Gal3S(b1-",
+    "Gal?S(b1-",
+    "Gal3S6S(b1-",
+    "Gal(b1-4)GlcNAc(b1-",
+    "Neu5Ac(a2-6)Gal(b1-",
+    "Gal(?1-?)[Gal(?1-?)]GalNAc(a1-",
+    "Hex(b1-"
+  ))
+  names(motifs) <- paste0("M", seq_along(motifs))
+  cases <- list(
+    glycans,
+    glyrepr::remove_linkages(glycans),
+    glyrepr::convert_to_generic(glycans),
+    glyparse::auto_parse(c("Gal(?1-4)GlcNAc(b1-", "Gal(b1-4)GlcNAc(b1-"))
+  )
+  for (x in cases) {
+    x <- x[c(seq_along(x), 1L, 1L)]
+    names(x) <- paste0("G", seq_along(x))
+    for (alignment in c("substructure", "terminal", "core", "whole")) {
+      native <- .product_substrate_native_counts(x, motifs, alignment)
+      expect_type(native, "integer")
+      reference <- .count_motifs_substituent_subset(x, motifs, alignment)
+      expect_identical(unname(native), unname(reference))
+      expect_identical(
+        .product_substrate_counts(x, motifs, alignment),
+        reference
+      )
+    }
+  }
+})
+
+test_that("ratio counting falls back for floating and additional metadata", {
+  floating <- glyparse::auto_parse("{Fuc(a1-2)}Gal(b1-4)GlcNAc(b1-")
+  extra <- glyparse::auto_parse("Gal(b1-4)GlcNAc(b1-")
+  graphs <- glyrepr::get_structure_graphs(extra, return_list = TRUE)
+  graphs[[1]] <- igraph::set_graph_attr(graphs[[1]], "source", "test")
+  extra <- glyrepr::new_glycan_structure(
+    as.character(extra),
+    stats::setNames(graphs, as.character(extra))
+  )
+  motifs <- glyparse::auto_parse(c("Gal(b1-", "Fuc(a1-"))
+  for (x in list(floating, extra)) {
+    x <- x[c(1, 1)]
+    expect_null(.product_substrate_native_counts(x, motifs, "terminal"))
+    expect_identical(
+      .product_substrate_counts(x, motifs, "terminal"),
+      .count_motifs_substituent_subset(x, motifs, "terminal")
+    )
+  }
+})
+
+test_that("batched ratios preserve real-data site and enzyme ordering", {
+  exp <- glyexp::real_experiment[c(1:12, 1:4), 1:3]
+  enzymes <- c("ST6GAL1", "FUT8", "ST6GAL1")
+  actual <- product_substrate_ratio(exp, enzymes)
+  local_mocked_bindings(
+    .product_substrate_counts = .count_motifs_substituent_subset
+  )
+  expect_identical(actual, product_substrate_ratio(exp, enzymes))
+})
