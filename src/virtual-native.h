@@ -153,7 +153,8 @@ string virtual_glycan_type(const Graph &g, const vector<Graph> &types,
       subset_match(g, types[2], d, "core", true))
     return "O";
   string m = g.mono[root(g)];
-  if (m == "Man" && !g.alditol && g.anomers[root(g)][0] == 'b')
+  if (m == "Man" && !g.alditol && g.sub[root(g)].empty() &&
+      g.anomers[root(g)][0] == 'b')
     return "";
   if (m == "GalNAc" || m == "Man" || m == "Fuc" || m == "GlcNAc" || m == "Xyl")
     return "O";

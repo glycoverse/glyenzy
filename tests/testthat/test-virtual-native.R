@@ -60,13 +60,20 @@ test_that("native annotation preserves default and reordered enzyme matches", {
 })
 
 test_that("native annotation preserves glycan-class restrictions at beta-Man roots", {
-  targets <- c("GlcNAc(b1-2)Man(b1-", "GlcNAc(b1-2)Man-ol(b1-")
+  roots <- c("Man(b1-", "Man6S(b1-", "Man3S6S(b1-", "Man-ol(b1-")
   enzymes <- .process_enzymes_arg("MGAT1", apply_prefilter = FALSE)
-  for (target in targets) {
-    graph <- trace_biosynthesis_virtual(target)
+  for (root in roots) {
+    from <- paste0("Man(a1-3)Man(b1-4)", root)
+    to <- paste0("GlcNAc(b1-2)", from)
+    graph <- path_biosynthesis_virtual(from, to)
+    native <- .amplify_virtual_edges(graph, enzymes)
+    reference <- .amplify_virtual_edges_r(graph, enzymes)
+    expected <- if (identical(root, "Man(b1-")) "MGAT1" else character()
+
+    expect_identical(igraph::E(reference)$concrete_enzymes, list(expected))
     expect_identical(
-      igraph::E(.amplify_virtual_edges(graph, enzymes))$concrete_enzymes,
-      igraph::E(.amplify_virtual_edges_r(graph, enzymes))$concrete_enzymes
+      igraph::E(native)$concrete_enzymes,
+      igraph::E(reference)$concrete_enzymes
     )
   }
 })
