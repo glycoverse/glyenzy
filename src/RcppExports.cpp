@@ -37,10 +37,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_virtual_trim
+Rcpp::List cpp_virtual_trim(Rcpp::List source, Rcpp::List targets, Rcpp::DataFrame dictionary, Rcpp::Function order, bool byte_order);
+RcppExport SEXP _glyenzy_cpp_virtual_trim(SEXP sourceSEXP, SEXP targetsSEXP, SEXP dictionarySEXP, SEXP orderSEXP, SEXP byte_orderSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type source(sourceSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dictionary(dictionarySEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type order(orderSEXP);
+    Rcpp::traits::input_parameter< bool >::type byte_order(byte_orderSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_virtual_trim(source, targets, dictionary, order, byte_order));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_virtual_annotate
+SEXP cpp_virtual_annotate(Rcpp::List records, Rcpp::IntegerMatrix edges, Rcpp::List plan, Rcpp::List types, Rcpp::DataFrame dictionary);
+RcppExport SEXP _glyenzy_cpp_virtual_annotate(SEXP recordsSEXP, SEXP edgesSEXP, SEXP planSEXP, SEXP typesSEXP, SEXP dictionarySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type records(recordsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type edges(edgesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type plan(planSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type types(typesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dictionary(dictionarySEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_virtual_annotate(records, edges, plan, types, dictionary));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_glyenzy_cpp_bfs_search", (DL_FUNC) &_glyenzy_cpp_bfs_search, 2},
     {"_glyenzy_cpp_bfs_have_motifs", (DL_FUNC) &_glyenzy_cpp_bfs_have_motifs, 5},
+    {"_glyenzy_cpp_virtual_trim", (DL_FUNC) &_glyenzy_cpp_virtual_trim, 5},
+    {"_glyenzy_cpp_virtual_annotate", (DL_FUNC) &_glyenzy_cpp_virtual_annotate, 5},
     {NULL, NULL, 0}
 };
 

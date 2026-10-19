@@ -719,3 +719,19 @@ Rcpp::LogicalMatrix cpp_bfs_have_motifs(Rcpp::List targets, Rcpp::List motifs,
   }
   return out;
 }
+
+#include "virtual-native.h"
+
+// [[Rcpp::export]]
+Rcpp::List cpp_virtual_trim(Rcpp::List source, Rcpp::List targets,
+                           Rcpp::DataFrame dictionary, Rcpp::Function order,
+                           bool byte_order) {
+  return glyenzy_bfs::virtual_trim(source, targets, dictionary, order, byte_order);
+}
+
+// [[Rcpp::export]]
+SEXP cpp_virtual_annotate(Rcpp::List records, Rcpp::IntegerMatrix edges,
+                          Rcpp::List plan, Rcpp::List types,
+                          Rcpp::DataFrame dictionary) {
+  return glyenzy_bfs::virtual_annotate(records, edges, plan, types, dictionary);
+}
