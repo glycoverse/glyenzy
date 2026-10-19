@@ -8,3 +8,11 @@ cpp_bfs_search <- function(config, callbacks) {
 cpp_bfs_have_motifs <- function(targets, motifs, alignments, lenient, dictionary) {
     .Call(`_glyenzy_cpp_bfs_have_motifs`, targets, motifs, alignments, lenient, dictionary)
 }
+
+cpp_virtual_trim <- function(source, targets, dictionary, order, byte_order) {
+    .Call(`_glyenzy_cpp_virtual_trim`, source, targets, dictionary, order, byte_order)
+}
+
+cpp_virtual_annotate <- function(records, edges, plan, types, dictionary) {
+    .Call(`_glyenzy_cpp_virtual_annotate`, records, edges, plan, types, dictionary)
+}

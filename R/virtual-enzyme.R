@@ -2,7 +2,8 @@
 
 .perform_virtual_synthesis <- function(
   from_g,
-  to_gs
+  to_gs,
+  enzymes = NULL
 ) {
   from_key <- as.character(from_g)[[1]]
   max_steps <- max(
@@ -17,15 +18,22 @@
   all_edges <- list()
   found <- logical(length(to_gs))
 
-  for (i in seq_along(to_gs)) {
-    result <- .virtual_trim_target(
-      from_g,
-      to_gs[i]
-    )
-    found[[i]] <- result$found
-    endpoint_keys[[i]] <- result$endpoint_key
-    if (length(result$all_edges) > 0L) {
-      all_edges <- c(all_edges, result$all_edges)
+  native <- .virtual_native_synthesis(from_g, to_gs)
+  if (!is.null(native)) {
+    found <- native$found
+    endpoint_keys <- native$endpoint_keys
+    all_edges <- native$all_edges
+  } else {
+    for (i in seq_along(to_gs)) {
+      result <- .virtual_trim_target(
+        from_g,
+        to_gs[i]
+      )
+      found[[i]] <- result$found
+      endpoint_keys[[i]] <- result$endpoint_key
+      if (length(result$all_edges) > 0L) {
+        all_edges <- c(all_edges, result$all_edges)
+      }
     }
   }
 
@@ -61,10 +69,13 @@
     )
   }
 
+  if (!is.null(enzymes)) {
+    path <- .amplify_virtual_edges(path, enzymes, records = native$records)
+  }
   path
 }
 
-.amplify_virtual_edges <- function(path, enzymes) {
+.amplify_virtual_edges_r <- function(path, enzymes) {
   edge_count <- igraph::ecount(path)
   concrete_enzymes <- rep(list(character()), edge_count)
   if (edge_count == 0L || length(enzymes) == 0L) {

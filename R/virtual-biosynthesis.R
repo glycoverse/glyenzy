@@ -72,18 +72,16 @@ trace_biosynthesis_virtual <- function(
   checkmate::assert_flag(annotate_enzymes)
 
   if (annotate_enzymes) {
-    enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
+    enzymes <- .virtual_enzymes_arg(enzymes, glycans)
   } else {
     .validate_virtual_enzymes(enzymes)
   }
 
   path <- .perform_virtual_synthesis(
     .decide_virtual_starting_glycan(glycans[1]),
-    glycans
+    glycans,
+    enzymes = if (annotate_enzymes) enzymes else NULL
   )
-  if (annotate_enzymes) {
-    path <- .amplify_virtual_edges(path, enzymes)
-  }
   .finalize_biosynthesis_network(
     path,
     glycans,
@@ -143,18 +141,16 @@ path_biosynthesis_virtual <- function(
   checkmate::assert_flag(annotate_enzymes)
 
   if (annotate_enzymes) {
-    enzymes <- .process_enzymes_arg(enzymes, apply_prefilter = FALSE)
+    enzymes <- .virtual_enzymes_arg(enzymes, to)
   } else {
     .validate_virtual_enzymes(enzymes)
   }
 
   path <- .perform_virtual_synthesis(
     from,
-    to
+    to,
+    enzymes = if (annotate_enzymes) enzymes else NULL
   )
-  if (annotate_enzymes) {
-    path <- .amplify_virtual_edges(path, enzymes)
-  }
   .finalize_biosynthesis_network(
     path,
     to,
