@@ -40,8 +40,18 @@ pak::pkg_install("glyenzy")
 
 Or from [GitHub](https://github.com/glycoverse/glyenzy):
 
+Install the latest releases of this package and its required Glycoverse
+dependencies together from GitHub:
+
 ``` r
-pak::pkg_install("glycoverse/glyenzy@*release")
+pak::pkg_install(c(
+  "glycoverse/glyrepr@*release",
+  "glycoverse/glyparse@*release",
+  "glycoverse/glydraw@*release",
+  "glycoverse/glyexp@*release",
+  "glycoverse/glymotif@*release",
+  "glycoverse/glyenzy@*release"
+))
 ```
 
 Or install the development version (NOT recommended):
