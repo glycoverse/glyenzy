@@ -1,5 +1,6 @@
 # glyenzy (development version)
 
+* `product_substrate_ratio()` computes glycomics and site-specific glycoproteomics ratios faster by matching repeated glycan structures once and batching motif counts, while preserving substituent-subset matching and feature order. (#56)
 * `trace_biosynthesis_virtual()` and `path_biosynthesis_virtual()` build fully specified concrete glycan networks and annotate built-in enzymes faster while preserving transition order and enzyme matches. (#55)
 
 * `trace_biosynthesis()` and `path_biosynthesis()` run faster with batched enzyme prefiltering, shared preparation of built-in rules, and more efficient result construction. Search results are recomputed for every call, and custom enzymes retain their existing dispatch. (#54)

@@ -9,6 +9,10 @@ cpp_bfs_have_motifs <- function(targets, motifs, alignments, lenient, dictionary
     .Call(`_glyenzy_cpp_bfs_have_motifs`, targets, motifs, alignments, lenient, dictionary)
 }
 
+cpp_product_substrate_counts <- function(targets, motifs, alignments, lenient, dictionary) {
+    .Call(`_glyenzy_cpp_product_substrate_counts`, targets, motifs, alignments, lenient, dictionary)
+}
+
 cpp_virtual_trim <- function(source, targets, dictionary, order, byte_order) {
     .Call(`_glyenzy_cpp_virtual_trim`, source, targets, dictionary, order, byte_order)
 }

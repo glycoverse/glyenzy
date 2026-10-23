@@ -720,6 +720,45 @@ Rcpp::LogicalMatrix cpp_bfs_have_motifs(Rcpp::List targets, Rcpp::List motifs,
   return out;
 }
 
+// Count the same deduplicated node mappings as the R subset matcher. Apply
+// substituent containment after topology matching, including for symmetric
+// motifs, so selection of the representative mapping stays unchanged.
+// [[Rcpp::export]]
+Rcpp::IntegerMatrix cpp_product_substrate_counts(
+    Rcpp::List targets, Rcpp::List motifs, Rcpp::CharacterVector alignments,
+    bool lenient, Rcpp::DataFrame dictionary) {
+  using namespace glyenzy_bfs;
+  Dictionary d(dictionary);
+  vector<glyenzy_bfs::Graph> prepared, bare;
+  for (SEXP motif : motifs) {
+    prepared.emplace_back(List(motif));
+    bare.push_back(prepared.back());
+    std::fill(bare.back().sub.begin(), bare.back().sub.end(), "");
+  }
+  IntegerMatrix out(targets.size(), motifs.size());
+  for (int i = 0; i < targets.size(); ++i) {
+    Rcpp::checkUserInterrupt();
+    glyenzy_bfs::Graph target(as<List>(targets[i]));
+    glyenzy_bfs::Graph base = target;
+    std::fill(base.sub.begin(), base.sub.end(), "");
+    for (int j = 0; j < motifs.size(); ++j) {
+      List matches = glyenzy_bfs_matching::match(
+          base, bare[j], d, as<string>(alignments[j]), false, true, lenient,
+          R_NilValue, false);
+      int count = 0;
+      for (SEXP x : matches) {
+        IntegerVector mapping(x);
+        bool ok = true;
+        for (int k = 0; k < prepared[j].n && ok; ++k)
+          ok = contained(target.sub[mapping[k] - 1], prepared[j].sub[k], lenient);
+        count += ok;
+      }
+      out(i, j) = count;
+    }
+  }
+  return out;
+}
+
 #include "virtual-native.h"
 
 // [[Rcpp::export]]
