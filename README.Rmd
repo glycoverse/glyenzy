@@ -96,7 +96,7 @@ glycan <- "Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-"
 
 To build the biosynthesis network:
 
-```{r}
+```{r biosynthesis-path, dev='ragg_png', dpi=300, fig.retina=1, fig.width=6, fig.height=6}
 path <- trace_biosynthesis(glycan)
 plot(path)
 ```
