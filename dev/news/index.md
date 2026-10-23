@@ -2,6 +2,11 @@
 
 ## glyenzy (development version)
 
+- [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/dev/reference/product_substrate_ratio.md)
+  computes glycomics and site-specific glycoproteomics ratios faster by
+  matching repeated glycan structures once and batching motif counts,
+  while preserving substituent-subset matching and feature order. (#56)
+
 - [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
   and
   [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)

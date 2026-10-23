@@ -155,10 +155,10 @@ apply_enzyme(man5, abstract_enzymes()[["GnTI"]])
 #> [1] GlcNAc(b1-2)Man(a1-3)[Man(a1-3)[Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> # Unique structures: 1
 trace_biosynthesis(man5, enzymes = abstract_enzymes(), max_virtual_steps = 0L)
-#> IGRAPH 620e8fc DN-- 15 19 -- 
+#> IGRAPH a4fef40 DN-- 15 19 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), is_virtual (e/l), step
 #> | (e/n), enzymes (e/x)
-#> + edges from 620e8fc (vertex names):
+#> + edges from a4fef40 (vertex names):
 #> [1] Glc(a1-2)Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-->Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-
 #> [2] Glc(a1-3)Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-         ->Glc(a1-3)Man(a1-2)Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-3)[Man(a1-2)Man(a1-6)]Man(a1-6)]Man(b1-4)GlcNAc(b1-4)GlcNAc(b1-         
 #> + ... omitted several edges
