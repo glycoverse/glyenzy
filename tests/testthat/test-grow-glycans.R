@@ -243,3 +243,31 @@ test_that("grow_glycans supports sequential ST actions", {
   expect_equal(as.character(one_step), "Gal6S(b1-")
   expect_true("Gal3S6S(b1-" %in% as.character(result))
 })
+
+test_that("zero growth steps retain only unique starting glycans", {
+  glycans <- glyrepr::as_glycan_structure(c(
+    "Gal(b1-4)GlcNAc(b1-",
+    "Gal(b1-4)GlcNAc(b1-"
+  ))
+  expect_equal(
+    grow_glycans(glycans, "ST6GAL1", n_steps = 0),
+    unique(glycans)
+  )
+  expect_equal(
+    grow_glycans(glycans, "ST6GAL1", n_steps = 0, filter = ~ rep(FALSE, length(.x))),
+    glyrepr::glycan_structure()
+  )
+})
+
+test_that("empty growth inputs retain the structure vector type", {
+  glycan <- "Gal(b1-4)GlcNAc(b1-"
+  empty <- glyrepr::glycan_structure()
+
+  expect_equal(grow_glycans_step(glycan, character()), empty)
+  expect_equal(grow_glycans_step(glycan, list()), empty)
+  expect_equal(grow_glycans_step(empty, "ST6GAL1"), empty)
+  expect_equal(
+    suppressMessages(grow_glycans(glycan, character(), n_steps = 1)),
+    glyrepr::as_glycan_structure(glycan)
+  )
+})

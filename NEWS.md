@@ -1,5 +1,7 @@
 # glyenzy (development version)
 
+* `grow_glycans(n_steps = 0)` now returns the unique, filtered starting glycans without running enzyme reactions. Empty glycan or enzyme inputs to `grow_glycans_step()` return a typed empty structure vector.
+
 * `product_substrate_ratio()` computes glycomics and site-specific glycoproteomics ratios faster by matching repeated glycan structures once and batching motif counts, while preserving substituent-subset matching and feature order. (#56)
 * `trace_biosynthesis_virtual()` and `path_biosynthesis_virtual()` build fully specified concrete glycan networks and annotate built-in enzymes faster while preserving transition order and enzyme matches. (#55)
 
