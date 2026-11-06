@@ -62,11 +62,10 @@ and interdependence in glycomics by accounting for glycan biosynthesis.
 
 ``` r
 exp <- glyexp::real_experiment2[seq_len(10), seq_len(3)]
-#> Warning: replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’
 product_substrate_ratio(exp, "ST6GAL1")
 #> class: SummarizedExperiment 
 #> dim: 1 3 
-#> metadata(2): exp_type glycan_type
+#> metadata(2): glycan_type scale
 #> assays(1): product_substrate_ratio
 #> rownames(1): ST6GAL1
 #> rowData names(1): enzyme
