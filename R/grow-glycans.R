@@ -73,6 +73,9 @@ grow_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
 }
 
 .grow_glycans_step <- function(glycans, enzymes) {
+  if (length(glycans) == 0L || length(enzymes) == 0L) {
+    return(glyrepr::glycan_structure())
+  }
   new_glycans <- purrr::map(enzymes, ~ .apply_enzyme_flatten(glycans, .x))
   unique(do.call(c, new_glycans))
 }
@@ -86,6 +89,9 @@ grow_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
   if (!is.null(filter)) {
     glycans <- glycans[filter(glycans)]
   }
+  if (n_steps == 0L) {
+    return(glycans)
+  }
   pool <- vector("list", n_steps + 1)
   pool[[1]] <- glycans
   n_glycans <- length(glycans)
@@ -97,7 +103,7 @@ grow_glycans <- function(glycans, enzymes, n_steps = 5, filter = NULL) {
     format = "{cli::pb_spin} Step {cli::pb_current}/{cli::pb_total} | {cli::pb_bar} {cli::pb_percent} | current number of glycans: {n_glycans}"
   )
 
-  for (i in 1:n_steps) {
+  for (i in seq_len(n_steps)) {
     new_glycans <- .grow_glycans_step(glycans, enzymes)
     if (length(new_glycans) == 0L) {
       cli::cli_progress_done()
