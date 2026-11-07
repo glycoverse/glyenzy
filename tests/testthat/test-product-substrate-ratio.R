@@ -68,7 +68,10 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
     c("TEST_GT", "TEST_GT")
   )
   expect_identical(SummarizedExperiment::colData(result), col_data)
-  expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(exp))
+  expect_identical(
+    S4Vectors::metadata(result),
+    c(S4Vectors::metadata(exp), list(scale = "raw"))
+  )
 })
 
 test_that("product_substrate_ratio uses lenient matching for non-intact data", {
@@ -154,7 +157,10 @@ test_that("product_substrate_ratio is site specific and keeps site order", {
   )
   expect_identical(result_rows$protein, c("P2", "P1"))
   expect_identical(result_rows$protein_site, c(20L, NA_integer_))
-  expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(exp))
+  expect_identical(
+    S4Vectors::metadata(result),
+    c(S4Vectors::metadata(exp), list(scale = "raw"))
+  )
 })
 
 test_that("product_substrate_ratio ignores rule context and handles zero", {
@@ -361,4 +367,156 @@ test_that("batched ratios preserve real-data site and enzyme ordering", {
     .product_substrate_counts = .count_motifs_substituent_subset
   )
   expect_identical(actual, product_substrate_ratio(exp, enzymes))
+})
+
+ratio_scale_experiment <- function(type) {
+  exp <- if (type == "glycomics") {
+    glyexp::real_experiment2[seq_len(4), seq_len(6)]
+  } else {
+    glyexp::real_experiment[seq_len(4), seq_len(6)]
+  }
+  rownames(exp) <- paste0("G", seq_len(4))
+  colnames(exp) <- paste0("S", seq_len(6))
+  SummarizedExperiment::assay(exp) <- matrix(
+    c(
+      2,
+      8,
+      4,
+      12,
+      0,
+      2,
+      0,
+      4,
+      NA,
+      2,
+      4,
+      NA,
+      2,
+      NA,
+      NA,
+      NA,
+      NA,
+      NA,
+      NA,
+      NA,
+      0.25,
+      0,
+      0.5,
+      0.125
+    ),
+    nrow = 4,
+    dimnames = dimnames(exp)
+  )
+  SummarizedExperiment::rowData(exp)$glycan_structure <- glyparse::auto_parse(
+    rep(c("Gal(b1-4)GlcNAc(b1-", "Neu5Ac(a2-6)Gal(b1-4)GlcNAc(b1-"), 2)
+  )
+  if (type == "glycoproteomics") {
+    SummarizedExperiment::rowData(exp)$protein <- c("P2", "P2", "P1", "P1")
+    SummarizedExperiment::rowData(exp)$protein_site <- c(20L, 20L, 10L, 10L)
+  }
+  S4Vectors::metadata(exp) <- list(
+    glycan_type = "N",
+    source = "scale regression",
+    custom = list(batch = 1L),
+    scale = "raw"
+  )
+  exp
+}
+
+test_that("ratios use linear abundances across reversible scales", {
+  transforms <- list(raw = identity, log = log, log2 = log2, log10 = log10)
+  for (type in c("glycomics", "glycoproteomics")) {
+    raw <- ratio_scale_experiment(type)
+    expected <- product_substrate_ratio(raw, "ST6GAL1")
+    expected_values <- if (type == "glycomics") {
+      matrix(c(10 / 3, NA, 0.5, 0, NA, 1 / 6), nrow = 1)
+    } else {
+      rbind(c(4, NA, NA, 0, NA, 0), c(3, NA, 0, NA, NA, 0.25))
+    }
+    expect_equal(unname(SummarizedExperiment::assay(expected)), expected_values)
+
+    for (scale in names(transforms)) {
+      input <- raw
+      SummarizedExperiment::assay(input) <- transforms[[scale]](
+        SummarizedExperiment::assay(raw)
+      )
+      S4Vectors::metadata(input)$scale <- scale
+      original_assay <- SummarizedExperiment::assay(input)
+      original_metadata <- S4Vectors::metadata(input)
+
+      result <- product_substrate_ratio(input, "ST6GAL1")
+
+      expect_equal(result, expected)
+      expect_identical(S4Vectors::metadata(result), S4Vectors::metadata(raw))
+      expect_identical(
+        SummarizedExperiment::colData(result),
+        SummarizedExperiment::colData(input)
+      )
+      expect_identical(SummarizedExperiment::assay(input), original_assay)
+      expect_identical(S4Vectors::metadata(input), original_metadata)
+    }
+  }
+})
+
+test_that("legacy ratios default only absent scale metadata to raw", {
+  for (type in c("glycomics", "glycoproteomics")) {
+    raw <- ratio_scale_experiment(type)
+    legacy <- raw
+    S4Vectors::metadata(legacy)$scale <- NULL
+    original_assay <- SummarizedExperiment::assay(legacy)
+    original_metadata <- S4Vectors::metadata(legacy)
+
+    expect_equal(
+      product_substrate_ratio(legacy, "ST6GAL1"),
+      product_substrate_ratio(raw, "ST6GAL1")
+    )
+    expect_identical(SummarizedExperiment::assay(legacy), original_assay)
+    expect_identical(S4Vectors::metadata(legacy), original_metadata)
+
+    for (scale in list(
+      NULL,
+      NA_character_,
+      "",
+      "unknown",
+      "ln",
+      c("raw", "log2")
+    )) {
+      invalid <- raw
+      S4Vectors::metadata(invalid)["scale"] <- list(scale)
+      expect_error(product_substrate_ratio(invalid, "ST6GAL1"), "scale")
+    }
+    logx <- raw
+    S4Vectors::metadata(logx)$scale <- "logx"
+    expect_error(
+      product_substrate_ratio(logx, "ST6GAL1"),
+      "recoverable abundances.*logx"
+    )
+  }
+})
+
+test_that("ratios reject invalid or unrepresentable linear abundances", {
+  for (type in c("glycomics", "glycoproteomics")) {
+    raw <- ratio_scale_experiment(type)
+    for (value in c(-1, Inf, -Inf)) {
+      invalid <- raw
+      SummarizedExperiment::assay(invalid)[1, 1] <- value
+      expect_error(
+        product_substrate_ratio(invalid, "ST6GAL1"),
+        "finite, non-negative abundances"
+      )
+    }
+    for (scale in c("log", "log2", "log10")) {
+      invalid <- raw
+      S4Vectors::metadata(invalid)$scale <- scale
+      for (value in c(Inf, 1e4)) {
+        SummarizedExperiment::assay(invalid)[1, 1] <- value
+        expect_error(
+          product_substrate_ratio(invalid, "ST6GAL1"),
+          "finite, non-negative abundances"
+        )
+      }
+      SummarizedExperiment::assay(invalid)[1, 1] <- -1e4
+      expect_error(product_substrate_ratio(invalid, "ST6GAL1"), "underflow")
+    }
+  }
 })

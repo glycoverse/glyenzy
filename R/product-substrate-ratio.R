@@ -24,7 +24,23 @@
 #' @returns A plain [SummarizedExperiment::SummarizedExperiment()] with a
 #'   `product_substrate_ratio` assay. For glycomics data, `rowData()` contains
 #'   `enzyme`. For glycoproteomics data, it contains `enzyme`, `protein`, and
-#'   `protein_site`. `colData()` and metadata are preserved from `exp`.
+#'   `protein_site`. `colData()` and metadata are preserved from `exp`, except
+#'   `scale` is set to `"raw"` to describe the unlogged, dimensionless ratios.
+#'
+#' @section Abundance scales:
+#' Ratios are calculated from linear abundances. The first assay is interpreted
+#' using its `scale` metadata: `"raw"` is used directly, while `"log"` (natural
+#' logarithm), `"log2"`, and `"log10"` are inverted before motif weighting and
+#' summation. No pseudocount is added or removed. Missing `scale` metadata is
+#' treated as `"raw"` for legacy objects; explicit invalid values are rejected.
+#' `"logx"` is not supported because the original abundances cannot be recovered
+#' from that label alone. Supply recoverable abundances with accurate scale
+#' metadata instead. The input object is not modified.
+#'
+#' Decoded abundances must be finite and non-negative, or missing. On ordinary
+#' log scales, `-Inf` represents zero; finite log values that overflow or
+#' underflow when inverted are rejected. Missing abundances contribute zero to
+#' motif sums, so a zero or wholly missing substrate sum produces `NA`.
 #'
 #' @references
 #' Bao B, Kellman BP, Chiang AWT, et al. (2021). Correcting for sparsity and
@@ -40,6 +56,7 @@
 product_substrate_ratio <- function(exp, enzymes) {
   exp_type <- .product_substrate_exp_type(exp)
   .check_product_substrate_exp(exp)
+  abundance <- .product_substrate_abundance(exp)
   enzymes <- .product_substrate_enzymes(enzymes)
   sites <- .product_substrate_sites(exp, exp_type)
   entries <- .product_substrate_entries(enzymes)
@@ -79,7 +96,8 @@ product_substrate_ratio <- function(exp, enzymes) {
       exp_type,
       sites,
       motifs,
-      alignment
+      alignment,
+      abundance
     )
 
     for (i in seq_along(entry_idx)) {
@@ -129,6 +147,38 @@ product_substrate_ratio <- function(exp, enzymes) {
     )
   }
   invisible(exp)
+}
+
+.product_substrate_abundance <- function(exp) {
+  metadata <- S4Vectors::metadata(exp)
+  scale <- if ("scale" %in% names(metadata)) metadata[["scale"]] else "raw"
+  checkmate::assert_choice(scale, c("raw", "log", "log2", "log10", "logx"))
+  if (scale == "logx") {
+    cli::cli_abort(
+      "{.fn product_substrate_ratio} requires recoverable abundances and does not support scale = 'logx'."
+    )
+  }
+
+  values <- as.matrix(SummarizedExperiment::assay(exp, 1))
+  abundance <- switch(
+    scale,
+    raw = values,
+    log = exp(values),
+    log2 = 2^values,
+    log10 = 10^values
+  )
+  if (any(!is.na(abundance) & (!is.finite(abundance) | abundance < 0))) {
+    cli::cli_abort(
+      "{.arg exp} must decode to finite, non-negative abundances or missing values."
+    )
+  }
+  if (scale != "raw" && any(is.finite(values) & abundance == 0, na.rm = TRUE)) {
+    cli::cli_abort(
+      "{.arg exp} contains finite log values that underflow when decoded to raw abundances."
+    )
+  }
+  abundance[is.na(abundance)] <- 0
+  abundance
 }
 
 .product_substrate_enzymes <- function(enzymes) {
@@ -233,7 +283,8 @@ product_substrate_ratio <- function(exp, enzymes) {
   exp_type,
   sites,
   motifs,
-  alignment
+  alignment,
+  abundance
 ) {
   row_data <- SummarizedExperiment::rowData(exp)
   motif_counts <- .product_substrate_counts(
@@ -241,8 +292,6 @@ product_substrate_ratio <- function(exp, enzymes) {
     motifs,
     alignments = rep(alignment, length(motifs))
   )
-  abundance <- as.matrix(SummarizedExperiment::assay(exp, 1))
-  abundance[is.na(abundance)] <- 0
   motif_names <- names(motifs)
 
   if (exp_type == "glycomics") {
@@ -376,10 +425,12 @@ product_substrate_ratio <- function(exp, enzymes) {
   }
 
   rownames(ratio) <- row_ids
+  metadata <- S4Vectors::metadata(exp)
+  metadata$scale <- "raw"
   SummarizedExperiment::SummarizedExperiment(
     assays = list(product_substrate_ratio = ratio),
     rowData = row_data,
     colData = SummarizedExperiment::colData(exp),
-    metadata = S4Vectors::metadata(exp)
+    metadata = metadata
   )
 }

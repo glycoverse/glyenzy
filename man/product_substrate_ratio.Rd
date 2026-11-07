@@ -19,7 +19,8 @@ are not glycans.}
 A plain \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::SummarizedExperiment()}} with a
 \code{product_substrate_ratio} assay. For glycomics data, \code{rowData()} contains
 \code{enzyme}. For glycoproteomics data, it contains \code{enzyme}, \code{protein}, and
-\code{protein_site}. \code{colData()} and metadata are preserved from \code{exp}.
+\code{protein_site}. \code{colData()} and metadata are preserved from \code{exp}, except
+\code{scale} is set to \code{"raw"} to describe the unlogged, dimensionless ratios.
 }
 \description{
 Calculate the ratio between the motif quantification of enzyme products and
@@ -37,6 +38,23 @@ Motifs are matched strictly for intact glycan structures and leniently for
 partial or reduced structures, consistent with other glyenzy motif-based
 functions.
 }
+\section{Abundance scales}{
+
+Ratios are calculated from linear abundances. The first assay is interpreted
+using its \code{scale} metadata: \code{"raw"} is used directly, while \code{"log"} (natural
+logarithm), \code{"log2"}, and \code{"log10"} are inverted before motif weighting and
+summation. No pseudocount is added or removed. Missing \code{scale} metadata is
+treated as \code{"raw"} for legacy objects; explicit invalid values are rejected.
+\code{"logx"} is not supported because the original abundances cannot be recovered
+from that label alone. Supply recoverable abundances with accurate scale
+metadata instead. The input object is not modified.
+
+Decoded abundances must be finite and non-negative, or missing. On ordinary
+log scales, \code{-Inf} represents zero; finite log values that overflow or
+underflow when inverted are rejected. Missing abundances contribute zero to
+motif sums, so a zero or wholly missing substrate sum produces \code{NA}.
+}
+
 \examples{
 exp <- glyexp::real_experiment2[seq_len(10), seq_len(3)]
 product_substrate_ratio(exp, "ST6GAL1")
