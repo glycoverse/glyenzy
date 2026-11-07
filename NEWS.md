@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* `product_substrate_ratio()` now calculates linear abundance ratios from `raw`, `log`, `log2`, or `log10` inputs and marks the output `scale = "raw"`. Missing scale metadata remains compatible with raw abundances; `logx` and invalid scales now error, so supply recoverable abundances with accurate metadata.
+* `product_substrate_ratio()` now calculates linear abundance ratios from `raw`, `log`, `log2`, or `log10` inputs and marks the output `scale = "raw"`. Missing scale metadata remains compatible with raw abundances; `logx` and invalid scales now error, so supply recoverable abundances with accurate metadata. (#59)
 
 * `grow_glycans(n_steps = 0)` now returns the unique, filtered starting glycans without running enzyme reactions. Empty glycan or enzyme inputs to `grow_glycans_step()` return a typed empty structure vector.
 
