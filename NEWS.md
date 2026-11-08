@@ -1,6 +1,6 @@
 # glyenzy (development version)
 
-* Product/substrate ratio regression fixtures follow current glyexp name and scale validation, while retaining explicit corrupted-input defensive tests. The development glyexp dependency is pinned for reproducible checks.
+* Product/substrate ratio regression fixtures follow current glyexp name and scale validation, while retaining explicit corrupted-input defensive tests. The development glyexp dependency is pinned for reproducible checks. (#60)
 
 * `product_substrate_ratio()` now calculates linear abundance ratios from `raw`, `log`, `log2`, or `log10` inputs and marks the output `scale = "raw"`. Missing scale metadata remains compatible with raw abundances; `logx` and invalid scales now error, so supply recoverable abundances with accurate metadata. (#59)
 
