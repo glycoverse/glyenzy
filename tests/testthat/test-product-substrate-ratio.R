@@ -20,7 +20,11 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
   SummarizedExperiment::assay(exp) <- abundance
   SummarizedExperiment::rowData(exp)$glycan_structure <- structures
   SummarizedExperiment::colData(exp) <- col_data
-  S4Vectors::metadata(exp) <- list(glycan_type = "N", source = "test")
+  S4Vectors::metadata(exp) <- list(
+    glycan_type = "N",
+    source = "test",
+    scale = "raw"
+  )
   enzyme <- make_enzyme(
     name = "TEST_GT",
     rules = list(
@@ -70,7 +74,7 @@ test_that("product_substrate_ratio calculates glycomics rule sums", {
   expect_identical(SummarizedExperiment::colData(result), col_data)
   expect_identical(
     S4Vectors::metadata(result),
-    c(S4Vectors::metadata(exp), list(scale = "raw"))
+    S4Vectors::metadata(exp)
   )
 })
 
@@ -126,7 +130,11 @@ test_that("product_substrate_ratio is site specific and keeps site order", {
     batch = c("A", "B"),
     row.names = colnames(abundance)
   )
-  S4Vectors::metadata(exp) <- list(glycan_type = "N", source = "test")
+  S4Vectors::metadata(exp) <- list(
+    glycan_type = "N",
+    source = "test",
+    scale = "raw"
+  )
   enzyme <- make_enzyme(
     name = "TEST_GT",
     rules = list(list(
@@ -159,7 +167,7 @@ test_that("product_substrate_ratio is site specific and keeps site order", {
   expect_identical(result_rows$protein_site, c(20L, NA_integer_))
   expect_identical(
     S4Vectors::metadata(result),
-    c(S4Vectors::metadata(exp), list(scale = "raw"))
+    S4Vectors::metadata(exp)
   )
 })
 
@@ -178,7 +186,7 @@ test_that("product_substrate_ratio ignores rule context and handles zero", {
   colnames(exp) <- colnames(abundance)
   SummarizedExperiment::assay(exp) <- abundance
   SummarizedExperiment::rowData(exp)$glycan_structure <- structures
-  S4Vectors::metadata(exp) <- list(glycan_type = "N")
+  S4Vectors::metadata(exp) <- list(glycan_type = "N", scale = "raw")
   plain <- make_enzyme(
     name = "PLAIN",
     rules = list(list(
@@ -261,7 +269,7 @@ test_that("product_substrate_ratio validates its inputs", {
     dimnames = list("G1", "S1")
   )
   SummarizedExperiment::rowData(exp)$glycan_structure <- structures
-  S4Vectors::metadata(exp) <- list(glycan_type = "N")
+  S4Vectors::metadata(exp) <- list(glycan_type = "N", scale = "raw")
   missing_structure <- exp
   SummarizedExperiment::rowData(missing_structure)$glycan_structure <- NULL
   empty_enzyme <- new_enzyme("EMPTY", list(), "GT", "human")
@@ -360,7 +368,19 @@ test_that("ratio counting falls back for floating and additional metadata", {
 })
 
 test_that("batched ratios preserve real-data site and enzyme ordering", {
-  exp <- glyexp::real_experiment[c(1:12, 1:4), 1:3]
+  source <- glyexp::real_experiment
+  indices <- c(1:12, 1:4)
+  abundance <- SummarizedExperiment::assay(source)[indices, 1:3]
+  rownames(abundance) <- paste0("G", seq_along(indices))
+  row_data <- SummarizedExperiment::rowData(source)[indices, , drop = FALSE]
+  rownames(row_data) <- rownames(abundance)
+  exp <- glyexp::GlycoproteomicSE(
+    abundance,
+    rowData = row_data,
+    colData = SummarizedExperiment::colData(source)[1:3, , drop = FALSE],
+    metadata = S4Vectors::metadata(source)
+  )
+  expect_true(methods::validObject(exp))
   enzymes <- c("ST6GAL1", "FUT8", "ST6GAL1")
   actual <- product_substrate_ratio(exp, enzymes)
   local_mocked_bindings(
@@ -437,10 +457,11 @@ test_that("ratios use linear abundances across reversible scales", {
 
     for (scale in names(transforms)) {
       input <- raw
+      S4Vectors::metadata(input)$scale <- scale
       SummarizedExperiment::assay(input) <- transforms[[scale]](
         SummarizedExperiment::assay(raw)
       )
-      S4Vectors::metadata(input)$scale <- scale
+      expect_true(methods::validObject(input))
       original_assay <- SummarizedExperiment::assay(input)
       original_metadata <- S4Vectors::metadata(input)
 
@@ -499,7 +520,11 @@ test_that("ratios reject invalid or unrepresentable linear abundances", {
     raw <- ratio_scale_experiment(type)
     for (value in c(-1, Inf, -Inf)) {
       invalid <- raw
+      # Deliberately model a corrupted historical raw object. Modern assay
+      # replacement rejects negative raw values before glyenzy can see them.
+      S4Vectors::metadata(invalid)$scale <- "log2"
       SummarizedExperiment::assay(invalid)[1, 1] <- value
+      S4Vectors::metadata(invalid)$scale <- "raw"
       expect_error(
         product_substrate_ratio(invalid, "ST6GAL1"),
         "finite, non-negative abundances"
