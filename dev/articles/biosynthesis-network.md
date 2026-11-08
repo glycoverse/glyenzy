@@ -32,10 +32,10 @@ To build its biosynthesis network, call
 
 path <- trace_biosynthesis(glycan)
 path
-#> IGRAPH 38e3979 DN-- 4 3 -- 
+#> IGRAPH 2c0872c DN-- 4 3 -- 
 #> + attr: name (v/c), target (v/l), enzyme (e/c), is_virtual (e/l), step
 #> | (e/n), enzymes (e/x)
-#> + edges from 38e3979 (vertex names):
+#> + edges from 2c0872c (vertex names):
 #> [1] GalNAc(a1-                       ->Gal(b1-3)GalNAc(a1-                       
 #> [2] Gal(b1-3)GalNAc(a1-              ->Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-         
 #> [3] Gal(b1-3)[GlcNAc(b1-6)]GalNAc(a1-->Gal(b1-4)GlcNAc(b1-6)[Gal(b1-3)]GalNAc(a1-
