@@ -31,4 +31,3 @@
       Error in `normalize_n_glycan()`:
       ! `glycans` must contain only topological structures.
       i Use `glyrepr::remove_linkages()` on intact or partial structures first.
-

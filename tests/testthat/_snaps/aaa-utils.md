@@ -13,4 +13,3 @@
     Condition
       Error in `.enzymes_from_list()`:
       ! Concrete and abstract enzymes cannot be mixed in `enzymes`.
-
