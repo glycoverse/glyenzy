@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.11.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,25 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.11.0" id="glyenzy-0110">glyenzy 0.11.0<a class="anchor" aria-label="anchor" href="#glyenzy-0110"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-11-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-11-0"></a></h3>
+<ul><li>
+<code><a href="../reference/product_substrate_ratio.html">product_substrate_ratio()</a></code> calculates linear abundance ratios from <code>raw</code>, <code>log</code>, <code>log2</code>, or <code>log10</code> inputs and marks the output <code>scale = "raw"</code>. Missing scale metadata is treated as raw; <code>logx</code> and invalid scales error. Supply recoverable abundances with accurate scale metadata. (#59)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-11-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-11-0"></a></h3>
+<ul><li>
+<code>grow_glycans(n_steps = 0)</code> returns unique, filtered starting glycans without running enzyme reactions. Empty glycan or enzyme inputs to <code><a href="../reference/grow_glycans_step.html">grow_glycans_step()</a></code> return a typed empty structure vector.</li>
+<li>
+<code><a href="../reference/product_substrate_ratio.html">product_substrate_ratio()</a></code> computes glycomics and site-specific glycoproteomics ratios faster while preserving substituent-subset matching and feature order. (#56)</li>
+<li>
+<code><a href="../reference/trace_biosynthesis.html">trace_biosynthesis()</a></code> and <code><a href="../reference/path_biosynthesis.html">path_biosynthesis()</a></code> run faster, including the first call, while retaining custom enzyme behavior and recomputing each search. (#54)</li>
+<li>
+<code><a href="../reference/trace_biosynthesis_virtual.html">trace_biosynthesis_virtual()</a></code> and <code><a href="../reference/path_biosynthesis_virtual.html">path_biosynthesis_virtual()</a></code> build fully specified concrete glycan networks and annotate built-in enzymes faster while preserving transition order and enzyme matches. (#55)</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.10.0" id="glyenzy-0100">glyenzy 0.10.0<a class="anchor" aria-label="anchor" href="#glyenzy-0100"></a></h2>
 <div class="section level3">

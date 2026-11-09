@@ -1,5 +1,36 @@
 # Changelog
 
+## glyenzy 0.11.0
+
+### Breaking changes
+
+- [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/reference/product_substrate_ratio.md)
+  calculates linear abundance ratios from `raw`, `log`, `log2`, or
+  `log10` inputs and marks the output `scale = "raw"`. Missing scale
+  metadata is treated as raw; `logx` and invalid scales error. Supply
+  recoverable abundances with accurate scale metadata. (#59)
+
+### Minor improvements and bug fixes
+
+- `grow_glycans(n_steps = 0)` returns unique, filtered starting glycans
+  without running enzyme reactions. Empty glycan or enzyme inputs to
+  [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/reference/grow_glycans_step.md)
+  return a typed empty structure vector.
+- [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/reference/product_substrate_ratio.md)
+  computes glycomics and site-specific glycoproteomics ratios faster
+  while preserving substituent-subset matching and feature order. (#56)
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis.md)
+  and
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis.md)
+  run faster, including the first call, while retaining custom enzyme
+  behavior and recomputing each search. (#54)
+- [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/trace_biosynthesis_virtual.md)
+  and
+  [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/reference/path_biosynthesis_virtual.md)
+  build fully specified concrete glycan networks and annotate built-in
+  enzymes faster while preserving transition order and enzyme matches.
+  (#55)
+
 ## glyenzy 0.10.0
 
 ### Breaking changes

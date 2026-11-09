@@ -13,7 +13,7 @@ glycosite."><meta property="og:image" content="https://glycoverse.github.io/glye
 
     <a class="navbar-brand me-2" href="../index.html">glyenzy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.11.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,8 @@ are not glycans.</p></dd>
     <p>A plain <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment::SummarizedExperiment()</a></code> with a
 <code>product_substrate_ratio</code> assay. For glycomics data, <code>rowData()</code> contains
 <code>enzyme</code>. For glycoproteomics data, it contains <code>enzyme</code>, <code>protein</code>, and
-<code>protein_site</code>. <code>colData()</code> and metadata are preserved from <code>exp</code>.</p>
+<code>protein_site</code>. <code>colData()</code> and metadata are preserved from <code>exp</code>, except
+<code>scale</code> is set to <code>"raw"</code> to describe the unlogged, dimensionless ratios.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -88,6 +89,23 @@ partial or reduced structures, consistent with other glyenzy motif-based
 functions.</p>
     </div>
     <div class="section level2">
+    <h2 id="abundance-scales">Abundance scales<a class="anchor" aria-label="anchor" href="#abundance-scales"></a></h2>
+
+
+<p>Ratios are calculated from linear abundances. The first assay is interpreted
+using its <code>scale</code> metadata: <code>"raw"</code> is used directly, while <code>"log"</code> (natural
+logarithm), <code>"log2"</code>, and <code>"log10"</code> are inverted before motif weighting and
+summation. No pseudocount is added or removed. Missing <code>scale</code> metadata is
+treated as <code>"raw"</code> for legacy objects; explicit invalid values are rejected.
+<code>"logx"</code> is not supported because the original abundances cannot be recovered
+from that label alone. Supply recoverable abundances with accurate scale
+metadata instead. The input object is not modified.</p>
+<p>Decoded abundances must be finite and non-negative, or missing. On ordinary
+log scales, <code>-Inf</code> represents zero; finite log values that overflow or
+underflow when inverted are rejected. Missing abundances contribute zero to
+motif sums, so a zero or wholly missing substrate sum produces <code>NA</code>.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Bao B, Kellman BP, Chiang AWT, et al. (2021). Correcting for sparsity and
 interdependence in glycomics by accounting for glycan biosynthesis.
@@ -98,11 +116,10 @@ interdependence in glycomics by accounting for glycan biosynthesis.
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/real_experiment2.html" class="external-link">real_experiment2</a></span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’</span>
 <span class="r-in"><span><span class="fu">product_substrate_ratio</span><span class="op">(</span><span class="va">exp</span>, <span class="st">"ST6GAL1"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 1 3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(2): exp_type glycan_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> metadata(2): glycan_type scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): product_substrate_ratio</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rownames(1): ST6GAL1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(1): enzyme</span>
