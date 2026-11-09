@@ -1,16 +1,15 @@
-# glyenzy (development version)
+# glyenzy 0.11.0
 
-* Product/substrate ratio regression fixtures follow current glyexp name and scale validation, while retaining explicit corrupted-input defensive tests. The development glyexp dependency is pinned for reproducible checks. (#60)
+## Breaking changes
 
-* `product_substrate_ratio()` now calculates linear abundance ratios from `raw`, `log`, `log2`, or `log10` inputs and marks the output `scale = "raw"`. Missing scale metadata remains compatible with raw abundances; `logx` and invalid scales now error, so supply recoverable abundances with accurate metadata. (#59)
+* `product_substrate_ratio()` calculates linear abundance ratios from `raw`, `log`, `log2`, or `log10` inputs and marks the output `scale = "raw"`. Missing scale metadata is treated as raw; `logx` and invalid scales error. Supply recoverable abundances with accurate scale metadata. (#59)
 
-* `grow_glycans(n_steps = 0)` now returns the unique, filtered starting glycans without running enzyme reactions. Empty glycan or enzyme inputs to `grow_glycans_step()` return a typed empty structure vector.
+## Minor improvements and bug fixes
 
-* `product_substrate_ratio()` computes glycomics and site-specific glycoproteomics ratios faster by matching repeated glycan structures once and batching motif counts, while preserving substituent-subset matching and feature order. (#56)
+* `grow_glycans(n_steps = 0)` returns unique, filtered starting glycans without running enzyme reactions. Empty glycan or enzyme inputs to `grow_glycans_step()` return a typed empty structure vector.
+* `product_substrate_ratio()` computes glycomics and site-specific glycoproteomics ratios faster while preserving substituent-subset matching and feature order. (#56)
+* `trace_biosynthesis()` and `path_biosynthesis()` run faster, including the first call, while retaining custom enzyme behavior and recomputing each search. (#54)
 * `trace_biosynthesis_virtual()` and `path_biosynthesis_virtual()` build fully specified concrete glycan networks and annotate built-in enzymes faster while preserving transition order and enzyme matches. (#55)
-
-* `trace_biosynthesis()` and `path_biosynthesis()` run faster with batched enzyme prefiltering, shared preparation of built-in rules, and more efficient result construction. Search results are recomputed for every call, and custom enzymes retain their existing dispatch. (#54)
-* The first `trace_biosynthesis()` call is faster: built-in search rules and fixed structures are prepared when the enzyme database is generated, and default tracing loads full enzyme graphs only when needed. Canonical condensed inputs and intact structures also avoid redundant parsing and classification. (#54)
 
 # glyenzy 0.10.0
 
