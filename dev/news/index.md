@@ -2,51 +2,36 @@
 
 ## glyenzy (development version)
 
-- Product/substrate ratio regression fixtures follow current glyexp name
-  and scale validation, while retaining explicit corrupted-input
-  defensive tests. The development glyexp dependency is pinned for
-  reproducible checks. (#60)
+## glyenzy 0.11.0
+
+### Breaking changes
 
 - [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/dev/reference/product_substrate_ratio.md)
-  now calculates linear abundance ratios from `raw`, `log`, `log2`, or
+  calculates linear abundance ratios from `raw`, `log`, `log2`, or
   `log10` inputs and marks the output `scale = "raw"`. Missing scale
-  metadata remains compatible with raw abundances; `logx` and invalid
-  scales now error, so supply recoverable abundances with accurate
-  metadata. (#59)
+  metadata is treated as raw; `logx` and invalid scales error. Supply
+  recoverable abundances with accurate scale metadata. (#59)
 
-- `grow_glycans(n_steps = 0)` now returns the unique, filtered starting
-  glycans without running enzyme reactions. Empty glycan or enzyme
-  inputs to
+### Minor improvements and bug fixes
+
+- `grow_glycans(n_steps = 0)` returns unique, filtered starting glycans
+  without running enzyme reactions. Empty glycan or enzyme inputs to
   [`grow_glycans_step()`](https://glycoverse.github.io/glyenzy/dev/reference/grow_glycans_step.md)
   return a typed empty structure vector.
-
 - [`product_substrate_ratio()`](https://glycoverse.github.io/glyenzy/dev/reference/product_substrate_ratio.md)
-  computes glycomics and site-specific glycoproteomics ratios faster by
-  matching repeated glycan structures once and batching motif counts,
+  computes glycomics and site-specific glycoproteomics ratios faster
   while preserving substituent-subset matching and feature order. (#56)
-
+- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
+  and
+  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
+  run faster, including the first call, while retaining custom enzyme
+  behavior and recomputing each search. (#54)
 - [`trace_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis_virtual.md)
   and
   [`path_biosynthesis_virtual()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis_virtual.md)
   build fully specified concrete glycan networks and annotate built-in
   enzymes faster while preserving transition order and enzyme matches.
   (#55)
-
-- [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
-  and
-  [`path_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/path_biosynthesis.md)
-  run faster with batched enzyme prefiltering, shared preparation of
-  built-in rules, and more efficient result construction. Search results
-  are recomputed for every call, and custom enzymes retain their
-  existing dispatch. (#54)
-
-- The first
-  [`trace_biosynthesis()`](https://glycoverse.github.io/glyenzy/dev/reference/trace_biosynthesis.md)
-  call is faster: built-in search rules and fixed structures are
-  prepared when the enzyme database is generated, and default tracing
-  loads full enzyme graphs only when needed. Canonical condensed inputs
-  and intact structures also avoid redundant parsing and classification.
-  (#54)
 
 ## glyenzy 0.10.0
 
